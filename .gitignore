@@ -1,8 +1,5 @@
-# Large media files (host externally or use Git LFS)
-*.mp3
-*.m4a
-*.mov
-*.mp4
+# Large media files (over 100MB — host externally)
+Forest Sounds.mp3
 
 # macOS
 .DS_Store
