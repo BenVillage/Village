@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnotherClay — Ben · Clay Village</title>
+<meta name="description" content="AnotherClay. Ceramicist. Tall forms, raw surfaces, deliberate glazes. Chiang Mai & Berlin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #FAFAF8; --surface: #FFFFFF; --surface-alt: #F5F3EF;
+  --border: rgba(0,0,0,0.07); --border-mid: rgba(0,0,0,0.13);
+  --text-primary: #111110; --text-secondary: #6B6860; --text-tertiary: #9C9A94;
+  --accent: #B8956A; --accent-dark: #96754A; --accent-light: #F0E6D6;
+  --accent-soft: rgba(184,149,106,0.10);
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.05); --shadow-md: 0 4px 20px rgba(0,0,0,0.07);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.09);
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text-primary); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+/* GRAIN */
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: 0.025; pointer-events: none; z-index: 1000; }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,248,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-village { font-family: var(--font-display); font-size: 15px; color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+.nav-village:hover { color: var(--text-primary); }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.nav-tabs { display: flex; gap: 2px; list-style: none; }
+.nav-tab { font-size: 13px; font-weight: 500; color: var(--text-tertiary); padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s; border: none; background: none; font-family: var(--font-body); }
+.nav-tab:hover { color: var(--text-primary); background: var(--surface-alt); }
+.nav-tab.active { color: var(--text-primary); background: var(--surface-alt); font-weight: 600; }
+.nav-cta { font-size: 13px; font-weight: 600; color: var(--surface); background: var(--text-primary); border: none; border-radius: 20px; padding: 8px 18px; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.nav-cta:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+/* HERO */
+.hero { padding: 80px 40px 64px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 360px; gap: 80px; align-items: end; }
+.hero-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+.hero-tag-line { width: 24px; height: 1px; background: var(--accent); }
+.hero-name { font-family: var(--font-display); font-size: clamp(52px,7vw,84px); line-height: 1.0; color: var(--text-primary); margin-bottom: 8px; letter-spacing: -0.02em; }
+.hero-craft { font-family: var(--font-display); font-style: italic; font-size: clamp(18px,2.2vw,24px); color: var(--text-secondary); margin-bottom: 28px; line-height: 1.4; }
+.hero-philosophy { font-size: 16px; color: var(--text-secondary); line-height: 1.8; max-width: 500px; border-left: 2px solid var(--accent); padding-left: 18px; margin-bottom: 36px; font-style: italic; }
+.hero-meta { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.hero-meta-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-tertiary); }
+.hero-meta-value { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+.hero-meta-div { width: 1px; height: 32px; background: var(--border-mid); }
+.hero-right { position: relative; padding-bottom: 20px; }
+.hero-img-wrap { width: 100%; aspect-ratio: 3/4; border-radius: 2px; overflow: hidden; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: var(--text-tertiary); font-size: 13px; }
+.hero-badge { position: absolute; bottom: 38px; left: -20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; box-shadow: var(--shadow-md); }
+.hero-badge-num { font-family: var(--font-display); font-size: 36px; line-height: 1; color: var(--text-primary); }
+.hero-badge-lbl { font-size: 11px; color: var(--text-tertiary); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 2px; }
+
+/* SECTIONS */
+.section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+.section-divider { height: 1px; background: var(--border); max-width: 1200px; margin: 0 auto; }
+.section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 40px; }
+.section-title { font-family: var(--font-display); font-size: 32px; color: var(--text-primary); letter-spacing: -0.01em; }
+.section-link { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 4px; transition: gap 0.2s; }
+.section-link:hover { gap: 8px; }
+
+/* WORK GRID */
+.work-filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+.filter { padding:7px 18px; border-radius:20px; border:1px solid var(--border-mid); background:transparent; font-family:var(--font-body); font-size:13px; font-weight:500; color:var(--text-secondary); cursor:pointer; transition:all 0.15s; }
+.filter:hover { color:var(--text-primary); background:var(--surface-alt); }
+.filter.active { background:var(--text-primary); color:#fff; border-color:var(--text-primary); }
+.work-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.work-card { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+.work-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); border-color: var(--border-mid); }
+.work-img { width: 100%; aspect-ratio: 4/3; background: var(--surface-alt); position: relative; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; overflow: hidden; }
+.work-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); position: absolute; inset: 0; }
+.work-card:hover .work-img img { transform: scale(1.04); }
+.badge { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
+.badge-sale { background: var(--text-primary); color: var(--surface); }
+.badge-sold { background: var(--surface-alt); color: var(--text-tertiary); }
+.badge-commission { background: var(--accent-light); color: var(--accent-dark); }
+.work-body { padding: 16px 18px 18px; }
+.work-title { font-family: var(--font-display); font-size: 17px; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3; }
+.work-meta { font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px; }
+.work-footer { display: flex; align-items: center; justify-content: space-between; }
+.work-price { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+.work-price.sold { color: var(--text-tertiary); text-decoration: line-through; font-weight: 400; font-size: 13px; }
+.btn-sm { font-size: 12px; font-weight: 600; color: var(--text-primary); background: var(--surface-alt); border: none; border-radius: 20px; padding: 6px 14px; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; }
+.btn-sm:hover, .btn-sm.primary { background: var(--text-primary); color: var(--surface); }
+.btn-sm.primary:hover { background: var(--accent-dark); }
+
+/* STORY */
+.story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.story-lead { font-family: var(--font-display); font-size: 22px; line-height: 1.5; color: var(--text-primary); margin-bottom: 24px; font-style: italic; }
+.story-body { font-size: 15px; color: var(--text-secondary); line-height: 1.85; }
+.story-body p { margin-bottom: 18px; }
+.story-body p:last-child { margin-bottom: 0; }
+.timeline { position: relative; }
+.timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+.tl-item { display: flex; gap: 24px; padding-bottom: 32px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 7px; position: relative; left: -4px; border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--accent); }
+.tl-content { padding-left: 8px; }
+.tl-year { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.tl-text { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+.tl-text strong { color: var(--text-primary); font-weight: 600; }
+
+/* WORKSHOPS */
+.workshop-list { display: flex; flex-direction: column; gap: 16px; }
+.ws-card { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 28px 32px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; transition: all 0.2s; }
+.ws-card:hover { border-color: var(--border-mid); box-shadow: var(--shadow-md); }
+.ws-name { font-family: var(--font-display); font-size: 22px; color: var(--text-primary); margin-bottom: 8px; line-height: 1.2; }
+.ws-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 12px; }
+.ws-meta-item { font-size: 13px; color: var(--text-tertiary); display: flex; align-items: center; gap: 5px; }
+.ws-meta-item svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.ws-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.ws-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--surface-alt); color: var(--text-secondary); border: 1px solid var(--border); }
+.ws-tag.beginner { background: #EFF8ED; color: #3A7D34; border-color: rgba(58,125,52,0.15); }
+.ws-tag.intermediate { background: #FEF3E2; color: #9A6200; border-color: rgba(154,98,0,0.15); }
+.ws-right { text-align: right; flex-shrink: 0; }
+.ws-price { font-family: var(--font-display); font-size: 28px; color: var(--text-primary); line-height: 1; margin-bottom: 4px; }
+.ws-seats { font-size: 12px; color: var(--text-tertiary); margin-bottom: 14px; }
+.ws-seats.low { color: #C45000; font-weight: 600; }
+.btn-book { font-size: 13px; font-weight: 600; background: var(--text-primary); color: var(--surface); border: none; border-radius: 20px; padding: 10px 22px; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; white-space: nowrap; }
+.btn-book:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+/* COMMISSION */
+.commission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.comm-title { font-family: var(--font-display); font-size: 28px; margin-bottom: 16px; line-height: 1.2; }
+.comm-body { font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 24px; }
+.comm-details { display: flex; flex-direction: column; gap: 14px; }
+.comm-detail { display: flex; gap: 14px; align-items: flex-start; }
+.comm-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.comm-icon svg { width: 14px; height: 14px; stroke: var(--accent-dark); fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.comm-detail-text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+.comm-detail-text strong { color: var(--text-primary); font-weight: 600; display: block; margin-bottom: 2px; }
+.comm-form { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 32px; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
+.form-input, .form-textarea, .form-select { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border-mid); border-radius: 2px; font-size: 14px; color: var(--text-primary); font-family: var(--font-body); outline: none; transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none; }
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.form-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B6860' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+.budget-slider { width: 100%; height: 3px; -webkit-appearance: none; appearance: none; background: var(--border-mid); border-radius: 2px; outline: none; cursor: pointer; margin-top: 4px; }
+.budget-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--text-primary); border: 2px solid var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,0.2); cursor: pointer; }
+.budget-display { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-top: 10px; font-family: var(--font-display); }
+.btn-submit { width: 100%; padding: 14px; background: var(--text-primary); color: var(--surface); border: none; border-radius: 2px; font-size: 14px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em; }
+.btn-submit:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+/* PATRON */
+.patron-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.patron-card { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 28px 24px; transition: all 0.2s; position: relative; }
+.patron-card:hover { border-color: var(--border-mid); box-shadow: var(--shadow-md); }
+.patron-card.featured { border-color: var(--accent); background: var(--accent-light); }
+.patron-card.featured::before { content: 'Most chosen'; position: absolute; top: 14px; right: 14px; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-dark); background: rgba(184,149,106,0.15); padding: 3px 8px; border-radius: 20px; }
+.patron-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.patron-price { font-family: var(--font-display); font-size: 40px; color: var(--text-primary); line-height: 1; margin-bottom: 4px; }
+.patron-period { font-size: 14px; color: var(--text-tertiary); margin-bottom: 20px; }
+.patron-benefits { list-style: none; margin-bottom: 24px; }
+.patron-benefit { font-size: 13px; color: var(--text-secondary); padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+.patron-benefit:last-child { border-bottom: none; }
+.patron-benefit::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 7px; }
+.patron-btn { width: 100%; padding: 11px; border: 1.5px solid var(--border-mid); border-radius: 2px; background: transparent; color: var(--text-primary); font-size: 13px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all 0.2s; }
+.patron-btn:hover { background: var(--text-primary); color: var(--surface); border-color: var(--text-primary); }
+.patron-card.featured .patron-btn { background: var(--text-primary); color: var(--surface); border-color: var(--text-primary); }
+.patron-card.featured .patron-btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 40px; margin-top: 40px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.footer-village { font-family: var(--font-display); font-size: 13px; color: var(--text-tertiary); }
+.footer-village a { color: var(--accent); text-decoration: none; }
+.footer-manifesto { font-size: 12px; font-style: italic; color: var(--text-tertiary); }
+
+/* LIGHTBOX */
+.lightbox { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(10,10,10,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 24px; }
+.lightbox.open { display: flex; }
+.lb-card { background: var(--surface); border-radius: 2px; max-width: 800px; width: 100%; max-height: 90vh; display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
+.lb-img { aspect-ratio: 1; background: var(--surface-alt); display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 13px; }
+.lb-content { padding: 40px 36px; overflow-y: auto; }
+.lb-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.08); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-primary); transition: background 0.15s; z-index: 10; }
+.lb-close:hover { background: rgba(0,0,0,0.15); }
+.lb-title { font-family: var(--font-display); font-size: 26px; margin-bottom: 6px; line-height: 1.2; }
+.lb-meta { font-size: 13px; color: var(--text-tertiary); margin-bottom: 20px; line-height: 1.8; }
+.lb-story { font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px; font-style: italic; border-left: 2px solid var(--accent-light); padding-left: 14px; }
+.lb-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 20px; }
+.lb-spec { font-size: 12px; color: var(--text-tertiary); }
+.lb-spec strong { display: block; color: var(--text-primary); font-weight: 600; font-size: 13px; margin-bottom: 1px; }
+.lb-care { font-size: 12px; color: var(--text-tertiary); background: var(--surface-alt); border-radius: 2px; padding: 12px 14px; margin-bottom: 20px; line-height: 1.6; }
+.lb-price { font-family: var(--font-display); font-size: 30px; margin-bottom: 16px; }
+.lb-actions { display: flex; flex-direction: column; gap: 8px; }
+.lb-btn { padding: 12px 20px; border-radius: 2px; font-size: 14px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all 0.2s; text-align: center; border: 1.5px solid var(--border-mid); background: transparent; color: var(--text-primary); }
+.lb-btn:hover { background: var(--surface-alt); }
+.lb-btn.primary { background: var(--text-primary); color: var(--surface); border-color: var(--text-primary); }
+.lb-btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+
+/* MODAL */
+.modal { display: none; position: fixed; inset: 0; z-index: 600; background: rgba(10,10,10,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 24px; }
+.modal.open { display: flex; }
+.modal-card { background: var(--surface); border-radius: 2px; padding: 40px; max-width: 480px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.06); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-primary); transition: background 0.15s; }
+.modal-close:hover { background: rgba(0,0,0,0.12); }
+.modal-title { font-family: var(--font-display); font-size: 26px; margin-bottom: 6px; line-height: 1.2; }
+.modal-sub { font-size: 13px; color: var(--text-tertiary); margin-bottom: 28px; line-height: 1.6; }
+.modal-summary { background: var(--surface-alt); border-radius: 2px; padding: 16px; margin-bottom: 24px; }
+.modal-line { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: var(--text-secondary); }
+.modal-line.total { border-top: 1px solid var(--border-mid); margin-top: 8px; padding-top: 10px; font-weight: 600; color: var(--text-primary); font-size: 15px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-tabs { display: none; }
+  .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 20px; }
+  .hero-right { display: none; }
+  .section { padding: 48px 20px; }
+  .work-grid { grid-template-columns: repeat(2,1fr); gap: 12px; }
+  .story-grid, .commission-grid { grid-template-columns: 1fr; gap: 40px; }
+  .patron-grid { grid-template-columns: 1fr; }
+  .lb-card { grid-template-columns: 1fr; }
+  .lb-img { aspect-ratio: 16/9; }
+  .ws-card { grid-template-columns: 1fr; }
+  .ws-right { text-align: left; }
+  footer { padding: 24px 20px; }
+}
+@media (max-width: 480px) {
+  .work-grid { grid-template-columns: 1fr; }
+  .hero-name { font-size: 44px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-village" href="index.html">
+    <span class="nav-dot"></span>
+    Clay Village
+  </a>
+  <ul class="nav-tabs">
+    <li><button class="nav-tab active" onclick="navTo('work',this)">Work</button></li>
+    <li><button class="nav-tab" onclick="navTo('story',this)">Story</button></li>
+    <li><button class="nav-tab" onclick="navTo('workshops',this)">Workshops</button></li>
+    <li><button class="nav-tab" onclick="navTo('commission',this)">Commission</button></li>
+    <li><button class="nav-tab" onclick="navTo('support',this)">Support</button></li>
+  </ul>
+  <a class="nav-cta" href="https://www.anotherclay.com" target="_blank">
+    Shop anotherclay.com
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-tag"><span class="hero-tag-line"></span>Clay Village · First Villager</div>
+    <h1 class="hero-name">Another<br>Clay</h1>
+    <p class="hero-craft">Ceramicist, builder, polyglot.<br>Chiang Mai &amp; Berlin.</p>
+    <blockquote class="hero-philosophy">Clay came last. I think it was always the destination.</blockquote>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Craft Age</span>
+        <span class="hero-meta-value">3 years clay</span>
+      </div>
+      <div class="hero-meta-div"></div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Making since</span>
+        <span class="hero-meta-value">Age 7 — music</span>
+      </div>
+      <div class="hero-meta-div"></div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Based</span>
+        <span class="hero-meta-value">Chiang Mai · Berlin</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-wrap">
+      <div style="font-size:32px;color:var(--border-mid);">◎</div>
+      <span>Add your portrait</span>
+    </div>
+    <div class="hero-badge">
+      <div class="hero-badge-num">3</div>
+      <div class="hero-badge-lbl">Years at the wheel</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- WORK -->
+<section class="section" id="work">
+  <div class="section-header">
+    <h2 class="section-title">Work</h2>
+    <a class="section-link" href="https://www.anotherclay.com" target="_blank">80+ pieces at anotherclay.com ↗</a>
+  </div>
+  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;">A selection from the collection. All pieces link through to the full shop for purchase.<br>Ordered by significance — not by engagement.</p>
+  <div class="work-filters" id="work-filters">
+    <button class="filter active" onclick="filterWork('all',this)">All</button>
+    <button class="filter" onclick="filterWork('vases',this)">Vases</button>
+    <button class="filter" onclick="filterWork('bottles',this)">Bottles</button>
+    <button class="filter" onclick="filterWork('teapots',this)">Teapots</button>
+    <button class="filter" onclick="filterWork('bowls',this)">Bowls</button>
+    <button class="filter" onclick="filterWork('for_sale',this)">Available now</button>
+  </div>
+  <div class="work-grid" id="work-grid"></div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- STORY -->
+<section class="section" id="story">
+  <div class="section-header">
+    <h2 class="section-title">Story</h2>
+  </div>
+  <div class="story-grid">
+    <div>
+      <p class="story-lead">"I came to clay last. Everything before it was preparation I didn't know was happening."</p>
+      <div class="story-body">
+        <p>My name is Ben. I work under the name AnotherClay — because there is always another attempt, another cylinder, one more vase. The work never finishes. That used to feel like failure. Now I understand it's the whole point.</p>
+        <p>I started with music. Saxophone and flute at a conservatory in Germany, then with a Berklee-trained musician in Israel, then in New York. For years, making music was how I understood the world — the discipline of it, the repetition, the way something tiny becomes something large through practice.</p>
+        <p>Then Berlin. Abstract painting on large canvases. Then film — music videos, cameras, editing, export bars at 3am. Each world taught me something about form, surface, and time.</p>
+        <p>Clay started with a four-hour crash course in Chiang Mai. I didn't plan it. Back in Vienna I built a tiny rooftop studio — a wheel, a small kiln — and just kept working. One more cylinder. One more vase. One more test. This week I returned to Chiang Mai, where it all began.</p>
+        <p>I make tall, slim vases with small bottoms, wide bellies and delicate flared necks. Flat teapots that sit low on a table. I like good glazes but I love the feel of smooth raw clay more — so I often keep the outside unglazed. The inside does the work the eye can't see.</p>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-year">Age 7</div>
+          <div class="tl-text"><strong>Music begins.</strong> Saxophone and flute. A conservatory in Germany. Learning that repetition is not boredom — it's how the hand learns what the mind can't teach.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-year">Israel &amp; New York</div>
+          <div class="tl-text"><strong>Jazz, deeper.</strong> A Berklee-trained musician in Israel. Then New York. The discipline of playing with people who are better than you.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-year">Berlin</div>
+          <div class="tl-text"><strong>Painting and film.</strong> Large abstract canvases. Then music videos — cameras, editing, export bars at 3am. Learning to think in surfaces and time.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-year">Chiang Mai</div>
+          <div class="tl-text"><strong>Four hours on a wheel.</strong> A crash course. Not planned. Something changed. A rooftop studio in Vienna. A wheel. A small kiln.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-year">Now</div>
+          <div class="tl-text"><strong>Back in Chiang Mai.</strong> Building Clay Village. Making vases. One more cylinder. One more test. One more vase.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- WORKSHOPS -->
+<section class="section" id="workshops">
+  <div class="section-header">
+    <h2 class="section-title">Workshops</h2>
+    <a class="section-link" href="#commission">Request private session →</a>
+  </div>
+  <div class="workshop-list">
+    <div class="ws-card">
+      <div>
+        <div class="ws-name">Introduction to Centring</div>
+        <div class="ws-meta">
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>TBC · Chiang Mai</span>
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>3 hours</span>
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>8 max</span>
+        </div>
+        <div class="ws-tags">
+          <span class="ws-tag beginner">Beginner</span>
+          <span class="ws-tag">In person</span>
+          <span class="ws-tag">Clay included</span>
+        </div>
+      </div>
+      <div class="ws-right">
+        <div class="ws-price">€ 85</div>
+        <div class="ws-seats low">3 seats left</div>
+        <button class="btn-book" onclick="openBooking('intro')">Book a seat</button>
+      </div>
+    </div>
+    <div class="ws-card">
+      <div>
+        <div class="ws-name">Tall Forms — Finding Your Voice</div>
+        <div class="ws-meta">
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>TBC · Location open</span>
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Full day (6 hrs)</span>
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>6 max</span>
+        </div>
+        <div class="ws-tags">
+          <span class="ws-tag intermediate">Intermediate</span>
+          <span class="ws-tag">In person</span>
+          <span class="ws-tag">Lunch included</span>
+        </div>
+      </div>
+      <div class="ws-right">
+        <div class="ws-price">€ 220</div>
+        <div class="ws-seats">6 seats available</div>
+        <button class="btn-book" onclick="openBooking('tall')">Book a seat</button>
+      </div>
+    </div>
+    <div class="ws-card">
+      <div>
+        <div class="ws-name">Masterclass: Glazing Without Fear</div>
+        <div class="ws-meta">
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Online · Live</span>
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>2 hours</span>
+          <span class="ws-meta-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>20 max</span>
+        </div>
+        <div class="ws-tags">
+          <span class="ws-tag intermediate">Intermediate</span>
+          <span class="ws-tag">Online</span>
+          <span class="ws-tag">Recording included</span>
+        </div>
+      </div>
+      <div class="ws-right">
+        <div class="ws-price">€ 45</div>
+        <div class="ws-seats">12 seats available</div>
+        <button class="btn-book" onclick="openBooking('glazing')">Book a seat</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- COMMISSION -->
+<section class="section" id="commission">
+  <div class="section-header">
+    <h2 class="section-title">Commission a piece</h2>
+  </div>
+  <div class="commission-grid">
+    <div>
+      <h3 class="comm-title">Something made for you,<br>by hand, on purpose.</h3>
+      <p class="comm-body">I take a small number of commissions each season. Tell me what you have in mind — I'll tell you honestly whether I can make it, and what it will take.</p>
+      <div class="comm-details">
+        <div class="comm-detail">
+          <div class="comm-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="comm-detail-text"><strong>Wait time</strong>Currently 6–8 weeks from deposit to delivery</div>
+        </div>
+        <div class="comm-detail">
+          <div class="comm-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="comm-detail-text"><strong>Starting price</strong>From € 200 — depending on form, material, complexity</div>
+        </div>
+        <div class="comm-detail">
+          <div class="comm-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="comm-detail-text"><strong>Process</strong>30% deposit to begin. Progress photos at each milestone. Final payment on completion.</div>
+        </div>
+        <div class="comm-detail">
+          <div class="comm-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div class="comm-detail-text"><strong>Every piece includes a Story Card</strong>How it was made, what I was thinking, care instructions. Printed and signed.</div>
+        </div>
+      </div>
+    </div>
+    <div class="comm-form">
+      <div class="form-group">
+        <label class="form-label">What do you want made?</label>
+        <textarea class="form-textarea" placeholder="A tall vase for a corner shelf. A teapot that sits flat. Something you've never seen but can describe..." rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Material preference</label>
+        <select class="form-select">
+          <option>No preference — I trust the maker</option>
+          <option>Stoneware — sturdy, warm</option>
+          <option>Porcelain — delicate, white</option>
+          <option>Terracotta — earthy, porous</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your budget</label>
+        <input type="range" class="budget-slider" min="200" max="2000" step="50" value="400" oninput="updateBudget(this.value)">
+        <div class="budget-display" id="budget-display">€ 400</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Timeline needed</label>
+        <select class="form-select">
+          <option>No rush — whenever it's ready</option>
+          <option>Within 3 months</option>
+          <option>Within 6 weeks</option>
+          <option>Urgent — let's talk</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your name</label>
+        <input type="text" class="form-input" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com">
+      </div>
+      <button class="btn-submit" onclick="submitCommission()">Send commission brief</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SUPPORT -->
+<section class="section" id="support">
+  <div class="section-header">
+    <h2 class="section-title">Support the work</h2>
+  </div>
+  <p style="font-size:15px;color:var(--text-secondary);max-width:600px;margin-bottom:40px;line-height:1.8;">Making takes time. Good clay, a good wheel, a good kiln — none of it is free. If you believe in what's being made here, you can support it directly.</p>
+  <div class="patron-grid">
+    <div class="patron-card">
+      <div class="patron-lbl">Supporter</div>
+      <div class="patron-price">€ 5</div>
+      <div class="patron-period">per month</div>
+      <ul class="patron-benefits">
+        <li class="patron-benefit">Early access to new work — before anyone else sees it</li>
+        <li class="patron-benefit">Monthly studio note from Ben</li>
+      </ul>
+      <button class="patron-btn" onclick="alert('Memberships coming soon. Email ben@anotherclay.com to join the list.')">Become a Supporter</button>
+    </div>
+    <div class="patron-card featured">
+      <div class="patron-lbl">Patron</div>
+      <div class="patron-price">€ 15</div>
+      <div class="patron-period">per month</div>
+      <ul class="patron-benefits">
+        <li class="patron-benefit">Everything in Supporter</li>
+        <li class="patron-benefit">Monthly process photograph — unpublished, from the studio</li>
+        <li class="patron-benefit">First refusal on new pieces before they go public</li>
+      </ul>
+      <button class="patron-btn" onclick="alert('Memberships coming soon. Email ben@anotherclay.com to join the list.')">Become a Patron</button>
+    </div>
+    <div class="patron-card">
+      <div class="patron-lbl">Collector</div>
+      <div class="patron-price">€ 50</div>
+      <div class="patron-period">per month</div>
+      <ul class="patron-benefits">
+        <li class="patron-benefit">Everything in Patron</li>
+        <li class="patron-benefit">Annual studio visit — Chiang Mai or Berlin</li>
+        <li class="patron-benefit">Your name acknowledged in one piece per year</li>
+        <li class="patron-benefit">Private commission slot — no wait list</li>
+      </ul>
+      <button class="patron-btn" onclick="alert('Memberships coming soon. Email ben@anotherclay.com to join the list.')">Become a Collector</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-village">Part of <a href="index.html">Clay Village</a> — the home for makers</div>
+    <div class="footer-manifesto">"Stop counting followers. Start counting what counts."</div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLB()">
+  <div class="lb-card">
+    <button class="lb-close" onclick="closeLB()">×</button>
+    <div class="lb-img" id="lb-img"><span style="font-size:13px;color:var(--text-tertiary);">Add image</span></div>
+    <div class="lb-content" id="lb-content"></div>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const PIECES = [
+  { id:'moonjar-39',      title:'Moonjar No. 39',                       cat:'vases',    status:'for_sale', price:420, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/cd21c056-0f49-44ea-b254-b46d43507409/DSCF1736.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/product-4-9e76d-md996-xtkps-6mh8r-setwy', story:'One of the most ambitious forms in the collection. The moonjar demands total symmetry — two hemispheres thrown separately and joined at the equator.' },
+  { id:'quiet-ember-44',  title:'Quiet Ember Bottle No. 44',            cat:'bottles',  status:'for_sale', price:380, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/767b28ea-97f6-4423-99b1-47650837b89d/Screenshot+2026-03-19+at+08.27.38.png', shopUrl:'https://www.anotherclay.com/shop/p/quiet-ember-bottle-no-44', story:'The glaze broke in a direction I had not planned. I kept it exactly as it was.' },
+  { id:'tall-gourd-56',   title:'Tall Gourd Vase No. 56',               cat:'vases',    status:'for_sale', price:750, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/e67c1e09-dbe8-4113-91be-e3698b286a45/DSCF1541.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/product-2-5c6mb-hxnkk-8n6cy-xb25w-jf32c', story:'The tallest and most demanding form in the collection. The neck was thrown separately and attached at leather-hard.' },
+  { id:'emerald-sphere-43',title:'Emerald Sphere No. 43',               cat:'vases',    status:'for_sale', price:380, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/b6c158fd-c568-4a79-b7fd-51895905fa78/DSCF1350.jpg',         shopUrl:'https://www.anotherclay.com/shop/p/emerald-sphere-no-43',  story:'A perfect sphere on the wheel is nearly impossible. This one came close. The emerald glaze thickens at the equator.' },
+  { id:'teardrop-53',     title:'Teardrop Bottle — Masterpiece No. 53', cat:'bottles',  status:'sold',     price:640, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/fdaa5e28-9333-4234-9769-b720420a5030/Untitled%2BProject%2B5.jpg', shopUrl:null, story:'The piece I would keep if I kept pieces. The fluted lip took three attempts across two days. This is the one I measure everything else against.' },
+  { id:'spire-neck-40',   title:'Spire-Neck Blue Vase No. 40',          cat:'vases',    status:'sold',     price:220, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/01425d9f-1a00-419c-990c-4530165c5ddf/Untitled%2BProject%2B5.jpg', shopUrl:null, story:'The neck rises almost too far. That tension — between stability and collapse — is the whole point of this form.' },
+  { id:'flat-teapot-69',  title:'Flat Teapot Smoked Bronze No. 69',     cat:'teapots',  status:'sold',     price:180, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/0f663ac1-b18a-45c6-a7a8-7473687e43e4/Untitled%2BProject%2B5.jpg', shopUrl:null, story:'The flattest teapot I have made so far. It lies on the table more than it sits. The spout is the hardest part to get right at this angle.' },
+  { id:'green-crackle-68',title:'Green Crackle Teapot No. 68',          cat:'teapots',  status:'for_sale', price:95,  img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/a836de76-f0ea-4496-9711-515ce9387e0b/DSCF1949.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/green-crackle-teapot-no-68', story:'The crackle came from cooling too fast. I do it deliberately now. There is a sound when it happens — a quiet ticking from inside the kiln.' },
+  { id:'long-neck-60',    title:'Long Neck Bottle No. 60',              cat:'bottles',  status:'for_sale', price:310, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/1b804ccf-07b1-4a2c-b000-f74d0e112194/DSCF1827.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/long-neck-bottle-no-60', story:'How long can a neck be before it becomes something else entirely. This one is right at the edge.' },
+  { id:'hourglass-49',    title:'Hourglass Calyx Vase No. 49',          cat:'vases',    status:'for_sale', price:200, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/9f4e4a37-16d9-43b5-9799-d1773eae3218/DSCF1844.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/hourglass-calyx-vase-no-49', story:'Two opposing curves held at a single point. Very difficult to keep centred on the wheel — the clay wants to collapse inward.' },
+  { id:'ocean-blue-8',    title:'Ocean-Blue Ovoid Bottle No. 8',        cat:'bottles',  status:'for_sale', price:135, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/c2802d19-5c24-46ba-8d4c-a4a8eb89b92c/DSCF2066.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/ocean-blue-ovoid-bottle-no-8', story:'The glaze breaks to a different depth at the shoulder. The ocean does the same thing at a reef edge.' },
+  { id:'midnight-51',     title:'Midnight Cascade Bottle No. 51',       cat:'bottles',  status:'for_sale', price:170, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/b9f4f875-1304-4ae9-aaea-67e3e358fa8f/DSCF1928.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/midnight-cascade-bottle-no-51', story:'Dark glaze running down the shoulder like something spilled in slow motion and then stopped.' },
+  { id:'ice-blue-58',     title:'Ice-Blue Double Gourd No. 58',         cat:'bottles',  status:'for_sale', price:240, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/1b482bd8-db6b-4d08-b114-95b55298b99f/IMG_9497.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/ice-blue-double-gourd-no-58', story:'Two spheres stacked. Each one wants to be its own piece. Together they argue in a way I find interesting.' },
+  { id:'wide-bowl-18',    title:'Wide Conical Bowl No. 18',             cat:'bowls',    status:'for_sale', price:240, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/9249fa5a-7f8b-439a-b815-27df169ac9fb/DSCF1872.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/wide-conical-bowl-no-18', story:'The widest bowl I make. At this diameter the rim barely holds together during throwing. That edge is where it becomes itself.' },
+  { id:'cream-bottle-52', title:'Cream Bottle with Red Drip No. 52',    cat:'bottles',  status:'for_sale', price:170, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/be365919-31f7-4c2c-9aed-080f1825f7d1/DSCF1328.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/cream-bottle-with-red-drip-no-52', story:'One drip of iron red on cream. Placed, not an accident. Everything else removed.' },
+  { id:'slim-tall-30',    title:'Slim Tall Vase No. 30',                cat:'vases',    status:'for_sale', price:280, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/e57df868-f893-4526-b306-7e5461627020/DSCF1788.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/slim-tall-vase-no-30', story:'The form I keep returning to. Tall, narrow, belly low, neck opening slowly. This is what I am trying to make.' },
+  { id:'tall-hourglass-55',title:'Tall Hourglass Vase No. 55',          cat:'vases',    status:'for_sale', price:295, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/351ff860-3b93-4e83-998b-e70b40ca06db/DSCF1812.JPG',         shopUrl:'https://www.anotherclay.com/shop/p/tall-hourglass-vase-no-55', story:'A tall version of the hourglass logic. Where two curves meet in the middle, there is a moment of held breath.' },
+  { id:'footed-bowl-24',  title:'Footed Bowl No. 24',                   cat:'bowls',    status:'for_sale', price:180, img:'https://images.squarespace-cdn.com/content/v1/67fa2b01d9fe551fd1439b10/7774c697-e085-4255-b036-2eeeb6fd6ec5/DSCF1780.png',         shopUrl:'https://www.anotherclay.com/shop/p/product-1-ydar7-yje5k-r4ew8-6kr4w-sfm79', story:'The foot is everything on a bowl. Cut too deep and the whole thing feels wrong. This one I got right.' },
+  { id:'commission-open', title:'Commission a piece',                    cat:'commission',status:'commission',price:null,img:null, shopUrl:null, story:'Tell me what you are imagining. I will tell you honestly whether I can make it, and what it will take.' }
+];
+
+function renderWork(filter) {
+  const grid = document.getElementById('work-grid');
+  const list = filter === 'all'
+    ? PIECES
+    : filter === 'for_sale'
+    ? PIECES.filter(p => p.status === 'for_sale')
+    : PIECES.filter(p => p.cat === filter);
+
+  grid.innerHTML = list.map(p => {
+    const badgeMap = { for_sale:'<span class="badge badge-sale">For sale</span>', sold:'<span class="badge badge-sold">Sold</span>', commission:'<span class="badge badge-commission">Commission</span>' };
+    const imgHtml = p.img
+      ? `<img src="${p.img}" alt="${p.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">`
+      : `<span style="font-size:12px;color:var(--text-tertiary);">Commission enquiry</span>`;
+    const priceHtml = p.status === 'for_sale'
+      ? `<span class="work-price">€ ${p.price}</span>`
+      : p.status === 'sold'
+      ? `<span class="work-price sold">€ ${p.price} · Sold</span>`
+      : `<span class="work-price" style="font-size:13px;font-weight:400;color:var(--text-secondary);">Commission only</span>`;
+    const btnHtml = p.status === 'for_sale' && p.shopUrl
+      ? `<a class="btn-sm primary" href="${p.shopUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Buy ↗</a>`
+      : `<button class="btn-sm" onclick="event.stopPropagation();openLB('${p.id}')">View</button>`;
+    const clickHandler = p.status === 'for_sale' && p.shopUrl
+      ? `onclick="window.open('${p.shopUrl}','_blank')"`
+      : `onclick="openLB('${p.id}')"`;
+    return `<div class="work-card" ${clickHandler}>
+      <div class="work-img">${imgHtml}${badgeMap[p.status]||''}</div>
+      <div class="work-body">
+        <div class="work-title">${p.title}</div>
+        <div class="work-meta">${p.cat.charAt(0).toUpperCase()+p.cat.slice(1)}</div>
+        <div class="work-footer">${priceHtml}${btnHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterWork(filter, btn) {
+  document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderWork(filter);
+}
+
+renderWork('all');
+
+const WS = {
+  intro: { name:'Introduction to Centring', date:'TBC · Chiang Mai', duration:'3 hours', price:85, deposit:42.5, includes:['Clay and tools','Tea and refreshments','Process photos sent after'] },
+  tall: { name:'Tall Forms — Finding Your Voice', date:'TBC · Location open', duration:'Full day (6 hours)', price:220, deposit:110, includes:['All materials','Lunch','Process photos','Pieces fired and sent'] },
+  glazing: { name:'Masterclass: Glazing Without Fear', date:'Online · Live', duration:'2 hours', price:45, deposit:45, includes:['Live session','30-day recording access','PDF glaze reference'] }
+};
+
+function navTo(id, btn) {
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+window.addEventListener('scroll',()=>{
+  const ids=['work','story','workshops','commission','support'];
+  const tabs=document.querySelectorAll('.nav-tab');
+  let cur='';
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});
+  tabs.forEach((t,i)=>t.classList.toggle('active',ids[i]===cur));
+},{passive:true});
+
+function openLB(id) {
+  const p = PIECES.find(x => x.id === id);
+  if (!p) return;
+  const imgHtml = p.img
+    ? `<img src="${p.img}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;display:block;">`
+    : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:13px;color:var(--text-tertiary);">Commission enquiry</div>`;
+  const priceHtml = p.price ? `<div class="lb-price">€ ${p.price}${p.status==='sold'?' · Sold':''}</div>` : '';
+  const actH = p.status === 'for_sale' && p.shopUrl
+    ? `<a class="lb-btn primary" href="${p.shopUrl}" target="_blank" rel="noopener">Buy at anotherclay.com ↗</a><button class="lb-btn" onclick="closeLB();setTimeout(()=>document.getElementById('commission').scrollIntoView({behavior:'smooth'}),200)">Commission something similar</button>`
+    : p.status === 'sold'
+    ? `<button class="lb-btn" onclick="closeLB();setTimeout(()=>document.getElementById('commission').scrollIntoView({behavior:'smooth'}),200)">Commission a similar piece</button>`
+    : `<button class="lb-btn primary" onclick="closeLB();setTimeout(()=>document.getElementById('commission').scrollIntoView({behavior:'smooth'}),200)">Start a commission brief</button>`;
+  document.getElementById('lb-img').innerHTML = imgHtml;
+  document.getElementById('lb-content').innerHTML = `<div class="lb-title">${p.title}</div><div class="lb-meta" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">${p.cat.charAt(0).toUpperCase()+p.cat.slice(1)}</div><div class="lb-story">${p.story}</div>${priceHtml}<div class="lb-actions">${actH}</div>`;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+
+function openBooking(id) {
+  const w=WS[id]; if(!w)return;
+  const incH=w.includes.map(i=>`<div class="modal-line"><span>${i}</span><span>✓</span></div>`).join('');
+  document.getElementById('modal-content').innerHTML=`
+    <div class="modal-title">Book your seat</div>
+    <div class="modal-sub">${w.name} · ${w.date} · ${w.duration}</div>
+    <div class="modal-summary">${incH}<div class="modal-line total"><span>Deposit due today (50%)</span><span>€ ${Math.round(w.deposit)}</span></div><div class="modal-line" style="font-size:11px;color:var(--text-tertiary);margin-top:4px;"><span>Balance due 48h before</span><span>€ ${Math.round(w.price-w.deposit)}</span></div></div>
+    <div class="form-group"><label class="form-label">Your name</label><input class="form-input" placeholder="Full name"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="your@email.com"></div>
+    <div class="form-group"><label class="form-label">Payment</label><div style="display:flex;gap:8px;margin-bottom:16px;"><button class="lb-btn primary" style="flex:1;padding:10px;font-size:13px;">Card (Stripe)</button><button class="lb-btn" style="flex:1;padding:10px;font-size:13px;" onclick="this.classList.add('primary');this.previousElementSibling.classList.remove('primary')">PayPal</button></div><button class="btn-submit" onclick="alert('Payment integration coming soon. Email ben@anotherclay.com to book now.')">Pay deposit — € ${Math.round(w.deposit)}</button></div>
+    <p style="font-size:11px;color:var(--text-tertiary);text-align:center;margin-top:12px;line-height:1.6;">Full refund if cancelled 7+ days before. 50% if 3–7 days. No refund under 3 days.</p>`;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+
+function updateBudget(v){document.getElementById('budget-display').textContent='€ '+parseInt(v).toLocaleString();}
+
+function submitCommission(){alert('Thank you. Ben will respond within 3 working days.\n\nFor now, email ben@anotherclay.com — Stripe integration coming in Session 13.');}
+
+// Scroll reveal
+if('IntersectionObserver' in window){
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';obs.unobserve(e.target);}});},{threshold:0.08});
+  document.querySelectorAll('.work-card,.ws-card,.patron-card,.tl-item,.comm-detail').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(16px)';el.style.transition='opacity 0.5s cubic-bezier(0.4,0,0.2,1),transform 0.5s cubic-bezier(0.4,0,0.2,1)';obs.observe(el);});
+}
+</script>
+</body>
+</html>

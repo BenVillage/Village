@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Import from Instagram — Clay Village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #FAFAF8; --surface: #FFFFFF; --surface-alt: #F5F3EF;
+  --border: rgba(0,0,0,0.07); --border-mid: rgba(0,0,0,0.13);
+  --text-primary: #111110; --text-secondary: #6B6860; --text-tertiary: #9C9A94;
+  --accent: #B8956A; --accent-dark: #96754A; --accent-light: #F0E6D6;
+  --accent-soft: rgba(184,149,106,0.10);
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.05); --shadow-md: 0 4px 20px rgba(0,0,0,0.07);
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text-primary); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: 0.025; pointer-events: none; z-index: 1000; }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(250,250,248,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-village { font-family: var(--font-display); font-size: 15px; color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+.nav-village:hover { color: var(--text-primary); }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+/* LAYOUT */
+.container { max-width: 680px; margin: 0 auto; padding: 60px 24px 120px; }
+
+/* PROGRESS */
+.progress { display: flex; align-items: center; gap: 0; margin-bottom: 48px; }
+.progress-step { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: var(--text-tertiary); transition: color 0.2s; }
+.progress-step.active { color: var(--text-primary); font-weight: 600; }
+.progress-step.done { color: var(--accent); }
+.progress-num { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border-mid); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: all 0.2s; flex-shrink: 0; }
+.progress-step.active .progress-num { border-color: var(--text-primary); background: var(--text-primary); color: #fff; }
+.progress-step.done .progress-num { border-color: var(--accent); background: var(--accent); color: #fff; }
+.progress-line { flex: 1; height: 1px; background: var(--border-mid); margin: 0 12px; }
+
+/* HEADINGS */
+.step-title { font-family: var(--font-display); font-size: 32px; margin-bottom: 8px; letter-spacing: -0.01em; }
+.step-sub { font-size: 15px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.7; }
+
+/* DROP ZONE */
+.dropzone { border: 2px dashed var(--border-mid); border-radius: 16px; padding: 60px 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface); }
+.dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: var(--accent-light); }
+.dropzone-icon { font-size: 40px; color: var(--border-mid); margin-bottom: 16px; }
+.dropzone-label { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.dropzone-hint { font-size: 13px; color: var(--text-tertiary); }
+.dropzone-or { font-size: 12px; color: var(--text-tertiary); margin: 20px 0; }
+.dropzone-alt { font-size: 13px; color: var(--accent-dark); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+/* PRIVACY */
+.privacy { display: flex; gap: 10px; align-items: flex-start; background: var(--surface-alt); border-radius: 10px; padding: 16px 18px; margin-top: 24px; }
+.privacy-icon { flex-shrink: 0; width: 20px; height: 20px; color: var(--accent); margin-top: 2px; }
+.privacy-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* STATUS */
+.status { margin-top: 24px; font-size: 14px; color: var(--text-secondary); display: none; }
+.status.show { display: block; }
+.status-bar { width: 100%; height: 4px; background: var(--surface-alt); border-radius: 4px; margin-top: 10px; overflow: hidden; }
+.status-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; width: 0%; }
+
+/* TABLE */
+.preview-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+.preview-table th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.preview-table td { padding: 10px; font-size: 13px; color: var(--text-primary); border-bottom: 1px solid var(--border); vertical-align: top; }
+.preview-table tr.nocaption td { color: var(--text-tertiary); }
+.preview-table input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+.caption-preview { max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.post-count { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+/* CARDS */
+.import-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 14px; transition: border-color 0.2s; }
+.import-card:hover { border-color: var(--border-mid); }
+.card-date { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
+.card-caption { width: 100%; min-height: 80px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: var(--font-body); color: var(--text-primary); line-height: 1.6; resize: vertical; outline: none; transition: border-color 0.15s; }
+.card-caption:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.card-pills { display: flex; gap: 6px; margin: 12px 0; flex-wrap: wrap; }
+.pill { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border-mid); background: transparent; font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+.pill:hover { color: var(--text-primary); border-color: var(--accent); }
+.pill.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+.piece-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.piece-fields.hidden { display: none; }
+.field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 4px; }
+.field-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: var(--font-body); color: var(--text-primary); outline: none; }
+.field-input:focus { border-color: var(--accent); }
+select.field-input { -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B6860' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: all 0.2s; border: 1.5px solid var(--border-mid); background: transparent; color: var(--text-primary); }
+.btn:hover { background: var(--surface-alt); }
+.btn-primary { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+.btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.btn-row { display: flex; gap: 10px; margin-top: 24px; }
+
+/* SUMMARY */
+.summary-card { background: var(--accent-light); border: 1px solid rgba(184,149,106,0.2); border-radius: 12px; padding: 28px; text-align: center; margin-bottom: 24px; }
+.summary-check { width: 48px; height: 48px; border-radius: 50%; background: #EFF8ED; color: #3A7D34; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.summary-title { font-family: var(--font-display); font-size: 26px; margin-bottom: 12px; }
+.summary-lines { font-size: 14px; color: var(--text-secondary); line-height: 2; }
+.summary-lines strong { color: var(--text-primary); font-weight: 600; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 28px 40px; }
+.footer-inner { max-width: 680px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.footer-village { font-family: var(--font-display); font-size: 13px; color: var(--text-tertiary); }
+.footer-village a { color: var(--accent); text-decoration: none; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  nav { padding: 0 16px; }
+  .container { padding: 32px 16px 80px; }
+  .step-title { font-size: 24px; }
+  .dropzone { padding: 40px 20px; }
+  .piece-fields { grid-template-columns: 1fr; }
+  .progress-step span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-village" href="index.html">
+    <span class="nav-dot"></span>
+    Clay Village
+  </a>
+</nav>
+
+<div class="container">
+
+  <!-- PROGRESS -->
+  <div class="progress" id="progress">
+    <div class="progress-step active" data-step="1"><div class="progress-num">1</div><span>Upload</span></div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="2"><div class="progress-num">2</div><span>Preview</span></div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="3"><div class="progress-num">3</div><span>Categorise</span></div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-step="4"><div class="progress-num">4</div><span>Import</span></div>
+  </div>
+
+  <!-- STEP 1: UPLOAD -->
+  <div id="step-1">
+    <h1 class="step-title">Bring your work home.</h1>
+    <p class="step-sub">Your Instagram history belongs to you. Every caption you wrote, every piece you documented — it can live here. In a place that understands what it is.</p>
+
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+      <div class="dropzone-label">Drop your Instagram ZIP file here</div>
+      <div class="dropzone-hint">Or click to browse</div>
+      <div class="dropzone-or">or</div>
+      <div class="dropzone-alt" id="json-upload-trigger">Upload just the posts JSON file</div>
+      <input type="file" id="file-input-zip" accept=".zip" style="display:none;">
+      <input type="file" id="file-input-json" accept=".json" style="display:none;">
+    </div>
+
+    <div class="privacy">
+      <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="privacy-text">Your Instagram data never leaves your device. Everything is processed in your browser. Nothing is uploaded to any server.</div>
+    </div>
+
+    <div class="status" id="status">
+      <div id="status-text">Reading your posts...</div>
+      <div class="status-bar"><div class="status-fill" id="status-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: PREVIEW -->
+  <div id="step-2" style="display:none;">
+    <h1 class="step-title">Your archive.</h1>
+    <p class="step-sub" id="preview-summary"></p>
+
+    <div class="post-count" id="selected-count"></div>
+
+    <div style="overflow-x:auto;">
+      <table class="preview-table">
+        <thead><tr><th style="width:32px;"></th><th>Date</th><th>Caption</th><th>Images</th></tr></thead>
+        <tbody id="preview-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" onclick="goStep(1)">Back</button>
+      <button class="btn btn-primary" id="btn-to-step3">Continue with selected</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: CATEGORISE -->
+  <div id="step-3" style="display:none;">
+    <h1 class="step-title">Categorise your posts.</h1>
+    <p class="step-sub">Each post becomes part of your village profile. Choose what it is — a journal entry, a process note, a piece in your gallery, or skip it.</p>
+
+    <div id="card-list"></div>
+
+    <div class="btn-row">
+      <button class="btn" onclick="goStep(2)">Back</button>
+      <button class="btn btn-primary" id="btn-import">Import to Clay Village</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: DONE -->
+  <div id="step-4" style="display:none;">
+    <div class="summary-card">
+      <div class="summary-check">&#10003;</div>
+      <h2 class="summary-title">Your archive is home.</h2>
+      <div class="summary-lines" id="summary-lines"></div>
+    </div>
+    <div style="text-align:center;">
+      <a class="btn btn-primary" href="index.html" style="text-decoration:none;">Open Clay Village</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-village">Part of <a href="index.html">Clay Village</a></div>
+  </div>
+</footer>
+
+<script>
+// ── STATE ────────────────────────────────────────────────────────────
+let allPosts = [];       // parsed from Instagram export
+let selectedIndices = []; // indices of posts selected in step 2
+let cardData = [];       // categorised data from step 3
+
+// ── ENCODING FIX ─────────────────────────────────────────────────────
+// Meta exports text as latin1-encoded UTF-8. This reverses the mojibake.
+function fixEncoding(text) {
+  if (!text) return '';
+  try { return decodeURIComponent(escape(text)); }
+  catch { return text; }
+}
+
+// ── STEP NAVIGATION ──────────────────────────────────────────────────
+function goStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById('step-' + i).style.display = i === n ? 'block' : 'none';
+  });
+  document.querySelectorAll('.progress-step').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    el.classList.toggle('active', s === n);
+    el.classList.toggle('done', s < n);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── STEP 1: FILE HANDLING ────────────────────────────────────────────
+const dropzone = document.getElementById('dropzone');
+const fileInputZip = document.getElementById('file-input-zip');
+const fileInputJson = document.getElementById('file-input-json');
+
+dropzone.addEventListener('click', (e) => {
+  if (e.target.id === 'json-upload-trigger') return;
+  fileInputZip.click();
+});
+document.getElementById('json-upload-trigger').addEventListener('click', (e) => {
+  e.stopPropagation();
+  fileInputJson.click();
+});
+
+dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  if (file.name.endsWith('.zip')) processZip(file);
+  else if (file.name.endsWith('.json')) processJson(file);
+  else showStatus('Please upload a .zip or .json file.');
+});
+
+fileInputZip.addEventListener('change', () => { if (fileInputZip.files[0]) processZip(fileInputZip.files[0]); });
+fileInputJson.addEventListener('change', () => { if (fileInputJson.files[0]) processJson(fileInputJson.files[0]); });
+
+function showStatus(text, pct) {
+  const el = document.getElementById('status');
+  el.classList.add('show');
+  document.getElementById('status-text').textContent = text;
+  if (pct !== undefined) document.getElementById('status-fill').style.width = pct + '%';
+}
+
+async function processZip(file) {
+  showStatus('Reading ZIP file...', 10);
+  try {
+    const zip = await JSZip.loadAsync(file);
+    showStatus('Looking for posts...', 30);
+
+    // Find posts JSON — could be in various paths depending on export format
+    let postsJson = null;
+    const candidates = [
+      'your_instagram_activity/content/posts_1.json',
+      'content/posts_1.json',
+      'posts_1.json',
+      'media.json',
+    ];
+    for (const path of candidates) {
+      const entry = zip.file(path);
+      if (entry) { postsJson = await entry.async('string'); break; }
+    }
+    // Fallback: search for any posts_1.json
+    if (!postsJson) {
+      zip.forEach((path, entry) => {
+        if (path.endsWith('posts_1.json') && !postsJson) {
+          postsJson = entry.async('string');
+        }
+      });
+      if (postsJson && typeof postsJson.then === 'function') postsJson = await postsJson;
+    }
+
+    if (!postsJson) {
+      showStatus('Could not find posts_1.json in the ZIP. Try uploading the JSON file directly.');
+      return;
+    }
+
+    showStatus('Parsing posts...', 60);
+    const raw = JSON.parse(postsJson);
+    parsePosts(raw);
+
+    // Try to get profile info
+    let profileJson = null;
+    const profileCandidates = [
+      'your_instagram_activity/personal_information/personal_information.json',
+      'personal_information/personal_information.json',
+      'personal_information.json',
+    ];
+    for (const path of profileCandidates) {
+      const entry = zip.file(path);
+      if (entry) { profileJson = await entry.async('string'); break; }
+    }
+    if (profileJson) {
+      try {
+        const profile = JSON.parse(profileJson);
+        const smd = profile?.profile_user?.[0]?.string_map_data || profile?.string_map_data || {};
+        const username = fixEncoding(smd?.Username?.value || smd?.Benutzername?.value || '');
+        const bio = fixEncoding(smd?.Bio?.value || '');
+        if (username) console.log('Instagram username:', username);
+        if (bio) console.log('Instagram bio:', bio);
+      } catch {}
+    }
+
+    showStatus('Done.', 100);
+    setTimeout(() => showStep2(), 300);
+  } catch (err) {
+    showStatus('Error reading ZIP: ' + err.message);
+    console.error(err);
+  }
+}
+
+async function processJson(file) {
+  showStatus('Reading JSON file...', 30);
+  try {
+    const text = await file.text();
+    const raw = JSON.parse(text);
+    showStatus('Parsing posts...', 60);
+    parsePosts(raw);
+    showStatus('Done.', 100);
+    setTimeout(() => showStep2(), 300);
+  } catch (err) {
+    showStatus('Error reading JSON: ' + err.message);
+    console.error(err);
+  }
+}
+
+function parsePosts(raw) {
+  // Instagram export format: array of post objects
+  // Each has: media (array), title (the caption), creation_timestamp
+  const posts = (Array.isArray(raw) ? raw : [raw]).map(post => {
+    const media = post.media || [];
+    const firstMedia = media[0] || {};
+    const caption = fixEncoding(post.title || firstMedia.title || '');
+    const timestamp = post.creation_timestamp || firstMedia.creation_timestamp || 0;
+    const date = timestamp ? new Date(timestamp * 1000) : null;
+    const imageCount = media.length;
+    return { caption, date, imageCount, raw: post };
+  }).filter(p => p.date);
+
+  // Sort by date, newest first
+  posts.sort((a, b) => b.date - a.date);
+  allPosts = posts;
+}
+
+// ── STEP 2: PREVIEW ──────────────────────────────────────────────────
+function showStep2() {
+  const total = allPosts.length;
+  const withCaption = allPosts.filter(p => p.caption.trim().length > 0).length;
+  const dateRange = allPosts.length > 1
+    ? formatDate(allPosts[allPosts.length - 1].date) + ' to ' + formatDate(allPosts[0].date)
+    : '';
+
+  document.getElementById('preview-summary').textContent =
+    `Found ${total} posts. ${withCaption} with captions. ${dateRange ? 'Spanning ' + dateRange + '.' : ''}`;
+
+  // Build table
+  const tbody = document.getElementById('preview-tbody');
+  tbody.innerHTML = '';
+  allPosts.forEach((p, i) => {
+    const hasCap = p.caption.trim().length > 0;
+    const tr = document.createElement('tr');
+    if (!hasCap) tr.className = 'nocaption';
+    tr.innerHTML = `
+      <td><input type="checkbox" data-idx="${i}" ${hasCap ? 'checked' : ''}></td>
+      <td style="white-space:nowrap;font-size:12px;color:var(--text-tertiary);">${formatDate(p.date)}</td>
+      <td class="caption-preview">${escHtml(p.caption.substring(0, 80)) || '<em style="color:var(--text-tertiary);">No caption</em>'}</td>
+      <td style="text-align:center;color:var(--text-tertiary);font-size:12px;">${p.imageCount}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateSelectedCount();
+  goStep(2);
+}
+
+function updateSelectedCount() {
+  const checks = document.querySelectorAll('#preview-tbody input[type="checkbox"]');
+  const count = Array.from(checks).filter(c => c.checked).length;
+  document.getElementById('selected-count').textContent = count + ' of ' + allPosts.length + ' posts selected';
+}
+
+document.getElementById('preview-tbody')?.addEventListener('change', updateSelectedCount);
+
+document.getElementById('btn-to-step3').addEventListener('click', () => {
+  const checks = document.querySelectorAll('#preview-tbody input[type="checkbox"]:checked');
+  selectedIndices = Array.from(checks).map(c => parseInt(c.dataset.idx));
+  if (!selectedIndices.length) { alert('Select at least one post.'); return; }
+  showStep3();
+});
+
+// ── STEP 3: CATEGORISE ───────────────────────────────────────────────
+function categorise(caption) {
+  const lower = caption.toLowerCase();
+  const words = caption.split(/\s+/).length;
+  const hasPieceKeyword = /teapot|vase|bottle|bowl|cup|mug|plate|jar/.test(lower);
+  const hasProcessKeyword = /glaze|glazing|kiln|firing|cone|bisque|reduction|oxidation|slip|wedging|centering|trimming/.test(lower);
+  const hasPrice = /\$|€|price|sold|for sale/.test(lower);
+
+  if (hasPieceKeyword && hasPrice) return 'piece';
+  if (hasProcessKeyword) return 'process';
+  if (words >= 200) return 'journal';
+  return 'journal';
+}
+
+function showStep3() {
+  cardData = selectedIndices.map(i => {
+    const p = allPosts[i];
+    return {
+      idx: i,
+      caption: p.caption,
+      date: p.date,
+      category: categorise(p.caption),
+      pieceTitle: '',
+      pieceNumber: '',
+      piecePrice: '',
+      pieceStatus: 'kept',
+    };
+  });
+
+  renderCards();
+  goStep(3);
+}
+
+function renderCards() {
+  const list = document.getElementById('card-list');
+  list.innerHTML = '';
+  cardData.forEach((d, ci) => {
+    const card = document.createElement('div');
+    card.className = 'import-card';
+    card.innerHTML = `
+      <div class="card-date">${formatDate(d.date)}</div>
+      <textarea class="card-caption" data-ci="${ci}">${escHtml(d.caption)}</textarea>
+      <div class="card-pills">
+        ${['journal','process','piece','skip'].map(cat =>
+          `<button class="pill ${d.category === cat ? 'active' : ''}" data-ci="${ci}" data-cat="${cat}">${cat === 'journal' ? 'Journal entry' : cat === 'process' ? 'Process note' : cat === 'piece' ? 'Piece story' : 'Skip'}</button>`
+        ).join('')}
+      </div>
+      <div class="piece-fields ${d.category === 'piece' ? '' : 'hidden'}" id="pf-${ci}">
+        <div><div class="field-label">Piece title</div><input class="field-input" data-ci="${ci}" data-field="pieceTitle" value="${escHtml(d.pieceTitle)}" placeholder="e.g. Tall Gourd Vase No. 56"></div>
+        <div><div class="field-label">Piece number</div><input class="field-input" data-ci="${ci}" data-field="pieceNumber" value="${escHtml(d.pieceNumber)}" placeholder="e.g. 56" type="number"></div>
+        <div><div class="field-label">Price (EUR)</div><input class="field-input" data-ci="${ci}" data-field="piecePrice" value="${escHtml(d.piecePrice)}" placeholder="0" type="number"></div>
+        <div><div class="field-label">Status</div><select class="field-input" data-ci="${ci}" data-field="pieceStatus"><option value="available" ${d.pieceStatus==='available'?'selected':''}>Available</option><option value="sold" ${d.pieceStatus==='sold'?'selected':''}>Sold</option><option value="kept" ${d.pieceStatus==='kept'?'selected':''}>Kept</option></select></div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  // Wire pills
+  list.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const ci = parseInt(pill.dataset.ci);
+      cardData[ci].category = pill.dataset.cat;
+      // Update active pill
+      pill.closest('.card-pills').querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.cat === pill.dataset.cat));
+      // Show/hide piece fields
+      const pf = document.getElementById('pf-' + ci);
+      if (pf) pf.classList.toggle('hidden', pill.dataset.cat !== 'piece');
+    });
+  });
+
+  // Wire caption edits
+  list.querySelectorAll('.card-caption').forEach(ta => {
+    ta.addEventListener('input', () => { cardData[parseInt(ta.dataset.ci)].caption = ta.value; });
+  });
+
+  // Wire piece field edits
+  list.querySelectorAll('.piece-fields .field-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      cardData[parseInt(inp.dataset.ci)][inp.dataset.field] = inp.value;
+    });
+  });
+}
+
+// ── STEP 4: IMPORT ───────────────────────────────────────────────────
+document.getElementById('btn-import').addEventListener('click', () => {
+  let journalCount = 0, processCount = 0, pieceCount = 0, skipCount = 0;
+
+  const journals = JSON.parse(localStorage.getItem('clayVillageJournals') || '[]');
+  const processNotes = JSON.parse(localStorage.getItem('clayVillageProcessNotes') || '[]');
+  const gallery = JSON.parse(localStorage.getItem('clayVillageGallery') || '[]');
+
+  cardData.forEach(d => {
+    if (d.category === 'skip') { skipCount++; return; }
+
+    const dateStr = formatDate(d.date);
+
+    if (d.category === 'journal') {
+      journals.unshift({
+        id: 'ig-j-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        title: d.caption.split('\n')[0].substring(0, 60) || 'Untitled',
+        body: d.caption,
+        author: 'Imported from Instagram',
+        date: dateStr,
+      });
+      journalCount++;
+    } else if (d.category === 'process') {
+      processNotes.unshift({
+        id: 'ig-p-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        title: d.caption.split('\n')[0].substring(0, 60) || 'Untitled',
+        body: d.caption,
+        tag: 'Instagram import',
+        author: 'Imported from Instagram',
+        date: dateStr,
+      });
+      processCount++;
+    } else if (d.category === 'piece') {
+      gallery.push({
+        id: 'ig-g-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        title: d.pieceTitle || d.caption.split('\n')[0].substring(0, 40) || 'Untitled piece',
+        maker: '',
+        clay: '', firing: '', craft_age: 0,
+        desc: d.caption,
+        price: d.piecePrice ? d.piecePrice : '',
+        available: d.pieceStatus === 'available',
+        seed: false,
+        img: '',
+        shopUrl: '',
+      });
+      pieceCount++;
+    }
+  });
+
+  localStorage.setItem('clayVillageJournals', JSON.stringify(journals));
+  localStorage.setItem('clayVillageProcessNotes', JSON.stringify(processNotes));
+  localStorage.setItem('clayVillageGallery', JSON.stringify(gallery));
+
+  // Show summary
+  const lines = [];
+  if (journalCount) lines.push(`<strong>${journalCount}</strong> journal ${journalCount === 1 ? 'entry' : 'entries'} imported`);
+  if (processCount) lines.push(`<strong>${processCount}</strong> process ${processCount === 1 ? 'note' : 'notes'} imported`);
+  if (pieceCount) lines.push(`<strong>${pieceCount}</strong> ${pieceCount === 1 ? 'piece' : 'pieces'} added to your gallery`);
+  if (skipCount) lines.push(`<strong>${skipCount}</strong> ${skipCount === 1 ? 'post' : 'posts'} skipped`);
+  document.getElementById('summary-lines').innerHTML = lines.join('<br>');
+
+  goStep(4);
+});
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function formatDate(d) {
+  if (!d) return '';
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function escHtml(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
