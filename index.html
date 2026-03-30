@@ -18114,12 +18114,12 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     },
     {
       label: 'Building 1 of 9',
-      title: 'The School',
-      body: `<p>Where beginners take their first steps at the wheel and experienced potters teach what they know. Every skill level is welcome here.</p>
-<p>The School holds structured learning paths — from centering your first lump of clay to mastering complex throwing techniques. You can track your progress, find workshops, and connect with teachers who match your style.</p>
-<p>No paywalled courses. No certification theater. Just real potters sharing what they've learned.</p>`,
-      target: 'School',
-      npc: 'Dog'
+      title: 'The Commons / Cafe',
+      body: `<p>The warm center of village social life. Come for tea, stay for conversations about clay. The Fox is always here to welcome you.</p>
+<p>This is where you go when you want to meet someone new. Browse who's around, see what they're working on, start a conversation that isn't a comment on a post.</p>
+<p>Think of it as the coffee shop where potters actually talk to each other — not the comments section where they leave fire emojis.</p>`,
+      target: 'Commons / Café',
+      npc: 'Fox'
     },
     {
       label: 'Building 2 of 9',
@@ -18132,12 +18132,12 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     },
     {
       label: 'Building 3 of 9',
-      title: 'The Commons / Cafe',
-      body: `<p>The warm center of village social life. Come for tea, stay for conversations about clay. The Fox is always here to welcome you.</p>
-<p>This is where you go when you want to meet someone new. Browse who's around, see what they're working on, start a conversation that isn't a comment on a post.</p>
-<p>Think of it as the coffee shop where potters actually talk to each other — not the comments section where they leave fire emojis.</p>`,
-      target: 'Commons / Café',
-      npc: 'Fox'
+      title: 'The School',
+      body: `<p>Where beginners take their first steps at the wheel and experienced potters teach what they know. Every skill level is welcome here.</p>
+<p>The School holds structured learning paths — from centering your first lump of clay to mastering complex throwing techniques. You can track your progress, find workshops, and connect with teachers who match your style.</p>
+<p>No paywalled courses. No certification theater. Just real potters sharing what they've learned.</p>`,
+      target: 'School',
+      npc: 'Dog'
     },
     {
       label: 'Building 4 of 9',
@@ -18168,6 +18168,15 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     },
     {
       label: 'Building 7 of 9',
+      title: 'The Residency / Exchange',
+      body: `<p>Visiting potters from around the world stay here. The Deer coordinates exchanges, bringing international perspectives to the village.</p>
+<p>A residency program where artists from other communities spend time in Clay Village — sharing techniques, learning from local potters, and leaving something behind when they go. Their technique cards end up in the Library forever.</p>
+<p>Every visiting artist makes the village a little richer.</p>`,
+      target: 'Residency / Exchange',
+      npc: null
+    },
+    {
+      label: 'Building 8 of 9',
       title: 'The Observatory / World',
       body: `<p>Where the village connects to the wider world of ceramics. Global ceramic traditions, cross-village exchanges, and a window into what's happening beyond these walls.</p>
 <p>Clay Village is the first village, but the vision is bigger — a platform where any creative community can build their own. Woodwork, glass, textiles. The Observatory is where you look outward and see what's coming.</p>`,
@@ -18175,22 +18184,13 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
       npc: null
     },
     {
-      label: 'Building 8 of 9',
+      label: 'Building 9 of 9',
       title: 'The Gallery / Market',
       body: `<p>Finished work is shown and sold here. The Deer helps coordinate exhibitions and connects makers with collectors.</p>
 <p>No algorithm deciding what's "trending." The gallery shows work because it's good, not because it got engagement. Rotating exhibitions give every potter a chance to be seen on their own terms.</p>
 <p>When the marketplace opens, artists sell directly — small fee, no middleman, no promoted listings.</p>`,
       target: 'Gallery / Market',
       npc: 'Deer'
-    },
-    {
-      label: 'Building 9 of 9',
-      title: 'The Residency / Exchange',
-      body: `<p>Visiting potters from around the world stay here. The Deer coordinates exchanges, bringing international perspectives to the village.</p>
-<p>A residency program where artists from other communities spend time in Clay Village — sharing techniques, learning from local potters, and leaving something behind when they go. Their technique cards end up in the Library forever.</p>
-<p>Every visiting artist makes the village a little richer.</p>`,
-      target: 'Residency / Exchange',
-      npc: null
     },
     {
       label: 'Closing',
@@ -18319,7 +18319,8 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
 
     // Nav buttons
     prevBtn.textContent = tourStep === 0 ? 'Close' : 'Back';
-    nextBtn.textContent = tourStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next';
+    nextBtn.style.display = tourStep === TOUR_STEPS.length - 1 ? 'none' : '';
+    nextBtn.textContent = 'Next';
 
     // Reset Q&A
     qaPanel.classList.remove('open');
@@ -18468,6 +18469,8 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
     if (e.key === 'Escape') { e.preventDefault(); endTour(); }
+    // Enter = drop into the current building (close tour, avatar stays here)
+    if (e.key === 'Enter') { e.preventDefault(); endTour(); }
   });
 })();
 // ===== END VILLAGE TOUR =====
