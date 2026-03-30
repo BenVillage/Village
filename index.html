@@ -6095,18 +6095,8 @@ function updateTimeOfDay(forceUpdate) {
   const overlay = document.getElementById('nighttime-overlay');
   if (!overlay) return;
 
-  let darkness = 0;
-  if (manualNightLevel > 0) {
-    // Manual slider mode
-    darkness = (manualNightLevel / 100) * 0.70;
-  } else {
-    // Auto clock mode
-    const hour = new Date().getHours();
-    if (hour >= 21 || hour < 5) darkness = 0.45;
-    else if (hour >= 20) darkness = 0.25;
-    else if (hour >= 5 && hour < 6) darkness = 0.2;
-    else if (hour >= 6 && hour < 7) darkness = 0.08;
-  }
+  // Slider is purely manual: left = full day, right = full night
+  const darkness = (manualNightLevel / 100) * 0.70;
 
   currentDarkness = darkness;
 
