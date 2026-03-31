@@ -1648,7 +1648,7 @@
     color: rgba(234,229,222,0.88); font-size: 15px; font-weight: 600; letter-spacing: 0.03em;
   }
   #cafe-room-body {
-    flex: 1; display: flex; align-items: flex-end; justify-content: center;
+    flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
     padding: 0 20px 36px;
   }
   #cafe-room-panel {
@@ -1690,7 +1690,7 @@
   .cafe-gate-btn.primary:hover { background:rgba(200,168,75,0.35); }
   .cafe-gate-sub { font-size:11px; color:rgba(196,180,154,0.45); margin-top:12px; }
 
-  #cafe-main { display:none; flex:1; flex-direction:column; overflow:hidden; }
+  #cafe-main { display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0; }
   #cafe-main.open { display:flex; }
   .cafe-tabs { display:flex; gap:2px; padding:0 16px; background:rgba(0,0,0,0.2); flex-shrink:0; overflow-x:auto; }
   .cafe-tab { padding:10px 16px; font-size:12px; font-weight:600; color:rgba(234,229,222,0.45); cursor:pointer; border:none; background:none; white-space:nowrap; border-bottom:2px solid transparent; transition:all 0.2s; font-family:inherit; }
@@ -1764,6 +1764,59 @@
   /* Clickable names */
   .cafe-link { color:rgba(200,168,75,0.75); cursor:pointer; transition:color 0.15s; }
   .cafe-link:hover { color:#c8a84b; text-decoration:underline; }
+
+  /* === The Council === */
+  #cafe-tab-council { background:rgba(8,12,16,0.4); }
+  .council-locked { display:flex; flex-direction:column; align-items:center; padding:30px 20px; text-align:center; }
+  .council-locked-title { font-size:18px; font-weight:700; color:#c0cad8; margin-bottom:8px; }
+  .council-locked-sub { font-size:13px; color:rgba(180,195,215,0.55); line-height:1.6; max-width:440px; margin-bottom:24px; }
+  .council-locked-countdown { font-size:14px; color:rgba(140,170,210,0.7); font-weight:600; margin-bottom:24px; }
+  .council-section { margin-bottom:24px; }
+  .council-section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:rgba(140,170,210,0.5); margin-bottom:12px; }
+  .council-proposal { background:rgba(140,170,210,0.05); border:1px solid rgba(140,170,210,0.1); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .council-proposal-title { font-size:15px; font-weight:700; color:#c0cad8; margin-bottom:6px; }
+  .council-proposal-why { font-size:12px; color:rgba(180,195,215,0.6); line-height:1.55; margin-bottom:10px; }
+  .council-proposal-deadline { font-size:10px; color:rgba(140,170,210,0.45); margin-bottom:10px; }
+  .council-vote-bar { height:6px; border-radius:3px; background:rgba(140,170,210,0.08); overflow:hidden; display:flex; margin-bottom:10px; }
+  .council-vote-for { background:rgba(200,168,75,0.7); transition:width 0.4s ease; }
+  .council-vote-against { background:rgba(140,170,210,0.3); transition:width 0.4s ease; }
+  .council-vote-abstain { background:rgba(140,170,210,0.1); transition:width 0.4s ease; }
+  .council-vote-btns { display:flex; gap:6px; margin-bottom:8px; }
+  .council-vote-btn { padding:7px 16px; border-radius:16px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid rgba(140,170,210,0.15); background:none; color:rgba(180,195,215,0.6); font-family:inherit; transition:all 0.15s; }
+  .council-vote-btn:hover { background:rgba(140,170,210,0.08); }
+  .council-vote-btn.active-for { background:rgba(200,168,75,0.2); border-color:rgba(200,168,75,0.4); color:#c8a84b; }
+  .council-vote-btn.active-against { background:rgba(140,170,210,0.12); border-color:rgba(140,170,210,0.3); color:#8eaad2; }
+  .council-vote-btn.active-abstain { background:rgba(140,170,210,0.06); border-color:rgba(140,170,210,0.2); color:rgba(140,170,210,0.5); }
+  .council-abstain-note { margin-top:6px; }
+  .council-abstain-note input { width:100%; background:rgba(140,170,210,0.06); border:1px solid rgba(140,170,210,0.12); border-radius:8px; color:#c0cad8; font-size:11px; padding:6px 10px; font-family:inherit; outline:none; }
+  .council-prevote { margin-top:8px; }
+  .council-prevote-toggle { font-size:10px; color:rgba(140,170,210,0.45); cursor:pointer; user-select:none; }
+  .council-prevote-toggle:hover { color:rgba(140,170,210,0.7); }
+  .council-prevote-body { display:none; margin-top:8px; font-size:11px; color:rgba(180,195,215,0.5); line-height:1.55; background:rgba(140,170,210,0.03); border:1px solid rgba(140,170,210,0.06); border-radius:8px; padding:10px 12px; }
+  .council-prevote-body.open { display:block; }
+  .council-prevote-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(200,168,75,0.5); margin-bottom:4px; }
+  .council-weight { background:rgba(140,170,210,0.05); border:1px solid rgba(140,170,210,0.1); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .council-weight-total { font-size:20px; font-weight:700; color:#c0cad8; margin-bottom:8px; }
+  .council-weight-row { display:flex; justify-content:space-between; font-size:12px; color:rgba(180,195,215,0.55); padding:4px 0; border-bottom:1px solid rgba(140,170,210,0.05); }
+  .council-weight-row span:last-child { color:#c0cad8; font-weight:600; }
+  .council-decided { background:rgba(140,170,210,0.04); border:1px solid rgba(140,170,210,0.08); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+  .council-decided-q { font-size:13px; font-weight:700; color:#c0cad8; margin-bottom:4px; }
+  .council-decided-outcome { font-size:12px; color:rgba(200,168,75,0.8); margin-bottom:6px; }
+  .council-decided-note { font-size:11px; color:rgba(180,195,215,0.45); font-style:italic; line-height:1.5; }
+  .council-propose-form { background:rgba(140,170,210,0.05); border:1px solid rgba(140,170,210,0.1); border-radius:14px; padding:16px; }
+  .council-propose-form input, .council-propose-form textarea { width:100%; background:rgba(140,170,210,0.06); border:1px solid rgba(140,170,210,0.12); border-radius:8px; color:#c0cad8; font-size:12px; padding:8px 10px; font-family:inherit; outline:none; margin-bottom:8px; box-sizing:border-box; }
+  .council-propose-form textarea { min-height:60px; resize:vertical; }
+  .council-propose-btn { padding:10px 20px; border-radius:16px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid rgba(140,170,210,0.2); background:rgba(140,170,210,0.08); color:#c0cad8; font-family:inherit; transition:all 0.15s; }
+  .council-propose-btn:hover { background:rgba(140,170,210,0.16); }
+  .council-horizon { background:rgba(8,12,16,0.6); border:1px solid rgba(140,170,210,0.06); border-radius:14px; padding:20px; margin-top:32px; }
+  .council-horizon-title { font-size:14px; font-weight:700; color:rgba(140,170,210,0.6); margin-bottom:8px; }
+  .council-horizon-text { font-size:12px; color:rgba(180,195,215,0.45); line-height:1.65; margin-bottom:14px; }
+  .council-horizon-q { font-size:13px; color:rgba(180,195,215,0.6); font-style:italic; margin-bottom:10px; }
+  .council-horizon-btns { display:flex; gap:6px; }
+  .council-horizon-btn { padding:6px 14px; border-radius:14px; font-size:11px; cursor:pointer; border:1px solid rgba(140,170,210,0.12); background:none; color:rgba(180,195,215,0.5); font-family:inherit; transition:all 0.15s; }
+  .council-horizon-btn:hover { background:rgba(140,170,210,0.08); }
+  .council-horizon-btn.active { background:rgba(140,170,210,0.12); border-color:rgba(140,170,210,0.25); color:#c0cad8; }
+  .council-horizon-count { font-size:10px; color:rgba(140,170,210,0.35); margin-top:10px; }
 
   /* === Building Overlays — Shared Immersive Chrome === */
   .bld-top {
@@ -3577,11 +3630,13 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
         <button class="cafe-tab" data-cafe-tab="tables">Tables</button>
         <button class="cafe-tab" data-cafe-tab="roundtable">Roundtable Corner</button>
         <button class="cafe-tab" data-cafe-tab="wall">Maker's Wall</button>
+        <button class="cafe-tab" data-cafe-tab="council">The Council</button>
       </div>
       <div class="cafe-tab-content" id="cafe-tab-notice"></div>
       <div class="cafe-tab-content" id="cafe-tab-tables" style="display:none;"></div>
       <div class="cafe-tab-content" id="cafe-tab-roundtable" style="display:none;"></div>
       <div class="cafe-tab-content" id="cafe-tab-wall" style="display:none;"></div>
+      <div class="cafe-tab-content" id="cafe-tab-council" style="display:none;"></div>
       <!-- Invite bar at bottom -->
       <div id="cafe-invite-bar">
         <div class="cafe-invite-label">Invite someone for tea</div>
@@ -10733,12 +10788,13 @@ function switchCafeTab(name) {
   cafeActiveTab = name;
   cafeViewingTable = null;
   document.querySelectorAll('.cafe-tab').forEach(t => t.classList.toggle('active', t.dataset.cafeTab === name));
-  ['notice', 'tables', 'roundtable', 'wall'].forEach(n => {
+  ['notice', 'tables', 'roundtable', 'wall', 'council'].forEach(n => {
     const el = document.getElementById('cafe-tab-' + n);
     if (el) el.style.display = n === name ? '' : 'none';
   });
   if (name === 'notice') renderCafeNotices();
   if (name === 'tables') renderCafeTables();
+  if (name === 'council') renderCouncil();
   if (name === 'roundtable') renderCafeRoundtable();
   if (name === 'wall') renderCafeMakerWall();
 }
@@ -11106,6 +11162,330 @@ function cafeSavePiece(pieceId, btn) {
   if (idx >= 0) { cafeSaved.splice(idx, 1); if (btn) { btn.textContent = 'Caught my eye'; btn.classList.remove('saved'); } }
   else { cafeSaved.push(pieceId); if (btn) { btn.textContent = 'Saved'; btn.classList.add('saved'); } }
   localStorage.setItem('clayVillageCommonsSaved', JSON.stringify(cafeSaved));
+}
+
+// ============================================================
+// THE COUNCIL — Governance Room
+// ============================================================
+
+var councilData = JSON.parse(localStorage.getItem('clayVillageCouncil') || 'null') || {
+  proposals: [
+    { id:'p1', title:'Should platform fees be set at 5%, 8%, or 10% of each transaction?',
+      why:'The village needs revenue to survive but makers need to keep what they earn. Mei wants fees below 10%. Marcus wants them high enough to sustain growth. The Roundtable could not resolve this — the Council must.',
+      options:['5% — makers keep more, platform grows slower','8% — balanced, covers costs with modest growth','10% — funds faster development but takes more from makers'],
+      deadline: Date.now() + 14*86400000,
+      prevote:'Mei, Amara, and Sofia strongly favour 5%. Marcus and Elena favour 10% arguing platform sustainability. Kenji and Peter support 8% as principled middle ground. The machine notes: beginners are most affected — higher fees on small sales feel punitive.',
+      votes:{}, // {odId: {choice:'for'|'against'|'abstain', weight:N, note:''}}
+      status:'active' },
+    { id:'p2', title:'Should AI-assisted work be permitted? If yes, must it be disclosed and how?',
+      why:'Ren uses AI to design forms then throws them by hand. Kenji says forty-three years of hand knowledge cannot be equated with machine-generated design. The village must decide where the line is — or whether there is one.',
+      options:['Permitted with mandatory disclosure','Permitted without disclosure','Not permitted in the village'],
+      deadline: Date.now() + 21*86400000,
+      prevote:'Ren, Alix and Zoe support permission. Kenji and Kofi oppose it strongly. Helen notes that museums already face this question. The machine found: the strongest argument for permission is that the hand always finishes the work. The strongest argument against is that disclosure changes how the work is received.',
+      votes:{}, status:'active' },
+    { id:'p3', title:'Should the village ever accept outside investment?',
+      why:'Mira built exactly this platform in 2017. She took investment. The timeline became the investors\' timeline. She lost her house. Peter watched the same thing happen at Facebook. Marcus says without investment the village cannot scale. The Roundtable split cleanly on this.',
+      options:['Never — self-funded only','Only after proving the model independently','Yes — with governance protections'],
+      deadline: Date.now() + 21*86400000,
+      prevote:'Mira, Peter, Jess, and Kenji oppose investment entirely. Marcus supports it with protections. Elena is neutral — she cares about whether the platform works, not how it is funded. The machine warns: this is the single decision most likely to change the village permanently.',
+      votes:{}, status:'active' },
+    { id:'p4', title:'Should follower counts be permanently removed from all profiles, or should makers choose?',
+      why:'Zoe\'s identity is her follower count. Kenji wants to be invisible to everyone except the right ten collectors. The manifesto says no metrics — but some makers built careers on them. Removing them helps some and hurts others.',
+      options:['Permanently remove all follower counts','Let each maker choose to show or hide','Show to maker only, hidden from public'],
+      deadline: Date.now() + 14*86400000,
+      prevote:'Zoe and Marcus want counts visible. Kenji, Peter, Tomas, and Diane want them gone. Raj predicts craft age will become the new follower count regardless. The machine found: the compromise — maker-controlled visibility — satisfied the most personas but resolved the least tension.',
+      votes:{}, status:'active' },
+    { id:'p5', title:'Should craft age be self-reported or verified by peer vouching?',
+      why:'Craft age is the village\'s alternative to follower counts. If it can be faked it means nothing. If verification is too strict it excludes people. Diane was burned by Instagram — she bought from someone with six months of practice pretending to have six years. This question is about trust.',
+      options:['Self-reported on honour','Verified by two peer vouches','Self-reported with optional peer endorsement'],
+      deadline: Date.now() + 14*86400000,
+      prevote:'Diane and Helen strongly want verification. Sofia worries verification excludes beginners who have no peers yet. Kofi notes that in Ghanaian apprenticeship traditions, the master vouches — not peers. The machine found: peer vouching works for established makers but creates a cold-start problem for newcomers.',
+      votes:{}, status:'active' }
+  ],
+  decided: [],
+  pending: [], // proposed but not yet active
+  horizon: {}, // {odId: 'yes'|'maybe'|'more'}
+  weight: {} // mock weight overrides
+};
+
+function saveCouncil() {
+  localStorage.setItem('clayVillageCouncil', JSON.stringify(councilData));
+}
+
+function isCouncilUnlocked() {
+  if (new URLSearchParams(window.location.search).get('council') === 'open') return true;
+  const profile = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+  if (!profile) return false;
+  const joinDate = profile.joinDate || localStorage.getItem('clayVillageJoinDate');
+  if (!joinDate) return false;
+  const daysIn = (Date.now() - new Date(joinDate).getTime()) / 86400000;
+  const interviews = Object.keys((typeof rtData !== 'undefined' && rtData ? rtData.interviewResults : null) || {}).length;
+  return daysIn >= 30 && interviews >= 2;
+}
+
+function getDaysRemaining() {
+  const profile = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+  const joinDate = profile?.joinDate || localStorage.getItem('clayVillageJoinDate');
+  if (!joinDate) return 30;
+  return Math.max(0, Math.ceil(30 - (Date.now() - new Date(joinDate).getTime()) / 86400000));
+}
+
+function getVoteWeight() {
+  const profile = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
+  const years = Math.min(40, (parseInt(profile.yearsPracticing) || 0) * 4);
+  const joinDate = profile.joinDate || localStorage.getItem('clayVillageJoinDate') || new Date().toISOString();
+  const daysIn = Math.min(20, Math.floor((Date.now() - new Date(joinDate).getTime()) / 86400000) / 3);
+  const pieces = Math.min(20, (parseInt(localStorage.getItem('clayVillageCouncilPieces')) || 0) * 5);
+  const interviews = Math.min(10, (Object.keys((typeof rtData !== 'undefined' && rtData ? rtData.interviewResults : null) || {}).length) * 5);
+  const prevVotes = Math.min(10, Object.values(councilData.proposals.reduce((acc, p) => { const v = p.votes[typeof getCurrentSession === 'function' ? getCurrentSession() : '']; if (v) acc[p.id] = 1; return acc; }, {})).length * 2);
+  return { years, daysIn: Math.round(daysIn), pieces, interviews, prevVotes, total: years + Math.round(daysIn) + pieces + interviews + prevVotes };
+}
+
+function renderCouncil() {
+  const el = document.getElementById('cafe-tab-council');
+  if (!el) return;
+  const unlocked = isCouncilUnlocked();
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : '';
+
+  if (!unlocked) {
+    // Locked state — window into the Council
+    const days = getDaysRemaining();
+    let html = `<div class="council-locked">
+      <div class="council-locked-title">The Council is where the village decides what it becomes.</div>
+      <div class="council-locked-sub">Not the founder. The residents.</div>
+      <div class="council-locked-countdown">You can vote in ${days} day${days !== 1 ? 's' : ''}. Until then — watch, read, form your opinion.</div>
+    </div>`;
+    // Show proposals read-only
+    html += '<div style="padding:0 16px 20px;opacity:0.7;">';
+    councilData.proposals.filter(p => p.status === 'active').forEach(p => {
+      html += renderProposalCard(p, me, true);
+    });
+    html += '</div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // Full Council room
+  let html = '';
+
+  // Section 1 — Active Proposals
+  const active = councilData.proposals.filter(p => p.status === 'active');
+  if (active.length > 0) {
+    html += `<div class="council-section">
+      <div class="council-section-title">Active Proposals</div>`;
+    active.forEach(p => { html += renderProposalCard(p, me, false); });
+    html += '</div>';
+  }
+
+  // Section 2 — Vote Weight
+  const w = getVoteWeight();
+  html += `<div class="council-section">
+    <div class="council-section-title">Your Voice</div>
+    <div class="council-weight">
+      <div class="council-weight-total">Your voice carries ${w.total} points in this Council.</div>
+      <div class="council-weight-row"><span>Years of craft practice (up to 40)</span><span>${w.years}</span></div>
+      <div class="council-weight-row"><span>Days in the village (up to 20)</span><span>${w.daysIn}</span></div>
+      <div class="council-weight-row"><span>Pieces sold or workshopped (up to 20)</span><span>${w.pieces}</span></div>
+      <div class="council-weight-row"><span>Roundtable interviews completed (up to 10)</span><span>${w.interviews}</span></div>
+      <div class="council-weight-row"><span>Previous Council votes cast (up to 10)</span><span>${w.prevVotes}</span></div>
+      <div style="font-size:11px;color:rgba(140,170,210,0.4);margin-top:10px;line-height:1.5;">This weight is transparent. Every resident can see their own weight. No resident can see another resident's exact weight — only whether they voted and how.</div>
+    </div>
+  </div>`;
+
+  // Section 3 — Decided
+  if (councilData.decided.length > 0) {
+    html += `<div class="council-section">
+      <div class="council-section-title">Decided — Permanent Record</div>`;
+    councilData.decided.forEach(d => {
+      const total = (d.forCount || 0) + (d.againstCount || 0) + (d.abstainCount || 0) || 1;
+      html += `<div class="council-decided">
+        <div class="council-decided-q">${d.title}</div>
+        <div class="council-decided-outcome">${d.outcome}</div>
+        <div class="council-vote-bar">
+          <div class="council-vote-for" style="width:${(d.forCount||0)/total*100}%"></div>
+          <div class="council-vote-against" style="width:${(d.againstCount||0)/total*100}%"></div>
+          <div class="council-vote-abstain" style="width:${(d.abstainCount||0)/total*100}%"></div>
+        </div>
+        <div class="council-decided-note">${d.founderNote || ''}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // Section 4 — Propose
+  html += `<div class="council-section">
+    <div class="council-section-title">Propose a Decision</div>
+    <div class="council-propose-form">
+      <input id="council-propose-title" placeholder="One clear question (80 chars max)" maxlength="80">
+      <textarea id="council-propose-why" placeholder="Why now? 2-4 sentences explaining what prompted this."></textarea>
+      <input id="council-propose-opt1" placeholder="Option 1">
+      <input id="council-propose-opt2" placeholder="Option 2">
+      <input id="council-propose-opt3" placeholder="Option 3 (optional)">
+      <input id="council-propose-affected" placeholder="Who is most affected?">
+      <div style="font-size:10px;color:rgba(140,170,210,0.4);margin-bottom:8px;">Deadline: 7-30 days from submission. Proposals go to review before becoming active.</div>
+      <button class="council-propose-btn" onclick="submitCouncilProposal()">Submit for Review</button>
+    </div>
+  </div>`;
+
+  // Pending proposals (proposed but not yet active)
+  if (councilData.pending.length > 0) {
+    html += `<div class="council-section">
+      <div class="council-section-title">Proposed — Awaiting Review</div>`;
+    councilData.pending.forEach(p => {
+      html += `<div class="council-proposal" style="opacity:0.65;">
+        <div class="council-proposal-title">${p.title}</div>
+        <div class="council-proposal-why">${p.why}</div>
+        ${p.founderResponse ? `<div style="font-size:11px;color:rgba(200,168,75,0.6);margin-top:6px;font-style:italic;">Founder: ${p.founderResponse}</div>` : '<div style="font-size:10px;color:rgba(140,170,210,0.35);">Awaiting review</div>'}
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // The Long Horizon — Mura
+  const horizonVote = councilData.horizon[me] || null;
+  const horizonCounts = Object.values(councilData.horizon);
+  const yesCount = horizonCounts.filter(v => v === 'yes').length;
+  const maybeCount = horizonCounts.filter(v => v === 'maybe').length;
+  const moreCount = horizonCounts.filter(v => v === 'more').length;
+  const totalH = yesCount + maybeCount + moreCount;
+
+  html += `<div class="council-horizon">
+    <div class="council-horizon-title">Beyond the screen — Mura</div>
+    <div class="council-horizon-text">The village you are building here is also a blueprint for a real place.<br><br>We are looking at rural Japan. Specifically the Noto Peninsula in Ishikawa Prefecture — a region of 800-year-old craft traditions, wood-fired kilns, lacquerware, ceramics, textiles. Devastated by the earthquake of January 2024. Masters still there. Traditions still alive. A community of makers arriving not as tourists but as people who came to stay and make — that changes what recovery looks like.<br><br>Restored farmhouses. A wood-fired kiln that takes three days to fire and the whole community to tend. A library with every glaze recipe ever developed on that land. A long table where everyone eats together. A fire in the hearth.<br><br>The digital village is the governance. The physical village is the home.<br><br>It will be called Mura.<br><br>This is not a promise. It is a direction. The Council will decide when the time is right.</div>
+    <div class="council-horizon-q">If Mura existed — would you go?</div>
+    <div class="council-horizon-btns">
+      <button class="council-horizon-btn${horizonVote === 'yes' ? ' active' : ''}" onclick="voteHorizon('yes')">Yes</button>
+      <button class="council-horizon-btn${horizonVote === 'maybe' ? ' active' : ''}" onclick="voteHorizon('maybe')">Maybe</button>
+      <button class="council-horizon-btn${horizonVote === 'more' ? ' active' : ''}" onclick="voteHorizon('more')">I'd want to know more</button>
+    </div>
+    ${totalH > 0 ? `<div class="council-horizon-count">${totalH} voice${totalH !== 1 ? 's' : ''} so far.</div>` : ''}
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+function renderProposalCard(p, me, readOnly) {
+  const myVote = p.votes[me];
+  const hasVoted = !!myVote;
+  const allVotes = Object.values(p.votes);
+  const forW = allVotes.filter(v => v.choice === 'for').reduce((s, v) => s + (v.weight || 1), 0);
+  const againstW = allVotes.filter(v => v.choice === 'against').reduce((s, v) => s + (v.weight || 1), 0);
+  const abstainW = allVotes.filter(v => v.choice === 'abstain').reduce((s, v) => s + (v.weight || 1), 0);
+  const totalW = forW + againstW + abstainW || 1;
+
+  const deadline = new Date(p.deadline);
+  const daysLeft = Math.max(0, Math.ceil((p.deadline - Date.now()) / 86400000));
+  const deadlineStr = deadline.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+
+  let html = `<div class="council-proposal">
+    <div class="council-proposal-title">${p.title}</div>
+    <div class="council-proposal-why">${p.why}</div>
+    <div style="margin-bottom:8px;">`;
+  (p.options || []).forEach((opt, i) => {
+    html += `<div style="font-size:12px;color:rgba(180,195,215,0.55);padding:3px 0;padding-left:12px;border-left:2px solid rgba(140,170,210,0.12);">${i + 1}. ${opt}</div>`;
+  });
+  html += `</div>
+    <div class="council-proposal-deadline">${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining · closes ${deadlineStr}</div>
+    <div class="council-vote-bar">
+      <div class="council-vote-for" style="width:${forW/totalW*100}%"></div>
+      <div class="council-vote-against" style="width:${againstW/totalW*100}%"></div>
+      <div class="council-vote-abstain" style="width:${abstainW/totalW*100}%"></div>
+    </div>`;
+
+  if (hasVoted) {
+    html += `<div style="font-size:11px;color:rgba(140,170,210,0.5);">You voted: ${myVote.choice}${allVotes.length > 0 ? ' · ' + allVotes.length + ' total votes · For ' + allVotes.filter(v=>v.choice==='for').length + ' · Against ' + allVotes.filter(v=>v.choice==='against').length + ' · Abstain ' + allVotes.filter(v=>v.choice==='abstain').length : ''}</div>`;
+  }
+
+  if (!readOnly && !hasVoted) {
+    html += `<div class="council-vote-btns">
+      <button class="council-vote-btn" onclick="castCouncilVote('${p.id}','for')">For</button>
+      <button class="council-vote-btn" onclick="castCouncilVote('${p.id}','against')">Against</button>
+      <button class="council-vote-btn" onclick="showAbstainNote('${p.id}')">Abstain with note</button>
+    </div>
+    <div class="council-abstain-note" id="abstain-note-${p.id}" style="display:none;">
+      <input id="abstain-input-${p.id}" placeholder="What would you need to know to vote?">
+      <button class="council-vote-btn" style="margin-top:4px;" onclick="castCouncilVote('${p.id}','abstain')">Submit abstain</button>
+    </div>`;
+  }
+
+  // Pre-vote summary
+  html += `<div class="council-prevote">
+    <div class="council-prevote-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Show Roundtable pre-vote summary</div>
+    <div class="council-prevote-body">
+      <div class="council-prevote-label">AI-generated perspective — not a recommendation</div>
+      ${p.prevote}
+    </div>
+  </div>`;
+
+  html += '</div>';
+  return html;
+}
+
+function showAbstainNote(proposalId) {
+  const el = document.getElementById('abstain-note-' + proposalId);
+  if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+function castCouncilVote(proposalId, choice) {
+  const p = councilData.proposals.find(x => x.id === proposalId);
+  if (!p || p.status !== 'active') return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  if (p.votes[me]) return; // already voted
+
+  const w = getVoteWeight();
+  let note = '';
+  if (choice === 'abstain') {
+    const input = document.getElementById('abstain-input-' + proposalId);
+    note = input ? input.value.trim() : '';
+    if (!note) { alert('Please explain what you would need to know to vote.'); return; }
+  }
+
+  p.votes[me] = { choice, weight: w.total, note, ts: Date.now() };
+  saveCouncil();
+  renderCouncil();
+}
+
+function submitCouncilProposal() {
+  const title = document.getElementById('council-propose-title')?.value.trim();
+  const why = document.getElementById('council-propose-why')?.value.trim();
+  const opt1 = document.getElementById('council-propose-opt1')?.value.trim();
+  const opt2 = document.getElementById('council-propose-opt2')?.value.trim();
+  const opt3 = document.getElementById('council-propose-opt3')?.value.trim();
+  const affected = document.getElementById('council-propose-affected')?.value.trim();
+
+  if (!title || !why || !opt1 || !opt2) { alert('Title, reason, and at least two options are required.'); return; }
+
+  const proposal = {
+    id: 'prop_' + Date.now(),
+    title, why,
+    options: [opt1, opt2, opt3].filter(Boolean),
+    affected,
+    deadline: Date.now() + 14 * 86400000,
+    prevote: 'Pre-vote analysis will be generated when this proposal is activated.',
+    votes: {},
+    status: 'pending',
+    submittedBy: typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon',
+    submittedAt: Date.now(),
+    founderResponse: null
+  };
+
+  councilData.pending.push(proposal);
+  saveCouncil();
+
+  // Clear form
+  ['council-propose-title', 'council-propose-why', 'council-propose-opt1', 'council-propose-opt2', 'council-propose-opt3', 'council-propose-affected'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  renderCouncil();
+}
+
+function voteHorizon(choice) {
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  councilData.horizon[me] = councilData.horizon[me] === choice ? null : choice; // toggle
+  saveCouncil();
+  renderCouncil();
 }
 
 // ===== CLAY MASTERY — Skill Progression + Spaced Repetition =====
