@@ -18305,10 +18305,7 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     card.style.animation = 'none';
     requestAnimationFrame(() => { card.style.animation = 'tour-card-in 0.4s ease-out'; });
 
-    // Pan camera to building
-    if (step.target) {
-      panCameraToBuilding(step.target);
-    }
+    // No auto-pan while browsing — press Enter to jump to the building
   }
 
   // Compute centroid of a building's outline polygon — these are the real map coordinates
@@ -18440,8 +18437,21 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
     if (e.key === 'Escape') { e.preventDefault(); endTour(); }
-    // Enter = drop into the current building (close tour, avatar stays here)
-    if (e.key === 'Enter') { e.preventDefault(); endTour(); }
+    // Enter = instantly teleport to building and close tour
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const step = TOUR_STEPS[tourStep];
+      if (step.target) {
+        const b = buildings.find(b => b.name === step.target);
+        if (b) {
+          const mw = mapImg.naturalWidth || mapImg.width || 1400;
+          const mh = mapImg.naturalHeight || mapImg.height || 800;
+          avatar.x = b.x * mw;
+          avatar.y = b.y * mh;
+        }
+      }
+      endTour();
+    }
   });
 })();
 // ===== END VILLAGE TOUR =====
