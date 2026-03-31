@@ -2726,7 +2726,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: min(520px, calc(100vw - 40px));
-    background: rgba(16, 12, 8, 0.92);
+    background: rgba(16, 12, 8, 0.62);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(200, 168, 112, 0.15);
@@ -2735,7 +2735,7 @@
     color: #e8e0d4;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     pointer-events: all;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     animation: tour-card-in 0.4s ease-out;
   }
   @keyframes tour-card-in {
@@ -18290,10 +18290,10 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
       d.classList.toggle('active', i === tourStep);
     });
 
-    // Nav buttons
-    prevBtn.textContent = tourStep === 0 ? 'Close' : 'Back';
-    nextBtn.style.display = tourStep === TOUR_STEPS.length - 1 ? 'none' : '';
-    nextBtn.textContent = 'Next';
+    // Nav buttons — always visible, loops forever
+    prevBtn.textContent = '←';
+    nextBtn.style.display = '';
+    nextBtn.textContent = '→';
 
     // Reset Q&A
     qaPanel.classList.remove('open');
@@ -18366,14 +18366,12 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
   }
 
   function nextStep() {
-    if (tourStep >= TOUR_STEPS.length - 1) { endTour(); return; }
-    tourStep++;
+    tourStep = (tourStep + 1) % TOUR_STEPS.length;
     renderStep();
   }
 
   function prevStep() {
-    if (tourStep <= 0) { endTour(); return; }
-    tourStep--;
+    tourStep = (tourStep - 1 + TOUR_STEPS.length) % TOUR_STEPS.length;
     renderStep();
   }
 
