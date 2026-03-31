@@ -3692,6 +3692,47 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <button id="obs-propose-btn" style="background:#1e3a5f;color:#7aabdf;border:1px solid rgba(122,171,223,0.3);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">Propose →</button>
     </div>
     <div id="obs-proposals" style="margin-top:14px;"></div>
+
+    <div style="border-top:1px solid rgba(255,255,255,0.07);margin:32px 0;"></div>
+
+    <!-- ═══ THE LONG VIEW — Public, visible to all residents ═══ -->
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#4a6888;margin-bottom:6px;">The Long View</div>
+      <div style="font-size:12px;color:rgba(100,136,170,0.45);margin-bottom:16px;line-height:1.5;">The founder speaking to the community. Not a feed. A scroll. Added to deliberately, not constantly.</div>
+      <div id="obs-longview"></div>
+      <div id="obs-longview-editor" style="display:none;margin-top:14px;">
+        <textarea id="obs-lv-input" placeholder="Write something for The Long View..." style="width:100%;min-height:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;font-size:13px;color:#e8f0ff;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;line-height:1.6;"></textarea>
+        <button id="obs-lv-publish" style="margin-top:8px;background:#1e3a5f;color:#7aabdf;border:1px solid rgba(122,171,223,0.3);border-radius:14px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Publish to The Long View</button>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid rgba(255,255,255,0.07);margin:32px 0;"></div>
+
+    <!-- ═══ FOUNDER'S LOG — Private, admin-only ═══ -->
+    <div id="obs-founders-log-section" style="display:none;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#4a6888;margin-bottom:6px;">Founder's Log <span style="font-weight:400;color:rgba(100,136,170,0.35);text-transform:none;letter-spacing:0;">— private, only you can see this</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;" id="obs-log-threads"></div>
+      <input id="obs-log-search" placeholder="Search the log..." style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:8px 14px;font-size:12px;color:#e8f0ff;font-family:inherit;outline:none;margin-bottom:14px;box-sizing:border-box;">
+      <div id="obs-log-entries"></div>
+      <div style="margin-top:14px;">
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+          <select id="obs-log-thread-select" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 10px;font-size:11px;color:#e8f0ff;font-family:inherit;outline:none;">
+            <option value="forces">The forces</option>
+            <option value="timing">The timing</option>
+            <option value="vision">The vision</option>
+            <option value="architecture">The architecture</option>
+            <option value="people">The people</option>
+            <option value="open">The open questions</option>
+          </select>
+        </div>
+        <textarea id="obs-log-input" placeholder="Raw thinking. 11pm ideas. What you see from the highest point." style="width:100%;min-height:80px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;font-size:13px;color:#e8f0ff;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;line-height:1.6;"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button id="obs-log-save" style="background:#1e3a5f;color:#7aabdf;border:1px solid rgba(122,171,223,0.3);border-radius:14px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Save to Log</button>
+          <button id="obs-log-to-longview" style="background:none;color:rgba(100,136,170,0.5);border:1px solid rgba(100,136,170,0.2);border-radius:14px;padding:9px 16px;font-size:12px;cursor:pointer;font-family:inherit;">Publish to Long View</button>
+        </div>
+      </div>
+    </div>
+
     </div>
     <div class="bld-manifesto-line">The future belongs to people who make with their hands.</div>
   </div>
@@ -12228,10 +12269,180 @@ function voteHorizon(choice) {
     el.innerHTML = html;
   }
 
+  // === THE LONG VIEW (public) + FOUNDER'S LOG (private) ===
+  const LV_KEY = 'clayVillageLongView';
+  const FL_KEY = 'clayVillageFoundersLog';
+
+  function isFounder() {
+    // For now — admin is always the founder
+    return true;
+  }
+
+  function getLongView() { return JSON.parse(localStorage.getItem(LV_KEY) || '[]'); }
+  function saveLongView(entries) { localStorage.setItem(LV_KEY, JSON.stringify(entries)); }
+  function getFoundersLog() { return JSON.parse(localStorage.getItem(FL_KEY) || '[]'); }
+  function saveFoundersLog(entries) { localStorage.setItem(FL_KEY, JSON.stringify(entries)); }
+
+  function renderLongView() {
+    const el = document.getElementById('obs-longview');
+    if (!el) return;
+    const entries = getLongView();
+    if (entries.length === 0) {
+      el.innerHTML = '<div style="font-size:12px;color:rgba(100,136,170,0.35);font-style:italic;padding:10px 0;">Nothing published yet. The scroll is waiting.</div>';
+    } else {
+      el.innerHTML = entries.map(e => {
+        const d = new Date(e.ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+        return `<div style="background:rgba(100,140,200,0.04);border:1px solid rgba(100,140,200,0.08);border-radius:14px;padding:16px;margin-bottom:12px;">
+          <div style="font-size:10px;color:rgba(100,136,170,0.4);margin-bottom:8px;">${d}</div>
+          <div style="font-size:13px;color:rgba(200,218,255,0.7);line-height:1.65;white-space:pre-wrap;">${e.text.replace(/</g,'&lt;')}</div>
+        </div>`;
+      }).join('');
+    }
+    // Show editor for founder only
+    const editor = document.getElementById('obs-longview-editor');
+    if (editor) editor.style.display = isFounder() ? '' : 'none';
+  }
+
+  function renderFoundersLog() {
+    const section = document.getElementById('obs-founders-log-section');
+    if (!section) return;
+    section.style.display = isFounder() ? '' : 'none';
+    if (!isFounder()) return;
+
+    const entries = getFoundersLog();
+    const search = (document.getElementById('obs-log-search')?.value || '').toLowerCase();
+    const activeThread = document.querySelector('.obs-log-thread-btn.active')?.dataset.thread || 'all';
+
+    // Thread filter buttons
+    const threads = ['all','forces','timing','vision','architecture','people','open'];
+    const threadLabels = { all:'All', forces:'The forces', timing:'The timing', vision:'The vision', architecture:'The architecture', people:'The people', open:'Open questions' };
+    const threadEl = document.getElementById('obs-log-threads');
+    if (threadEl) {
+      threadEl.innerHTML = threads.map(t =>
+        `<button class="obs-log-thread-btn${activeThread === t ? ' active' : ''}" data-thread="${t}" style="padding:4px 10px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid rgba(100,140,200,${activeThread === t ? '0.3' : '0.1'});background:rgba(100,140,200,${activeThread === t ? '0.12' : '0.04'});color:${activeThread === t ? '#7aabdf' : 'rgba(100,136,170,0.45)'};font-family:inherit;">${threadLabels[t]}</button>`
+      ).join('');
+      threadEl.querySelectorAll('.obs-log-thread-btn').forEach(btn => {
+        btn.addEventListener('click', () => { renderFoundersLog(); });
+        btn.addEventListener('click', function() {
+          threadEl.querySelectorAll('.obs-log-thread-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          renderFoundersLog();
+        });
+      });
+    }
+
+    // Filter entries
+    let filtered = entries;
+    if (activeThread !== 'all') filtered = filtered.filter(e => e.thread === activeThread);
+    if (search) filtered = filtered.filter(e => e.text.toLowerCase().includes(search));
+
+    const entriesEl = document.getElementById('obs-log-entries');
+    if (!entriesEl) return;
+    if (filtered.length === 0) {
+      entriesEl.innerHTML = '<div style="font-size:12px;color:rgba(100,136,170,0.3);font-style:italic;padding:10px 0;">No entries yet.</div>';
+    } else {
+      entriesEl.innerHTML = filtered.map(e => {
+        const d = new Date(e.ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        const tLabel = threadLabels[e.thread] || e.thread;
+        return `<div style="background:rgba(100,140,200,0.04);border:1px solid rgba(100,140,200,0.06);border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:10px;color:rgba(100,136,170,0.4);">${d}</span>
+            <span style="font-size:9px;padding:2px 8px;border-radius:8px;background:rgba(100,140,200,0.08);color:rgba(100,136,170,0.5);">${tLabel}</span>
+          </div>
+          <div style="font-size:13px;color:rgba(200,218,255,0.65);line-height:1.65;white-space:pre-wrap;">${e.text.replace(/</g,'&lt;')}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Seed Entry 001 if log is empty
+  function seedFoundersLog() {
+    const existing = getFoundersLog();
+    if (existing.length > 0) return;
+    const entry001 = `Three macro forces are building simultaneously toward the same moment.
+
+AI displacement is removing white-collar work faster than anyone predicted. The people losing jobs are not the people who expected to lose them. When they have time — real time, not stolen moments — they will reach for their hands. History says so.
+
+Post-labour economics accelerates this. If AI generates enough abundance that basic needs are met without full employment the question of what life is for becomes urgent at civilisational scale. Making things. Being present. Genuine connection.
+
+AI potentially solving aging means the craft knowledge that would have been lost lives on. The master ceramicist with forty years of practice gets forty more. The Library becomes extraordinary.
+
+The content machine becomes irrelevant in a world where people have time. The village is built for exactly that world.
+
+The right moment — established, with real residents, real data, real Story Cards in real homes — when the displacement wave hits. Three triggers: a visible displacement event, fifty real residents, or the moment Mura breaks ground in Noto.
+
+150 per village. Dunbar's number. One million people means six thousand villages — each intimate, each with its own character.
+
+Migration carries rules as data. Villages have genealogies. The splits are visible.
+
+The ratio: one master for every three to four serious learners. Mixed always.
+
+Mura. Rural Japan. The Noto Peninsula. Restored farmhouses. A wood-fired kiln. A library with every glaze recipe ever developed on that land. A long table. A fire in the hearth.
+
+The governance built digitally before a single brick is laid. The community formed online before they meet in person.
+
+The only hedge against bad timing is starting now and building slowly and honestly.`;
+
+    saveFoundersLog([
+      { id: 'entry001', thread: 'forces', text: entry001, ts: new Date('2026-03-31T23:00:00').getTime() }
+    ]);
+  }
+
+  // Wire up event listeners
+  function wireLogEvents() {
+    const lvPublish = document.getElementById('obs-lv-publish');
+    if (lvPublish) lvPublish.addEventListener('click', () => {
+      const input = document.getElementById('obs-lv-input');
+      const text = input?.value.trim();
+      if (!text) return;
+      const entries = getLongView();
+      entries.unshift({ id: 'lv_' + Date.now(), text, ts: Date.now() });
+      saveLongView(entries);
+      input.value = '';
+      renderLongView();
+    });
+
+    const logSave = document.getElementById('obs-log-save');
+    if (logSave) logSave.addEventListener('click', () => {
+      const input = document.getElementById('obs-log-input');
+      const thread = document.getElementById('obs-log-thread-select')?.value || 'open';
+      const text = input?.value.trim();
+      if (!text) return;
+      const entries = getFoundersLog();
+      entries.unshift({ id: 'fl_' + Date.now(), thread, text, ts: Date.now() });
+      saveFoundersLog(entries);
+      input.value = '';
+      renderFoundersLog();
+    });
+
+    const logToLV = document.getElementById('obs-log-to-longview');
+    if (logToLV) logToLV.addEventListener('click', () => {
+      const input = document.getElementById('obs-log-input');
+      const text = input?.value.trim();
+      if (!text) return;
+      // Save to both log and long view
+      const thread = document.getElementById('obs-log-thread-select')?.value || 'open';
+      const flEntries = getFoundersLog();
+      flEntries.unshift({ id: 'fl_' + Date.now(), thread, text, ts: Date.now() });
+      saveFoundersLog(flEntries);
+      const lvEntries = getLongView();
+      lvEntries.unshift({ id: 'lv_' + Date.now(), text, ts: Date.now() });
+      saveLongView(lvEntries);
+      input.value = '';
+      renderFoundersLog();
+      renderLongView();
+    });
+
+    const logSearch = document.getElementById('obs-log-search');
+    if (logSearch) logSearch.addEventListener('input', () => renderFoundersLog());
+  }
+
   window.openObservatory = function() {
     const ov = document.getElementById('observatory-overlay'); if (!ov) return;
     ov.style.display = 'flex';
+    seedFoundersLog();
     renderGlance(); renderLens(); renderMembers(); renderVillages(); renderProposals();
+    renderLongView(); renderFoundersLog(); wireLogEvents();
   };
 })();
 
