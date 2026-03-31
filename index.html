@@ -3002,9 +3002,7 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <div class="tour-qa-answer" id="tour-qa-answer" style="display:none;"></div>
     </div>
     <div class="tour-nav">
-      <button class="tour-nav-btn" id="tour-prev">Back</button>
       <div class="tour-dots" id="tour-dots"></div>
-      <button class="tour-nav-btn primary" id="tour-next">Next</button>
     </div>
   </div>
 </div>
@@ -18290,10 +18288,7 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
       d.classList.toggle('active', i === tourStep);
     });
 
-    // Nav buttons — always visible, loops forever
-    prevBtn.textContent = '←';
-    nextBtn.style.display = '';
-    nextBtn.textContent = '→';
+    // No nav buttons — arrow keys only
 
     // Reset Q&A
     qaPanel.classList.remove('open');
@@ -18407,8 +18402,7 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
   });
 
   document.getElementById('tour-exit').addEventListener('click', endTour);
-  nextBtn.addEventListener('click', nextStep);
-  prevBtn.addEventListener('click', prevStep);
+  // Navigation via arrow keys only — buttons removed
 
   qaToggle.addEventListener('click', () => {
     qaPanel.classList.toggle('open');
@@ -18441,7 +18435,7 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     'Studio Quarter':       { up: 'Residency / Exchange', right: 'Residency / Exchange', down: 'Observatory / World', left: 'Mentor Cluster' },
     'Residency / Exchange': { down: 'Observatory / World', left: 'Studio Quarter' },
     'Observatory / World':  { down: 'Gallery / Market', left: 'Studio Quarter', up: 'Residency / Exchange' },
-    'Gallery / Market':     { left: 'Commons / Café' },
+    'Gallery / Market':     { left: 'Commons / Café', right: 'Observatory / World', up: 'Observatory / World' },
   };
 
   function navToBuilding(name) {
