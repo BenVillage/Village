@@ -1678,6 +1678,93 @@
     text-align: center; color: rgba(196,180,154,0.65); font-size: 11px;
   }
 
+  /* === Commons / Café — Tabbed Interior === */
+  #cafe-daily-gate { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; padding:40px 20px; text-align:center; }
+  .cafe-gate-q { font-size:18px; color:#eae5de; font-style:italic; line-height:1.6; max-width:480px; margin-bottom:20px; }
+  .cafe-gate-input { width:100%; max-width:420px; min-height:60px; background:rgba(234,229,222,0.08); border:1px solid rgba(196,180,154,0.2); border-radius:12px; color:#eae5de; font-size:14px; padding:12px 16px; font-family:inherit; resize:vertical; outline:none; }
+  .cafe-gate-input:focus { border-color:rgba(196,180,154,0.45); }
+  .cafe-gate-btns { display:flex; gap:10px; margin-top:16px; }
+  .cafe-gate-btn { padding:10px 24px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid rgba(196,180,154,0.3); background:rgba(234,229,222,0.12); color:#eae5de; font-family:inherit; transition:background 0.15s; }
+  .cafe-gate-btn:hover { background:rgba(234,229,222,0.22); }
+  .cafe-gate-btn.primary { background:rgba(200,168,75,0.2); border-color:rgba(200,168,75,0.4); }
+  .cafe-gate-btn.primary:hover { background:rgba(200,168,75,0.35); }
+  .cafe-gate-sub { font-size:11px; color:rgba(196,180,154,0.45); margin-top:12px; }
+
+  #cafe-main { display:none; flex:1; flex-direction:column; overflow:hidden; }
+  #cafe-main.open { display:flex; }
+  .cafe-tabs { display:flex; gap:2px; padding:0 16px; background:rgba(0,0,0,0.2); flex-shrink:0; overflow-x:auto; }
+  .cafe-tab { padding:10px 16px; font-size:12px; font-weight:600; color:rgba(234,229,222,0.45); cursor:pointer; border:none; background:none; white-space:nowrap; border-bottom:2px solid transparent; transition:all 0.2s; font-family:inherit; }
+  .cafe-tab:hover { color:rgba(234,229,222,0.7); }
+  .cafe-tab.active { color:#c8a84b; border-bottom-color:#c8a84b; }
+  .cafe-tab-content { flex:1; overflow-y:auto; padding:16px; scrollbar-width:thin; scrollbar-color:rgba(196,180,154,0.2) transparent; }
+
+  /* Invite bar */
+  #cafe-invite-bar { flex-shrink:0; padding:10px 16px; border-top:1px solid rgba(196,180,154,0.12); background:rgba(0,0,0,0.15); }
+  #cafe-invite-bar .cafe-invite-label { font-size:10px; color:rgba(196,180,154,0.5); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em; }
+  #cafe-invite-chips { display:flex; flex-wrap:wrap; gap:6px; }
+
+  /* Notice Board */
+  .cafe-notice { background:rgba(234,229,222,0.06); border:1px solid rgba(196,180,154,0.1); border-radius:14px; padding:16px; margin-bottom:12px; }
+  .cafe-notice-type { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:rgba(200,168,75,0.7); margin-bottom:6px; }
+  .cafe-notice-text { font-size:13px; color:#eae5de; line-height:1.55; margin-bottom:10px; }
+  .cafe-notice-actions { display:flex; gap:8px; }
+  .cafe-notice-btn { padding:6px 14px; border-radius:16px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid rgba(196,180,154,0.2); background:rgba(234,229,222,0.08); color:#eae5de; font-family:inherit; transition:background 0.15s; }
+  .cafe-notice-btn:hover { background:rgba(234,229,222,0.18); }
+  .cafe-notice-btn.voted { background:rgba(200,168,75,0.2); border-color:rgba(200,168,75,0.4); }
+
+  /* Tables */
+  .cafe-table-card { background:rgba(234,229,222,0.06); border:1px solid rgba(196,180,154,0.1); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:box-shadow 0.4s ease, opacity 0.4s ease; }
+  .cafe-table-card:hover { background:rgba(234,229,222,0.1); }
+  .cafe-table-topic { font-size:15px; font-weight:600; color:#eae5de; margin-bottom:4px; }
+  .cafe-table-meta { font-size:11px; color:rgba(196,180,154,0.5); }
+  .cafe-table-preview { font-size:12px; color:rgba(234,229,222,0.6); margin-top:8px; font-style:italic; }
+  .cafe-table-view { max-width:640px; margin:0 auto; display:flex; flex-direction:column; height:100%; }
+  .cafe-table-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:12px 0; }
+  .cafe-table-msg { display:flex; gap:8px; align-items:flex-start; }
+  .cafe-table-msg-avatar { width:28px; height:28px; min-width:28px; border-radius:50%; background:rgba(196,180,154,0.3); background-size:cover; background-position:center; }
+  .cafe-table-msg-body { flex:1; }
+  .cafe-table-msg-name { font-size:11px; font-weight:600; color:rgba(200,168,75,0.7); cursor:pointer; }
+  .cafe-table-msg-name:hover { color:#c8a84b; text-decoration:underline; }
+  .cafe-table-msg-text { font-size:13px; color:#eae5de; line-height:1.5; }
+  .cafe-table-msg-time { font-size:10px; color:rgba(196,180,154,0.4); margin-top:2px; }
+  .cafe-table-input-row { display:flex; gap:8px; padding:12px 0; flex-shrink:0; border-top:1px solid rgba(196,180,154,0.1); }
+  .cafe-table-input { flex:1; background:rgba(234,229,222,0.08); border:1px solid rgba(196,180,154,0.15); border-radius:20px; color:#eae5de; font-size:13px; padding:8px 14px; font-family:inherit; outline:none; }
+  .cafe-table-input:focus { border-color:rgba(196,180,154,0.35); }
+  .cafe-table-send { width:34px; height:34px; border-radius:50%; border:none; background:rgba(200,168,75,0.25); color:#eae5de; font-size:14px; cursor:pointer; flex-shrink:0; }
+  .cafe-table-send:hover { background:rgba(200,168,75,0.4); }
+  .cafe-new-table-row { display:flex; gap:8px; margin-bottom:16px; }
+
+  /* Roundtable Corner */
+  .cafe-req-card { background:rgba(234,229,222,0.06); border:1px solid rgba(196,180,154,0.1); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+  .cafe-req-text { font-size:13px; color:#eae5de; line-height:1.5; margin-bottom:8px; }
+  .cafe-req-people { font-size:10px; color:rgba(196,180,154,0.5); margin-bottom:8px; line-height:1.5; }
+  .cafe-req-actions { display:flex; gap:6px; }
+  .cafe-req-btn { padding:5px 12px; border-radius:14px; font-size:10px; font-weight:600; cursor:pointer; border:1px solid rgba(196,180,154,0.15); background:none; color:rgba(234,229,222,0.6); font-family:inherit; transition:all 0.15s; }
+  .cafe-req-btn:hover { background:rgba(234,229,222,0.1); }
+  .cafe-req-btn.active-agree { background:rgba(100,180,100,0.15); border-color:rgba(100,180,100,0.3); color:#70c878; }
+  .cafe-req-btn.active-disagree { background:rgba(200,80,60,0.15); border-color:rgba(200,80,60,0.3); color:#e88070; }
+
+  /* Maker's Wall */
+  .cafe-wall-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+  .cafe-wall-piece { background:rgba(234,229,222,0.06); border:1px solid rgba(196,180,154,0.1); border-radius:12px; overflow:hidden; cursor:pointer; transition:transform 0.15s; }
+  .cafe-wall-piece:hover { transform:scale(1.03); }
+  .cafe-wall-img { width:100%; height:140px; background:rgba(196,180,154,0.15) center/cover no-repeat; }
+  .cafe-wall-info { padding:10px; }
+  .cafe-wall-title { font-size:12px; font-weight:600; color:#eae5de; margin-bottom:2px; }
+  .cafe-wall-maker { font-size:10px; color:rgba(196,180,154,0.6); cursor:pointer; }
+  .cafe-wall-maker:hover { color:#c8a84b; text-decoration:underline; }
+  .cafe-wall-filters { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+  .cafe-wall-filter { padding:5px 12px; border-radius:14px; font-size:10px; font-weight:600; cursor:pointer; border:1px solid rgba(196,180,154,0.15); background:none; color:rgba(234,229,222,0.5); font-family:inherit; }
+  .cafe-wall-filter:hover { color:#eae5de; }
+  .cafe-wall-filter.active { background:rgba(200,168,75,0.15); border-color:rgba(200,168,75,0.3); color:#c8a84b; }
+  .cafe-wall-save { margin-top:8px; padding:4px 10px; border-radius:10px; font-size:9px; border:1px solid rgba(196,180,154,0.15); background:none; color:rgba(234,229,222,0.5); cursor:pointer; font-family:inherit; }
+  .cafe-wall-save:hover { background:rgba(200,168,75,0.1); color:#c8a84b; }
+  .cafe-wall-save.saved { color:#c8a84b; border-color:rgba(200,168,75,0.3); }
+
+  /* Clickable names */
+  .cafe-link { color:rgba(200,168,75,0.75); cursor:pointer; transition:color 0.15s; }
+  .cafe-link:hover { color:#c8a84b; text-decoration:underline; }
+
   /* === Building Overlays — Shared Immersive Chrome === */
   .bld-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -3472,12 +3559,35 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
     <div style="width:80px;"></div>
   </div>
   <div id="cafe-room-body">
-    <div id="cafe-room-panel">
-      <div id="cafe-room-tagline">The warm center of village social life.<br>Come for tea, stay for the conversation.</div>
-      <div id="cafe-room-users"></div>
-      <div id="cafe-room-invite-hint">Tap someone to invite them for Coffee or Tea</div>
+    <!-- Daily question gate -->
+    <div id="cafe-daily-gate">
+      <div class="cafe-gate-sub" style="margin-bottom:20px;">Before you come in —</div>
+      <div class="cafe-gate-q" id="cafe-gate-question"></div>
+      <textarea class="cafe-gate-input" id="cafe-gate-answer" placeholder="Your answer (optional)..."></textarea>
+      <div class="cafe-gate-btns">
+        <button class="cafe-gate-btn primary" onclick="submitCafeGate()">Answer &amp; enter</button>
+        <button class="cafe-gate-btn" onclick="skipCafeGate()">Skip</button>
+      </div>
+      <div class="cafe-gate-sub">Your answers build a private journal in the Library.</div>
     </div>
-    <div class="bld-manifesto-line" style="color:rgba(160,140,110,0.35);">Talk about the work. Not the metrics.</div>
+    <!-- Main tabbed interior -->
+    <div id="cafe-main">
+      <div class="cafe-tabs">
+        <button class="cafe-tab active" data-cafe-tab="notice">Notice Board</button>
+        <button class="cafe-tab" data-cafe-tab="tables">Tables</button>
+        <button class="cafe-tab" data-cafe-tab="roundtable">Roundtable Corner</button>
+        <button class="cafe-tab" data-cafe-tab="wall">Maker's Wall</button>
+      </div>
+      <div class="cafe-tab-content" id="cafe-tab-notice"></div>
+      <div class="cafe-tab-content" id="cafe-tab-tables" style="display:none;"></div>
+      <div class="cafe-tab-content" id="cafe-tab-roundtable" style="display:none;"></div>
+      <div class="cafe-tab-content" id="cafe-tab-wall" style="display:none;"></div>
+      <!-- Invite bar at bottom -->
+      <div id="cafe-invite-bar">
+        <div class="cafe-invite-label">Invite someone for tea</div>
+        <div id="cafe-invite-chips"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -10484,38 +10594,519 @@ function closeBuildingPage() {
   document.getElementById('building-page-overlay').classList.remove('open');
 }
 
+// ============================================================
+// COMMONS / CAFÉ — Full Interior System
+// ============================================================
+
+const CAFE_DAILY_QUESTIONS = [
+  "When did you last make something you didn't photograph?",
+  "What's the oldest handmade object you own? Why do you still have it?",
+  "If you could teach one person one thing about your craft, what would it be?",
+  "What's the worst thing you ever made? What did it teach you?",
+  "When did you last hold something and feel the maker's hands in it?",
+  "What would you make if nobody would ever see it?",
+  "Is there a tool you use that you'd never replace? Why that one?",
+  "What did your hands learn this week that your brain didn't?",
+  "If the internet disappeared tomorrow, would you still make? Why?",
+  "What's the difference between something made and something manufactured?",
+  "Who taught you to make? What do you remember most about how they taught?",
+  "What would you make for someone you love but never sell?",
+  "When did you last fail at something and feel grateful for the failure?",
+  "What's one thing about your craft that takes years to understand?"
+];
+
+var cafeTables = JSON.parse(localStorage.getItem('clayVillageCommonsTables') || '[]');
+var cafeNotices = JSON.parse(localStorage.getItem('clayVillageCommonsNotices') || '[]');
+var cafeDaily = JSON.parse(localStorage.getItem('clayVillageCommonsDaily') || '{}');
+var cafeSaved = JSON.parse(localStorage.getItem('clayVillageCommonsSaved') || '[]');
+var cafeActiveTab = 'notice';
+var cafeViewingTable = null;
+
 function openCafeRoom() {
-  // Populate user chips — show all profiles except self
-  const usersEl = document.getElementById('cafe-room-users');
-  usersEl.innerHTML = '';
-  const me = getSessionProfile ? getSessionProfile() : null;
-  const allProfiles = (typeof profiles !== 'undefined' ? profiles : []).filter(p => p.name || p.villageName);
-  allProfiles.forEach(p => {
-    if (me && p.id === me.id) return; // skip self
-    const chip = document.createElement('div');
-    chip.className = 'cru-chip';
-    const photo = document.createElement('div');
-    photo.className = 'cru-chip-photo';
-    if (p.photo) photo.style.backgroundImage = `url('${p.photo}')`;
-    else photo.style.background = getProfileColor ? getProfileColor(p.id) : '#c4b49a';
-    chip.appendChild(photo);
-    chip.appendChild(document.createTextNode(p.villageName || p.name));
-    chip.addEventListener('click', () => {
-      sendCafeInvite(p.id);
+  // Populate invite chips in the bottom bar
+  const chipsEl = document.getElementById('cafe-invite-chips');
+  if (chipsEl) {
+    chipsEl.innerHTML = '';
+    const me = getSessionProfile ? getSessionProfile() : null;
+    const allProfiles = (typeof profiles !== 'undefined' ? profiles : []).filter(p => p.name || p.villageName);
+    allProfiles.forEach(p => {
+      if (me && p.id === me.id) return;
+      const chip = document.createElement('div');
+      chip.className = 'cru-chip';
+      const photo = document.createElement('div');
+      photo.className = 'cru-chip-photo';
+      if (p.photo) photo.style.backgroundImage = `url('${p.photo}')`;
+      else photo.style.background = typeof getProfileColor === 'function' ? getProfileColor(p.id) : '#c4b49a';
+      chip.appendChild(photo);
+      chip.appendChild(document.createTextNode(p.villageName || p.name));
+      chip.addEventListener('click', () => { sendCafeInvite(p.id); });
+      chipsEl.appendChild(chip);
     });
-    usersEl.appendChild(chip);
-  });
-  if (usersEl.children.length === 0) {
-    usersEl.innerHTML = '<div style="color:rgba(234,229,222,0.50);font-size:12px;text-align:center;width:100%;">No one else here yet…</div>';
+    if (chipsEl.children.length === 0) {
+      chipsEl.innerHTML = '<span style="color:rgba(234,229,222,0.40);font-size:11px;">No one else here yet</span>';
+    }
   }
+
+  // Also keep old #cafe-room-users populated for backward compat
+  const oldUsers = document.getElementById('cafe-room-users');
+  if (oldUsers) oldUsers.innerHTML = '';
+
   document.getElementById('cafe-room-overlay').classList.add('open');
+
+  // Show daily gate or go straight to main
+  const today = new Date().toISOString().slice(0, 10);
+  if (cafeDaily.lastDate === today) {
+    skipCafeGate();
+  } else {
+    showCafeDailyGate();
+  }
 }
 
 function closeCafeRoom() {
   document.getElementById('cafe-room-overlay').classList.remove('open');
+  document.getElementById('cafe-main').classList.remove('open');
+  document.getElementById('cafe-daily-gate').style.display = 'flex';
+  cafeViewingTable = null;
 }
 
 document.getElementById('cafe-room-leave').addEventListener('click', closeCafeRoom);
+
+// === DAILY QUESTION GATE ===
+function showCafeDailyGate() {
+  document.getElementById('cafe-daily-gate').style.display = 'flex';
+  document.getElementById('cafe-main').classList.remove('open');
+  // Pick today's question (deterministic by date)
+  const today = new Date().toISOString().slice(0, 10);
+  const dayIdx = today.split('-').reduce((a, b) => a + parseInt(b), 0);
+  const q = CAFE_DAILY_QUESTIONS[dayIdx % CAFE_DAILY_QUESTIONS.length];
+  document.getElementById('cafe-gate-question').textContent = '"' + q + '"';
+  document.getElementById('cafe-gate-answer').value = '';
+  cafeDaily._currentQuestion = q;
+}
+
+function submitCafeGate() {
+  const answer = document.getElementById('cafe-gate-answer').value.trim();
+  if (!answer) { skipCafeGate(); return; }
+  const today = new Date().toISOString().slice(0, 10);
+  const q = cafeDaily._currentQuestion || CAFE_DAILY_QUESTIONS[0];
+
+  // Save to daily history
+  if (!cafeDaily.history) cafeDaily.history = [];
+  cafeDaily.history.push({ date: today, question: q, answer: answer });
+  cafeDaily.lastDate = today;
+  cafeDaily.lastQuestion = q;
+  localStorage.setItem('clayVillageCommonsDaily', JSON.stringify(cafeDaily));
+
+  // Also save to Library journals
+  try {
+    const journals = JSON.parse(localStorage.getItem('clayVillageJournals') || '[]');
+    journals.push({
+      id: 'daily_' + Date.now(),
+      title: q,
+      author: (getSessionProfile ? getSessionProfile()?.name : '') || 'You',
+      date: today,
+      body: answer,
+      source: 'commons-daily'
+    });
+    localStorage.setItem('clayVillageJournals', JSON.stringify(journals));
+  } catch (e) {}
+
+  skipCafeGate();
+}
+
+function skipCafeGate() {
+  document.getElementById('cafe-daily-gate').style.display = 'none';
+  document.getElementById('cafe-main').classList.add('open');
+  cafeActiveTab = 'notice';
+  switchCafeTab('notice');
+  seedCafeNotices();
+}
+
+// === TAB SYSTEM ===
+document.querySelector('.cafe-tabs')?.addEventListener('click', e => {
+  const tab = e.target.closest('.cafe-tab');
+  if (!tab) return;
+  switchCafeTab(tab.dataset.cafeTab);
+});
+
+function switchCafeTab(name) {
+  cafeActiveTab = name;
+  cafeViewingTable = null;
+  document.querySelectorAll('.cafe-tab').forEach(t => t.classList.toggle('active', t.dataset.cafeTab === name));
+  ['notice', 'tables', 'roundtable', 'wall'].forEach(n => {
+    const el = document.getElementById('cafe-tab-' + n);
+    if (el) el.style.display = n === name ? '' : 'none';
+  });
+  if (name === 'notice') renderCafeNotices();
+  if (name === 'tables') renderCafeTables();
+  if (name === 'roundtable') renderCafeRoundtable();
+  if (name === 'wall') renderCafeMakerWall();
+}
+
+// === HELPER: clickable name ===
+function cafeLink(name, profileId) {
+  if (!profileId) return `<span class="cafe-link">${name}</span>`;
+  return `<span class="cafe-link" onclick="cafeOpenProfile('${profileId}')">${name}</span>`;
+}
+
+function cafeOpenProfile(id) {
+  const p = (typeof profiles !== 'undefined' ? profiles : []).find(pr => pr.id === id);
+  if (p && typeof showProfileCard === 'function') showProfileCard(p);
+}
+
+// === NOTICE BOARD ===
+function seedCafeNotices() {
+  if (cafeNotices.length > 0) return; // already seeded
+  const allProfiles = (typeof profiles !== 'undefined' ? profiles : []).filter(p => p.name || p.villageName);
+
+  // Village findings from Roundtable
+  if (typeof RT_REQUIREMENTS !== 'undefined' && RT_REQUIREMENTS.length > 0) {
+    RT_REQUIREMENTS.slice(0, 2).forEach((r, i) => {
+      cafeNotices.push({
+        id: 'finding_' + i, type: 'finding',
+        text: r.text,
+        data: { reqIndex: i },
+        ts: Date.now() - i * 86400000,
+        responses: { agree: [], pushback: [] }
+      });
+    });
+  }
+
+  // New arrivals
+  allProfiles.slice(0, 2).forEach((p, i) => {
+    cafeNotices.push({
+      id: 'arrival_' + p.id, type: 'arrival',
+      text: `${p.villageName || p.name} just moved in. ${p.mainPractice || 'Maker'}. ${p.yearsPracticing || '?'} years practice. "${p.identity || p.currentFocus || 'Ready to create.'}"`,
+      data: { profileId: p.id, name: p.villageName || p.name },
+      ts: Date.now() - i * 43200000,
+      responses: {}
+    });
+  });
+
+  // Upcoming event
+  cafeNotices.push({
+    id: 'event_1', type: 'event',
+    text: 'Community glaze testing session — Saturday. Bring a test tile and one glaze recipe to share. No experience needed.',
+    data: { eventName: 'Glaze Testing Saturday' },
+    ts: Date.now(),
+    responses: { notifyMe: [] }
+  });
+
+  localStorage.setItem('clayVillageCommonsNotices', JSON.stringify(cafeNotices));
+}
+
+function renderCafeNotices() {
+  const el = document.getElementById('cafe-tab-notice');
+  if (!el) return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : '';
+
+  let html = '';
+  cafeNotices.forEach(n => {
+    const typeLabel = n.type === 'finding' ? 'Village Finding' : n.type === 'arrival' ? 'New Arrival' : 'Coming to the Village';
+
+    html += `<div class="cafe-notice">
+      <div class="cafe-notice-type">${typeLabel}</div>
+      <div class="cafe-notice-text">${n.text}</div>
+      <div class="cafe-notice-actions">`;
+
+    if (n.type === 'finding') {
+      const agreed = (n.responses.agree || []).includes(me);
+      const pushed = (n.responses.pushback || []).includes(me);
+      html += `<button class="cafe-notice-btn${agreed ? ' voted' : ''}" onclick="cafeVoteNotice('${n.id}','agree')">This rings true${n.responses.agree?.length ? ' · ' + n.responses.agree.length : ''}</button>`;
+      html += `<button class="cafe-notice-btn${pushed ? ' voted' : ''}" onclick="cafeVoteNotice('${n.id}','pushback')">Push back${n.responses.pushback?.length ? ' · ' + n.responses.pushback.length : ''}</button>`;
+    } else if (n.type === 'arrival') {
+      html += `<button class="cafe-notice-btn" onclick="cafeOpenProfile('${n.data?.profileId}')">View profile</button>`;
+      html += `<button class="cafe-notice-btn" onclick="cafeSayWelcome('${n.data?.profileId}')">Say welcome</button>`;
+    } else if (n.type === 'event') {
+      const notified = (n.responses.notifyMe || []).includes(me);
+      html += `<button class="cafe-notice-btn${notified ? ' voted' : ''}" onclick="cafeNotifyEvent('${n.id}')">Notify me${n.responses.notifyMe?.length ? ' · ' + n.responses.notifyMe.length : ''}</button>`;
+    }
+
+    html += `</div></div>`;
+  });
+
+  if (html === '') html = '<div style="text-align:center;color:rgba(196,180,154,0.4);font-size:12px;padding:40px;">The notice board is quiet today.</div>';
+  el.innerHTML = html;
+}
+
+function cafeVoteNotice(noticeId, type) {
+  const n = cafeNotices.find(x => x.id === noticeId);
+  if (!n) return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  if (!n.responses[type]) n.responses[type] = [];
+  if (!n.responses[type].includes(me)) n.responses[type].push(me);
+  localStorage.setItem('clayVillageCommonsNotices', JSON.stringify(cafeNotices));
+  renderCafeNotices();
+}
+
+function cafeNotifyEvent(noticeId) {
+  const n = cafeNotices.find(x => x.id === noticeId);
+  if (!n) return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  if (!n.responses.notifyMe) n.responses.notifyMe = [];
+  if (!n.responses.notifyMe.includes(me)) n.responses.notifyMe.push(me);
+  localStorage.setItem('clayVillageCommonsNotices', JSON.stringify(cafeNotices));
+  renderCafeNotices();
+}
+
+function cafeSayWelcome(profileId) {
+  if (typeof sendDM === 'function' && typeof getCurrentSession === 'function') {
+    const me = getCurrentSession();
+    sendDM(me, profileId, 'Welcome to the village! Glad you are here.');
+  }
+  if (typeof openPrivateChat === 'function') openPrivateChat(profileId);
+}
+
+// === TABLES ===
+function renderCafeTables() {
+  const el = document.getElementById('cafe-tab-tables');
+  if (!el) return;
+
+  if (cafeViewingTable) { renderCafeTableView(cafeViewingTable); return; }
+
+  const now = Date.now();
+  // Sort by temperature: hottest first
+  const sorted = [...cafeTables].sort((a, b) => (b.lastActivity || b.createdAt) - (a.lastActivity || a.createdAt));
+
+  let html = `<div class="cafe-new-table-row">
+    <input class="cafe-table-input" id="cafe-new-table-input" placeholder="Start a new table — ask a question or share a thought..." style="flex:1;">
+    <button class="cafe-table-send" onclick="cafeCreateTable()">+</button>
+  </div>`;
+
+  if (sorted.length === 0) {
+    html += '<div style="text-align:center;color:rgba(196,180,154,0.4);font-size:12px;padding:30px;">No tables yet. Start one.</div>';
+  }
+
+  sorted.forEach(t => {
+    const age = (now - (t.lastActivity || t.createdAt)) / (48 * 60 * 60 * 1000); // 0=just now, 1=48h old
+    const temp = Math.max(0, Math.min(1, 1 - age));
+    const glow = temp > 0.05 ? `box-shadow:0 0 ${temp * 20}px rgba(200,150,80,${temp * 0.35});` : '';
+    const opacity = temp < 0.1 ? 'opacity:0.5;' : '';
+    const people = new Set(t.messages.map(m => m.from)).size;
+    const lastMsg = t.messages.length > 0 ? t.messages[t.messages.length - 1].text : '';
+    const timeAgo = cafeTimeAgo(t.lastActivity || t.createdAt);
+
+    html += `<div class="cafe-table-card" style="${glow}${opacity}" onclick="cafeViewingTable='${t.id}';renderCafeTables();">
+      <div class="cafe-table-topic">${t.topic}</div>
+      <div class="cafe-table-meta">${people} at the table · ${t.messages.length} messages · ${timeAgo}</div>
+      ${lastMsg ? `<div class="cafe-table-preview">"${lastMsg.substring(0, 80)}${lastMsg.length > 80 ? '...' : ''}"</div>` : ''}
+    </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function cafeCreateTable() {
+  const input = document.getElementById('cafe-new-table-input');
+  const topic = input.value.trim();
+  if (!topic) return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  const meName = typeof getSessionProfile === 'function' ? (getSessionProfile()?.name || 'Someone') : 'Someone';
+  const table = {
+    id: 'table_' + Date.now(),
+    topic: topic,
+    createdBy: me,
+    createdAt: Date.now(),
+    lastActivity: Date.now(),
+    messages: [{ from: me, fromName: meName, text: topic, ts: Date.now() }]
+  };
+  cafeTables.push(table);
+  localStorage.setItem('clayVillageCommonsTables', JSON.stringify(cafeTables));
+  input.value = '';
+  cafeViewingTable = table.id;
+  renderCafeTables();
+}
+
+function renderCafeTableView(tableId) {
+  const el = document.getElementById('cafe-tab-tables');
+  const table = cafeTables.find(t => t.id === tableId);
+  if (!table || !el) { cafeViewingTable = null; renderCafeTables(); return; }
+
+  const people = new Set(table.messages.map(m => m.from)).size;
+  const allProfiles = typeof profiles !== 'undefined' ? profiles : [];
+
+  let msgsHtml = '';
+  table.messages.forEach(m => {
+    const p = allProfiles.find(pr => pr.id === m.from);
+    const photo = p?.photo ? `background-image:url('${p.photo}');background-size:cover;` : '';
+    const name = m.fromName || p?.villageName || p?.name || 'Someone';
+    const time = new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    msgsHtml += `<div class="cafe-table-msg">
+      <div class="cafe-table-msg-avatar" style="${photo}"></div>
+      <div class="cafe-table-msg-body">
+        <div class="cafe-table-msg-name" onclick="cafeOpenProfile('${m.from}')">${name}</div>
+        <div class="cafe-table-msg-text">${m.text.replace(/</g, '&lt;')}</div>
+        <div class="cafe-table-msg-time">${time}</div>
+      </div>
+    </div>`;
+  });
+
+  const full = people >= 12;
+  el.innerHTML = `<div class="cafe-table-view">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px;flex-shrink:0;">
+      <button class="cafe-notice-btn" onclick="cafeViewingTable=null;renderCafeTables();">← All tables</button>
+      <span style="font-size:11px;color:rgba(196,180,154,0.5);">${people}/12 at this table</span>
+    </div>
+    <div style="font-size:16px;font-weight:600;color:#eae5de;margin-bottom:12px;">${table.topic}</div>
+    <div class="cafe-table-msgs" id="cafe-table-msgs-inner">${msgsHtml}</div>
+    ${full ? '<div style="text-align:center;padding:10px;font-size:11px;color:rgba(200,168,75,0.6);">This table is full. Start a new one on the same topic.</div>' : `
+    <div class="cafe-table-input-row">
+      <input class="cafe-table-input" id="cafe-table-msg-input" placeholder="Pull up a chair and say something..." maxlength="500">
+      <button class="cafe-table-send" onclick="cafeSendTableMsg('${tableId}')">→</button>
+    </div>`}
+  </div>`;
+
+  const msgsContainer = document.getElementById('cafe-table-msgs-inner');
+  if (msgsContainer) msgsContainer.scrollTop = msgsContainer.scrollHeight;
+
+  const msgInput = document.getElementById('cafe-table-msg-input');
+  if (msgInput) msgInput.addEventListener('keydown', e => { if (e.key === 'Enter') cafeSendTableMsg(tableId); });
+}
+
+function cafeSendTableMsg(tableId) {
+  const table = cafeTables.find(t => t.id === tableId);
+  if (!table) return;
+  const input = document.getElementById('cafe-table-msg-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  const meName = typeof getSessionProfile === 'function' ? (getSessionProfile()?.name || 'Someone') : 'Someone';
+
+  // Check if table is full (12 unique participants)
+  const participants = new Set(table.messages.map(m => m.from));
+  if (participants.size >= 12 && !participants.has(me)) return;
+
+  table.messages.push({ from: me, fromName: meName, text: text, ts: Date.now() });
+  table.lastActivity = Date.now();
+  localStorage.setItem('clayVillageCommonsTables', JSON.stringify(cafeTables));
+  input.value = '';
+  renderCafeTableView(tableId);
+}
+
+function cafeTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+  return Math.floor(diff / 86400000) + 'd ago';
+}
+
+// === ROUNDTABLE CORNER ===
+function renderCafeRoundtable() {
+  const el = document.getElementById('cafe-tab-roundtable');
+  if (!el) return;
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : '';
+
+  // Get vote data
+  let rtVotes = JSON.parse(localStorage.getItem('clayVillageCommonsRtVotes') || '{}');
+
+  const reqs = typeof RT_REQUIREMENTS !== 'undefined' ? RT_REQUIREMENTS : [];
+  let html = '<div style="font-size:16px;font-weight:700;color:#eae5de;margin-bottom:4px;">Living Requirements</div>';
+  html += `<div style="font-size:11px;color:rgba(196,180,154,0.45);margin-bottom:16px;">From the Roundtable. ${reqs.length} requirements. Add your voice.</div>`;
+
+  reqs.forEach((r, i) => {
+    const supporters = (r.supporters || []).map(id => {
+      const p = typeof getPersona === 'function' ? getPersona(id) : null;
+      return p ? cafeLink(p.name, null) : id;
+    }).join(', ');
+    const opposers = (r.opposers || []).map(id => {
+      const p = typeof getPersona === 'function' ? getPersona(id) : null;
+      return p ? cafeLink(p.name, null) : id;
+    }).join(', ');
+
+    const myVote = rtVotes['req_' + i];
+    html += `<div class="cafe-req-card">
+      <div class="cafe-req-text">${r.text}</div>
+      <div class="cafe-req-people">${supporters ? 'For: ' + supporters : ''}${opposers ? ' · Against: ' + opposers : ''}</div>
+      <div class="cafe-req-actions">
+        <button class="cafe-req-btn${myVote === 'agree' ? ' active-agree' : ''}" onclick="cafeVoteReq(${i},'agree')">Agree</button>
+        <button class="cafe-req-btn${myVote === 'disagree' ? ' active-disagree' : ''}" onclick="cafeVoteReq(${i},'disagree')">Disagree</button>
+      </div>
+    </div>`;
+  });
+
+  // Distilled truth
+  html += `<div style="margin-top:20px;padding:16px;background:rgba(200,168,75,0.06);border:1px solid rgba(200,168,75,0.12);border-radius:14px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(200,168,75,0.6);margin-bottom:8px;">The Distilled Truth</div>
+    <div style="font-size:13px;color:#eae5de;line-height:1.6;font-style:italic;">The people who disagree most violently about what this place should be actually want the same thing — respect for the work. They just define respect differently.</div>
+  </div>`;
+
+  // Round indicator
+  const realCount = typeof RT_PERSONAS !== 'undefined' ? RT_PERSONAS.filter(p => p.isRealPerson).length : 0;
+  html += `<div style="text-align:center;font-size:11px;color:rgba(196,180,154,0.4);margin-top:16px;">Round complete. ${realCount} real resident${realCount !== 1 ? 's have' : ' has'} added their voice.</div>`;
+
+  el.innerHTML = html;
+}
+
+function cafeVoteReq(reqIndex, vote) {
+  let rtVotes = JSON.parse(localStorage.getItem('clayVillageCommonsRtVotes') || '{}');
+  const key = 'req_' + reqIndex;
+  rtVotes[key] = rtVotes[key] === vote ? null : vote; // toggle
+  localStorage.setItem('clayVillageCommonsRtVotes', JSON.stringify(rtVotes));
+  renderCafeRoundtable();
+}
+
+// === MAKER'S WALL ===
+var cafeWallFilter = 'all';
+
+function renderCafeMakerWall() {
+  const el = document.getElementById('cafe-tab-wall');
+  if (!el) return;
+
+  let pieces = typeof getPieces === 'function' ? getPieces() : [];
+  // Sort newest first (by id or by order — newest = last in array)
+  pieces = [...pieces].reverse();
+
+  // Filter
+  if (cafeWallFilter !== 'all') {
+    pieces = pieces.filter(p => (p.clay || p.craft || '').toLowerCase().includes(cafeWallFilter));
+  }
+
+  const filters = ['all', 'ceramics', 'glass', 'textiles', 'wood', 'metal'];
+  let html = '<div class="cafe-wall-filters">';
+  filters.forEach(f => {
+    html += `<button class="cafe-wall-filter${f === cafeWallFilter ? ' active' : ''}" onclick="cafeWallFilter='${f}';renderCafeMakerWall();">${f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}</button>`;
+  });
+  html += '</div>';
+
+  if (pieces.length === 0) {
+    html += '<div style="text-align:center;color:rgba(196,180,154,0.4);font-size:12px;padding:30px;">No pieces yet.</div>';
+  } else {
+    html += '<div class="cafe-wall-grid">';
+    pieces.forEach(p => {
+      const isSaved = cafeSaved.includes(p.id);
+      const maker = p.maker || 'Unknown maker';
+      const allProfiles = typeof profiles !== 'undefined' ? profiles : [];
+      const makerProfile = allProfiles.find(pr => (pr.villageName || pr.name) === maker);
+
+      html += `<div class="cafe-wall-piece">
+        <div class="cafe-wall-img" style="${p.img ? 'background-image:url(' + p.img + ')' : ''}" onclick="cafeOpenPiece('${p.id}')"></div>
+        <div class="cafe-wall-info">
+          <div class="cafe-wall-title" onclick="cafeOpenPiece('${p.id}')">${p.title || 'Untitled'}</div>
+          <div class="cafe-wall-maker" onclick="${makerProfile ? "cafeOpenProfile('" + makerProfile.id + "')" : ''}">${maker}</div>
+          <button class="cafe-wall-save${isSaved ? ' saved' : ''}" onclick="cafeSavePiece('${p.id}',this);event.stopPropagation();">${isSaved ? 'Saved' : 'Caught my eye'}</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function cafeOpenPiece(pieceId) {
+  const pieces = typeof getPieces === 'function' ? getPieces() : [];
+  const piece = pieces.find(p => p.id === pieceId);
+  if (piece && typeof showPieceDetail === 'function') showPieceDetail(piece);
+}
+
+function cafeSavePiece(pieceId, btn) {
+  const idx = cafeSaved.indexOf(pieceId);
+  if (idx >= 0) { cafeSaved.splice(idx, 1); if (btn) { btn.textContent = 'Caught my eye'; btn.classList.remove('saved'); } }
+  else { cafeSaved.push(pieceId); if (btn) { btn.textContent = 'Saved'; btn.classList.add('saved'); } }
+  localStorage.setItem('clayVillageCommonsSaved', JSON.stringify(cafeSaved));
+}
 
 // ===== CLAY MASTERY — Skill Progression + Spaced Repetition =====
 (function() {
@@ -12210,6 +12801,8 @@ This was a humbling reminder to pay close attention to the entire process, espec
 
   document.getElementById('gallery-close').addEventListener('click', () => { document.getElementById('gallery-overlay').style.display='none'; });
   window.openGallery = function() { const ov = document.getElementById('gallery-overlay'); if (!ov) return; ov.style.display='flex'; renderMarket(); renderFilters(); renderGrid(); };
+  window.getPieces = getPieces;
+  window.showPieceDetail = showPieceDetail;
 })();
 
 document.getElementById('building-page-close').addEventListener('click', closeBuildingPage);
