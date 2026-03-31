@@ -18433,14 +18433,14 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
 
   // Spatial navigation map — based on physical layout of the village
   const TOUR_NAV = {
-    'Commons / Café':       { left: 'Library / Archive', up: 'Library / Archive' },
+    'Commons / Café':       { left: 'Library / Archive', up: 'Library / Archive', right: 'Gallery / Market' },
     'Library / Archive':    { right: 'School', up: 'School', down: 'Commons / Café' },
     'School':               { right: 'Mentor Cluster', down: 'Library / Archive', left: 'Library / Archive' },
     'Mentor Cluster':       { right: 'Studio Quarter', left: 'School', down: 'Bonfire Plaza' },
     'Bonfire Plaza':        { left: 'School', right: 'Studio Quarter' },
     'Studio Quarter':       { up: 'Residency / Exchange', right: 'Residency / Exchange', down: 'Observatory / World', left: 'Mentor Cluster' },
-    'Residency / Exchange': { down: 'Studio Quarter' },
-    'Observatory / World':  { down: 'Gallery / Market', left: 'Gallery / Market' },
+    'Residency / Exchange': { down: 'Observatory / World', left: 'Studio Quarter' },
+    'Observatory / World':  { down: 'Gallery / Market', left: 'Studio Quarter', up: 'Residency / Exchange' },
     'Gallery / Market':     { left: 'Commons / Café' },
   };
 
