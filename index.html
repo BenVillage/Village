@@ -18305,7 +18305,8 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     card.style.animation = 'none';
     requestAnimationFrame(() => { card.style.animation = 'tour-card-in 0.4s ease-out'; });
 
-    // No auto-pan while browsing — press Enter to jump to the building
+    // Pan camera to building
+    if (step.target) panCameraToBuilding(step.target);
   }
 
   // Compute centroid of a building's outline polygon — these are the real map coordinates
@@ -18430,28 +18431,52 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     if (e.key === 'Enter') { e.preventDefault(); submitQuestion(); }
   });
 
-  // Keyboard nav
+  // Spatial navigation map — based on physical layout of the village
+  const TOUR_NAV = {
+    'Commons / Café':       { left: 'Library / Archive', up: 'Library / Archive' },
+    'Library / Archive':    { right: 'School', up: 'School', down: 'Commons / Café' },
+    'School':               { right: 'Mentor Cluster', down: 'Library / Archive', left: 'Library / Archive' },
+    'Mentor Cluster':       { right: 'Studio Quarter', left: 'School', down: 'Bonfire Plaza' },
+    'Bonfire Plaza':        { left: 'School', right: 'Studio Quarter' },
+    'Studio Quarter':       { up: 'Residency / Exchange', right: 'Residency / Exchange', down: 'Observatory / World', left: 'Mentor Cluster' },
+    'Residency / Exchange': { down: 'Studio Quarter' },
+    'Observatory / World':  { down: 'Gallery / Market', left: 'Gallery / Market' },
+    'Gallery / Market':     { left: 'Commons / Café' },
+  };
+
+  function navToBuilding(name) {
+    const idx = TOUR_STEPS.findIndex(s => s.target === name);
+    if (idx !== -1) { tourStep = idx; renderStep(); }
+  }
+
+  // Keyboard nav — spatial arrow keys + Enter to enter building
   document.addEventListener('keydown', (e) => {
     if (!tourActive) return;
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
-    if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
-    if (e.key === 'Escape') { e.preventDefault(); endTour(); }
-    // Enter = instantly teleport to building and close tour
-    if (e.key === 'Enter') {
+    if (e.key === 'Escape') { e.preventDefault(); endTour(); return; }
+
+    const currentTarget = TOUR_STEPS[tourStep].target;
+    const nav = currentTarget ? TOUR_NAV[currentTarget] : null;
+
+    if (e.key === 'ArrowRight') {
       e.preventDefault();
-      const step = TOUR_STEPS[tourStep];
-      if (step.target) {
-        const b = buildings.find(b => b.name === step.target);
-        if (b) {
-          const mw = mapImg.naturalWidth || mapImg.width || 1400;
-          const mh = mapImg.naturalHeight || mapImg.height || 800;
-          avatar.x = b.x * mw;
-          avatar.y = b.y * mh;
-        }
-      }
-      endTour();
+      if (nav && nav.right) navToBuilding(nav.right); else nextStep();
     }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (nav && nav.left) navToBuilding(nav.left); else prevStep();
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (nav && nav.up) navToBuilding(nav.up);
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (nav && nav.down) navToBuilding(nav.down);
+    }
+
+    // Enter = close tour, avatar is already travelling there via pan
+    if (e.key === 'Enter') { e.preventDefault(); endTour(); }
   });
 })();
 // ===== END VILLAGE TOUR =====
