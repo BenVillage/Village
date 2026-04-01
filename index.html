@@ -1842,6 +1842,19 @@
   .mentor-wall-para { font-size:14px; color:rgba(234,229,222,0.6); line-height:1.7; font-style:italic; font-family:Georgia,'Times New Roman',serif; margin-bottom:8px; }
   .mentor-wall-who { font-size:10px; color:rgba(196,180,154,0.35); margin-bottom:12px; }
 
+  /* === Residency & Exchange — wish board + archive === */
+  .ex-wish-card { background:rgba(234,229,222,0.03); border:1px dashed rgba(196,180,154,0.2); border-radius:12px; padding:16px 18px; margin-bottom:10px; }
+  .ex-wish-need { font-size:14px; color:rgba(234,229,222,0.75); line-height:1.6; margin-bottom:6px; }
+  .ex-wish-offer { font-size:12px; color:rgba(196,180,154,0.55); line-height:1.5; margin-bottom:4px; }
+  .ex-wish-meta { font-size:11px; color:rgba(196,180,154,0.35); margin-bottom:10px; }
+  .ex-help-btn { padding:6px 16px; border-radius:16px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid rgba(200,168,75,0.25); background:rgba(200,168,75,0.08); color:rgba(234,229,222,0.7); font-family:inherit; transition:background 0.15s; }
+  .ex-help-btn:hover { background:rgba(200,168,75,0.18); }
+  .ex-archive-entry { padding:22px 0; border-bottom:1px solid rgba(196,180,154,0.07); }
+  .ex-archive-pair { font-size:13px; color:rgba(200,168,75,0.65); margin-bottom:4px; }
+  .ex-archive-detail { font-size:11px; color:rgba(196,180,154,0.38); margin-bottom:14px; }
+  .ex-archive-para-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:rgba(196,180,154,0.3); margin-bottom:4px; }
+  .ex-archive-para { font-size:14px; color:rgba(234,229,222,0.6); line-height:1.7; font-style:italic; font-family:Georgia,'Times New Roman',serif; margin-bottom:12px; }
+
   /* === Studio Quarter — four tabs === */
   .sq-tab-bar { display:flex; gap:0; margin-bottom:24px; border-bottom:1px solid rgba(196,180,154,0.1); }
   .sq-tab { padding:10px 18px; font-size:12px; font-weight:600; color:rgba(234,229,222,0.35); cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; transition:all 0.2s; font-family:inherit; margin-bottom:-1px; }
@@ -4134,27 +4147,42 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <div id="exchange-filters" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;"></div>
       <!-- Listings -->
       <div id="exchange-listings"></div>
+      <!-- Wish Board -->
+      <div id="exchange-wishes"></div>
       <!-- Post a listing -->
-      <div class="bld-divider"></div>
-      <div class="bld-glass">
-        <div class="bld-label">Post a listing</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <input id="ex-title" placeholder="What you're offering..." style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;"/>
-          <select id="ex-type" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;">
-            <option value="swap">Studio Swap</option>
-            <option value="residency">Residency</option>
-            <option value="credits">Credits</option>
-          </select>
+      <div id="exchange-post-section">
+        <div class="bld-divider"></div>
+        <div class="bld-glass">
+          <div class="bld-label">Post a listing</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <input id="ex-title" placeholder="What you're offering..." style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;"/>
+            <select id="ex-type" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;">
+              <option value="swap">Studio Swap</option>
+              <option value="residency">Residency</option>
+              <option value="credits">Credits</option>
+            </select>
+          </div>
+          <textarea id="ex-desc" placeholder="A little more detail — what you have, what you're looking for, any dates..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;resize:none;height:72px;margin-bottom:10px;line-height:1.5;"></textarea>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center;">
+            <input id="ex-dates" placeholder="Dates / timeframe" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;"/>
+            <input id="ex-skills" placeholder="Skills / equipment offered" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;"/>
+            <button id="ex-post-btn" style="background:#c8a84b;color:#1a1008;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">Post →</button>
+          </div>
         </div>
-        <textarea id="ex-desc" placeholder="A little more detail — what you have, what you're looking for, any dates..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;resize:none;height:72px;margin-bottom:10px;line-height:1.5;"></textarea>
-        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center;">
-          <input id="ex-dates" placeholder="Dates / timeframe" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;"/>
-          <input id="ex-skills" placeholder="Skills / equipment offered" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.9);outline:none;"/>
-          <button id="ex-post-btn" style="background:#c8a84b;color:#1a1008;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">Post →</button>
+        <!-- Wish form -->
+        <div class="bld-glass" style="margin-top:10px;">
+          <div class="bld-label">Post a wish</div>
+          <div style="font-size:12px;color:rgba(196,180,154,0.5);margin-bottom:12px;line-height:1.5;">Can't offer a residency yet? Post what you're looking for. Seeds become real.</div>
+          <textarea id="ex-wish-need" placeholder="What I need — be specific about craft, location, duration..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.05);border:1px dashed rgba(196,180,154,0.2);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.85);outline:none;resize:none;height:60px;margin-bottom:8px;line-height:1.5;"></textarea>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:flex-start;">
+            <textarea id="ex-wish-offer" placeholder="What I can offer in return..." style="background:rgba(255,255,255,0.05);border:1px dashed rgba(196,180,154,0.2);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.85);outline:none;resize:none;height:46px;line-height:1.5;"></textarea>
+            <input id="ex-wish-time" placeholder="Timeframe..." style="background:rgba(255,255,255,0.05);border:1px dashed rgba(196,180,154,0.2);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:rgba(234,229,222,0.85);outline:none;"/>
+            <button id="ex-wish-btn" style="background:rgba(200,168,75,0.12);color:#eae5de;border:1px solid rgba(200,168,75,0.25);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">Post wish →</button>
+          </div>
         </div>
       </div>
     </div>
-    <div class="bld-manifesto-line">Go somewhere. Make something. Come back changed.</div>
+    <div class="bld-manifesto-line" id="exchange-manifesto">Go somewhere. Make something. Come back changed.</div>
   </div>
 </div>
 
@@ -12069,7 +12097,9 @@ function voteHorizon(choice) {
 
 // ── Residency / Exchange — Studio Exchange Listings ───────────────
 (function() {
-  const EX_KEY = 'clayVillageExchangeListings';
+  const EX_KEY      = 'clayVillageExchangeListings';
+  const EX_WISH_KEY = 'clayVillageExchangeWishes';
+  const EX_ARCH_KEY = 'clayVillageExchangeArchive';
   const TYPE_LABEL = { swap: 'Studio Swap', residency: 'Residency', credits: 'Credits' };
   const TYPE_COLOR = { swap: '#0095f6', residency: '#22c55e', credits: '#f59e0b' };
 
@@ -12110,21 +12140,52 @@ function voteHorizon(choice) {
   function renderFilters() {
     const el = document.getElementById('exchange-filters');
     if (!el) return;
-    const filters = [['all','All'], ['swap','Swaps'], ['residency','Residencies'], ['credits','Credits']];
+    const filters = [['all','All'], ['swap','Swaps'], ['residency','Residencies'], ['credits','Credits'], ['archive','Archive']];
     el.innerHTML = '';
     filters.forEach(([val, label]) => {
       const btn = document.createElement('button');
       btn.textContent = label;
       const active = activeFilter === val;
-      btn.style.cssText = `border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:${active?'700':'500'};cursor:pointer;font-family:inherit;background:${active?'#8c6a4a':'#e8ddd0'};color:${active?'#fff':'#8c6a4a'};transition:all 0.15s;`;
-      btn.addEventListener('click', () => { activeFilter = val; renderFilters(); renderListings(); });
+      const isArchive = val === 'archive';
+      btn.style.cssText = `border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:${active?'700':'500'};cursor:pointer;font-family:inherit;background:${active?(isArchive?'#4a6050':'#8c6a4a'):(isArchive?'rgba(234,229,222,0.08)':'#e8ddd0')};color:${active?'#fff':(isArchive?'rgba(196,180,154,0.6)':'#8c6a4a')};transition:all 0.15s;${isArchive&&!active?'border:1px solid rgba(196,180,154,0.15);':''}`;
+      btn.addEventListener('click', () => { activeFilter = val; renderFilters(); renderListings(); renderWishes(); });
       el.appendChild(btn);
     });
+    // Show/hide post forms and wish board based on active filter
+    const postSection = document.getElementById('exchange-post-section');
+    if (postSection) postSection.style.display = activeFilter === 'archive' ? 'none' : '';
+    // Update manifesto line
+    const mEl = document.getElementById('exchange-manifesto');
+    if (mEl) mEl.textContent = activeFilter === 'archive' ? 'The village is not just digital. It physically moves people around the world.' : 'Go somewhere. Make something. Come back changed.';
   }
 
   function renderListings() {
     const el = document.getElementById('exchange-listings');
     if (!el) return;
+
+    // Archive mode — show completed exchanges
+    if (activeFilter === 'archive') {
+      const archive = JSON.parse(localStorage.getItem(EX_ARCH_KEY) || '[]');
+      if (!archive.length) {
+        el.innerHTML = '<div style="text-align:center;padding:50px 20px;font-size:13px;color:rgba(196,180,154,0.35);font-style:italic;line-height:1.8;">The archive is empty.<br>When real exchanges complete and both participants submit their paragraphs,<br>the entry appears here — permanently.</div>';
+        return;
+      }
+      let html = '';
+      archive.slice().reverse().forEach(entry => {
+        const dateStr = entry.ts ? new Date(entry.ts).toLocaleDateString('en-GB', { month:'long', year:'numeric' }) : '';
+        const details = [entry.craft, entry.duration, dateStr].filter(Boolean).join(' · ');
+        html += `<div class="ex-archive-entry">
+          <div class="ex-archive-pair">${entry.who1} &nbsp;↔&nbsp; ${entry.who2}</div>
+          <div class="ex-archive-detail">${details}</div>
+          ${entry.para1 ? `<div class="ex-archive-para-label">${entry.who1}</div><div class="ex-archive-para">"${entry.para1}"</div>` : ''}
+          ${entry.para2 ? `<div class="ex-archive-para-label">${entry.who2}</div><div class="ex-archive-para">"${entry.para2}"</div>` : ''}
+        </div>`;
+      });
+      el.innerHTML = html;
+      return;
+    }
+
+    // Normal mode
     const listings = getListings().filter(l => activeFilter === 'all' || l.type === activeFilter);
     el.innerHTML = '';
     if (listings.length === 0) {
@@ -12159,6 +12220,46 @@ function voteHorizon(choice) {
     });
   }
 
+  function renderWishes() {
+    const el = document.getElementById('exchange-wishes');
+    if (!el) return;
+    if (activeFilter === 'archive') { el.innerHTML = ''; return; }
+
+    const wishes = JSON.parse(localStorage.getItem(EX_WISH_KEY) || '[]');
+    if (!wishes.length) { el.innerHTML = ''; return; }
+
+    let html = `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(196,180,154,0.4);margin:20px 0 10px;">Wishes — seeds waiting to become residencies</div>`;
+    wishes.forEach(w => {
+      const dateStr = w.ts ? new Date(w.ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '';
+      const profile = (window.profiles || []).find(p => p.id === w.authorId);
+      const name = profile ? (profile.villageName || profile.name) : (w.authorName || 'A maker');
+      html += `<div class="ex-wish-card">
+        <div class="ex-wish-need">${w.need}</div>
+        ${w.offer ? `<div class="ex-wish-offer">Can offer: ${w.offer}</div>` : ''}
+        <div class="ex-wish-meta">${name}${w.timeframe ? ' · ' + w.timeframe : ''}${dateStr ? ' · ' + dateStr : ''}</div>
+        <button class="ex-help-btn" data-wish-author="${w.authorId || ''}" data-wish-name="${name}">I can help with this</button>
+      </div>`;
+    });
+    el.innerHTML = html;
+
+    el.querySelectorAll('.ex-help-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.wishAuthor;
+        const targetName = btn.dataset.wishName;
+        if (targetId && window.openMailbox) {
+          document.getElementById('exchange-overlay').style.display = 'none';
+          openMailbox(targetId);
+        } else {
+          const note = document.createElement('div');
+          note.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#2c1a0e;color:#f5e6d0;border-radius:10px;padding:12px 22px;font-size:13px;z-index:99999;font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+          note.textContent = 'Message ' + targetName + ' through their profile to respond.';
+          document.body.appendChild(note);
+          setTimeout(() => note.remove(), 3000);
+        }
+      });
+    });
+  }
+
   document.getElementById('ex-post-btn').addEventListener('click', () => {
     const title = document.getElementById('ex-title').value.trim();
     const desc = document.getElementById('ex-desc').value.trim();
@@ -12183,6 +12284,26 @@ function voteHorizon(choice) {
     renderListings();
   });
 
+  document.getElementById('ex-wish-btn').addEventListener('click', () => {
+    const need = document.getElementById('ex-wish-need').value.trim();
+    if (!need) return;
+    const offer = document.getElementById('ex-wish-offer').value.trim();
+    const time = document.getElementById('ex-wish-time').value.trim();
+    const sess = typeof getSessionProfile !== 'undefined' && getSessionProfile ? getSessionProfile() : null;
+    const wishes = JSON.parse(localStorage.getItem(EX_WISH_KEY) || '[]');
+    wishes.push({
+      id: 'wish-' + Date.now(),
+      authorId: sess ? sess.id : null,
+      authorName: sess ? (sess.villageName || sess.name) : 'A maker',
+      need, offer, timeframe: time, ts: Date.now(),
+    });
+    localStorage.setItem(EX_WISH_KEY, JSON.stringify(wishes));
+    document.getElementById('ex-wish-need').value = '';
+    document.getElementById('ex-wish-offer').value = '';
+    document.getElementById('ex-wish-time').value = '';
+    renderWishes();
+  });
+
   document.getElementById('exchange-close').addEventListener('click', () => {
     document.getElementById('exchange-overlay').style.display = 'none';
   });
@@ -12191,8 +12312,10 @@ function voteHorizon(choice) {
     const ov = document.getElementById('exchange-overlay');
     if (!ov) return;
     ov.style.display = 'flex';
+    activeFilter = 'all';
     renderFilters();
     renderListings();
+    renderWishes();
   };
 })();
 
