@@ -1812,6 +1812,72 @@
   .council-horizon-btn.active { background:rgba(140,170,210,0.12); border-color:rgba(140,170,210,0.25); color:#c0cad8; }
   .council-horizon-count { font-size:10px; color:rgba(140,170,210,0.35); margin-top:10px; }
 
+  /* === Mentor Cluster === */
+  .mentor-tab-bar { display:flex; gap:2px; padding:0; margin-bottom:20px; background:rgba(0,0,0,0.2); border-radius:0; }
+  .mentor-tab { padding:10px 16px; font-size:12px; font-weight:600; color:rgba(234,229,222,0.4); cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; transition:all 0.2s; font-family:inherit; }
+  .mentor-tab:hover { color:rgba(234,229,222,0.7); }
+  .mentor-tab.active { color:#c8a84b; border-bottom-color:#c8a84b; }
+  .mentor-ask { text-align:center; padding:40px 20px 30px; }
+  .mentor-ask-q { font-size:20px; font-weight:400; color:#eae5de; font-style:italic; line-height:1.5; max-width:460px; margin:0 auto 20px; font-family:Georgia,'Times New Roman',serif; }
+  .mentor-ask-input { width:100%; max-width:440px; min-height:80px; background:rgba(200,168,75,0.04); border:1px solid rgba(200,168,75,0.15); border-radius:14px; color:#eae5de; font-size:14px; padding:14px 16px; font-family:inherit; resize:vertical; outline:none; line-height:1.6; }
+  .mentor-ask-input:focus { border-color:rgba(200,168,75,0.35); }
+  .mentor-ask-btn { margin-top:12px; padding:10px 24px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid rgba(200,168,75,0.3); background:rgba(200,168,75,0.12); color:#eae5de; font-family:inherit; transition:background 0.15s; }
+  .mentor-ask-btn:hover { background:rgba(200,168,75,0.25); }
+  .mentor-request { padding:16px; margin-bottom:12px; border-left:3px solid rgba(200,168,75,0.4); background:rgba(234,229,222,0.04); border-radius:0 14px 14px 0; }
+  .mentor-request-text { font-size:14px; color:#eae5de; line-height:1.6; margin-bottom:8px; font-style:italic; font-family:Georgia,'Times New Roman',serif; }
+  .mentor-request-meta { font-size:11px; color:rgba(196,180,154,0.45); }
+  .mentor-request-actions { margin-top:10px; display:flex; gap:8px; }
+  .mentor-card { background:rgba(234,229,222,0.05); border:1px solid rgba(196,180,154,0.1); border-radius:14px; padding:16px; margin-bottom:12px; }
+  .mentor-card-name { font-size:15px; font-weight:700; color:#eae5de; cursor:pointer; }
+  .mentor-card-name:hover { color:#c8a84b; }
+  .mentor-card-meta { font-size:11px; color:rgba(196,180,154,0.5); margin-top:2px; margin-bottom:8px; }
+  .mentor-card-status { display:inline-block; font-size:10px; padding:2px 8px; border-radius:8px; font-weight:600; }
+  .mentor-card-status.available { background:rgba(100,180,100,0.12); color:rgba(140,220,140,0.8); }
+  .mentor-card-status.full { background:rgba(200,168,75,0.12); color:rgba(200,168,75,0.7); }
+  .mentor-card-status.unavailable { background:rgba(140,140,140,0.1); color:rgba(160,160,160,0.5); }
+  .mentor-card-closing { font-size:13px; color:rgba(234,229,222,0.6); line-height:1.65; font-style:italic; font-family:Georgia,'Times New Roman',serif; margin-top:10px; padding-top:10px; border-top:1px solid rgba(196,180,154,0.08); }
+  .mentor-wall-entry { padding:20px 0; border-bottom:1px solid rgba(196,180,154,0.06); }
+  .mentor-wall-pair { font-size:13px; color:rgba(200,168,75,0.7); margin-bottom:4px; }
+  .mentor-wall-detail { font-size:11px; color:rgba(196,180,154,0.4); margin-bottom:12px; }
+  .mentor-wall-para { font-size:14px; color:rgba(234,229,222,0.6); line-height:1.7; font-style:italic; font-family:Georgia,'Times New Roman',serif; margin-bottom:8px; }
+  .mentor-wall-who { font-size:10px; color:rgba(196,180,154,0.35); margin-bottom:12px; }
+
+  /* === Studio Quarter — four tabs === */
+  .sq-tab-bar { display:flex; gap:0; margin-bottom:24px; border-bottom:1px solid rgba(196,180,154,0.1); }
+  .sq-tab { padding:10px 18px; font-size:12px; font-weight:600; color:rgba(234,229,222,0.35); cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; transition:all 0.2s; font-family:inherit; margin-bottom:-1px; }
+  .sq-tab:hover { color:rgba(234,229,222,0.65); }
+  .sq-tab.active { color:#c8a84b; border-bottom-color:#c8a84b; }
+  .sq-door { background:rgba(234,229,222,0.04); border:1px solid rgba(196,180,154,0.1); border-radius:14px; padding:18px 20px; margin-bottom:12px; transition:border-color 0.2s; }
+  .sq-door.open { border-color:rgba(200,168,75,0.22); background:rgba(200,168,75,0.04); }
+  .sq-door-name { font-size:15px; font-weight:700; color:#eae5de; cursor:pointer; display:inline; }
+  .sq-door-name:hover { color:#c8a84b; }
+  .sq-door-meta { font-size:11px; color:rgba(196,180,154,0.45); margin-top:3px; margin-bottom:14px; }
+  .sq-door-status { font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 9px; border-radius:20px; display:inline-block; }
+  .sq-door-status.open { background:rgba(100,180,100,0.1); color:rgba(130,200,130,0.8); }
+  .sq-door-status.closed { background:rgba(150,100,50,0.1); color:rgba(196,180,154,0.4); }
+  .sq-knock-btn { padding:8px 22px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid rgba(200,168,75,0.3); background:rgba(200,168,75,0.1); color:#eae5de; font-family:inherit; transition:background 0.15s; }
+  .sq-knock-btn:hover { background:rgba(200,168,75,0.22); }
+  .sq-knock-btn:disabled { opacity:0.4; cursor:default; }
+  .sq-visit-notes { margin-top:14px; padding-top:14px; border-top:1px solid rgba(196,180,154,0.08); }
+  .sq-process-entry { padding:16px 18px; margin-bottom:10px; border-left:3px solid rgba(200,168,75,0.2); background:rgba(234,229,222,0.04); border-radius:0 12px 12px 0; }
+  .sq-process-text { font-size:14px; color:#eae5de; line-height:1.65; white-space:pre-wrap; }
+  .sq-process-img { width:100%; max-height:240px; object-fit:cover; border-radius:8px; margin-top:10px; }
+  .sq-process-meta { font-size:11px; color:rgba(196,180,154,0.38); margin-top:8px; display:flex; gap:10px; align-items:center; }
+  .sq-vis-badge { font-size:10px; padding:2px 7px; border-radius:10px; font-weight:600; }
+  .sq-vis-badge.private { background:rgba(150,100,50,0.12); color:rgba(196,160,110,0.6); }
+  .sq-vis-badge.open { background:rgba(100,150,100,0.1); color:rgba(130,180,130,0.7); }
+  .sq-vis-badge.village { background:rgba(100,130,200,0.1); color:rgba(140,170,220,0.7); }
+  .sq-failure-card { background:rgba(234,229,222,0.05); border:1px solid rgba(196,180,154,0.09); border-radius:16px; padding:24px 26px; margin-bottom:20px; }
+  .sq-failure-note { font-size:13px; color:rgba(234,229,222,0.55); line-height:1.6; margin-bottom:10px; }
+  .sq-failure-lesson { font-size:15px; color:rgba(234,229,222,0.8); line-height:1.7; font-style:italic; font-family:Georgia,'Times New Roman',serif; }
+  .sq-failure-who { font-size:11px; color:rgba(200,168,75,0.55); margin-top:14px; cursor:pointer; }
+  .sq-failure-who:hover { color:#c8a84b; }
+  .sq-failure-img { width:100%; max-height:200px; object-fit:cover; border-radius:10px; margin-bottom:14px; opacity:0.75; }
+  .sq-open-toggle { display:flex; align-items:center; gap:12px; background:rgba(200,168,75,0.06); border:1px solid rgba(200,168,75,0.15); border-radius:12px; padding:12px 16px; margin-bottom:20px; cursor:pointer; }
+  .sq-open-toggle-dot { width:12px; height:12px; border-radius:50%; border:2px solid rgba(200,168,75,0.4); flex-shrink:0; transition:all 0.2s; }
+  .sq-open-toggle-dot.on { background:#c8a84b; border-color:#c8a84b; }
+  .sq-open-toggle-label { font-size:13px; color:rgba(234,229,222,0.7); }
+
   /* === Building Overlays — Shared Immersive Chrome === */
   .bld-top {
     display: flex; align-items: center; justify-content: space-between;
@@ -3739,60 +3805,79 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
 </div>
 
 <!-- Mentor Cluster — Matching Board -->
-<div id="mentor-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:#1a1209 url('Mentor Cluster Blur.jpg') center/cover no-repeat;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<div id="mentor-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:#0d0a07 url('Mentor Cluster Blur.jpg') center/cover no-repeat;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div class="bld-top">
     <button id="mentor-close" class="bld-leave">← Leave</button>
-    <div class="bld-title-bar">🏛️ Mentor Cluster</div>
+    <div class="bld-title-bar">The Mentor Cluster</div>
     <div style="width:80px;"></div>
   </div>
   <div class="bld-body">
-    <div class="bld-inner">
-      <p class="bld-tagline">Patient, unhurried learning. The crane coordinates pairings.<br>Every apprentice finds their own path.</p>
-      <div class="bld-quote">"I watch first, speak second. I will not interrupt your process. When I do speak, listen carefully." — Crane</div>
-      <!-- Tabs -->
-      <div id="mentor-tabs" style="display:flex;gap:6px;margin-bottom:20px;"></div>
-      <!-- Content -->
-      <div id="mentor-content"></div>
+    <div class="bld-inner" style="max-width:680px;">
+      <div class="mentor-tab-bar">
+        <button class="mentor-tab active" data-mtab="learn">Looking to Learn</button>
+        <button class="mentor-tab" data-mtab="mentors">Mentors</button>
+        <button class="mentor-tab" data-mtab="wall">The Wall</button>
+      </div>
+      <div id="mentor-tab-learn"></div>
+      <div id="mentor-tab-mentors" style="display:none;"></div>
+      <div id="mentor-tab-wall" style="display:none;"></div>
     </div>
     <div class="bld-manifesto-line">Mastery is not a follower count. Ask someone who has it.</div>
   </div>
 </div>
 
-<!-- Studio Quarter — Practice Log -->
+<!-- Studio Quarter — four tabs -->
 <div id="studio-quarter-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:#0e0a06 url('Studio Quarter.jpg') center/cover no-repeat;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div class="bld-top">
     <button id="sq-close" class="bld-leave">← Leave</button>
-    <div class="bld-title-bar">🏺 Studio Quarter — Practice Log</div>
+    <div class="bld-title-bar">🏺 Studio Quarter</div>
     <div style="width:80px;"></div>
   </div>
   <div class="bld-body">
-    <div class="bld-inner">
-      <p class="bld-tagline">A private record of what you made, what worked, what didn't.<br>No audience. Just the work and the wheel.</p>
-      <!-- New entry form -->
-      <div class="bld-glass">
-        <div class="bld-label" id="sq-entry-date"></div>
-        <textarea id="sq-entry-text" placeholder="What did you make today? What are you noticing? What broke, what surprised you..." style="width:100%;box-sizing:border-box;background:transparent;border:none;outline:none;font-size:14px;color:rgba(234,229,222,0.9);font-family:inherit;line-height:1.7;resize:none;height:100px;"></textarea>
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;">
-          <select id="sq-mood" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;font-size:12px;color:rgba(234,229,222,0.9);font-family:inherit;outline:none;">
-            <option value="">Session feeling...</option>
-            <option value="🔥 In flow">🔥 In flow</option>
-            <option value="🧱 Struggling">🧱 Struggling</option>
-            <option value="🌱 Learning">🌱 Learning</option>
-            <option value="😤 Frustrated">😤 Frustrated</option>
-            <option value="✨ Breakthrough">✨ Breakthrough</option>
-            <option value="🤔 Experimenting">🤔 Experimenting</option>
-          </select>
-          <input id="sq-pieces" type="number" min="0" placeholder="Pieces made" style="width:110px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;font-size:12px;color:rgba(234,229,222,0.9);font-family:inherit;outline:none;"/>
-          <button id="sq-log-btn" style="background:#c8a84b;color:#1a1008;border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto;">Log session →</button>
-        </div>
+    <div class="bld-inner" style="max-width:680px;">
+      <!-- Tab bar -->
+      <div class="sq-tab-bar">
+        <button class="sq-tab active" data-sqtab="mystudio">My Studio</button>
+        <button class="sq-tab" data-sqtab="visits">Studio Visits</button>
+        <button class="sq-tab" data-sqtab="process">Process Board</button>
+        <button class="sq-tab" data-sqtab="failure">Failure Wall</button>
       </div>
-      <!-- Stats row -->
-      <div id="sq-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;"></div>
-      <!-- Past entries -->
-      <div class="bld-label">Past sessions</div>
-      <div id="sq-entries"></div>
+
+      <!-- Tab 1 — My Studio (Practice Log, unchanged) -->
+      <div id="sq-tab-mystudio">
+        <p class="bld-tagline">A private record of what you made, what worked, what didn't.<br>No audience. Just the work and the wheel.</p>
+        <div class="bld-glass">
+          <div class="bld-label" id="sq-entry-date"></div>
+          <textarea id="sq-entry-text" placeholder="What did you make today? What are you noticing? What broke, what surprised you..." style="width:100%;box-sizing:border-box;background:transparent;border:none;outline:none;font-size:14px;color:rgba(234,229,222,0.9);font-family:inherit;line-height:1.7;resize:none;height:100px;"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+            <select id="sq-mood" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;font-size:12px;color:rgba(234,229,222,0.9);font-family:inherit;outline:none;">
+              <option value="">Session feeling...</option>
+              <option value="🔥 In flow">🔥 In flow</option>
+              <option value="🧱 Struggling">🧱 Struggling</option>
+              <option value="🌱 Learning">🌱 Learning</option>
+              <option value="😤 Frustrated">😤 Frustrated</option>
+              <option value="✨ Breakthrough">✨ Breakthrough</option>
+              <option value="🤔 Experimenting">🤔 Experimenting</option>
+            </select>
+            <input id="sq-pieces" type="number" min="0" placeholder="Pieces made" style="width:110px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;font-size:12px;color:rgba(234,229,222,0.9);font-family:inherit;outline:none;"/>
+            <button id="sq-log-btn" style="background:#c8a84b;color:#1a1008;border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto;">Log session →</button>
+          </div>
+        </div>
+        <div id="sq-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;"></div>
+        <div class="bld-label">Past sessions</div>
+        <div id="sq-entries"></div>
+      </div>
+
+      <!-- Tab 2 — Studio Visits -->
+      <div id="sq-tab-visits" style="display:none;"></div>
+
+      <!-- Tab 3 — Process Board -->
+      <div id="sq-tab-process" style="display:none;"></div>
+
+      <!-- Tab 4 — Failure Wall -->
+      <div id="sq-tab-failure" style="display:none;"></div>
     </div>
-    <div class="bld-manifesto-line">Make the thing. The rest is noise.</div>
+    <div class="bld-manifesto-line" id="sq-manifesto">Make the thing. The rest is noise.</div>
   </div>
 </div>
 
@@ -12492,10 +12577,11 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
   };
 })();
 
-// ── Mentor Cluster — Matching Board ──────────────────────────────
+// ── Mentor Cluster — Apprenticeship System ──────────────────────
 (function() {
-  let mentorTab = 'mentors';
+  let mentorTab = 'learn';
 
+  const MC_KEY = 'clayVillageMentorCluster';
   const NPC_IDS = new Set(['npc-fox','npc-owl','npc-crane','npc-cat','npc-deer','npc-dog']);
 
   const OFFER_TYPES = {
@@ -12849,106 +12935,246 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
     return card;
   }
 
-  function renderTabs() {
-    const el = document.getElementById('mentor-tabs'); if (!el) return;
-    const tabs = [['mentors','Mentors'], ['seeking','Looking for mentorship'], ['inspire','💡 Get inspired']];
-    el.innerHTML = '';
-    tabs.forEach(function(pair) {
-      const val = pair[0], label = pair[1];
-      const btn = document.createElement('button');
-      btn.textContent = label;
-      const active = mentorTab === val;
-      btn.style.cssText = 'border:none;border-radius:20px;padding:6px 16px;font-size:12px;font-weight:' + (active?'700':'500') + ';cursor:pointer;font-family:inherit;background:' + (active?'#8c6a4a':'#e8ddd0') + ';color:' + (active?'#fff':'#8c6a4a') + ';';
-      btn.addEventListener('click', function() { mentorTab = val; renderTabs(); renderContent(); });
-      el.appendChild(btn);
+  // ── Data helpers ────────────────────────────────────────────────
+  function getMCData() { return JSON.parse(localStorage.getItem(MC_KEY) || '{"requests":[],"agreements":[],"wall":[]}'); }
+  function saveMCData(d) { localStorage.setItem(MC_KEY, JSON.stringify(d)); }
+  function getRequests() { return getMCData().requests; }
+  function getWallEntries() { return getMCData().wall; }
+
+  function getMentorList() {
+    const NPC_IDS = ['npc-fox','npc-owl','npc-crane','npc-cat','npc-deer','npc-dog'];
+    const data = getMCData();
+    const nominated = (data.nominations || []);
+    const result = [];
+
+    (window.profiles || []).forEach(function(p) {
+      if (NPC_IDS.indexOf(p.id) !== -1) return;
+      const years = parseInt(p.yearsPracticing) || 0;
+      const nom = nominated.filter(function(n){ return n.mentorId === p.id; });
+      const completedApps = (data.wall || []).filter(function(w){ return w.mentorId === p.id; });
+      if (nom.length > 0 || years >= 15) {
+        result.push({ profile: p, nominations: nom, completedCount: completedApps.length, autoSurfaced: nom.length === 0 && years >= 15 });
+      }
     });
+
+    // Add seed mentors that match the spec (nominated path) — skip for now, village profiles only
+    return result;
   }
 
-  function renderInspiration(el) {
-    const cards = INSPIRATION_OFFERS.map(function(o) {
-      return '<div style="background:#fff;border:1px solid #e0d0c0;border-radius:12px;padding:16px 18px;">' +
-        '<div style="font-size:24px;margin-bottom:6px;">' + o.icon + '</div>' +
-        '<div style="font-size:14px;font-weight:700;color:#2c1a0e;margin-bottom:2px;">' + o.type + '</div>' +
-        '<div style="font-size:10px;font-weight:600;color:#c8a84b;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">' + o.tagline + '</div>' +
-        '<div style="font-size:12px;color:#8c6a4a;line-height:1.6;margin-bottom:8px;">' + o.desc + '</div>' +
-        '<div style="font-size:11px;color:#a08060;font-style:italic;margin-bottom:8px;">e.g. ' + o.example + '</div>' +
-        '<div style="font-size:11px;font-weight:700;color:#2c1a0e;background:#f8f4ef;border-radius:6px;padding:4px 10px;display:inline-block;">' + o.price + '</div>' +
-      '</div>';
-    }).join('');
-    el.innerHTML =
-      '<div style="margin-bottom:20px;">' +
-        '<div style="font-size:15px;font-weight:700;color:#2c1a0e;margin-bottom:6px;">What makes a great guidance offer?</div>' +
-        '<div style="font-size:13px;color:#8c6a4a;line-height:1.6;">The best offers are specific, honest about format, and priced to match your time. One well-described offer outperforms a long list of vague ones every time.</div>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:24px;">' + cards + '</div>' +
-      '<div style="background:#f0e8d8;border-radius:12px;padding:16px 20px;font-size:13px;color:#6a4a2e;line-height:1.6;">' +
-        '<strong>Ready to offer mentorship?</strong> Turn on "Offers teaching" in your profile — you\'ll appear in the Mentors tab. Add your guidance offers and trailer links from the profile editor.' +
-      '</div>';
+  // ── Tab switching ────────────────────────────────────────────────
+  function switchMentorTab(name) {
+    mentorTab = name;
+    document.querySelectorAll('.mentor-tab').forEach(function(btn) {
+      const isActive = btn.dataset.mtab === name;
+      btn.classList.toggle('active', isActive);
+    });
+    document.getElementById('mentor-tab-learn').style.display   = name === 'learn'   ? '' : 'none';
+    document.getElementById('mentor-tab-mentors').style.display = name === 'mentors' ? '' : 'none';
+    document.getElementById('mentor-tab-wall').style.display    = name === 'wall'    ? '' : 'none';
+    if (name === 'learn')   renderLearn();
+    if (name === 'mentors') renderMentors();
+    if (name === 'wall')    renderWall();
   }
 
-  function renderContent() {
-    const el = document.getElementById('mentor-content'); if (!el) return;
-    el.innerHTML = '';
+  // ── Tab 1 — Looking to Learn ─────────────────────────────────────
+  function renderLearn() {
+    const el = document.getElementById('mentor-tab-learn'); if (!el) return;
+    const requests = getRequests();
+    const sess = window.getCurrentSession ? window.getCurrentSession() : null;
+    const me = sess && window.profiles ? window.profiles.find(function(p){ return p.id === sess.profileId; }) : null;
 
-    if (mentorTab === 'inspire') { renderInspiration(el); return; }
+    let html = '<div class="mentor-ask">' +
+      '<div class="mentor-ask-q">What are you trying to learn that you cannot teach yourself?</div>' +
+      '<textarea class="mentor-ask-input" id="mentor-learn-input" placeholder="Describe what you\'re trying to master — be as specific as you can..."></textarea>' +
+      '<div><button class="mentor-ask-btn" id="mentor-learn-submit">Post this request</button></div>' +
+    '</div>';
 
-    if (mentorTab === 'seeking') {
-      const list = getSeeking();
-      if (!list.length) {
-        el.innerHTML = '<div style="color:#a08060;font-size:13px;padding:16px 0;">No one has marked themselves as looking for a mentor yet.</div>';
-        return;
-      }
-      list.forEach(function(p) { el.appendChild(buildMentorCard(p, false)); });
+    if (requests.length > 0) {
+      html += '<div style="padding:0 4px;">';
+      requests.slice().sort(function(a,b){ return a.ts - b.ts; }).forEach(function(r) {
+        const who = window.profiles ? window.profiles.find(function(p){ return p.id === r.authorId; }) : null;
+        const name = who ? (who.villageName || who.name) : 'Someone';
+        const craft = who ? (who.mainPractice || '') : '';
+        const craftAge = who ? (parseInt(who.yearsPracticing)||0) : 0;
+        const date = new Date(r.ts).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+        const metaParts = [craft, craftAge ? craftAge + ' years' : ''].filter(Boolean).join(' · ');
+        html += '<div class="mentor-request">' +
+          '<div class="mentor-request-text">"' + r.text + '"</div>' +
+          '<div class="mentor-request-meta">' +
+            '<span class="cafe-link" onclick="showProfileCard(' + JSON.stringify(who||{name:name}) + ')">' + name + '</span>' +
+            (metaParts ? ' &nbsp;·&nbsp; ' + metaParts : '') +
+            ' &nbsp;·&nbsp; ' + date +
+          '</div>' +
+        '</div>';
+      });
+      html += '</div>';
     } else {
-      const villageList = getMentors();
-      if (villageList.length > 0) {
-        const vh = document.createElement('div');
-        vh.style.cssText = 'font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#a08060;margin-bottom:12px;';
-        vh.textContent = 'Village mentors';
-        el.appendChild(vh);
-        villageList.forEach(function(p) { el.appendChild(buildMentorCard(p, false)); });
-        const sep = document.createElement('div');
-        sep.style.cssText = 'font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#a08060;margin:24px 0 12px;padding-top:16px;border-top:1px solid #e8ddd0;';
-        sep.textContent = 'From the wider ceramic world';
-        el.appendChild(sep);
-      }
-      SEED_MENTORS.forEach(function(m) { el.appendChild(buildMentorCard(m, true)); });
+      html += '<div style="text-align:center;padding:20px;font-size:13px;color:rgba(196,180,154,0.4);font-style:italic;">No requests yet. Yours could be first.</div>';
     }
 
-    el.querySelectorAll('.mentor-msg-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.getElementById('mentor-overlay').style.display = 'none';
-        if (window.openMailbox) openMailbox(btn.dataset.profileId);
-      });
+    el.innerHTML = html;
+
+    document.getElementById('mentor-learn-submit').addEventListener('click', function() {
+      const input = document.getElementById('mentor-learn-input');
+      const text = (input.value || '').trim();
+      if (!text) return;
+      const data = getMCData();
+      data.requests = data.requests || [];
+      data.requests.push({ id: 'req-' + Date.now(), authorId: me ? me.id : 'anon', text: text, ts: Date.now() });
+      saveMCData(data);
+      input.value = '';
+      renderLearn();
     });
-    wireOfferButtons(el);
   }
 
+  // ── Tab 2 — Mentors ──────────────────────────────────────────────
+  function renderMentors() {
+    const el = document.getElementById('mentor-tab-mentors'); if (!el) return;
+    const mentors = getMentorList();
+    const data = getMCData();
+
+    if (!mentors.length) {
+      el.innerHTML = '<div style="text-align:center;padding:40px 20px;font-size:13px;color:rgba(196,180,154,0.4);font-style:italic;">No mentors have been nominated yet.<br>When a student nominates someone, they appear here.</div>';
+      return;
+    }
+
+    let html = '';
+    mentors.forEach(function(m) {
+      const p = m.profile;
+      const years = parseInt(p.yearsPracticing) || 0;
+      const craft = p.mainPractice || '';
+      const statusKey = (data.mentorStatus || {})[p.id] || 'available';
+      const statusLabel = statusKey === 'full' ? 'Full' : statusKey === 'unavailable' ? 'Unavailable' : 'Available';
+      const statusClass = statusKey === 'available' ? 'available' : 'full';
+
+      const nomHtml = m.nominations.length ? m.nominations.map(function(n){
+        const nomWho = window.profiles ? window.profiles.find(function(pp){ return pp.id === n.nominatorId; }) : null;
+        const nomName = nomWho ? (nomWho.villageName || nomWho.name) : 'a village member';
+        return 'Nominated by <span class="cafe-link" onclick="showProfileCard(' + JSON.stringify(nomWho||{name:nomName}) + ')">' + nomName + '</span>';
+      }).join(' &nbsp;·&nbsp; ') : '<span style="color:rgba(200,168,75,0.5);font-style:italic;">Auto-surfaced · not yet nominated</span>';
+
+      // closing paragraphs from completed apprenticeships
+      const closings = (data.wall || []).filter(function(w){ return w.mentorId === p.id && w.mentorPara; });
+      const closingHtml = closings.length ? '<div class="mentor-card-closing">' + closings.map(function(w){ return '"' + w.mentorPara + '"'; }).join('<br><br>') + '</div>' : '';
+
+      html += '<div class="mentor-card">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">' +
+          '<div>' +
+            '<div class="mentor-card-name" onclick="showProfileCard(' + JSON.stringify(p) + ')">' + (p.villageName||p.name) + '</div>' +
+            '<div class="mentor-card-meta">' + [craft, years ? years + ' years' : ''].filter(Boolean).join(' · ') + (m.completedCount ? ' · ' + m.completedCount + ' apprenticeship' + (m.completedCount!==1?'s':'') + ' completed' : '') + '</div>' +
+          '</div>' +
+          '<span class="mentor-card-status ' + statusClass + '" style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap;">' + statusLabel + '</span>' +
+        '</div>' +
+        '<div style="font-size:11px;color:rgba(196,180,154,0.5);margin-top:6px;">' + nomHtml + '</div>' +
+        closingHtml +
+        '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button class="mentor-ask-btn" style="font-size:11px;padding:6px 14px;" onclick="(function(){' +
+            'document.getElementById(\'mentor-overlay\').style.display=\'none\';' +
+            'if(window.openMailbox)openMailbox(\'' + p.id + '\');' +
+          '})()">Send a message →</button>' +
+          '<button class="mentor-ask-btn" style="font-size:11px;padding:6px 14px;" onclick="(function(){' +
+            'var d=JSON.parse(localStorage.getItem(\'' + MC_KEY + '\')||\'{"requests":[],"agreements":[],"wall":[]}\');' +
+            'd.nominations=d.nominations||[];' +
+            'var sess=window.getCurrentSession?window.getCurrentSession():null;' +
+            'var me=sess&&window.profiles?window.profiles.find(function(pp){return pp.id===sess.profileId;}):null;' +
+            'if(!me){alert(\'Please set up your profile first.\');return;}' +
+            'd.nominations.push({mentorId:\'' + p.id + '\',nominatorId:me.id,ts:Date.now()});' +
+            'localStorage.setItem(\'' + MC_KEY + '\',JSON.stringify(d));' +
+            'renderMentors();' +
+          '})()">Nominate as mentor</button>' +
+        '</div>' +
+      '</div>';
+    });
+
+    el.innerHTML = html;
+  }
+
+  // ── Tab 3 — The Wall ─────────────────────────────────────────────
+  function renderWall() {
+    const el = document.getElementById('mentor-tab-wall'); if (!el) return;
+    const entries = getWallEntries();
+
+    if (!entries.length) {
+      el.innerHTML = '<div style="text-align:center;padding:40px 20px;font-size:13px;color:rgba(196,180,154,0.4);font-style:italic;">The Wall is empty.<br>When an apprenticeship completes and both closing paragraphs are submitted, it appears here — permanently.</div>';
+      return;
+    }
+
+    let html = '';
+    entries.slice().reverse().forEach(function(w) {
+      const mentor = window.profiles ? window.profiles.find(function(p){ return p.id === w.mentorId; }) : null;
+      const apprentice = window.profiles ? window.profiles.find(function(p){ return p.id === w.apprenticeId; }) : null;
+      const mentorName = mentor ? (mentor.villageName||mentor.name) : (w.mentorName || 'Unknown');
+      const apprenticeName = apprentice ? (apprentice.villageName||apprentice.name) : (w.apprenticeName || 'Unknown');
+      const dateStr = w.completedAt ? new Date(w.completedAt).toLocaleDateString('en-GB',{month:'long',year:'numeric'}) : '';
+
+      html += '<div class="mentor-wall-entry">' +
+        '<div class="mentor-wall-pair">' +
+          '<span class="cafe-link" onclick="showProfileCard(' + JSON.stringify(mentor||{name:mentorName}) + ')">' + mentorName + '</span>' +
+          ' &nbsp;·&nbsp; ' +
+          '<span class="cafe-link" onclick="showProfileCard(' + JSON.stringify(apprentice||{name:apprenticeName}) + ')">' + apprenticeName + '</span>' +
+          (w.craft ? ' &nbsp;·&nbsp; ' + w.craft : '') +
+          (dateStr ? ' &nbsp;·&nbsp; ' + dateStr : '') +
+        '</div>' +
+        (w.apprenticePara ? '<div class="mentor-wall-para" style="margin-top:12px;"><span style="font-size:10px;color:rgba(196,180,154,0.35);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">What changed</span>"' + w.apprenticePara + '"</div>' : '') +
+        (w.mentorPara ? '<div class="mentor-wall-para"><span style="font-size:10px;color:rgba(196,180,154,0.35);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;">What this apprentice taught me</span>"' + w.mentorPara + '"</div>' : '') +
+      '</div>';
+    });
+
+    el.innerHTML = html;
+  }
+
+  // ── Close button ─────────────────────────────────────────────────
   document.getElementById('mentor-close').addEventListener('click', function() {
     document.getElementById('mentor-overlay').style.display = 'none';
   });
 
+  // ── Open entry point ─────────────────────────────────────────────
   window.openMentorCluster = function() {
     const ov = document.getElementById('mentor-overlay'); if (!ov) return;
     ov.style.display = 'flex';
-    renderTabs(); renderContent();
+
+    // Wire tab buttons (idempotent — remove old listeners by cloning)
+    document.querySelectorAll('.mentor-tab').forEach(function(btn) {
+      const fresh = btn.cloneNode(true);
+      btn.parentNode.replaceChild(fresh, btn);
+      fresh.addEventListener('click', function() { switchMentorTab(fresh.dataset.mtab); });
+    });
+
+    switchMentorTab('learn');
   };
 })();
 
-// ── Studio Quarter — Practice Log ────────────────────────────────
+// ── Studio Quarter — four tabs ────────────────────────────────────
 (function() {
-  const SQ_KEY = 'clayVillagePracticeLog';
+  const SQ_KEY  = 'clayVillagePracticeLog';
+  const SV_KEY  = 'clayVillageStudioDoors';   // { profileId: { open:bool, knocks:[{id,ts}] } }
+  const PB_KEY  = 'clayVillageProcessBoard';   // [{id,authorId,text,imageData,visibility,ts}]
+  const FW_KEY  = 'clayVillageFailureWall';    // [{id,authorId,failureNote,lessonNote,imageData,shared,ts,archived}]
+  const NPC_IDS = ['npc-fox','npc-owl','npc-crane','npc-cat','npc-deer','npc-dog'];
 
+  // ── Practice Log helpers (unchanged) ─────────────────────────────
   function getEntries() { return JSON.parse(localStorage.getItem(SQ_KEY) || '[]'); }
   function saveEntries(list) { localStorage.setItem(SQ_KEY, JSON.stringify(list)); }
+
+  function calcStreak(entries) {
+    if (!entries.length) return 0;
+    const dates = [...new Set(entries.map(e => e.date))].sort().reverse();
+    const today = new Date().toISOString().slice(0,10);
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if (dates[0] !== today && dates[0] !== yesterday) return 0;
+    let streak = 1;
+    for (let i = 1; i < dates.length; i++) {
+      const prev = new Date(dates[i-1]); const curr = new Date(dates[i]);
+      if ((prev - curr) / 86400000 === 1) streak++; else break;
+    }
+    return streak;
+  }
 
   function renderStats() {
     const el = document.getElementById('sq-stats'); if (!el) return;
     const entries = getEntries();
     const totalPieces = entries.reduce((sum, e) => sum + (parseInt(e.pieces) || 0), 0);
     const streak = calcStreak(entries);
-    const moods = entries.map(e => e.mood).filter(Boolean);
-    const topMood = moods.length ? [...new Set(moods)].sort((a,b) => moods.filter(m=>m===b).length - moods.filter(m=>m===a).length)[0] : '—';
     const stats = [
       { label: 'Sessions logged', value: entries.length },
       { label: 'Pieces made', value: totalPieces },
@@ -12960,22 +13186,6 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
         <div style="font-size:10px;color:#a08060;margin-top:2px;text-transform:uppercase;letter-spacing:0.06em;">${s.label}</div>
       </div>
     `).join('');
-  }
-
-  function calcStreak(entries) {
-    if (!entries.length) return 0;
-    const dates = [...new Set(entries.map(e => e.date))].sort().reverse();
-    const today = new Date().toISOString().slice(0,10);
-    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-    if (dates[0] !== today && dates[0] !== yesterday) return 0;
-    let streak = 1;
-    for (let i = 1; i < dates.length; i++) {
-      const prev = new Date(dates[i-1]); const curr = new Date(dates[i]);
-      const diff = (prev - curr) / 86400000;
-      if (diff === 1) streak++;
-      else break;
-    }
-    return streak;
   }
 
   function renderEntries() {
@@ -13011,6 +13221,356 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
     });
   }
 
+  // ── New data helpers ──────────────────────────────────────────────
+  function getDoors() {
+    const raw = JSON.parse(localStorage.getItem(SV_KEY) || '{}');
+    // Seed defaults: Maya and Yuki have open studios
+    if (!raw._seeded) {
+      raw['profile-maya'] = raw['profile-maya'] || { open: true, knocks: [] };
+      raw['profile-yuki'] = raw['profile-yuki'] || { open: true, knocks: [] };
+      raw._seeded = true;
+      localStorage.setItem(SV_KEY, JSON.stringify(raw));
+    }
+    return raw;
+  }
+  function saveDoors(d) { localStorage.setItem(SV_KEY, JSON.stringify(d)); }
+
+  function getPBEntries() {
+    const raw = JSON.parse(localStorage.getItem(PB_KEY) || '[]');
+    if (!raw.length) {
+      // Seed example process notes from Maya
+      const seeds = [
+        { id:'pb-seed-1', authorId:'profile-maya', text:'Third attempt at the moonjar form. The join keeps cracking. Trying slower drying this time — wrapping in plastic overnight and hoping for the best.', visibility:'village', ts: Date.now()-7*86400000 },
+        { id:'pb-seed-2', authorId:'profile-maya', text:'Kiln opened this morning. Two pieces survived. One is the best thing I\'ve made. The other collapsed onto itself in a way I don\'t fully understand yet.', visibility:'village', ts: Date.now()-3*86400000 },
+        { id:'pb-seed-3', authorId:'profile-yuki', text:'Experimenting with a new ash glaze — wood ash from the studio, mixed with a little feldspar. The results are unpredictable. That\'s the point.', visibility:'open', ts: Date.now()-86400000 },
+      ];
+      localStorage.setItem(PB_KEY, JSON.stringify(seeds));
+      return seeds;
+    }
+    return raw;
+  }
+  function savePBEntries(e) { localStorage.setItem(PB_KEY, JSON.stringify(e)); }
+
+  function getFWEntries() {
+    const raw = JSON.parse(localStorage.getItem(FW_KEY) || '[]');
+    if (!raw.length) {
+      // Seed example failures
+      const seeds = [
+        { id:'fw-seed-1', authorId:'profile-james', failureNote:'A series of six bowls — same clay, same glaze, same firing. Three came out right. Three cracked from the base up.', lessonNote:'I had been rushing the drying. I still rush. The lesson keeps teaching itself.', shared: true, ts: Date.now()-14*86400000, archived: false },
+        { id:'fw-seed-2', authorId:'profile-sophia', failureNote:'Spent three weeks on a sculptural piece. Loaded it carefully. It exploded in the kiln and took out the shelf above it.', lessonNote:'There was a small air bubble I saw and decided to ignore. Never ignore the bubble.', shared: true, ts: Date.now()-5*86400000, archived: false },
+      ];
+      localStorage.setItem(FW_KEY, JSON.stringify(seeds));
+      return seeds;
+    }
+    return raw;
+  }
+  function saveFWEntries(e) { localStorage.setItem(FW_KEY, JSON.stringify(e)); }
+
+  function getCurrentMaker() {
+    const sess = window.getCurrentSession ? window.getCurrentSession() : null;
+    return sess && window.profiles ? (window.profiles.find(p => p.id === sess.profileId) || null) : null;
+  }
+
+  function fmt(ts) {
+    return new Date(ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  // ── Tab switching ─────────────────────────────────────────────────
+  function switchSQTab(name) {
+    ['mystudio','visits','process','failure'].forEach(t => {
+      const el = document.getElementById('sq-tab-' + t);
+      if (el) el.style.display = t === name ? '' : 'none';
+    });
+    document.querySelectorAll('.sq-tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.sqtab === name);
+    });
+    const manifestoEl = document.getElementById('sq-manifesto');
+    if (manifestoEl) {
+      if (name === 'failure') manifestoEl.textContent = 'The failures teach more than the successes. Nobody shows them. We do.';
+      else manifestoEl.textContent = 'Make the thing. The rest is noise.';
+    }
+    if (name === 'mystudio')  { renderStats(); renderEntries(); }
+    if (name === 'visits')    renderVisits();
+    if (name === 'process')   renderProcessBoard();
+    if (name === 'failure')   renderFailureWall();
+  }
+
+  // ── Tab 2 — Studio Visits ─────────────────────────────────────────
+  function renderVisits() {
+    const el = document.getElementById('sq-tab-visits'); if (!el) return;
+    const me = getCurrentMaker();
+    const doors = getDoors();
+    const myDoor = me ? (doors[me.id] || { open: false, knocks: [] }) : { open: false, knocks: [] };
+
+    const humanProfiles = (window.profiles || []).filter(p => NPC_IDS.indexOf(p.id) === -1);
+    const otherMakers = humanProfiles.filter(p => me ? p.id !== me.id : true);
+
+    let html = '';
+
+    // My door toggle (if logged in as a profile)
+    if (me) {
+      const isOpen = myDoor.open;
+      html += `<div class="sq-open-toggle" id="sq-door-toggle">
+        <div class="sq-open-toggle-dot ${isOpen ? 'on' : ''}"></div>
+        <div class="sq-open-toggle-label">${isOpen ? 'Your studio door is open — visitors can see your process notes' : 'Your studio door is closed — open it to let visitors in'}</div>
+      </div>`;
+    }
+
+    html += `<div style="font-size:11px;color:rgba(196,180,154,0.4);margin-bottom:16px;line-height:1.6;">Studios whose doors are open. Knock to let them know you\'re here. No buy buttons. No prices. This is not a marketplace.</div>`;
+
+    const openMakers = otherMakers.filter(p => {
+      const d = doors[p.id];
+      return d && d.open;
+    });
+
+    if (!openMakers.length) {
+      html += '<div style="text-align:center;padding:40px 20px;font-size:13px;color:rgba(196,180,154,0.35);font-style:italic;">No studios are open right now.<br>When a maker opens their door, they appear here.</div>';
+    } else {
+      openMakers.forEach(p => {
+        const years = parseInt(p.yearsPracticing) || 0;
+        const craft = p.mainPractice || '';
+        const metaParts = [craft, years ? years + ' years' : ''].filter(Boolean).join(' · ');
+        const door = doors[p.id] || { knocks: [] };
+        const myKnock = me ? (door.knocks || []).find(k => k.id === me.id) : null;
+        const knockLabel = myKnock ? 'Knocked ✓' : 'Knock';
+        const knockDisabled = myKnock ? 'disabled' : '';
+
+        // Shared process notes visible to visitors
+        const pbAll = getPBEntries();
+        const sharedNotes = pbAll.filter(n => n.authorId === p.id && n.visibility === 'open').slice(-2);
+        const notesHtml = sharedNotes.length
+          ? `<div class="sq-visit-notes"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(196,180,154,0.35);margin-bottom:8px;">From the process board</div>` +
+            sharedNotes.map(n => `<div style="font-size:13px;color:rgba(234,229,222,0.55);line-height:1.6;font-style:italic;margin-bottom:6px;">"${n.text.slice(0,160)}${n.text.length>160?'…':''}"</div>`).join('') +
+            `</div>` : '';
+
+        html += `<div class="sq-door open">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div>
+              <span class="sq-door-name" onclick="showProfileCard(${JSON.stringify(p)})">${p.villageName||p.name}</span>
+              <span class="sq-door-status open" style="margin-left:10px;">Open</span>
+              <div class="sq-door-meta">${metaParts || 'Maker'}</div>
+            </div>
+            <button class="sq-knock-btn" data-knock="${p.id}" ${knockDisabled}>${knockLabel}</button>
+          </div>
+          ${notesHtml}
+        </div>`;
+      });
+    }
+
+    el.innerHTML = html;
+
+    // Wire door toggle
+    const toggle = el.querySelector('#sq-door-toggle');
+    if (toggle && me) {
+      toggle.addEventListener('click', () => {
+        const d = getDoors();
+        if (!d[me.id]) d[me.id] = { open: false, knocks: [] };
+        d[me.id].open = !d[me.id].open;
+        saveDoors(d);
+        renderVisits();
+      });
+    }
+
+    // Wire knock buttons
+    el.querySelectorAll('[data-knock]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!me) { return; }
+        const targetId = btn.dataset.knock;
+        const d = getDoors();
+        if (!d[targetId]) d[targetId] = { open: true, knocks: [] };
+        d[targetId].knocks = d[targetId].knocks || [];
+        if (!d[targetId].knocks.find(k => k.id === me.id)) {
+          d[targetId].knocks.push({ id: me.id, ts: Date.now() });
+          saveDoors(d);
+        }
+        btn.textContent = 'Knocked ✓';
+        btn.disabled = true;
+      });
+    });
+  }
+
+  // ── Tab 3 — Process Board ─────────────────────────────────────────
+  function renderProcessBoard() {
+    const el = document.getElementById('sq-tab-process'); if (!el) return;
+    const me = getCurrentMaker();
+    const entries = getPBEntries();
+
+    let html = `<div style="font-size:13px;color:rgba(196,180,154,0.6);line-height:1.6;margin-bottom:20px;">Your running studio diary. Not polished posts — just notes. You choose who sees each one.</div>`;
+
+    // New entry form
+    html += `<div class="bld-glass" style="margin-bottom:24px;">
+      <div class="bld-label">Add a process note</div>
+      <textarea id="pb-new-text" placeholder="Third attempt at the moonjar form. The join keeps cracking. Trying slower drying.&#10;&#10;Kiln opened this morning. Two pieces survived. One is the best thing I've made." style="width:100%;box-sizing:border-box;background:transparent;border:none;outline:none;font-size:14px;color:rgba(234,229,222,0.85);font-family:inherit;line-height:1.7;resize:none;height:90px;"></textarea>
+      <div style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+        <select id="pb-new-vis" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 10px;font-size:12px;color:rgba(234,229,222,0.8);font-family:inherit;outline:none;">
+          <option value="private">Private — only me</option>
+          <option value="open">Open to studio visitors</option>
+          <option value="village">Village-wide</option>
+        </select>
+        <label style="font-size:12px;color:rgba(196,180,154,0.5);cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <input type="file" id="pb-new-img" accept="image/*" style="display:none;">
+          <span id="pb-img-label" style="padding:6px 12px;border:1px solid rgba(196,180,154,0.15);border-radius:6px;font-size:12px;color:rgba(196,180,154,0.5);cursor:pointer;">+ Photo</span>
+        </label>
+        <button id="pb-post-btn" style="background:#c8a84b;color:#1a1008;border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto;">Post note →</button>
+      </div>
+    </div>`;
+
+    // My entries + village-wide entries from others
+    const myId = me ? me.id : null;
+    const visible = entries.filter(n => {
+      if (n.authorId === myId) return true;           // own: always
+      if (n.visibility === 'village') return true;    // village-wide
+      return false;
+    }).slice().sort((a,b) => b.ts - a.ts);
+
+    if (!visible.length) {
+      html += '<div style="text-align:center;padding:30px 20px;font-size:13px;color:rgba(196,180,154,0.35);font-style:italic;">Nothing here yet. Add your first process note above.</div>';
+    } else {
+      const sections = { mine: visible.filter(n => n.authorId === myId), others: visible.filter(n => n.authorId !== myId) };
+      if (sections.mine.length) {
+        html += `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:rgba(196,180,154,0.35);margin-bottom:10px;">Your notes</div>`;
+        sections.mine.forEach(n => {
+          const visBadge = `<span class="sq-vis-badge ${n.visibility}">${n.visibility === 'private' ? 'Private' : n.visibility === 'open' ? 'Open to visitors' : 'Village-wide'}</span>`;
+          html += `<div class="sq-process-entry">
+            ${n.imageData ? `<img class="sq-process-img" src="${n.imageData}">` : ''}
+            <div class="sq-process-text">${n.text}</div>
+            <div class="sq-process-meta"><span>${fmt(n.ts)}</span>${visBadge}<button data-pbdel="${n.id}" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.15);cursor:pointer;font-size:13px;padding:0;">×</button></div>
+          </div>`;
+        });
+      }
+      if (sections.others.length) {
+        html += `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:rgba(196,180,154,0.35);margin:20px 0 10px;">From the village</div>`;
+        sections.others.forEach(n => {
+          const author = (window.profiles||[]).find(p => p.id === n.authorId);
+          const name = author ? (author.villageName||author.name) : 'A maker';
+          html += `<div class="sq-process-entry">
+            ${n.imageData ? `<img class="sq-process-img" src="${n.imageData}">` : ''}
+            <div class="sq-process-text">${n.text}</div>
+            <div class="sq-process-meta"><span class="cafe-link" onclick="showProfileCard(${JSON.stringify(author||{name})})">${name}</span><span>${fmt(n.ts)}</span></div>
+          </div>`;
+        });
+      }
+    }
+
+    el.innerHTML = html;
+
+    // Wire photo label
+    const imgInput = el.querySelector('#pb-new-img');
+    const imgLabel = el.querySelector('#pb-img-label');
+    let pendingImgData = null;
+    if (imgInput) {
+      imgInput.addEventListener('change', () => {
+        const file = imgInput.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e2 => { pendingImgData = e2.target.result; imgLabel.textContent = '✓ Photo ready'; imgLabel.style.color = 'rgba(200,168,75,0.8)'; };
+        reader.readAsDataURL(file);
+      });
+      imgLabel.addEventListener('click', () => imgInput.click());
+    }
+
+    // Wire post button
+    const postBtn = el.querySelector('#pb-post-btn');
+    if (postBtn) {
+      postBtn.addEventListener('click', () => {
+        const text = (el.querySelector('#pb-new-text').value || '').trim();
+        if (!text) return;
+        const vis = el.querySelector('#pb-new-vis').value;
+        const all = getPBEntries();
+        all.push({ id: 'pb-' + Date.now(), authorId: myId || 'anon', text, visibility: vis, imageData: pendingImgData || null, ts: Date.now() });
+        savePBEntries(all);
+        pendingImgData = null;
+        renderProcessBoard();
+      });
+    }
+
+    // Wire delete buttons
+    el.querySelectorAll('[data-pbdel]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const all = getPBEntries().filter(n => n.id !== btn.dataset.pbdel);
+        savePBEntries(all); renderProcessBoard();
+      });
+    });
+  }
+
+  // ── Tab 4 — Failure Wall ──────────────────────────────────────────
+  function renderFailureWall() {
+    const el = document.getElementById('sq-tab-failure'); if (!el) return;
+    const me = getCurrentMaker();
+    const myId = me ? me.id : null;
+    const all = getFWEntries();
+
+    // My active failure
+    const myActive = all.find(f => f.authorId === myId && !f.archived && f.shared);
+
+    let html = `<div style="font-size:13px;color:rgba(196,180,154,0.6);line-height:1.6;margin-bottom:20px;">One active failure per maker. When you post a new one, the old one is archived but still readable. No likes. No comments. Just the failure and what it taught.</div>`;
+
+    // Post / replace form
+    html += `<div class="bld-glass" style="margin-bottom:28px;">
+      <div class="bld-label">${myActive ? 'Replace your current failure' : 'Post your failure'}</div>
+      ${myActive ? `<div style="font-size:12px;color:rgba(196,180,154,0.4);margin-bottom:12px;font-style:italic;">Your current: "${myActive.lessonNote.slice(0,80)}…"<br>Posting a new one will archive this.</div>` : ''}
+      <textarea id="fw-fail-text" placeholder="Describe what didn't work. Be specific." style="width:100%;box-sizing:border-box;background:transparent;border:none;outline:none;font-size:14px;color:rgba(234,229,222,0.85);font-family:inherit;line-height:1.7;resize:none;height:70px;margin-bottom:10px;"></textarea>
+      <textarea id="fw-lesson-text" placeholder="What did you learn from it?" style="width:100%;box-sizing:border-box;background:transparent;border:none;outline:none;font-size:14px;color:rgba(234,229,222,0.85);font-family:inherit;line-height:1.7;resize:none;height:70px;"></textarea>
+      <div style="display:flex;gap:10px;margin-top:10px;align-items:center;">
+        <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <input type="file" id="fw-new-img" accept="image/*" style="display:none;">
+          <span id="fw-img-label" style="padding:6px 12px;border:1px solid rgba(196,180,154,0.15);border-radius:6px;font-size:12px;color:rgba(196,180,154,0.5);cursor:pointer;">+ Photo</span>
+        </label>
+        <button id="fw-post-btn" style="background:#c8a84b;color:#1a1008;border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto;">Post to the wall →</button>
+      </div>
+    </div>`;
+
+    // The wall — all shared non-archived failures
+    const sharedAll = all.filter(f => f.shared && !f.archived).sort((a,b) => b.ts - a.ts);
+    if (!sharedAll.length) {
+      html += '<div style="text-align:center;padding:30px 20px;font-size:13px;color:rgba(196,180,154,0.3);font-style:italic;">The wall is empty.<br>Be the first to post a failure.</div>';
+    } else {
+      sharedAll.forEach(f => {
+        const author = (window.profiles||[]).find(p => p.id === f.authorId);
+        const name = author ? (author.villageName||author.name) : 'A maker';
+        html += `<div class="sq-failure-card">
+          ${f.imageData ? `<img class="sq-failure-img" src="${f.imageData}">` : ''}
+          <div class="sq-failure-note">${f.failureNote}</div>
+          <div class="sq-failure-lesson">"${f.lessonNote}"</div>
+          <div class="sq-failure-who" onclick="showProfileCard(${JSON.stringify(author||{name})})">${name} &nbsp;·&nbsp; ${fmt(f.ts)}</div>
+        </div>`;
+      });
+    }
+
+    el.innerHTML = html;
+
+    // Wire photo
+    const fwImgInput = el.querySelector('#fw-new-img');
+    const fwImgLabel = el.querySelector('#fw-img-label');
+    let fwPendingImg = null;
+    if (fwImgInput) {
+      fwImgInput.addEventListener('change', () => {
+        const file = fwImgInput.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e2 => { fwPendingImg = e2.target.result; fwImgLabel.textContent = '✓ Photo ready'; fwImgLabel.style.color = 'rgba(200,168,75,0.8)'; };
+        reader.readAsDataURL(file);
+      });
+      fwImgLabel.addEventListener('click', () => fwImgInput.click());
+    }
+
+    // Wire post
+    const fwPost = el.querySelector('#fw-post-btn');
+    if (fwPost) {
+      fwPost.addEventListener('click', () => {
+        const failText = (el.querySelector('#fw-fail-text').value || '').trim();
+        const lessonText = (el.querySelector('#fw-lesson-text').value || '').trim();
+        if (!failText || !lessonText) return;
+        const entries = getFWEntries();
+        // Archive previous active
+        entries.forEach(f => { if (f.authorId === myId && !f.archived) f.archived = true; });
+        entries.push({ id: 'fw-' + Date.now(), authorId: myId || 'anon', failureNote: failText, lessonNote: lessonText, imageData: fwPendingImg || null, shared: true, ts: Date.now(), archived: false });
+        saveFWEntries(entries);
+        fwPendingImg = null;
+        renderFailureWall();
+      });
+    }
+  }
+
+  // ── Existing event wiring ─────────────────────────────────────────
   document.getElementById('sq-log-btn').addEventListener('click', () => {
     const text = document.getElementById('sq-entry-text').value.trim(); if (!text) return;
     const entries = getEntries();
@@ -13031,12 +13591,18 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
     document.getElementById('studio-quarter-overlay').style.display = 'none';
   });
 
+  // ── Wire tabs ─────────────────────────────────────────────────────
+  document.querySelectorAll('.sq-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchSQTab(btn.dataset.sqtab));
+  });
+
+  // ── Open entry point ──────────────────────────────────────────────
   window.openStudioQuarter = function() {
     const ov = document.getElementById('studio-quarter-overlay'); if (!ov) return;
     const dateEl = document.getElementById('sq-entry-date');
     if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
     ov.style.display = 'flex';
-    renderStats(); renderEntries();
+    switchSQTab('mystudio');
   };
 })();
 
