@@ -12640,6 +12640,13 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
       { id: 'entry002', thread: 'people', text: entry002, ts: new Date('2026-03-31T23:30:00').getTime() },
       { id: 'entry003', thread: 'architecture', text: entry003, ts: new Date('2026-03-31T23:45:00').getTime() }
     ]);
+
+    // Publish Entry 001 to the Long View — the first founder action
+    if (getLongView().length === 0) {
+      saveLongView([
+        { id: 'lv-001', text: entry001, ts: new Date('2026-03-31T23:00:00').getTime() }
+      ]);
+    }
   }
 
   // Wire up event listeners
@@ -13075,8 +13082,8 @@ This is what exists. Built in conversation. One HTML file. No framework. The who
       const years = parseInt(p.yearsPracticing) || 0;
       const nom = nominated.filter(function(n){ return n.mentorId === p.id; });
       const completedApps = (data.wall || []).filter(function(w){ return w.mentorId === p.id; });
-      if (nom.length > 0 || years >= 15) {
-        result.push({ profile: p, nominations: nom, completedCount: completedApps.length, autoSurfaced: nom.length === 0 && years >= 15 });
+      if (nom.length > 0 || years >= 5) {
+        result.push({ profile: p, nominations: nom, completedCount: completedApps.length, autoSurfaced: nom.length === 0 && years >= 5 });
       }
     });
 
