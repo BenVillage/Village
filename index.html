@@ -11377,6 +11377,7 @@ var councilData = JSON.parse(localStorage.getItem('clayVillageCouncil') || 'null
   decided: [],
   pending: [], // proposed but not yet active
   horizon: {}, // {odId: 'yes'|'maybe'|'more'}
+  horizonLocation: {}, // {odId: 'brandenburg'|'noto'|'other'}
   weight: {} // mock weight overrides
 };
 
@@ -11513,7 +11514,8 @@ function renderCouncil() {
     html += '</div>';
   }
 
-  // The Long Horizon — Mura
+  // The Long Horizon — Mura (two phases)
+  councilData.horizonLocation = councilData.horizonLocation || {};
   const horizonVote = councilData.horizon[me] || null;
   const horizonCounts = Object.values(councilData.horizon);
   const yesCount = horizonCounts.filter(v => v === 'yes').length;
@@ -11521,9 +11523,23 @@ function renderCouncil() {
   const moreCount = horizonCounts.filter(v => v === 'more').length;
   const totalH = yesCount + maybeCount + moreCount;
 
+  const locVote = councilData.horizonLocation[me] || null;
+  const locCounts = Object.values(councilData.horizonLocation);
+  const brandCount = locCounts.filter(v => v === 'brandenburg').length;
+  const notoCount  = locCounts.filter(v => v === 'noto').length;
+  const otherCount = locCounts.filter(v => v === 'other').length;
+  const totalL = brandCount + notoCount + otherCount;
+
   html += `<div class="council-horizon">
     <div class="council-horizon-title">Beyond the screen — Mura</div>
-    <div class="council-horizon-text">The village you are building here is also a blueprint for a real place.<br><br>We are looking at rural Japan. Specifically the Noto Peninsula in Ishikawa Prefecture — a region of 800-year-old craft traditions, wood-fired kilns, lacquerware, ceramics, textiles. Devastated by the earthquake of January 2024. Masters still there. Traditions still alive. A community of makers arriving not as tourists but as people who came to stay and make — that changes what recovery looks like.<br><br>Restored farmhouses. A wood-fired kiln that takes three days to fire and the whole community to tend. A library with every glaze recipe ever developed on that land. A long table where everyone eats together. A fire in the hearth.<br><br>The digital village is the governance. The physical village is the home.<br><br>It will be called Mura.<br><br>This is not a promise. It is a direction. The Council will decide when the time is right.</div>
+    <div class="council-horizon-text">The village you are building here is also a blueprint for a real place. It will happen in two phases.<br><br>
+<strong style="color:rgba(180,195,215,0.7);">Phase 1 — Brandenburg, Germany</strong><br>
+Two hours from Berlin. Accessible by train. An existing farmhouse or small compound in the rural Brandenburg landscape — flat, forested, quiet. Close enough to the city to be reachable, far enough to feel like somewhere else. This is the prototype. A working residency space, a kiln, a long table, a small library. Enough to prove the model works in physical space — that the community formed digitally can also make things together. Brandenburg is where we learn what Mura needs to be before we build it.<br><br>
+<strong style="color:rgba(180,195,215,0.7);">Phase 2 — Mura, Noto Peninsula, Japan</strong><br>
+Ishikawa Prefecture. Eight hundred years of ceramic tradition. Wood-fired kilns, lacquerware, textiles, rice terraces, sea. The peninsula was devastated by the earthquake of January 2024. Masters are still there. Traditions are still alive. A community of makers arriving not as tourists but as people who came to stay and work — that changes what recovery looks like.<br><br>
+Restored farmhouses. A wood-fired anagama that takes three days to fire and the whole community to tend. A library with every glaze recipe ever developed on that land. A long table where everyone eats together. A fire in the hearth.<br><br>
+Brandenburg proves the model. Noto is where it goes when it is ready.<br><br>
+The digital village is the governance. The physical village is the home. It will be called Mura. This is not a promise. It is a direction.</div>
     <div class="council-horizon-q">If Mura existed — would you go?</div>
     <div class="council-horizon-btns">
       <button class="council-horizon-btn${horizonVote === 'yes' ? ' active' : ''}" onclick="voteHorizon('yes')">Yes</button>
@@ -11531,6 +11547,15 @@ function renderCouncil() {
       <button class="council-horizon-btn${horizonVote === 'more' ? ' active' : ''}" onclick="voteHorizon('more')">I'd want to know more</button>
     </div>
     ${totalH > 0 ? `<div class="council-horizon-count">${totalH} voice${totalH !== 1 ? 's' : ''} so far.</div>` : ''}
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(140,170,210,0.07);">
+      <div class="council-horizon-q">Where should the first physical residency be?</div>
+      <div class="council-horizon-btns">
+        <button class="council-horizon-btn${locVote === 'brandenburg' ? ' active' : ''}" onclick="voteHorizonLocation('brandenburg')">Brandenburg, near Berlin</button>
+        <button class="council-horizon-btn${locVote === 'noto' ? ' active' : ''}" onclick="voteHorizonLocation('noto')">Noto Peninsula, Japan</button>
+        <button class="council-horizon-btn${locVote === 'other' ? ' active' : ''}" onclick="voteHorizonLocation('other')">Somewhere else</button>
+      </div>
+      ${totalL > 0 ? `<div class="council-horizon-count">${brandCount > 0 ? brandCount + ' Brandenburg' : ''}${brandCount > 0 && (notoCount > 0 || otherCount > 0) ? ' · ' : ''}${notoCount > 0 ? notoCount + ' Noto' : ''}${notoCount > 0 && otherCount > 0 ? ' · ' : ''}${otherCount > 0 ? otherCount + ' somewhere else' : ''} — ${totalL} voice${totalL !== 1 ? 's' : ''} so far.</div>` : ''}
+    </div>
   </div>`;
 
   el.innerHTML = html;
@@ -11656,6 +11681,14 @@ function submitCouncilProposal() {
 function voteHorizon(choice) {
   const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
   councilData.horizon[me] = councilData.horizon[me] === choice ? null : choice; // toggle
+  saveCouncil();
+  renderCouncil();
+}
+
+function voteHorizonLocation(choice) {
+  const me = typeof getCurrentSession === 'function' ? getCurrentSession() : 'anon';
+  councilData.horizonLocation = councilData.horizonLocation || {};
+  councilData.horizonLocation[me] = councilData.horizonLocation[me] === choice ? null : choice; // toggle
   saveCouncil();
   renderCouncil();
 }
