@@ -23457,6 +23457,274 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
 })();
 // ===== END MAKER'S STUDIO =====
 
+// ===== VILLAGE SIMULATION ENGINE ===========================================
+// Pre-generated content bank with timed release. No external API.
+// Bonfire: 3x per day (every 8h). Tables: 1x per day. Process notes: 1x per day.
+// Replace SIM_BANK entries with real content when ready — the timer system stays.
+// ===========================================================================
+(function() {
+  const BANK_KEY     = 'clayVillageSimBank';
+  const SCHEDULE_KEY = 'clayVillageSimSchedule';
+
+  const INTERVALS = {
+    bonfire : 8  * 60 * 60 * 1000,   // 8h  → 3x per day
+    table   : 24 * 60 * 60 * 1000,   // 24h → 1x per day
+    process : 24 * 60 * 60 * 1000,   // 24h → 1x per day
+  };
+
+  // ── Placeholder content bank ─────────────────────────────────────
+  // User will replace these entries with their real content bank.
+  // Structure is intentional — keep it when swapping content in.
+  const DEFAULT_BANK = {
+
+    bonfire: [
+      { persona: 'Maya',   text: 'Finally got the moonjar join right. Third attempt. The trick was wetting my hands less, not more.' },
+      { persona: 'James',  text: 'Opened the kiln this morning. The reduction worked. One piece has a flash I\'ve never seen before — orange bleeding into grey at the shoulder.' },
+      { persona: 'Yuki',   text: 'The raku fired at dusk. The smoke reduction took twenty minutes. By the time we opened it the piece was warm as a living thing.' },
+      { persona: 'Sophia', text: 'Three days of rain. Perfect for clay. Everything is drying slowly and I think the cracks in the last batch were from drying too fast.' },
+      { persona: 'Oliver', text: 'Went back to basics this week. Just centering. An hour every morning. Forgot how meditative the wheel is when you remove the pressure to make something.' },
+      { persona: 'Maya',   text: 'The porcelain I ordered from Korea arrived. Different from anything I\'ve thrown before — it wants to collapse at the rim if you push it.' },
+      { persona: 'James',  text: 'A student asked me today why I still throw at all when I\'ve been making ceramics for twelve years. I said: because it still surprises me.' },
+      { persona: 'Yuki',   text: 'Watching the fire is as important as loading the kiln. The colour of the flame tells you everything.' },
+      { persona: 'Sophia', text: 'Made a mistake today that turned into the best piece in the batch. Accidentally threw the wall too thin and it collapsed outward into a form I couldn\'t have planned.' },
+      { persona: 'Oliver', text: 'Someone came into the studio who had never touched clay. Their first bowl had a quality mine lost somewhere around year four. I need to think about that.' },
+      { persona: 'Maya',   text: 'The drying shelf is full. The studio smells like wet earth. This is the best part of the whole process.' },
+      { persona: 'James',  text: 'Trimming is the most underrated skill in ceramics. The foot ring is the signature. Collectors know this.' },
+      { persona: 'Yuki',   text: 'There is a pause between when the clay is centred and when you open it that feels like taking a breath before speaking. I live in that pause.' },
+      { persona: 'Sophia', text: 'Mixing a new glaze from scratch for the first time in two years. The variables are: temperature, time, thickness, and luck.' },
+      { persona: 'Oliver', text: 'The kiln takes eight hours to fire and twenty to cool. Most of making ceramics is waiting. I used to find this frustrating. Now it feels honest.' },
+    ],
+
+    table: [
+      {
+        persona: 'Maya', personaId: 'profile-maya',
+        topic: 'How do you decide when a piece is finished?',
+        messages: [
+          { fromName: 'Maya',   text: 'I keep adding to things until they break or I force myself to stop. Is that a system?' },
+          { fromName: 'James',  text: 'I have a rule: if I pick it up a second time to change something, I put it down and walk away for a day.' },
+          { fromName: 'Yuki',   text: 'Finished is when the piece no longer asks you for anything. You\'ll know.' },
+        ]
+      },
+      {
+        persona: 'James', personaId: 'user2',
+        topic: 'What\'s a skill you\'ve been trying to improve for years?',
+        messages: [
+          { fromName: 'James',  text: 'Handles. I have been making mugs for twelve years and handles still feel like they belong to a different tradition than the body.' },
+          { fromName: 'Sophia', text: 'Glaze calculation. I understand the chemistry but something gets lost between the recipe and the result.' },
+          { fromName: 'Oliver', text: 'Patience with drying. I keep rushing it. I keep cracking things. Twenty years.' },
+        ]
+      },
+      {
+        persona: 'Yuki', personaId: 'user3',
+        topic: 'Do you listen to anything while you make?',
+        messages: [
+          { fromName: 'Yuki',   text: 'Silence. The wheel has its own sound. Adding anything else is competing with it.' },
+          { fromName: 'Maya',   text: 'Podcasts when throwing, nothing when trimming. Trimming requires all of me.' },
+          { fromName: 'Sophia', text: 'Music when I\'m confident, silence when I\'m uncertain. I can tell how a session is going by what I need to hear.' },
+        ]
+      },
+      {
+        persona: 'Sophia', personaId: 'npc-sophia',
+        topic: 'What\'s the piece you made that surprised you most?',
+        messages: [
+          { fromName: 'Sophia', text: 'A bowl that collapsed during trimming and became something better than what I\'d planned. I\'ve been trying to make it again. Can\'t.' },
+          { fromName: 'Oliver', text: 'A teapot where everything was slightly wrong and somehow it worked. The pour is perfect. No idea why.' },
+          { fromName: 'Maya',   text: 'A vessel that cracked in the kiln in a way that made it look carved. I said it was intentional. It wasn\'t.' },
+        ]
+      },
+      {
+        persona: 'Oliver', personaId: 'user6',
+        topic: 'What do you wish you\'d learned earlier?',
+        messages: [
+          { fromName: 'Oliver', text: 'That slow drying fixes more problems than any other single thing I can control.' },
+          { fromName: 'James',  text: 'To throw less and observe more. I learned this at year ten. Should have been year two.' },
+          { fromName: 'Yuki',   text: 'That the clay knows what it wants to be. Your job is to listen.' },
+        ]
+      },
+    ],
+
+    process: [
+      { persona: 'Maya',   personaId: 'profile-maya', visibility: 'village',
+        text: 'Third attempt at the moonjar form this week. The join is holding. Wrapped it in plastic and put it in the corner. Will not touch it for three days.' },
+      { persona: 'James',  personaId: 'user2',        visibility: 'village',
+        text: 'Loaded the kiln with the reduction series. Eleven pieces, two test tiles. Firing tomorrow at 6am. The flame should go orange around cone 8.' },
+      { persona: 'Yuki',   personaId: 'user3',        visibility: 'village',
+        text: 'Mixed the new ash glaze: 40% wood ash, 20% feldspar, 20% silica, 20% kaolin. Test tile goes in this week. Expecting matte with movement.' },
+      { persona: 'Sophia', personaId: 'npc-sophia',   visibility: 'village',
+        text: 'Started a new series of handled cups — trying to make the handle feel like it grew from the body rather than being attached. Not there yet.' },
+      { persona: 'Oliver', personaId: 'user6',        visibility: 'village',
+        text: 'Week of basics. Centering only. An hour each morning. By day three the muscle memory came back. By day five I started seeing where I\'d been compensating.' },
+      { persona: 'Maya',   personaId: 'profile-maya', visibility: 'village',
+        text: 'Opened the kiln. The crystalline glaze ran more than expected — one piece is ruined, one is extraordinary. The third is somewhere in between and I don\'t know how I feel about it.' },
+      { persona: 'James',  personaId: 'user2',        visibility: 'village',
+        text: 'Trimming day. Ten pieces leather-hard and waiting. The foot ring is the signature. I tell my students this every time. Today I reminded myself.' },
+      { persona: 'Yuki',   personaId: 'user3',        visibility: 'village',
+        text: 'Tea bowl series: attempting wabi-sabi intentionally is a contradiction. Today I threw twenty bowls without trying for anything and found two that are right.' },
+      { persona: 'Sophia', personaId: 'npc-sophia',   visibility: 'village',
+        text: 'The large sculpture cracked during drying. Same place as last time. There is air trapped somewhere I can\'t find. This is the problem I\'ve been trying to solve for a year.' },
+      { persona: 'Oliver', personaId: 'user6',        visibility: 'village',
+        text: 'First firing of the year at cone 10. The studio has been cold and the clay has been stiff. Everything took longer than it should. The kiln opened an hour ago. Waiting to cool.' },
+    ],
+  };
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function getBank() {
+    const stored = localStorage.getItem(BANK_KEY);
+    if (stored) {
+      try { return JSON.parse(stored); } catch(e) {}
+    }
+    return DEFAULT_BANK;
+  }
+
+  function getSchedule() {
+    const stored = localStorage.getItem(SCHEDULE_KEY);
+    if (stored) {
+      try { return JSON.parse(stored); } catch(e) {}
+    }
+    return {
+      bonfire : { lastTs: 0, nextIndex: 0 },
+      table   : { lastTs: 0, nextIndex: 0 },
+      process : { lastTs: 0, nextIndex: 0 },
+    };
+  }
+
+  function saveSchedule(s) {
+    localStorage.setItem(SCHEDULE_KEY, JSON.stringify(s));
+  }
+
+  // ── Release functions ─────────────────────────────────────────────
+  function releaseBonfire(item) {
+    if (typeof addBonfireMessage === 'function') {
+      addBonfireMessage(item.persona, item.text, '', false);
+    }
+  }
+
+  function releaseTable(item) {
+    // Build a table object compatible with cafeTables structure
+    const now = Date.now();
+    const tableId = 'sim_table_' + now;
+
+    // Stagger message timestamps over the past few hours so the table looks organic
+    const msgs = (item.messages || []).map((m, i) => ({
+      from     : item.personaId || 'sim-' + item.persona.toLowerCase(),
+      fromName : m.fromName,
+      text     : m.text,
+      ts       : now - (item.messages.length - 1 - i) * 45 * 60 * 1000, // 45-min gaps
+    }));
+
+    const table = {
+      id          : tableId,
+      topic       : item.topic,
+      createdBy   : item.personaId || 'sim',
+      createdAt   : now - msgs.length * 45 * 60 * 1000,
+      lastActivity: now,
+      messages    : msgs,
+      sim         : true, // flag so we can identify sim-created tables
+    };
+
+    // cafeTables is a global var — push and persist
+    if (typeof cafeTables !== 'undefined') {
+      cafeTables.push(table);
+      localStorage.setItem('clayVillageCommonsTables', JSON.stringify(cafeTables));
+    }
+  }
+
+  function releaseProcess(item) {
+    const PB_KEY = 'clayVillageProcessBoard';
+    const entries = JSON.parse(localStorage.getItem(PB_KEY) || '[]');
+    entries.push({
+      id        : 'sim-pb-' + Date.now(),
+      authorId  : item.personaId || 'sim-' + item.persona.toLowerCase(),
+      text      : item.text,
+      visibility: item.visibility || 'village',
+      imageData : null,
+      ts        : Date.now(),
+      sim       : true,
+    });
+    localStorage.setItem(PB_KEY, JSON.stringify(entries));
+  }
+
+  const RELEASE_FNS = { bonfire: releaseBonfire, table: releaseTable, process: releaseProcess };
+
+  // ── Core check — called on load and every 5 minutes ───────────────
+  function checkAndRelease() {
+    const bank     = getBank();
+    const schedule = getSchedule();
+    const now      = Date.now();
+    let changed    = false;
+
+    ['bonfire', 'table', 'process'].forEach(type => {
+      const items = bank[type];
+      if (!items || !items.length) return;
+
+      const s        = schedule[type];
+      const elapsed  = now - (s.lastTs || 0);
+      const interval = INTERVALS[type];
+
+      if (elapsed >= interval) {
+        const idx  = (s.nextIndex || 0) % items.length;
+        const item = items[idx];
+        RELEASE_FNS[type](item);
+        s.lastTs    = now;
+        s.nextIndex = idx + 1;
+        changed     = true;
+      }
+    });
+
+    if (changed) saveSchedule(schedule);
+  }
+
+  // ── Public API ────────────────────────────────────────────────────
+  // window.simRelease('bonfire') — force-release next item of a type (testing)
+  // window.simStatus()           — return schedule snapshot
+  // window.simResetSchedule()    — reset all lastTs to 0 (triggers immediate release)
+
+  window.simRelease = function(type) {
+    const bank     = getBank();
+    const schedule = getSchedule();
+    const items    = bank[type];
+    if (!items || !items.length) { console.warn('Sim: no bank entries for', type); return; }
+    const idx  = (schedule[type].nextIndex || 0) % items.length;
+    RELEASE_FNS[type](items[idx]);
+    schedule[type].lastTs    = Date.now();
+    schedule[type].nextIndex = idx + 1;
+    saveSchedule(schedule);
+    console.log('Sim: released', type, idx, '→', items[idx].persona || items[idx].topic);
+  };
+
+  window.simStatus = function() {
+    const s = getSchedule();
+    const now = Date.now();
+    ['bonfire','table','process'].forEach(type => {
+      const due = Math.max(0, INTERVALS[type] - (now - s[type].lastTs));
+      const mins = Math.round(due / 60000);
+      console.log(type + ': next in ' + (mins > 60 ? Math.round(mins/60) + 'h' : mins + 'm') + ' · index ' + s[type].nextIndex);
+    });
+    return s;
+  };
+
+  window.simResetSchedule = function() {
+    localStorage.removeItem(SCHEDULE_KEY);
+    console.log('Sim: schedule reset — will release on next check');
+  };
+
+  // ── Replace bank content ──────────────────────────────────────────
+  // Call window.simSetBank({ bonfire:[...], table:[...], process:[...] })
+  // to swap in the real content bank without touching code.
+  window.simSetBank = function(newBank) {
+    localStorage.setItem(BANK_KEY, JSON.stringify(newBank));
+    console.log('Sim: bank updated — bonfire:', newBank.bonfire?.length, 'table:', newBank.table?.length, 'process:', newBank.process?.length);
+  };
+
+  // ── Boot: check on load (after 2s to let everything else init) ────
+  setTimeout(checkAndRelease, 2000);
+
+  // ── Periodic check every 5 minutes ───────────────────────────────
+  setInterval(checkAndRelease, 5 * 60 * 1000);
+
+})();
+// ===== END VILLAGE SIMULATION ENGINE =====
+
 </script>
 </body>
 </html>
