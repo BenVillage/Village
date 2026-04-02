@@ -3897,6 +3897,110 @@
   #admin-panel, #flyout-bonfire:not(.bonfire-fs-flyout) {
     transition: filter 0.5s ease;
   }
+
+  /* ── Mura Firefly ─────────────────────────────────────────── */
+  #mura-firefly {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #c8a84b;
+    cursor: pointer;
+    z-index: 10500;
+    display: none;
+    animation: mura-breathe 3.5s ease-in-out infinite;
+  }
+  #mura-firefly.mura-active {
+    animation: mura-glow 2.5s ease-in-out infinite;
+  }
+  @keyframes mura-breathe {
+    0%, 100% { opacity: 0.35; box-shadow: 0 0 5px rgba(200,168,75,0.25); transform: scale(1); }
+    50%       { opacity: 0.55; box-shadow: 0 0 10px rgba(200,168,75,0.4); transform: scale(1.15); }
+  }
+  @keyframes mura-glow {
+    0%, 100% { opacity: 0.8;  box-shadow: 0 0 8px rgba(200,168,75,0.6), 0 0 18px rgba(200,168,75,0.25); transform: scale(1); }
+    50%       { opacity: 1;   box-shadow: 0 0 14px rgba(200,168,75,0.85), 0 0 28px rgba(200,168,75,0.4); transform: scale(1.25); }
+  }
+
+  /* ── Mura Panel ───────────────────────────────────────────── */
+  #mura-panel {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    z-index: 10600 !important;
+    background: #ffffff !important;
+    display: none;
+    overflow-y: auto !important;
+  }
+  #mura-panel.mura-open { display: block !important; }
+  .mura-panel-inner {
+    position: relative !important;
+    max-width: 460px !important;
+    width: 90% !important;
+    margin: 64px auto 64px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  .mura-msg {
+    font-size: 15px;
+    line-height: 1.85;
+    color: #262626;
+    white-space: pre-line;
+    margin-bottom: 28px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: 0.01em;
+    display: block;
+  }
+  .mura-reply {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    outline: none !important;
+    resize: vertical !important;
+    color: #262626 !important;
+    background: #fafafa !important;
+    padding: 12px 14px !important;
+    min-height: 96px !important;
+  }
+  .mura-reply::placeholder { color: #bbb !important; }
+  .mura-btn-row {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin-top: 14px !important;
+  }
+  .mura-send-btn {
+    background: #262626 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    padding: 11px 24px !important;
+    letter-spacing: 0.04em !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  }
+  .mura-send-btn:hover { background: #444 !important; }
+  .mura-clearfix { clear: both !important; }
+  .mura-x {
+    position: absolute !important;
+    top: -48px !important;
+    right: 0 !important;
+    background: none !important;
+    border: none !important;
+    font-size: 22px !important;
+    color: #bbb !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    padding: 4px !important;
+  }
+  .mura-x:hover { color: #888 !important; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -4040,6 +4144,108 @@ function logPresence(location) {
 // Log on arrival + heartbeat every 30s
 document.addEventListener('DOMContentLoaded', () => logPresence('map'));
 setInterval(() => logPresence(_presenceLocation), 30000);
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// MURA — LAYER 4: FIREFLY UI COMPONENT
+// ═══════════════════════════════════════════════════════════════
+
+// Seed moment — visible immediately for testing
+window._muraMoment = {
+  message: 'ようこそ。\nWelcome.\n\nYou found your way here. That already means something.\n\nTake your time.'
+};
+
+// Every building overlay Mura inhabits
+const _MURA_OVERLAYS = [
+  'building-page-overlay', 'cafe-room-overlay', 'observatory-overlay',
+  'mentor-overlay', 'studio-quarter-overlay', 'library-overlay',
+  'gallery-overlay', 'bonfire-manifesto-overlay', 'exchange-overlay',
+  'school-overlay', 'maker-studio-overlay', 'roundtable-overlay',
+  'cognitive-agency-overlay'
+];
+
+function _anyBuildingOpen() {
+  return _MURA_OVERLAYS.some(id => {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    return el.classList.contains('open') || el.style.display === 'flex';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ── Create firefly dot ───────────────────────────────────────
+  const fly = document.createElement('div');
+  fly.id = 'mura-firefly';
+  document.body.appendChild(fly);
+
+  // ── Create panel ─────────────────────────────────────────────
+  const panel = document.createElement('div');
+  panel.id = 'mura-panel';
+  panel.innerHTML = `
+    <div class="mura-panel-inner">
+      <button class="mura-x">×</button>
+      <div class="mura-msg"></div>
+      <textarea class="mura-reply" placeholder="You don't have to respond." rows="4"></textarea>
+      <div class="mura-btn-row">
+        <button class="mura-send-btn">Send →</button>
+      </div>
+    </div>`;
+  document.body.appendChild(panel);
+
+  // ── Keep firefly in sync with overlay state ──────────────────
+  function syncFirefly() {
+    const open = _anyBuildingOpen();
+    fly.style.display = open ? 'block' : 'none';
+    fly.classList.toggle('mura-active', open && !!window._muraMoment);
+  }
+  // Watch for class/style changes on any overlay
+  new MutationObserver(syncFirefly).observe(document.body, {
+    attributes: true, attributeFilter: ['class', 'style'], subtree: true
+  });
+  setInterval(syncFirefly, 800); // safety poll for _muraMoment changes
+
+  // ── Firefly click → open panel ───────────────────────────────
+  fly.addEventListener('click', function() {
+    if (!window._muraMoment) return;
+    panel.querySelector('.mura-msg').textContent = window._muraMoment.message;
+    panel.querySelector('.mura-reply').value = '';
+    panel.classList.add('mura-open');
+    setTimeout(() => panel.querySelector('.mura-reply').focus(), 60);
+  });
+
+  // ── Close — preserves moment so firefly stays active ─────────
+  function closePanel() { panel.classList.remove('mura-open'); }
+  panel.querySelector('.mura-x').addEventListener('click', closePanel);
+  panel.addEventListener('click', e => { if (e.target === panel) closePanel(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && panel.classList.contains('mura-open')) closePanel();
+  });
+
+  // ── Prevent building overlay close from triggering when inside panel ─
+  panel.addEventListener('keydown', e => e.stopPropagation());
+
+  // ── Send response — only clears moment when something is sent ─
+  panel.querySelector('.mura-send-btn').addEventListener('click', function() {
+    const text = panel.querySelector('.mura-reply').value.trim();
+    if (text) {
+      if (window._muraMoment && typeof logToMura === 'function') {
+        logToMura({
+          building: 'mura',
+          entry_type: 'response_to_mura',
+          content: text,
+          mura_triggered: true,
+          member_responded: true,
+          member_response: text,
+        });
+      }
+      window._muraMoment = null; // only clears once they've actually responded
+    }
+    closePanel();
+  });
+
+});
 </script>
 </head>
 <body>
