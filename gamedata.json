@@ -1,0 +1,2670 @@
+{
+  "clayVillageWalls": [],
+  "clayVillageTriggerAreas": {
+    "School": [
+      {
+        "x": 390.0160000000053,
+        "y": 243
+      },
+      {
+        "x": 301.0160000000053,
+        "y": 285
+      },
+      {
+        "x": 332.0160000000053,
+        "y": 311
+      },
+      {
+        "x": 493.0160000000053,
+        "y": 230
+      },
+      {
+        "x": 466.0160000000053,
+        "y": 206
+      }
+    ],
+    "Library / Archive": [
+      {
+        "x": 195,
+        "y": 395.1639999999929
+      },
+      {
+        "x": 171,
+        "y": 418.1639999999929
+      },
+      {
+        "x": 209,
+        "y": 439.1639999999929
+      },
+      {
+        "x": 291,
+        "y": 389.1639999999929
+      },
+      {
+        "x": 264,
+        "y": 361.1639999999929
+      }
+    ],
+    "Commons / Caf\u00e9": [
+      {
+        "x": 331,
+        "y": 532.7639999999919
+      },
+      {
+        "x": 359,
+        "y": 514.7639999999919
+      },
+      {
+        "x": 418,
+        "y": 561.7639999999919
+      },
+      {
+        "x": 271,
+        "y": 651.7639999999919
+      },
+      {
+        "x": 217,
+        "y": 614.7639999999919
+      },
+      {
+        "x": 247,
+        "y": 582.7639999999919
+      }
+    ],
+    "Mentor Cluster": [
+      {
+        "x": 632,
+        "y": 230.20079999998808
+      },
+      {
+        "x": 628,
+        "y": 250.20079999998808
+      },
+      {
+        "x": 726,
+        "y": 251.20079999998808
+      },
+      {
+        "x": 800,
+        "y": 223.20079999998808
+      },
+      {
+        "x": 753,
+        "y": 194.20079999998808
+      },
+      {
+        "x": 656,
+        "y": 206.20079999998808
+      }
+    ],
+    "Bonfire Plaza": [
+      {
+        "x": 655,
+        "y": 327.2007999999881
+      },
+      {
+        "x": 622,
+        "y": 355.2007999999881
+      },
+      {
+        "x": 624,
+        "y": 390.2007999999881
+      },
+      {
+        "x": 640,
+        "y": 412.2007999999881
+      },
+      {
+        "x": 678,
+        "y": 429.2007999999881
+      },
+      {
+        "x": 714,
+        "y": 441.2007999999881
+      },
+      {
+        "x": 764,
+        "y": 435.2007999999881
+      },
+      {
+        "x": 807,
+        "y": 412.2007999999881
+      },
+      {
+        "x": 834,
+        "y": 374.2007999999881
+      },
+      {
+        "x": 822,
+        "y": 343.2007999999881
+      },
+      {
+        "x": 785,
+        "y": 324.2007999999881
+      },
+      {
+        "x": 740,
+        "y": 312.2007999999881
+      },
+      {
+        "x": 700,
+        "y": 308.2007999999881
+      }
+    ],
+    "Studio Quarter": [
+      {
+        "x": 881,
+        "y": 228.20079999998808
+      },
+      {
+        "x": 849,
+        "y": 258.2007999999881
+      },
+      {
+        "x": 935,
+        "y": 307.2007999999881
+      },
+      {
+        "x": 994,
+        "y": 341.2007999999881
+      },
+      {
+        "x": 1054,
+        "y": 370.2007999999881
+      },
+      {
+        "x": 1106,
+        "y": 338.2007999999881
+      },
+      {
+        "x": 1078,
+        "y": 306.2007999999881
+      },
+      {
+        "x": 1025,
+        "y": 276.2007999999881
+      },
+      {
+        "x": 967,
+        "y": 265.2007999999881
+      }
+    ],
+    "Observatory / World": [
+      {
+        "x": 1209,
+        "y": 357.94239999998666
+      },
+      {
+        "x": 1181,
+        "y": 387.94239999998666
+      },
+      {
+        "x": 1188,
+        "y": 415.94239999998666
+      },
+      {
+        "x": 1213,
+        "y": 432.94239999998666
+      },
+      {
+        "x": 1255,
+        "y": 437.94239999998666
+      },
+      {
+        "x": 1304,
+        "y": 460.94239999998666
+      },
+      {
+        "x": 1346,
+        "y": 440.94239999998666
+      }
+    ],
+    "Gallery / Market": [
+      {
+        "x": 1090,
+        "y": 529.9423999999867
+      },
+      {
+        "x": 1052,
+        "y": 572.9423999999867
+      },
+      {
+        "x": 1145,
+        "y": 644.9423999999867
+      },
+      {
+        "x": 1243,
+        "y": 606.9423999999867
+      },
+      {
+        "x": 1285,
+        "y": 537.9423999999867
+      },
+      {
+        "x": 1176,
+        "y": 478.94239999998666
+      }
+    ],
+    "Residency / Exchange": [
+      {
+        "x": 1213,
+        "y": 132
+      },
+      {
+        "x": 1175,
+        "y": 133
+      },
+      {
+        "x": 1164,
+        "y": 157
+      },
+      {
+        "x": 1201,
+        "y": 189
+      },
+      {
+        "x": 1245,
+        "y": 209
+      },
+      {
+        "x": 1282,
+        "y": 223
+      },
+      {
+        "x": 1330,
+        "y": 218
+      },
+      {
+        "x": 1323,
+        "y": 201
+      }
+    ]
+  },
+  "clayVillageBannerOffsets": {
+    "School": {
+      "dx": -6.903569372481253,
+      "dy": -3.1004029936672026
+    },
+    "Library / Archive": {
+      "dx": -42.12032239493378,
+      "dy": 5.317271157167537
+    },
+    "Commons / Caf\u00e9": {
+      "dx": -30.625791594703536,
+      "dy": 6.887795048934994
+    },
+    "Mentor Cluster": {
+      "dx": 9.891767415083324,
+      "dy": 19.091594703511824
+    },
+    "Bonfire Plaza": {
+      "dx": -3.5506620610248403,
+      "dy": -68.12343120322402
+    },
+    "Studio Quarter": {
+      "dx": 54.20437535981598,
+      "dy": -34.11076568796774
+    },
+    "Observatory / World": {
+      "dx": 26.95912492803701,
+      "dy": -2.108750719631527
+    },
+    "Gallery / Market": {
+      "dx": 45.088370754174115,
+      "dy": -18.49015544041464
+    },
+    "Residency / Exchange": {
+      "dx": 48.92774899251596,
+      "dy": 11.21278065630399
+    }
+  },
+  "clayVillageFireZones": [
+    [
+      {
+        "x": 740,
+        "y": 367
+      },
+      {
+        "x": 731,
+        "y": 350
+      },
+      {
+        "x": 725,
+        "y": 340
+      }
+    ],
+    [
+      {
+        "x": 702,
+        "y": 364
+      },
+      {
+        "x": 709,
+        "y": 351
+      },
+      {
+        "x": 718,
+        "y": 337
+      }
+    ],
+    [
+      {
+        "x": 735,
+        "y": 377
+      },
+      {
+        "x": 717,
+        "y": 379
+      },
+      {
+        "x": 707,
+        "y": 369
+      }
+    ],
+    [
+      {
+        "x": 729,
+        "y": 370
+      },
+      {
+        "x": 723,
+        "y": 358
+      },
+      {
+        "x": 719,
+        "y": 343
+      }
+    ]
+  ],
+  "clayVillageSmokeZones": [
+    [
+      {
+        "x": 725,
+        "y": 344
+      },
+      {
+        "x": 734,
+        "y": 322
+      },
+      {
+        "x": 734,
+        "y": 302
+      },
+      {
+        "x": 734,
+        "y": 292
+      },
+      {
+        "x": 733,
+        "y": 275
+      },
+      {
+        "x": 726,
+        "y": 267
+      },
+      {
+        "x": 713,
+        "y": 257
+      },
+      {
+        "x": 702,
+        "y": 262
+      },
+      {
+        "x": 700,
+        "y": 280
+      },
+      {
+        "x": 703,
+        "y": 298
+      },
+      {
+        "x": 705,
+        "y": 319
+      }
+    ],
+    [
+      {
+        "x": 727,
+        "y": 50
+      },
+      {
+        "x": 732,
+        "y": 39
+      },
+      {
+        "x": 738,
+        "y": 29
+      },
+      {
+        "x": 744,
+        "y": 22
+      },
+      {
+        "x": 746,
+        "y": 8
+      },
+      {
+        "x": 734,
+        "y": 1
+      },
+      {
+        "x": 708,
+        "y": 2
+      },
+      {
+        "x": 712,
+        "y": 17
+      },
+      {
+        "x": 718,
+        "y": 30
+      }
+    ],
+    [
+      {
+        "x": 585,
+        "y": 96
+      },
+      {
+        "x": 594,
+        "y": 85
+      },
+      {
+        "x": 601,
+        "y": 75
+      },
+      {
+        "x": 600,
+        "y": 67
+      },
+      {
+        "x": 612,
+        "y": 56
+      },
+      {
+        "x": 616,
+        "y": 41
+      },
+      {
+        "x": 607,
+        "y": 29
+      },
+      {
+        "x": 588,
+        "y": 27
+      },
+      {
+        "x": 573,
+        "y": 30
+      },
+      {
+        "x": 574,
+        "y": 45
+      },
+      {
+        "x": 577,
+        "y": 64
+      }
+    ],
+    [
+      {
+        "x": 185,
+        "y": 273
+      },
+      {
+        "x": 185,
+        "y": 260
+      },
+      {
+        "x": 187,
+        "y": 252
+      },
+      {
+        "x": 194,
+        "y": 245
+      },
+      {
+        "x": 180,
+        "y": 235
+      },
+      {
+        "x": 178,
+        "y": 226
+      },
+      {
+        "x": 164,
+        "y": 211
+      },
+      {
+        "x": 166,
+        "y": 204
+      },
+      {
+        "x": 152,
+        "y": 197
+      },
+      {
+        "x": 146,
+        "y": 209
+      },
+      {
+        "x": 132,
+        "y": 212
+      },
+      {
+        "x": 133,
+        "y": 227
+      },
+      {
+        "x": 140,
+        "y": 235
+      },
+      {
+        "x": 145,
+        "y": 243
+      },
+      {
+        "x": 149,
+        "y": 251
+      },
+      {
+        "x": 149,
+        "y": 262
+      },
+      {
+        "x": 160,
+        "y": 264
+      }
+    ]
+  ],
+  "clayVillageProfiles": [
+    {
+      "id": "user1",
+      "name": "Maya",
+      "city": "Seattle, WA",
+      "country": "US",
+      "identity": "Wheel thrower exploring textured forms",
+      "bio": "Fell in love with wheel throwing five years ago. There is nothing like the feeling of a bowl taking shape under your hands.",
+      "whatClayMeans": "Meditative focus \u2014 my time at the wheel is when everything else fades away",
+      "currentWork": "A set of textured stoneware bowls with carved surface patterns",
+      "feedbackPreference": "Direct and honest, especially about form and proportion",
+      "mainPractice": "wheel",
+      "level": "intermediate",
+      "yearsPracticing": 5,
+      "currentFocus": "Trimming and surface texture",
+      "currentPath": "Even wall thickness",
+      "currentStreak": 12,
+      "longestStreak": 30,
+      "tags": [
+        "stoneware",
+        "texture",
+        "bowls"
+      ],
+      "openToChat": true,
+      "openToCritique": true,
+      "openToMeetups": true,
+      "homeBuilding": "Studio Quarter",
+      "formsLoved": "bowls, cups",
+      "materials": "stoneware",
+      "orientation": "functional",
+      "firingInterests": "cone 6 oxidation, exploring soda firing",
+      "glazeInterests": "ash glazes, layered glazes for depth",
+      "sharedStudio": true,
+      "kilnAccess": true,
+      "wheelAccess": true,
+      "instagram": "@maya.throws",
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjbCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY2wpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2M4NzI0YSIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxODUiIHJ4PSI2OCIgcnk9IjQwIiBmaWxsPSIjYjg2MDQwIi8+PHJlY3QgeD0iODIiIHk9IjE0OCIgd2lkdGg9IjM2IiBoZWlnaHQ9IjM4IiByeD0iMTAiIGZpbGw9IiNjYzc4NTUiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iNjAiIHJ4PSI1NSIgcnk9IjU4IiBmaWxsPSIjMTQwYTAyIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExNSIgcng9IjUwIiByeT0iNTYiIGZpbGw9IiNjYzc4NTUiLz48cGF0aCBkPSJNNDYsODggUTUyLDMyIDEwMCwyOCBRMTQ4LDMyIDE1NCw4OCBRMTQwLDU1IDEwMCw1MiBRNjAsNTUgNDYsODhaIiBmaWxsPSIjMTQwYTAyIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMjYiIHI9IjIyIiBmaWxsPSIjMTQwYTAyIi8+PGVsbGlwc2UgY3g9IjQ0IiBjeT0iMTEyIiByeD0iOSIgcnk9IjEzIiBmaWxsPSIjYmY2YzQ4Ii8+PGVsbGlwc2UgY3g9IjE1NiIgY3k9IjExMiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iI2JmNmM0OCIvPjxlbGxpcHNlIGN4PSI3NiIgY3k9IjEwMyIgcng9IjEyIiByeT0iOSIgZmlsbD0id2hpdGUiLz48ZWxsaXBzZSBjeD0iMTI0IiBjeT0iMTAzIiByeD0iMTIiIHJ5PSI5IiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9Ijc4IiBjeT0iMTA0IiByPSI4IiBmaWxsPSIjMWUwYzA0Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMTA0IiByPSI4IiBmaWxsPSIjMWUwYzA0Ii8+PGNpcmNsZSBjeD0iODAiIGN5PSIxMDEiIHI9IjMiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMTI4IiBjeT0iMTAxIiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik02NSw5MCBRNzYsODUgODcsOTAiIHN0cm9rZT0iIzFlMGMwNCIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTEzLDkwIFExMjQsODUgMTM1LDkwIiBzdHJva2U9IiMxZTBjMDQiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExOCIgcng9IjUiIHJ5PSI0IiBmaWxsPSIjYjg2MDQwIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNODYsMTM2IFExMDAsMTQ1IDExNCwxMzYiIHN0cm9rZT0iIzhjMzgyMCIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik04OCwxMzYgUTEwMCwxNDMgMTEyLDEzNiBRMTAwLDE0OCA4OCwxMzZaIiBmaWxsPSIjYTA0MDMwIi8+PGVsbGlwc2UgY3g9IjY2IiBjeT0iMTIyIiByeD0iMTAiIHJ5PSI3IiBmaWxsPSIjZTA4MDYwIiBvcGFjaXR5PSIwLjM1Ii8+PGVsbGlwc2UgY3g9IjEzNCIgY3k9IjEyMiIgcng9IjEwIiByeT0iNyIgZmlsbD0iI2UwODA2MCIgb3BhY2l0eT0iMC4zNSIvPjwvZz48L3N2Zz4=",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjbCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY2wpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2M4NzI0YSIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxODUiIHJ4PSI2OCIgcnk9IjQwIiBmaWxsPSIjYjg2MDQwIi8+PHJlY3QgeD0iODIiIHk9IjE0OCIgd2lkdGg9IjM2IiBoZWlnaHQ9IjM4IiByeD0iMTAiIGZpbGw9IiNjYzc4NTUiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iNjAiIHJ4PSI1NSIgcnk9IjU4IiBmaWxsPSIjMTQwYTAyIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExNSIgcng9IjUwIiByeT0iNTYiIGZpbGw9IiNjYzc4NTUiLz48cGF0aCBkPSJNNDYsODggUTUyLDMyIDEwMCwyOCBRMTQ4LDMyIDE1NCw4OCBRMTQwLDU1IDEwMCw1MiBRNjAsNTUgNDYsODhaIiBmaWxsPSIjMTQwYTAyIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMjYiIHI9IjIyIiBmaWxsPSIjMTQwYTAyIi8+PGVsbGlwc2UgY3g9IjQ0IiBjeT0iMTEyIiByeD0iOSIgcnk9IjEzIiBmaWxsPSIjYmY2YzQ4Ii8+PGVsbGlwc2UgY3g9IjE1NiIgY3k9IjExMiIgcng9IjkiIHJ5PSIxMyIgZmlsbD0iI2JmNmM0OCIvPjxlbGxpcHNlIGN4PSI3NiIgY3k9IjEwMyIgcng9IjEyIiByeT0iOSIgZmlsbD0id2hpdGUiLz48ZWxsaXBzZSBjeD0iMTI0IiBjeT0iMTAzIiByeD0iMTIiIHJ5PSI5IiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9Ijc4IiBjeT0iMTA0IiByPSI4IiBmaWxsPSIjMWUwYzA0Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMTA0IiByPSI4IiBmaWxsPSIjMWUwYzA0Ii8+PGNpcmNsZSBjeD0iODAiIGN5PSIxMDEiIHI9IjMiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iMTI4IiBjeT0iMTAxIiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik02NSw5MCBRNzYsODUgODcsOTAiIHN0cm9rZT0iIzFlMGMwNCIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTEzLDkwIFExMjQsODUgMTM1LDkwIiBzdHJva2U9IiMxZTBjMDQiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExOCIgcng9IjUiIHJ5PSI0IiBmaWxsPSIjYjg2MDQwIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNODYsMTM2IFExMDAsMTQ1IDExNCwxMzYiIHN0cm9rZT0iIzhjMzgyMCIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik04OCwxMzYgUTEwMCwxNDMgMTEyLDEzNiBRMTAwLDE0OCA4OCwxMzZaIiBmaWxsPSIjYTA0MDMwIi8+PGVsbGlwc2UgY3g9IjY2IiBjeT0iMTIyIiByeD0iMTAiIHJ5PSI3IiBmaWxsPSIjZTA4MDYwIiBvcGFjaXR5PSIwLjM1Ii8+PGVsbGlwc2UgY3g9IjEzNCIgY3k9IjEyMiIgcng9IjEwIiByeT0iNyIgZmlsbD0iI2UwODA2MCIgb3BhY2l0eT0iMC4zNSIvPjwvZz48L3N2Zz4=",
+      "villageName": "",
+      "currentBase": "local",
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "offersTeaching": false,
+      "canReviewBeginners": false,
+      "availableForWorkshops": false,
+      "hasOwnStudio": false,
+      "homeSetup": false,
+      "website": "",
+      "portfolio": "",
+      "recentPieces": []
+    },
+    {
+      "id": "user2",
+      "name": "James",
+      "city": "Portland, OR",
+      "country": "US",
+      "identity": "Functional pottery & tea ware specialist",
+      "bio": "Twelve years of dedicated tea ware. A well-made teapot is one of the most challenging and rewarding forms.",
+      "whatClayMeans": "The intersection of engineering and art \u2014 every spout, lid, and handle is a puzzle",
+      "currentWork": "A series of side-handle teapots inspired by Japanese kyusu",
+      "feedbackPreference": "Technical feedback on function \u2014 does the spout pour cleanly?",
+      "mainPractice": "wheel",
+      "level": "advanced",
+      "yearsPracticing": 12,
+      "currentFocus": "Teapot design",
+      "currentPath": "Spout engineering",
+      "currentStreak": 34,
+      "longestStreak": 60,
+      "tags": [
+        "porcelain",
+        "tea-ware",
+        "functional"
+      ],
+      "openToChat": true,
+      "openToExchange": true,
+      "homeBuilding": "Commons / Caf\u00e9",
+      "formsLoved": "teapots, cups, tea ware",
+      "materials": "porcelain",
+      "orientation": "functional",
+      "firingInterests": "cone 10 reduction, soda firing",
+      "glazeInterests": "celadon, shino, carbon trap",
+      "offersTeaching": true,
+      "availableForWorkshops": true,
+      "canReviewBeginners": true,
+      "hasOwnStudio": true,
+      "kilnAccess": true,
+      "wheelAccess": true,
+      "instagram": "@james.teaware",
+      "website": "jamesteapots.com",
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjbCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY2wpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzJlNGE3YSIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxOTAiIHJ4PSI3MCIgcnk9IjQyIiBmaWxsPSIjNmE4YWFhIi8+PHJlY3QgeD0iODMiIHk9IjE1MCIgd2lkdGg9IjM0IiBoZWlnaHQ9IjM4IiByeD0iOCIgZmlsbD0iI2MwOTA3MCIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSI1OCIgcng9IjUyIiByeT0iNTAiIGZpbGw9IiMyYTFhMGEiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMTEyIiByeD0iNTAiIHJ5PSI1NSIgZmlsbD0iI2MwOTA3MCIvPjxwYXRoIGQ9Ik01MCw4MCBRNTQsMzAgMTAwLDI4IFExNDYsMzAgMTUwLDgwIFExMzgsNTIgMTAwLDUwIFE2Miw1MiA1MCw4MFoiIGZpbGw9IiMyYTFhMGEiLz48ZWxsaXBzZSBjeD0iNDQiIGN5PSIxMTAiIHJ4PSI5IiByeT0iMTMiIGZpbGw9IiNiODgwNjAiLz48ZWxsaXBzZSBjeD0iMTU2IiBjeT0iMTEwIiByeD0iOSIgcnk9IjEzIiBmaWxsPSIjYjg4MDYwIi8+PGVsbGlwc2UgY3g9Ijc2IiBjeT0iMTAwIiByeD0iMTIiIHJ5PSI5IiBmaWxsPSJ3aGl0ZSIvPjxlbGxpcHNlIGN4PSIxMjQiIGN5PSIxMDAiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iNzgiIGN5PSIxMDEiIHI9IjgiIGZpbGw9IiMxYTEwMDgiLz48Y2lyY2xlIGN4PSIxMjYiIGN5PSIxMDEiIHI9IjgiIGZpbGw9IiMxYTEwMDgiLz48Y2lyY2xlIGN4PSI4MCIgY3k9Ijk4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9IjEyOCIgY3k9Ijk4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik02Niw4OCBRNzcsODMgODgsODciIHN0cm9rZT0iIzFhMTAwOCIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTEyLDg3IFExMjMsODMgMTM0LDg4IiBzdHJva2U9IiMxYTEwMDgiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExNiIgcng9IjUiIHJ5PSI0IiBmaWxsPSIjYTA3MDUwIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNODQsMTMwIFExMDAsMTQwIDExNiwxMzAiIHN0cm9rZT0iIzdhMzgyNCIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNODQsMTMwIFExMDAsMTM4IDExNiwxMzAgUTEwMCwxNDIgODQsMTMwWiIgZmlsbD0iIzhhM2EyNCIvPjxwYXRoIGQ9Ik03OCwxMzAgUTEwMCwxNTggMTIyLDEzMCBRMTEwLDE0OCAxMDAsMTUyIFE5MCwxNDggNzgsMTMwWiIgZmlsbD0iIzJhMWEwYSIgb3BhY2l0eT0iMC44NSIvPjxwYXRoIGQ9Ik03MiwxMjUgUTgwLDEyMiA5MiwxMjQiIHN0cm9rZT0iIzJhMWEwYSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNMTA4LDEyNCBRMTIwLDEyMiAxMjgsMTI1IiBzdHJva2U9IiMyYTFhMGEiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iMC42Ii8+PC9nPjwvc3ZnPg==",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjbCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY2wpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzJlNGE3YSIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxOTAiIHJ4PSI3MCIgcnk9IjQyIiBmaWxsPSIjNmE4YWFhIi8+PHJlY3QgeD0iODMiIHk9IjE1MCIgd2lkdGg9IjM0IiBoZWlnaHQ9IjM4IiByeD0iOCIgZmlsbD0iI2MwOTA3MCIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSI1OCIgcng9IjUyIiByeT0iNTAiIGZpbGw9IiMyYTFhMGEiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMTEyIiByeD0iNTAiIHJ5PSI1NSIgZmlsbD0iI2MwOTA3MCIvPjxwYXRoIGQ9Ik01MCw4MCBRNTQsMzAgMTAwLDI4IFExNDYsMzAgMTUwLDgwIFExMzgsNTIgMTAwLDUwIFE2Miw1MiA1MCw4MFoiIGZpbGw9IiMyYTFhMGEiLz48ZWxsaXBzZSBjeD0iNDQiIGN5PSIxMTAiIHJ4PSI5IiByeT0iMTMiIGZpbGw9IiNiODgwNjAiLz48ZWxsaXBzZSBjeD0iMTU2IiBjeT0iMTEwIiByeD0iOSIgcnk9IjEzIiBmaWxsPSIjYjg4MDYwIi8+PGVsbGlwc2UgY3g9Ijc2IiBjeT0iMTAwIiByeD0iMTIiIHJ5PSI5IiBmaWxsPSJ3aGl0ZSIvPjxlbGxpcHNlIGN4PSIxMjQiIGN5PSIxMDAiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iNzgiIGN5PSIxMDEiIHI9IjgiIGZpbGw9IiMxYTEwMDgiLz48Y2lyY2xlIGN4PSIxMjYiIGN5PSIxMDEiIHI9IjgiIGZpbGw9IiMxYTEwMDgiLz48Y2lyY2xlIGN4PSI4MCIgY3k9Ijk4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9IjEyOCIgY3k9Ijk4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik02Niw4OCBRNzcsODMgODgsODciIHN0cm9rZT0iIzFhMTAwOCIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTEyLDg3IFExMjMsODMgMTM0LDg4IiBzdHJva2U9IiMxYTEwMDgiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExNiIgcng9IjUiIHJ5PSI0IiBmaWxsPSIjYTA3MDUwIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNODQsMTMwIFExMDAsMTQwIDExNiwxMzAiIHN0cm9rZT0iIzdhMzgyNCIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNODQsMTMwIFExMDAsMTM4IDExNiwxMzAgUTEwMCwxNDIgODQsMTMwWiIgZmlsbD0iIzhhM2EyNCIvPjxwYXRoIGQ9Ik03OCwxMzAgUTEwMCwxNTggMTIyLDEzMCBRMTEwLDE0OCAxMDAsMTUyIFE5MCwxNDggNzgsMTMwWiIgZmlsbD0iIzJhMWEwYSIgb3BhY2l0eT0iMC44NSIvPjxwYXRoIGQ9Ik03MiwxMjUgUTgwLDEyMiA5MiwxMjQiIHN0cm9rZT0iIzJhMWEwYSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNMTA4LDEyNCBRMTIwLDEyMiAxMjgsMTI1IiBzdHJva2U9IiMyYTFhMGEiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iMC42Ii8+PC9nPjwvc3ZnPg==",
+      "villageName": "",
+      "currentBase": "local",
+      "openToCritique": false,
+      "openToMeetups": false,
+      "openToStudioVisits": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "sharedStudio": false,
+      "homeSetup": false,
+      "portfolio": "",
+      "recentPieces": [],
+      "guidanceOffers": [
+        {
+          "type": "live",
+          "title": "Live Throwing Session",
+          "desc": "One-on-one live video session where we work on your throwing or trimming technique in real time.",
+          "format": "60 minutes",
+          "price": "$75"
+        },
+        {
+          "type": "monthly",
+          "title": "Monthly Trimming Guidance",
+          "desc": "Ongoing monthly guidance with weekly check-ins on your trimming practice.",
+          "format": "4 sessions / month",
+          "price": "$150"
+        },
+        {
+          "type": "critique",
+          "title": "Trimming Critique",
+          "desc": "Send photos and videos of your trimming. I'll assess wall thickness, foot ring quality, and overall form.",
+          "format": "Written feedback within 72h",
+          "price": "$30"
+        }
+      ],
+      "teachingStyle": "Direct and practical. Clear goals, honest feedback. I care more about your spout than your feelings."
+    },
+    {
+      "id": "npc-fox",
+      "name": "Fox",
+      "city": "Clay Village",
+      "country": "Village",
+      "identity": "Community guide & village greeter",
+      "bio": "The friendly fox has been greeting visitors to Clay Village for years. Always eager to help newcomers find their way around and make their first cup of tea.",
+      "whatClayMeans": "Bringing people together over shared craft",
+      "currentWork": "Welcome mugs for every new villager",
+      "feedbackPreference": "Warm encouragement first, gentle suggestions second",
+      "mainPractice": "handbuilding",
+      "level": "intermediate",
+      "yearsPracticing": 6,
+      "currentFocus": "Teaching newcomers the village ways",
+      "currentPath": "Building community bonds",
+      "currentStreak": 365,
+      "longestStreak": 365,
+      "tags": [
+        "guide",
+        "welcoming",
+        "community-builder"
+      ],
+      "openToChat": true,
+      "openToMeetups": true,
+      "offersTeaching": true,
+      "canReviewBeginners": true,
+      "homeBuilding": "Commons / Caf\u00e9",
+      "formsLoved": "mugs, bowls, pinch pots",
+      "materials": "earthenware",
+      "orientation": "both",
+      "firingInterests": "electric, low-fire",
+      "glazeInterests": "bright colorful glazes, food-safe",
+      "sharedStudio": true,
+      "kilnAccess": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2Y0NzAzYSIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpoo8L3RleHQ+PC9zdmc+",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2Y0NzAzYSIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpoo8L3RleHQ+PC9zdmc+",
+      "villageName": "",
+      "currentBase": "local",
+      "openToCritique": false,
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "availableForWorkshops": false,
+      "hasOwnStudio": false,
+      "homeSetup": false,
+      "wheelAccess": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": [],
+      "teachingStyle": "Patient and encouraging. I meet you where you are, not where I think you should be."
+    },
+    {
+      "id": "npc-owl",
+      "name": "Owl",
+      "city": "Clay Village",
+      "country": "Village",
+      "identity": "Library keeper & knowledge curator",
+      "bio": "The wise owl tends the village library with meticulous care, cataloguing ceramic techniques from every tradition and era.",
+      "whatClayMeans": "Preserving centuries of ceramic wisdom for the next generation",
+      "currentWork": "A comprehensive glaze recipe archive organized by firing temperature",
+      "feedbackPreference": "Detailed, research-backed, with historical references",
+      "mainPractice": "wheel",
+      "level": "advanced",
+      "yearsPracticing": 20,
+      "currentFocus": "Documenting ceramic techniques",
+      "currentPath": "Preserving craft wisdom",
+      "currentStreak": 400,
+      "longestStreak": 400,
+      "tags": [
+        "knowledge",
+        "library",
+        "mentor"
+      ],
+      "openToChat": true,
+      "openToCritique": true,
+      "offersTeaching": true,
+      "availableForWorkshops": true,
+      "homeBuilding": "Library / Archive",
+      "formsLoved": "bowls, vessels, plates",
+      "materials": "porcelain, stoneware",
+      "orientation": "functional",
+      "firingInterests": "gas reduction, wood firing",
+      "glazeInterests": "traditional ash glazes, tenmoku",
+      "hasOwnStudio": true,
+      "kilnAccess": true,
+      "wheelAccess": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzVhM2UyOCIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpok8L3RleHQ+PC9zdmc+",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzVhM2UyOCIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpok8L3RleHQ+PC9zdmc+",
+      "villageName": "",
+      "currentBase": "local",
+      "openToMeetups": false,
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "canReviewBeginners": false,
+      "sharedStudio": false,
+      "homeSetup": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": [],
+      "guidanceOffers": [
+        {
+          "type": "live",
+          "title": "Historical Technique Session",
+          "desc": "An hour exploring the origins and lineage of any technique you're working with. Context makes craft meaningful.",
+          "format": "60 minutes",
+          "price": "By arrangement"
+        },
+        {
+          "type": "critique",
+          "title": "Glaze Archive Consultation",
+          "desc": "I'll recommend glaze recipes and historical resources from the archive for whatever you're trying to achieve.",
+          "format": "Written response within 1 week",
+          "price": "By arrangement"
+        }
+      ],
+      "teachingStyle": "Historical and contextual. Every technique has a lineage \u2014 I teach you where it came from before I show you how to do it."
+    },
+    {
+      "id": "npc-crane",
+      "name": "Crane",
+      "city": "Clay Village",
+      "country": "Village",
+      "identity": "Mentor coordinator & inspiration source",
+      "bio": "Patient and graceful, the crane guides potters through their creative journey. Every apprentice finds their own path under the crane's steady wing.",
+      "whatClayMeans": "The patience to shape something beautiful, one careful movement at a time",
+      "currentWork": "Pairing new apprentices with experienced mentors across the village",
+      "feedbackPreference": "Patient, observational \u2014 watches your process before offering thoughts",
+      "mainPractice": "wheel",
+      "level": "expert",
+      "yearsPracticing": 25,
+      "currentFocus": "Mentoring the next generation",
+      "currentPath": "Building master-apprentice relationships",
+      "currentStreak": 420,
+      "longestStreak": 420,
+      "tags": [
+        "mentor",
+        "patience",
+        "wisdom"
+      ],
+      "openToChat": true,
+      "offersTeaching": true,
+      "canReviewBeginners": true,
+      "availableForWorkshops": true,
+      "homeBuilding": "Mentor Cluster",
+      "formsLoved": "large vessels, ceremonial bowls",
+      "materials": "stoneware, porcelain",
+      "orientation": "both",
+      "firingInterests": "wood firing, anagama",
+      "glazeInterests": "natural ash, shino",
+      "hasOwnStudio": true,
+      "kilnAccess": true,
+      "wheelAccess": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzViOWVhNiIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpqI8L3RleHQ+PC9zdmc+",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzViOWVhNiIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpqI8L3RleHQ+PC9zdmc+",
+      "villageName": "",
+      "currentBase": "local",
+      "openToCritique": false,
+      "openToMeetups": false,
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "sharedStudio": false,
+      "homeSetup": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": [],
+      "guidanceOffers": [
+        {
+          "type": "milestone",
+          "title": "Milestone Review",
+          "desc": "Submit your milestone work for formal review and approval on any Mastery Path.",
+          "format": "Review within 1 week",
+          "price": "By arrangement"
+        },
+        {
+          "type": "live",
+          "title": "Path Consultation",
+          "desc": "A quiet conversation about where you are, where you want to go, and what your next step should be.",
+          "format": "45 minutes",
+          "price": "By arrangement"
+        }
+      ],
+      "teachingStyle": "I watch first, speak second. I will not interrupt your process. When I do speak, listen carefully."
+    },
+    {
+      "id": "npc-cat",
+      "name": "Cat",
+      "city": "Clay Village",
+      "country": "Village",
+      "identity": "Studio steward & creative refuge guardian",
+      "bio": "The cat maintains the village studios with quiet care, purring contentedly while potters work. A calm presence that makes every studio feel like home.",
+      "whatClayMeans": "Quiet meditation in the making \u2014 the hum of the wheel, the warmth of the kiln",
+      "currentWork": "Small figurines and abstract sculpture for the studio shelves",
+      "feedbackPreference": "Quiet nod of approval, or a gentle paw on your arm if something needs attention",
+      "mainPractice": "handbuilding",
+      "level": "advanced",
+      "yearsPracticing": 12,
+      "currentFocus": "Creating peaceful studio spaces",
+      "currentPath": "Nurturing artistic sanctuary",
+      "currentStreak": 300,
+      "longestStreak": 300,
+      "tags": [
+        "studio",
+        "calm",
+        "creative"
+      ],
+      "openToChat": true,
+      "openToStudioVisits": true,
+      "homeBuilding": "Studio Quarter",
+      "formsLoved": "figurines, abstract sculpture",
+      "materials": "paper clay, stoneware",
+      "orientation": "sculptural",
+      "firingInterests": "electric, pit firing",
+      "glazeInterests": "matte earth tones, oxide washes",
+      "hasOwnStudio": true,
+      "wheelAccess": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzZiNzI4MCIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfkLE8L3RleHQ+PC9zdmc+",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzZiNzI4MCIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfkLE8L3RleHQ+PC9zdmc+",
+      "villageName": "",
+      "currentBase": "local",
+      "openToCritique": false,
+      "openToMeetups": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "offersTeaching": false,
+      "canReviewBeginners": false,
+      "availableForWorkshops": false,
+      "sharedStudio": false,
+      "homeSetup": false,
+      "kilnAccess": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": []
+    },
+    {
+      "id": "npc-deer",
+      "name": "Deer",
+      "city": "Clay Village",
+      "country": "Village",
+      "identity": "Residency host & exchange facilitator",
+      "bio": "Graceful and welcoming, the deer brings visiting artists from far away to share in the village craft. Every culture has something to teach about clay.",
+      "whatClayMeans": "Connecting potters across borders \u2014 clay speaks every language",
+      "currentWork": "Coordinating the spring artist exchange with potters from three continents",
+      "feedbackPreference": "Cross-cultural perspective \u2014 how does this technique connect to other traditions?",
+      "mainPractice": "wheel",
+      "level": "intermediate",
+      "yearsPracticing": 8,
+      "currentFocus": "Bringing potters from around the world",
+      "currentPath": "Fostering international exchange",
+      "currentStreak": 180,
+      "longestStreak": 180,
+      "tags": [
+        "exchange",
+        "residency",
+        "hospitality"
+      ],
+      "openToChat": true,
+      "openToExchange": true,
+      "openToMeetups": true,
+      "homeBuilding": "Residency / Exchange",
+      "formsLoved": "vessels, cups from different traditions",
+      "materials": "local clays",
+      "orientation": "both",
+      "firingInterests": "various international techniques",
+      "glazeInterests": "experimental cross-cultural glazes",
+      "sharedStudio": true,
+      "kilnAccess": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2M0OTU2YSIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpow8L3RleHQ+PC9zdmc+",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2M0OTU2YSIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfpow8L3RleHQ+PC9zdmc+",
+      "villageName": "",
+      "currentBase": "local",
+      "openToCritique": false,
+      "openToStudioVisits": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "offersTeaching": false,
+      "canReviewBeginners": false,
+      "availableForWorkshops": false,
+      "hasOwnStudio": false,
+      "homeSetup": false,
+      "wheelAccess": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": []
+    },
+    {
+      "id": "npc-dog",
+      "name": "Dog",
+      "city": "Clay Village",
+      "country": "Village",
+      "identity": "Festival organizer & community gatherer",
+      "bio": "Energetic and friendly, the dog keeps the bonfire warm and organizes the best community gatherings. Every Friday is firing night!",
+      "whatClayMeans": "Gathering around the fire to celebrate the work we have done together",
+      "currentWork": "Planning the next bonfire pit-firing party with platters for everyone",
+      "feedbackPreference": "Enthusiastic and supportive \u2014 every piece is worth celebrating",
+      "mainPractice": "handbuilding",
+      "level": "beginner",
+      "yearsPracticing": 3,
+      "currentFocus": "Organizing pottery gatherings and fires",
+      "currentPath": "Building community spirit",
+      "currentStreak": 90,
+      "longestStreak": 90,
+      "tags": [
+        "gathering",
+        "festival",
+        "bonfire"
+      ],
+      "openToChat": true,
+      "openToMeetups": true,
+      "peerBuddy": true,
+      "homeBuilding": "Bonfire Plaza",
+      "formsLoved": "plates, platters, serving bowls",
+      "materials": "earthenware, terracotta",
+      "orientation": "functional",
+      "firingInterests": "wood firing, bonfire, pit firing",
+      "glazeInterests": "rustic, slip-decorated",
+      "sharedStudio": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2U4YTg1MCIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfkJU8L3RleHQ+PC9zdmc+",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2U4YTg1MCIvPjx0ZXh0IHg9IjUwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI1MiIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfkJU8L3RleHQ+PC9zdmc+",
+      "villageName": "",
+      "currentBase": "local",
+      "openToCritique": false,
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "offersTeaching": false,
+      "canReviewBeginners": false,
+      "availableForWorkshops": false,
+      "hasOwnStudio": false,
+      "homeSetup": false,
+      "kilnAccess": false,
+      "wheelAccess": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": []
+    },
+    {
+      "id": "admin",
+      "name": "You",
+      "villageName": "Clay Village Admin",
+      "city": "Your Location",
+      "country": "Earth",
+      "currentBase": "village",
+      "identity": "Village founder & admin",
+      "bio": "You created Clay Village. Manage everything from here.",
+      "whatClayMeans": "Building a world where potters can gather, learn, and create together",
+      "currentWork": "Shaping the village itself",
+      "mainPractice": "wheel",
+      "level": "master",
+      "yearsPracticing": 0,
+      "currentFocus": "Building the perfect pottery village",
+      "currentPath": "Village stewardship",
+      "currentStreak": 0,
+      "longestStreak": 0,
+      "tags": [
+        "admin",
+        "builder",
+        "founder"
+      ],
+      "openToChat": true,
+      "offersTeaching": true,
+      "homeBuilding": "Observatory / World",
+      "hasOwnStudio": true,
+      "sharedStudio": true,
+      "kilnAccess": true,
+      "wheelAccess": true,
+      "imageUrl": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzMzNzZkZiIvPjwvc3ZnPg==",
+      "photo": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzMzNzZkZiIvPjwvc3ZnPg==",
+      "feedbackPreference": "",
+      "formsLoved": "",
+      "materials": "",
+      "firingInterests": "",
+      "glazeInterests": "",
+      "orientation": "both",
+      "openToCritique": false,
+      "openToMeetups": false,
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "canReviewBeginners": false,
+      "availableForWorkshops": false,
+      "homeSetup": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": []
+    },
+    {
+      "id": "user-ben",
+      "name": "Ben",
+      "villageName": "Ben",
+      "city": "Melbourne",
+      "country": "Australia",
+      "identity": "Village founder & vibe coder",
+      "bio": "Building Clay Village \u2014 a place for potters to gather, not perform. Also building the X reply app I never released because it made the internet faker.",
+      "whatClayMeans": "Making something real in a world full of noise",
+      "currentWork": "Shaping Clay Village itself",
+      "mainPractice": "handbuilding",
+      "level": "intermediate",
+      "yearsPracticing": 5,
+      "currentFocus": "Building the village platform",
+      "currentPath": "Community design",
+      "currentStreak": 0,
+      "longestStreak": 0,
+      "tags": [
+        "founder",
+        "builder",
+        "vibe-coder"
+      ],
+      "openToChat": true,
+      "openToMeetups": true,
+      "homeBuilding": "Observatory / World",
+      "hasOwnStudio": true,
+      "kilnAccess": true,
+      "wheelAccess": true,
+      "photo": null,
+      "currentBase": "local",
+      "feedbackPreference": "",
+      "formsLoved": "",
+      "materials": "",
+      "firingInterests": "",
+      "glazeInterests": "",
+      "orientation": "both",
+      "openToCritique": false,
+      "openToStudioVisits": false,
+      "openToExchange": false,
+      "lookingForMentor": false,
+      "peerBuddy": false,
+      "hasMentor": false,
+      "mentorName": "",
+      "offersTeaching": false,
+      "canReviewBeginners": false,
+      "availableForWorkshops": false,
+      "sharedStudio": false,
+      "homeSetup": false,
+      "instagram": "",
+      "website": "",
+      "portfolio": "",
+      "recentPieces": []
+    }
+  ],
+  "cvCafeInvite": {
+    "from": "user2",
+    "fromName": "James",
+    "fromPhoto": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGNsaXBQYXRoIGlkPSJjbCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjY2wpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzJlNGE3YSIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxOTAiIHJ4PSI3MCIgcnk9IjQyIiBmaWxsPSIjNmE4YWFhIi8+PHJlY3QgeD0iODMiIHk9IjE1MCIgd2lkdGg9IjM0IiBoZWlnaHQ9IjM4IiByeD0iOCIgZmlsbD0iI2MwOTA3MCIvPjxlbGxpcHNlIGN4PSIxMDAiIGN5PSI1OCIgcng9IjUyIiByeT0iNTAiIGZpbGw9IiMyYTFhMGEiLz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMTEyIiByeD0iNTAiIHJ5PSI1NSIgZmlsbD0iI2MwOTA3MCIvPjxwYXRoIGQ9Ik01MCw4MCBRNTQsMzAgMTAwLDI4IFExNDYsMzAgMTUwLDgwIFExMzgsNTIgMTAwLDUwIFE2Miw1MiA1MCw4MFoiIGZpbGw9IiMyYTFhMGEiLz48ZWxsaXBzZSBjeD0iNDQiIGN5PSIxMTAiIHJ4PSI5IiByeT0iMTMiIGZpbGw9IiNiODgwNjAiLz48ZWxsaXBzZSBjeD0iMTU2IiBjeT0iMTEwIiByeD0iOSIgcnk9IjEzIiBmaWxsPSIjYjg4MDYwIi8+PGVsbGlwc2UgY3g9Ijc2IiBjeT0iMTAwIiByeD0iMTIiIHJ5PSI5IiBmaWxsPSJ3aGl0ZSIvPjxlbGxpcHNlIGN4PSIxMjQiIGN5PSIxMDAiIHJ4PSIxMiIgcnk9IjkiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iNzgiIGN5PSIxMDEiIHI9IjgiIGZpbGw9IiMxYTEwMDgiLz48Y2lyY2xlIGN4PSIxMjYiIGN5PSIxMDEiIHI9IjgiIGZpbGw9IiMxYTEwMDgiLz48Y2lyY2xlIGN4PSI4MCIgY3k9Ijk4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9IjEyOCIgY3k9Ijk4IiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik02Niw4OCBRNzcsODMgODgsODciIHN0cm9rZT0iIzFhMTAwOCIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTEyLDg3IFExMjMsODMgMTM0LDg4IiBzdHJva2U9IiMxYTEwMDgiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjExNiIgcng9IjUiIHJ5PSI0IiBmaWxsPSIjYTA3MDUwIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNODQsMTMwIFExMDAsMTQwIDExNiwxMzAiIHN0cm9rZT0iIzdhMzgyNCIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNODQsMTMwIFExMDAsMTM4IDExNiwxMzAgUTEwMCwxNDIgODQsMTMwWiIgZmlsbD0iIzhhM2EyNCIvPjxwYXRoIGQ9Ik03OCwxMzAgUTEwMCwxNTggMTIyLDEzMCBRMTEwLDE0OCAxMDAsMTUyIFE5MCwxNDggNzgsMTMwWiIgZmlsbD0iIzJhMWEwYSIgb3BhY2l0eT0iMC44NSIvPjxwYXRoIGQ9Ik03MiwxMjUgUTgwLDEyMiA5MiwxMjQiIHN0cm9rZT0iIzJhMWEwYSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBvcGFjaXR5PSIwLjYiLz48cGF0aCBkPSJNMTA4LDEyNCBRMTIwLDEyMiAxMjgsMTI1IiBzdHJva2U9IiMyYTFhMGEiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iMC42Ii8+PC9nPjwvc3ZnPg==",
+    "to": "user-ben",
+    "toName": "Ben",
+    "toPhoto": "",
+    "ts": 1774989839993
+  },
+  "cvCafeDeclined": {
+    "declinedBy": "user2",
+    "declinedByName": "James",
+    "forUser": "user1",
+    "reason": "keine zeit",
+    "ts": 1774707229270
+  },
+  "cvCafeLeft": {
+    "by": "user-ben",
+    "ts": 1775012343698
+  },
+  "cvCafeAccepted": {
+    "from": "user2",
+    "to": "user-ben",
+    "ts": 1774989876411
+  },
+  "key": "cvCafeLeft",
+  "value": null,
+  "clayVillageOutlines": {
+    "Commons / Caf\u00e9": [
+      {
+        "x": 262,
+        "y": 624.9028000000026
+      },
+      {
+        "x": 158,
+        "y": 567.9028000000026
+      },
+      {
+        "x": 272,
+        "y": 479.9028000000025
+      },
+      {
+        "x": 375,
+        "y": 562.9028000000026
+      }
+    ],
+    "Library / Archive": [
+      {
+        "x": 219,
+        "y": 406.9028000000025
+      },
+      {
+        "x": 195,
+        "y": 396.9028000000025
+      },
+      {
+        "x": 158,
+        "y": 413.9028000000025
+      },
+      {
+        "x": 113,
+        "y": 394.9028000000025
+      },
+      {
+        "x": 89,
+        "y": 366.9028000000025
+      },
+      {
+        "x": 166,
+        "y": 300.9028000000025
+      },
+      {
+        "x": 175,
+        "y": 307.9028000000025
+      },
+      {
+        "x": 195,
+        "y": 292.9028000000025
+      },
+      {
+        "x": 224,
+        "y": 309.9028000000025
+      },
+      {
+        "x": 226,
+        "y": 362.9028000000025
+      },
+      {
+        "x": 252,
+        "y": 386.9028000000025
+      }
+    ],
+    "School": [
+      {
+        "x": 320,
+        "y": 295.9028000000025
+      },
+      {
+        "x": 191,
+        "y": 236.90280000000251
+      },
+      {
+        "x": 331,
+        "y": 154.90280000000251
+      },
+      {
+        "x": 465,
+        "y": 212.90280000000251
+      }
+    ],
+    "Mentor Cluster": [
+      {
+        "x": 667,
+        "y": 206.90280000000251
+      },
+      {
+        "x": 624,
+        "y": 227.90280000000251
+      },
+      {
+        "x": 577,
+        "y": 207.90280000000251
+      },
+      {
+        "x": 572,
+        "y": 184.90280000000251
+      },
+      {
+        "x": 568,
+        "y": 167.90280000000251
+      },
+      {
+        "x": 613,
+        "y": 114.90280000000251
+      },
+      {
+        "x": 643,
+        "y": 136.90280000000251
+      },
+      {
+        "x": 660,
+        "y": 126.90280000000251
+      },
+      {
+        "x": 660,
+        "y": 101.90280000000251
+      },
+      {
+        "x": 735,
+        "y": 104.90280000000251
+      },
+      {
+        "x": 739,
+        "y": 120.90280000000251
+      },
+      {
+        "x": 752,
+        "y": 127.90280000000251
+      },
+      {
+        "x": 766,
+        "y": 112.90280000000251
+      },
+      {
+        "x": 795,
+        "y": 117.90280000000251
+      },
+      {
+        "x": 806,
+        "y": 112.90280000000251
+      },
+      {
+        "x": 833,
+        "y": 129.90280000000251
+      },
+      {
+        "x": 834,
+        "y": 161.90280000000251
+      },
+      {
+        "x": 821,
+        "y": 185.90280000000251
+      },
+      {
+        "x": 797,
+        "y": 200.90280000000251
+      },
+      {
+        "x": 748,
+        "y": 184.90280000000251
+      },
+      {
+        "x": 774,
+        "y": 158.90280000000251
+      },
+      {
+        "x": 761,
+        "y": 133.90280000000251
+      },
+      {
+        "x": 735,
+        "y": 135.90280000000251
+      },
+      {
+        "x": 665,
+        "y": 134.90280000000251
+      },
+      {
+        "x": 636,
+        "y": 151.90280000000251
+      },
+      {
+        "x": 618,
+        "y": 161.90280000000251
+      }
+    ],
+    "Bonfire Plaza": [
+      {
+        "x": 918,
+        "y": 248.90280000000251
+      },
+      {
+        "x": 876,
+        "y": 226.90280000000251
+      },
+      {
+        "x": 958,
+        "y": 155.90280000000251
+      },
+      {
+        "x": 1002,
+        "y": 175.90280000000251
+      },
+      {
+        "x": 1023,
+        "y": 179.90280000000251
+      },
+      {
+        "x": 1045,
+        "y": 161.90280000000251
+      },
+      {
+        "x": 1085,
+        "y": 178.90280000000251
+      },
+      {
+        "x": 1095,
+        "y": 170.90280000000251
+      },
+      {
+        "x": 1147,
+        "y": 189.90280000000251
+      },
+      {
+        "x": 1193,
+        "y": 216.90280000000251
+      },
+      {
+        "x": 1207,
+        "y": 246.90280000000251
+      },
+      {
+        "x": 1186,
+        "y": 268.9028000000025
+      },
+      {
+        "x": 1089,
+        "y": 331.9028000000025
+      },
+      {
+        "x": 1028,
+        "y": 300.9028000000025
+      },
+      {
+        "x": 1130,
+        "y": 239.90280000000251
+      },
+      {
+        "x": 1164,
+        "y": 255.90280000000251
+      },
+      {
+        "x": 1058,
+        "y": 203.90280000000251
+      },
+      {
+        "x": 1015,
+        "y": 193.90280000000251
+      },
+      {
+        "x": 995,
+        "y": 187.90280000000251
+      },
+      {
+        "x": 968,
+        "y": 212.90280000000251
+      },
+      {
+        "x": 962,
+        "y": 228.90280000000251
+      }
+    ],
+    "Studio Quarter": [
+      {
+        "x": 699,
+        "y": 357.9028000000025
+      },
+      {
+        "x": 687,
+        "y": 366.9028000000025
+      },
+      {
+        "x": 686,
+        "y": 381.9028000000025
+      },
+      {
+        "x": 696,
+        "y": 388.9028000000025
+      },
+      {
+        "x": 714,
+        "y": 393.9028000000025
+      },
+      {
+        "x": 732,
+        "y": 393.9028000000025
+      },
+      {
+        "x": 750,
+        "y": 385.9028000000025
+      },
+      {
+        "x": 754,
+        "y": 373.9028000000025
+      },
+      {
+        "x": 749,
+        "y": 362.9028000000025
+      },
+      {
+        "x": 733,
+        "y": 353.9028000000025
+      }
+    ],
+    "Residency / Exchange": [
+      {
+        "x": 1252,
+        "y": 101.90280000000251
+      },
+      {
+        "x": 1214,
+        "y": 123.90280000000251
+      },
+      {
+        "x": 1245,
+        "y": 143.90280000000251
+      },
+      {
+        "x": 1281,
+        "y": 128.90280000000251
+      },
+      {
+        "x": 1310,
+        "y": 136.90280000000251
+      },
+      {
+        "x": 1285,
+        "y": 159.90280000000251
+      },
+      {
+        "x": 1319,
+        "y": 182.90280000000251
+      },
+      {
+        "x": 1320,
+        "y": 131.90280000000251
+      }
+    ],
+    "Observatory / World": [
+      {
+        "x": 1284,
+        "y": 306.9028000000025
+      },
+      {
+        "x": 1208,
+        "y": 385.9028000000025
+      },
+      {
+        "x": 1300,
+        "y": 429.9028000000025
+      },
+      {
+        "x": 1321,
+        "y": 408.9028000000025
+      },
+      {
+        "x": 1322,
+        "y": 335.9028000000025
+      }
+    ],
+    "Gallery / Market": [
+      {
+        "x": 1085,
+        "y": 570.9028000000026
+      },
+      {
+        "x": 1166,
+        "y": 511.9028000000025
+      },
+      {
+        "x": 1263,
+        "y": 548.9028000000026
+      },
+      {
+        "x": 1167,
+        "y": 619.9028000000026
+      }
+    ]
+  },
+  "clayVillageHoverOutlines": {
+    "Commons / Caf\u00e9": [
+      {
+        "x": 363,
+        "y": 520
+      },
+      {
+        "x": 273,
+        "y": 457
+      },
+      {
+        "x": 237,
+        "y": 465
+      },
+      {
+        "x": 203,
+        "y": 505
+      },
+      {
+        "x": 157,
+        "y": 530
+      },
+      {
+        "x": 158,
+        "y": 571
+      },
+      {
+        "x": 303,
+        "y": 663
+      },
+      {
+        "x": 405,
+        "y": 630
+      },
+      {
+        "x": 421,
+        "y": 593
+      },
+      {
+        "x": 411,
+        "y": 568
+      },
+      {
+        "x": 364,
+        "y": 566
+      }
+    ],
+    "Library / Archive": [
+      {
+        "x": 233,
+        "y": 410
+      },
+      {
+        "x": 196,
+        "y": 396
+      },
+      {
+        "x": 164,
+        "y": 414
+      },
+      {
+        "x": 113,
+        "y": 395
+      },
+      {
+        "x": 83,
+        "y": 362
+      },
+      {
+        "x": 82,
+        "y": 341
+      },
+      {
+        "x": 126,
+        "y": 310
+      },
+      {
+        "x": 147,
+        "y": 278
+      },
+      {
+        "x": 184,
+        "y": 282
+      },
+      {
+        "x": 226,
+        "y": 276
+      },
+      {
+        "x": 249,
+        "y": 321
+      },
+      {
+        "x": 250,
+        "y": 382
+      },
+      {
+        "x": 251,
+        "y": 399
+      }
+    ],
+    "School": [
+      {
+        "x": 257,
+        "y": 106
+      },
+      {
+        "x": 181,
+        "y": 187
+      },
+      {
+        "x": 192,
+        "y": 205
+      },
+      {
+        "x": 192,
+        "y": 243
+      },
+      {
+        "x": 246,
+        "y": 269
+      },
+      {
+        "x": 274,
+        "y": 282
+      },
+      {
+        "x": 328,
+        "y": 302
+      },
+      {
+        "x": 400,
+        "y": 278
+      },
+      {
+        "x": 447,
+        "y": 245
+      },
+      {
+        "x": 482,
+        "y": 217
+      },
+      {
+        "x": 465,
+        "y": 215
+      },
+      {
+        "x": 470,
+        "y": 185
+      },
+      {
+        "x": 350,
+        "y": 120
+      }
+    ],
+    "Mentor Cluster": [
+      {
+        "x": 837,
+        "y": 160
+      },
+      {
+        "x": 808,
+        "y": 192
+      },
+      {
+        "x": 760,
+        "y": 222
+      },
+      {
+        "x": 720,
+        "y": 227
+      },
+      {
+        "x": 678,
+        "y": 226
+      },
+      {
+        "x": 627,
+        "y": 229
+      },
+      {
+        "x": 589,
+        "y": 221
+      },
+      {
+        "x": 553,
+        "y": 203
+      },
+      {
+        "x": 542,
+        "y": 170
+      },
+      {
+        "x": 558,
+        "y": 145
+      },
+      {
+        "x": 661,
+        "y": 60
+      },
+      {
+        "x": 738,
+        "y": 63
+      },
+      {
+        "x": 832,
+        "y": 102
+      }
+    ],
+    "Bonfire Plaza": [
+      {
+        "x": 678,
+        "y": 337
+      },
+      {
+        "x": 655,
+        "y": 357
+      },
+      {
+        "x": 655,
+        "y": 384
+      },
+      {
+        "x": 677,
+        "y": 403
+      },
+      {
+        "x": 722,
+        "y": 418
+      },
+      {
+        "x": 757,
+        "y": 410
+      },
+      {
+        "x": 785,
+        "y": 379
+      },
+      {
+        "x": 784,
+        "y": 351
+      },
+      {
+        "x": 746,
+        "y": 337
+      },
+      {
+        "x": 711,
+        "y": 328
+      }
+    ],
+    "Studio Quarter": [
+      {
+        "x": 962,
+        "y": 120
+      },
+      {
+        "x": 923,
+        "y": 146
+      },
+      {
+        "x": 907,
+        "y": 177
+      },
+      {
+        "x": 873,
+        "y": 200
+      },
+      {
+        "x": 864,
+        "y": 242
+      },
+      {
+        "x": 913,
+        "y": 270
+      },
+      {
+        "x": 1093,
+        "y": 358
+      },
+      {
+        "x": 1211,
+        "y": 262
+      },
+      {
+        "x": 1213,
+        "y": 237
+      },
+      {
+        "x": 1201,
+        "y": 211
+      },
+      {
+        "x": 1201,
+        "y": 202
+      },
+      {
+        "x": 1162,
+        "y": 169
+      },
+      {
+        "x": 1157,
+        "y": 152
+      },
+      {
+        "x": 1127,
+        "y": 132
+      },
+      {
+        "x": 1081,
+        "y": 140
+      },
+      {
+        "x": 1063,
+        "y": 129
+      },
+      {
+        "x": 1020,
+        "y": 138
+      }
+    ],
+    "Residency / Exchange": [
+      {
+        "x": 1275,
+        "y": 66
+      },
+      {
+        "x": 1218,
+        "y": 102
+      },
+      {
+        "x": 1198,
+        "y": 126
+      },
+      {
+        "x": 1198,
+        "y": 150
+      },
+      {
+        "x": 1219,
+        "y": 174
+      },
+      {
+        "x": 1302,
+        "y": 218
+      },
+      {
+        "x": 1318,
+        "y": 217
+      },
+      {
+        "x": 1320,
+        "y": 112
+      }
+    ],
+    "Observatory / World": [
+      {
+        "x": 1310,
+        "y": 237
+      },
+      {
+        "x": 1267,
+        "y": 254
+      },
+      {
+        "x": 1250,
+        "y": 280
+      },
+      {
+        "x": 1246,
+        "y": 317
+      },
+      {
+        "x": 1212,
+        "y": 339
+      },
+      {
+        "x": 1207,
+        "y": 389
+      },
+      {
+        "x": 1238,
+        "y": 420
+      },
+      {
+        "x": 1302,
+        "y": 436
+      },
+      {
+        "x": 1320,
+        "y": 432
+      }
+    ],
+    "Gallery / Market": [
+      {
+        "x": 1226,
+        "y": 470
+      },
+      {
+        "x": 1171,
+        "y": 477
+      },
+      {
+        "x": 1078,
+        "y": 528
+      },
+      {
+        "x": 1078,
+        "y": 569
+      },
+      {
+        "x": 1102,
+        "y": 597
+      },
+      {
+        "x": 1136,
+        "y": 613
+      },
+      {
+        "x": 1173,
+        "y": 622
+      },
+      {
+        "x": 1211,
+        "y": 606
+      },
+      {
+        "x": 1240,
+        "y": 589
+      },
+      {
+        "x": 1261,
+        "y": 551
+      },
+      {
+        "x": 1265,
+        "y": 510
+      }
+    ]
+  },
+  "clayVillageLightBrush": [
+    {
+      "x": 750,
+      "y": 489,
+      "r": 8
+    },
+    {
+      "x": 662,
+      "y": 633,
+      "r": 8
+    },
+    {
+      "x": 662,
+      "y": 633,
+      "r": 8
+    },
+    {
+      "x": 313,
+      "y": 349,
+      "r": 8
+    },
+    {
+      "x": 313,
+      "y": 349,
+      "r": 8
+    },
+    {
+      "x": 220,
+      "y": 419,
+      "r": 8
+    },
+    {
+      "x": 220,
+      "y": 419,
+      "r": 8
+    },
+    {
+      "x": 220,
+      "y": 419,
+      "r": 8
+    },
+    {
+      "x": 88,
+      "y": 551,
+      "r": 8
+    },
+    {
+      "x": 88,
+      "y": 551,
+      "r": 8
+    },
+    {
+      "x": 959,
+      "y": 89,
+      "r": 8
+    },
+    {
+      "x": 959,
+      "y": 89,
+      "r": 8
+    },
+    {
+      "x": 755,
+      "y": 489,
+      "r": 8
+    },
+    {
+      "x": 755,
+      "y": 489,
+      "r": 8
+    },
+    {
+      "x": 541,
+      "y": 414,
+      "r": 8
+    },
+    {
+      "x": 541,
+      "y": 414,
+      "r": 8
+    },
+    {
+      "x": 405,
+      "y": 477,
+      "r": 8
+    },
+    {
+      "x": 405,
+      "y": 477,
+      "r": 8
+    },
+    {
+      "x": 801,
+      "y": 570,
+      "r": 8
+    },
+    {
+      "x": 801,
+      "y": 570,
+      "r": 8
+    },
+    {
+      "x": 1154,
+      "y": 597,
+      "r": 8
+    },
+    {
+      "x": 1154,
+      "y": 597,
+      "r": 8
+    },
+    {
+      "x": 1218,
+      "y": 411,
+      "r": 8
+    },
+    {
+      "x": 1218,
+      "y": 411,
+      "r": 8
+    },
+    {
+      "x": 1032,
+      "y": 311,
+      "r": 8
+    },
+    {
+      "x": 1032,
+      "y": 311,
+      "r": 8
+    },
+    {
+      "x": 913,
+      "y": 256,
+      "r": 8
+    },
+    {
+      "x": 913,
+      "y": 256,
+      "r": 8
+    },
+    {
+      "x": 1169,
+      "y": 274,
+      "r": 8
+    },
+    {
+      "x": 1169,
+      "y": 274,
+      "r": 8
+    },
+    {
+      "x": 1000,
+      "y": 198,
+      "r": 8
+    },
+    {
+      "x": 1000,
+      "y": 198,
+      "r": 8
+    },
+    {
+      "x": 683,
+      "y": 145,
+      "r": 8
+    },
+    {
+      "x": 683,
+      "y": 145,
+      "r": 8
+    },
+    {
+      "x": 755,
+      "y": 211,
+      "r": 8
+    },
+    {
+      "x": 755,
+      "y": 211,
+      "r": 8
+    },
+    {
+      "x": 466,
+      "y": 221,
+      "r": 8
+    },
+    {
+      "x": 466,
+      "y": 221,
+      "r": 8
+    },
+    {
+      "x": 244,
+      "y": 609,
+      "r": 8
+    },
+    {
+      "x": 244,
+      "y": 609,
+      "r": 8
+    },
+    {
+      "x": 327,
+      "y": 672,
+      "r": 8
+    },
+    {
+      "x": 327,
+      "y": 672,
+      "r": 8
+    },
+    {
+      "x": 679,
+      "y": 578,
+      "r": 8
+    },
+    {
+      "x": 377,
+      "y": 124,
+      "r": 8
+    },
+    {
+      "x": 91,
+      "y": 96,
+      "r": 8
+    },
+    {
+      "x": 39,
+      "y": 366,
+      "r": 8
+    },
+    {
+      "x": 896,
+      "y": 358,
+      "r": 8
+    },
+    {
+      "x": 581,
+      "y": 301,
+      "r": 8
+    },
+    {
+      "x": 866,
+      "y": 300,
+      "r": 8
+    }
+  ],
+  "clayVillageLightZones": [],
+  "clayVillageRoundtable": {
+    "interviewResults": {
+      "zoe": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: pro",
+          "Core stance on metrics: pro",
+          "Core stance on community: neutral",
+          "Closing statement: \"Don't build a platform that hides people. That's not protection. That's a cage.\""
+        ],
+        "gap": {
+          "says": "The algorithm isn't everything",
+          "does": "Refreshes the like count every 3 minutes"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T18:56:46.811Z"
+      },
+      "jess": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"Let me own my presence. Let me take it with me if I leave. That's the only thing that matters.\""
+        ],
+        "gap": {
+          "says": "I'll never trust a platform again",
+          "does": "Is here at this table \u2014 which means she still hopes"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:14:42.227Z"
+      },
+      "alix": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"I don't need to make anything. I just need to be near people who do.\""
+        ],
+        "gap": {
+          "says": "I don't know what's real anymore",
+          "does": "Already knows \u2014 she just described kintsugi without knowing the word"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:16:35.448Z"
+      },
+      "kofi": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: neutral",
+          "Closing statement: \"Build the infrastructure. Leave the culture alone.\""
+        ],
+        "gap": {
+          "says": "I don't need the internet",
+          "does": "His tradition is the most sophisticated design system at this table \u2014 it just predates the digital world"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:17:38.526Z"
+      },
+      "mei": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: neutral",
+          "Closing statement: \"Build something that lets him keep making without me worrying every month.\""
+        ],
+        "gap": {
+          "says": "I need economic sustainability",
+          "does": "She already knows the work matters \u2014 the gap is between meaning and money"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:19:29.846Z"
+      },
+      "noor": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: pro",
+          "Closing statement: \"Build something that sees me. That's all I ask.\""
+        ],
+        "gap": {
+          "says": "I just need students to find me",
+          "does": "Has created something studios can't \u2014 she just doesn't know how to scale the intimacy"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:20:36.095Z"
+      },
+      "tomas": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: neutral",
+          "Closing statement: \"I need to see it working for someone like me before I trust it.\""
+        ],
+        "gap": {
+          "says": "Sharing broke something",
+          "does": "The work literally improved when he stopped performing \u2014 the evidence is in the clay"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:21:29.214Z"
+      },
+      "lena": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: neutral",
+          "Closing statement: \"I'm not a pottery person. I just know what I love when I hold it.\""
+        ],
+        "gap": {
+          "says": "I want more things like this",
+          "does": "Already has a deep emotional relationship with craft \u2014 just doesn't have the language for it"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:22:17.342Z"
+      },
+      "sofia": {
+        "interviewCount": 2,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: pro",
+          "Closing statement: \"Can the village do that? Just... help me find someone who'll show me what I'm doing wrong?\""
+        ],
+        "gap": {
+          "says": "I just want a teacher",
+          "does": "Already has the most important thing \u2014 she can't stop"
+        },
+        "delta": "Revisited. Core beliefs held steady. Sofia is consistent.",
+        "firstInterviewDate": "2026-03-31T19:23:16.851Z"
+      },
+      "peter": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"I hope you're the one that proves me wrong. I really do. But I've hoped before.\""
+        ],
+        "gap": {
+          "says": "I've seen too many good ideas corrupted",
+          "does": "Already knows what making without metrics feels like \u2014 he just left it behind for decades"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:27:05.356Z"
+      },
+      "amara": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: pro",
+          "Closing statement: \"Is that so complicated? The money goes to the maker. That's it.\""
+        ],
+        "gap": {
+          "says": "I just want fair economics",
+          "does": "Can't even claim her identity because the economics won't let her"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:28:01.236Z"
+      },
+      "james": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: pro",
+          "Core stance on metrics: pro",
+          "Core stance on community: against",
+          "Closing statement: \"I'm not against what you're building. I'm against risking what I've already built. Come back with traffic.\""
+        ],
+        "gap": {
+          "says": "The system works perfectly",
+          "does": "Has optimised the art out of his own process"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:28:45.035Z"
+      },
+      "diane": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"Build what you described. I'm already your customer. I've been waiting for this.\""
+        ],
+        "gap": {
+          "says": "I want trust and provenance",
+          "does": "Exactly that \u2014 she is the customer who already exists"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:29:25.119Z"
+      },
+      "raj": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: pro",
+          "Core stance on metrics: pro",
+          "Core stance on community: neutral",
+          "Closing statement: \"I've seen this movie before. Prove me wrong. I genuinely hope you can.\""
+        ],
+        "gap": {
+          "says": "Humans are tribal and status-seeking by nature",
+          "does": "His most meaningful community has no metrics at all"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:30:06.578Z"
+      },
+      "elena": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: against",
+          "Closing statement: \"Come back when you have a booking system. Then we'll talk about philosophy.\""
+        ],
+        "gap": {
+          "says": "I don't need community",
+          "does": "Her studio already IS a community \u2014 she just calls it a business"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:31:07.483Z"
+      },
+      "marcus": {
+        "interviewCount": 2,
+        "insights": [
+          "Core stance on algorithms: pro",
+          "Core stance on metrics: pro",
+          "Core stance on community: against",
+          "Closing statement: \"I respect the vision. But vision doesn't pay back a Series A. Show me the model.\""
+        ],
+        "gap": {
+          "says": "Scale is everything",
+          "does": "His most valued relationships are with small, intimate businesses"
+        },
+        "delta": "Revisited. Core beliefs held steady. Marcus is consistent.",
+        "firstInterviewDate": "2026-03-31T19:31:57.597Z"
+      },
+      "kenji": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: neutral",
+          "Closing statement: \"Build for the work. Not for the numbers around the work.\""
+        ],
+        "gap": {
+          "says": "I don't need a platform",
+          "does": "Remembers every serious collector who ever held his work"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:32:37.451Z"
+      },
+      "dana": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: pro",
+          "Core stance on metrics: pro",
+          "Core stance on community: neutral",
+          "Closing statement: \"Build it. But don't pretend it's easy. And don't pretend the people at Instagram are evil. Most of us are just tired.\""
+        ],
+        "gap": {
+          "says": "The algorithm is necessary",
+          "does": "Hasn't been proud of her work in years"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:51:23.608Z"
+      },
+      "carl": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"If the village makes room for people who just make \u2014 not sell, not teach, not perform \u2014 then you've built something real.\""
+        ],
+        "gap": {
+          "says": "I don't need anything",
+          "does": "Has built exactly what the village promises \u2014 gift economy, real relationships, making for joy \u2014 without any platform"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:51:25.113Z"
+      },
+      "ren": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: neutral",
+          "Core stance on metrics: neutral",
+          "Core stance on community: pro",
+          "Closing statement: \"The hand always finishes what the machine starts. That's enough.\""
+        ],
+        "gap": {
+          "says": "I don't care if it's cheating",
+          "does": "The part he's proudest of is the part AI can't do"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:51:26.619Z"
+      },
+      "mira": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"Don't take outside money until you know who you are. And charge from day one. Free platforms attract the wrong crowd.\""
+        ],
+        "gap": {
+          "says": "It can't work",
+          "does": "Her analysis of why it failed is the blueprint for making it work"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:51:28.121Z"
+      },
+      "helen": {
+        "interviewCount": 1,
+        "insights": [
+          "Core stance on algorithms: against",
+          "Core stance on metrics: against",
+          "Core stance on community: pro",
+          "Closing statement: \"Every generation forgets the makers of the previous generation. If your platform remembers \u2014 actually remembers \u2014 that alone justifies its existence.\""
+        ],
+        "gap": {
+          "says": "I decide what gets preserved",
+          "does": "Haunted by the makers she didn't find in time"
+        },
+        "delta": null,
+        "firstInterviewDate": "2026-03-31T19:51:29.626Z"
+      }
+    },
+    "systemScore": 17
+  },
+  "clayVillageBuildingCoordinates": [
+    {
+      "name": "Commons / Caf\u00e9",
+      "x": 0.1813958904354992,
+      "y": 0.6674907292954264
+    },
+    {
+      "name": "Library / Archive",
+      "x": 0.1281829419035847,
+      "y": 0.4326328800988875
+    },
+    {
+      "name": "School",
+      "x": 0.22517869618960606,
+      "y": 0.21013597033374537
+    },
+    {
+      "name": "Mentor Cluster",
+      "x": 0.5060622346428764,
+      "y": 0.16934487021013597
+    },
+    {
+      "name": "Bonfire Plaza",
+      "x": 0.52,
+      "y": 0.5
+    },
+    {
+      "name": "Studio Quarter",
+      "x": 0.7323856613102596,
+      "y": 0.273176761433869
+    },
+    {
+      "name": "Residency / Exchange",
+      "x": 0.9317658228981925,
+      "y": 0.12978986402966625
+    },
+    {
+      "name": "Observatory / World",
+      "x": 0.9344601494061375,
+      "y": 0.39678615574783677
+    },
+    {
+      "name": "Gallery / Market",
+      "x": 0.8536303541677864,
+      "y": 0.6650185414091471
+    }
+  ]
+}

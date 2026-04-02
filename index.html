@@ -7677,10 +7677,10 @@ const DEFAULT_SPAWN_POINT = { x: 660, y: 410 };
 // On every load: sync from server into localStorage first (synchronous XHR)
 const _IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 (function syncFromServer() {
-  if (!_IS_LOCAL) return;
+  const url = _IS_LOCAL ? 'http://localhost:3001/data' : '/gamedata.json';
   try {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:3001/data', false); // synchronous
+    xhr.open('GET', url, false); // synchronous
     xhr.send();
     if (xhr.status === 200) {
       const data = JSON.parse(xhr.responseText);

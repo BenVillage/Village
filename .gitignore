@@ -6,6 +6,3 @@
 
 # Backup files
 *.backup*
-
-# Server-side data (not part of static deploy)
-gamedata.json
