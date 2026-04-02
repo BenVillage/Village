@@ -3939,7 +3939,8 @@
     box-sizing: border-box !important;
     display: none;
   }
-  #mura-panel.mura-open { display: block !important; }
+  #mura-panel.mura-open { display: block !important; transition: opacity 2s ease !important; }
+  #mura-panel.mura-fade-out { opacity: 0 !important; }
   .mura-panel-inner {
     position: static !important;
   }
@@ -4196,7 +4197,9 @@ document.addEventListener('DOMContentLoaded', function() {
     ta.classList.remove('mura-vanish');
     ta.style.transition = 'none';
     ta.style.opacity = '1';
-    setTimeout(() => { ta.style.transition = ''; }, 50);
+    panel.classList.remove('mura-fade-out');
+    panel.style.opacity = '1';
+    setTimeout(() => { ta.style.transition = ''; panel.style.opacity = ''; }, 50);
     panel.classList.add('mura-open');
     setTimeout(() => ta.focus(), 60);
   });
@@ -4228,15 +4231,22 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     window._muraMoment = null;
-    // Fade text over 2s, then clear silently
+    // Step 1: fade text over 2s
     this.classList.add('mura-vanish');
     const ta = this;
     setTimeout(() => {
-      ta.value = '';
-      ta.classList.remove('mura-vanish');
-      ta.style.transition = 'none';
-      ta.style.opacity = '1';
-      setTimeout(() => { ta.style.transition = ''; }, 50);
+      // Step 2: fade the whole panel over 2s
+      panel.classList.add('mura-fade-out');
+      setTimeout(() => {
+        // Step 3: close and reset everything silently
+        panel.classList.remove('mura-open', 'mura-fade-out');
+        panel.style.opacity = '';
+        ta.value = '';
+        ta.classList.remove('mura-vanish');
+        ta.style.transition = 'none';
+        ta.style.opacity = '1';
+        setTimeout(() => { ta.style.transition = ''; }, 50);
+      }, 2100);
     }, 2100);
   });
 
