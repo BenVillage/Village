@@ -3970,23 +3970,10 @@
     min-height: 96px !important;
   }
   .mura-reply::placeholder { color: #bbb !important; }
-  .mura-btn-row {
-    display: flex !important;
-    justify-content: flex-end !important;
-    margin-top: 14px !important;
+  .mura-reply.mura-vanish {
+    opacity: 0 !important;
+    transition: opacity 0.5s ease !important;
   }
-  .mura-send-btn {
-    background: #262626 !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-size: 13px !important;
-    color: #fff !important;
-    cursor: pointer !important;
-    padding: 11px 24px !important;
-    letter-spacing: 0.04em !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  }
-  .mura-send-btn:hover { background: #444 !important; }
   .mura-clearfix { clear: both !important; }
   .mura-x {
     position: absolute !important;
@@ -4188,9 +4175,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="mura-x">×</button>
       <div class="mura-msg"></div>
       <textarea class="mura-reply" placeholder="You don't have to respond." rows="4"></textarea>
-      <div class="mura-btn-row">
-        <button class="mura-send-btn">Send →</button>
-      </div>
     </div>`;
   document.body.appendChild(panel);
 
@@ -4210,9 +4194,12 @@ document.addEventListener('DOMContentLoaded', function() {
   fly.addEventListener('click', function() {
     if (!window._muraMoment) return;
     panel.querySelector('.mura-msg').textContent = window._muraMoment.message;
-    panel.querySelector('.mura-reply').value = '';
+    const ta = panel.querySelector('.mura-reply');
+    ta.value = '';
+    ta.classList.remove('mura-vanish');
+    ta.style.opacity = '';
     panel.classList.add('mura-open');
-    setTimeout(() => panel.querySelector('.mura-reply').focus(), 60);
+    setTimeout(() => ta.focus(), 60);
   });
 
   // ── Close — preserves moment so firefly stays active ─────────
@@ -4226,23 +4213,29 @@ document.addEventListener('DOMContentLoaded', function() {
   // ── Prevent building overlay close from triggering when inside panel ─
   panel.addEventListener('keydown', e => e.stopPropagation());
 
-  // ── Send response — only clears moment when something is sent ─
-  panel.querySelector('.mura-send-btn').addEventListener('click', function() {
-    const text = panel.querySelector('.mura-reply').value.trim();
-    if (text) {
-      if (window._muraMoment && typeof logToMura === 'function') {
-        logToMura({
-          building: 'mura',
-          entry_type: 'response_to_mura',
-          content: text,
-          mura_triggered: true,
-          member_responded: true,
-          member_response: text,
-        });
-      }
-      window._muraMoment = null; // only clears once they've actually responded
+  // ── Enter to send — text vanishes, panel closes ───────────────
+  panel.querySelector('.mura-reply').addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' || e.shiftKey) return; // Shift+Enter = newline
+    e.preventDefault();
+    const text = this.value.trim();
+    if (!text) { closePanel(); return; }
+    // Log response
+    if (window._muraMoment && typeof logToMura === 'function') {
+      logToMura({
+        building: 'mura',
+        entry_type: 'response_to_mura',
+        content: text,
+        mura_triggered: true,
+        member_responded: true,
+        member_response: text,
+      });
     }
-    closePanel();
+    // Vanish the text, then close
+    this.classList.add('mura-vanish');
+    setTimeout(() => {
+      window._muraMoment = null;
+      closePanel();
+    }, 520);
   });
 
 });
