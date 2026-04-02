@@ -3998,7 +3998,7 @@
 <script>
 // ===== SUPABASE — MURA'S MEMORY =====
 const _sb = supabase.createClient(
-  'https://ferpikimblfjmuhtujri.supabase.co',
+  'https://fokujzwgqtifpbmmhdot.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlcnBpa2ltYmxmam11aHR1anJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDM0NDMsImV4cCI6MjA5MDYxOTQ0M30.Gnzv-m4UIPhADEb0_CoqHlAifWfl_hArzGZehdtX_Ak'
 );
 
@@ -7675,7 +7675,9 @@ const DEFAULT_SPAWN_POINT = { x: 660, y: 410 };
 
 // === DATA PERSISTENCE: file-backed save server (port 3001) + localStorage fallback ===
 // On every load: sync from server into localStorage first (synchronous XHR)
+const _IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 (function syncFromServer() {
+  if (!_IS_LOCAL) return;
   try {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://localhost:3001/data', false); // synchronous
@@ -7705,11 +7707,13 @@ const DEFAULT_SPAWN_POINT = { x: 660, y: 410 };
 function persistData(key, value) {
   const str = JSON.stringify(value);
   localStorage.setItem(key, str);
-  fetch('http://localhost:3001/save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ [key]: value })
-  }).catch(() => {});
+  if (_IS_LOCAL) {
+    fetch('http://localhost:3001/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [key]: value })
+    }).catch(() => {});
+  }
 }
 
 function loadWithDefaults(storageKey, defaults) {
@@ -17385,7 +17389,7 @@ function openPrivateChat(profileId) {
 
   // Clear any stale "other user left" signal before opening (local + server)
   localStorage.removeItem('cvCafeLeft');
-  fetch('http://localhost:3001/save', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ key:'cvCafeLeft', value: null }) }).catch(()=>{});
+  if (_IS_LOCAL) fetch('http://localhost:3001/save', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ key:'cvCafeLeft', value: null }) }).catch(()=>{});
   renderPrivateMessages();
   document.getElementById('private-chat-overlay').classList.add('open');
 
@@ -18564,6 +18568,7 @@ document.getElementById('admin-sync-to-server').addEventListener('click', () => 
     }
   }
   const keyCount = Object.keys(payload).length;
+  if (!_IS_LOCAL) { statusEl.textContent = 'Save server not available on production'; return; }
   fetch('http://localhost:3001/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -27497,7 +27502,7 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     msg.querySelectorAll('.mura-jp').forEach(span => {
       let _ttsPlaying = false;
       span.addEventListener('mouseenter', async () => {
-        if (_ttsPlaying) return;
+        if (_ttsPlaying || !_IS_LOCAL) return;
         _ttsPlaying = true;
         try {
           const res = await fetch('http://localhost:3001/tts', {
@@ -27554,7 +27559,7 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
         .order('timestamp', { ascending: false })
         .limit(10);
       if (sbErr) throw new Error(sbErr.message);
-      if (!entries || entries.length === 0) { renderMessage(PLACEHOLDER_TEXT); input.focus(); return; }
+      if (!entries || entries.length === 0 || !_IS_LOCAL) { renderMessage(PLACEHOLDER_TEXT); input.focus(); return; }
       const resp = await fetch('http://localhost:3001/mura', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
