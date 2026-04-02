@@ -3598,10 +3598,14 @@
     font-family: inherit;
     color: #262626;
     outline: none;
-    resize: vertical;
+    resize: none;
     line-height: 1.6;
+    transition: opacity 2s ease;
   }
   #mura-response-area::placeholder { color: #b0b0b0; }
+  #mura-response-area.mura-text-vanish { opacity: 0; }
+  #mura-dialog { transition: opacity 2s ease; }
+  #mura-dialog.mura-dialog-fade { opacity: 0; }
 
   /* ===== VILLAGE TOUR ===== */
   #top-controls {
@@ -27332,6 +27336,10 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
 
   async function openDialog() {
     _showingPending = false;
+    dialog.classList.remove('mura-dialog-fade');
+    dialog.style.opacity = '';
+    input.classList.remove('mura-text-vanish');
+    input.style.opacity = '';
     // Priority 1 — seeded/pending Mura moment
     const pending = getPending();
     if (pending.length > 0) {
@@ -27396,13 +27404,45 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
     firefly.classList.remove('mura-active');
   }
 
-  // Click outside panel closes dialog
-  dialog.addEventListener('click', e => {
-    if (!panel.contains(e.target)) closeDialog();
-  });
-
+  // × closes immediately
   closeBtn.addEventListener('click', closeDialog);
   firefly.addEventListener('click', openDialog);
+
+  // Enter to send — text fades 2s, then window fades 2s
+  input.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    e.preventDefault();
+    const text = this.value.trim();
+    if (!text) return;
+    // Save the response
+    const building = getCurrentBuilding();
+    const responses = JSON.parse(localStorage.getItem('mura_responses') || '[]');
+    responses.push({ ts: Date.now(), building, response: text });
+    localStorage.setItem('mura_responses', JSON.stringify(responses));
+    logToMura({ building: building || 'unknown', entry_type: 'response_to_mura', content: text });
+    if (_showingPending) {
+      const pending = getPending();
+      if (pending.length > 0) { pending.shift(); localStorage.setItem('mura_pending', JSON.stringify(pending)); }
+      _showingPending = false;
+    }
+    isActive = false;
+    firefly.classList.remove('mura-active');
+    // Step 1: fade text over 2s
+    this.classList.add('mura-text-vanish');
+    setTimeout(() => {
+      // Step 2: fade whole dialog over 2s
+      dialog.classList.add('mura-dialog-fade');
+      setTimeout(() => {
+        // Step 3: close silently, reset
+        dialog.style.display = 'none';
+        dialog.classList.remove('mura-dialog-fade');
+        dialog.style.opacity = '';
+        input.value = '';
+        input.classList.remove('mura-text-vanish');
+        input.style.opacity = '';
+      }, 2100);
+    }, 2100);
+  });
 
   // Observe display changes on all building overlays
   BUILDING_OVERLAYS.forEach(id => {
