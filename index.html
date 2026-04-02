@@ -22898,23 +22898,39 @@ ul{margin:8px 0;padding-left:20px}li{margin:4px 0;font-size:14px}p{margin:8px 0;
       {n:'074',text:`This is long-horizon thinking in a world that optimizes for the next quarter. It looks naive until it is obviously necessary. Every great thing ever built looked naive before it was necessary. The cathedral. The library. The village. The school. The archive. All of them were built by people who believed the future deserved more than the present was willing to give it.`},
       {n:'075',text:`Don't let anyone make it smaller.`,short:true},
     ];
-    const tweetHTML = tweets.map(t => {
-      const isShort = t.short ? 'font-style:italic;font-size:17px;' : '';
-      const isJp = t.jp ? 'color:#3a3330;' : '';
-      return `<div style="padding:20px 0;border-bottom:1px solid #f0f0f0;position:relative;" class="vd-tweet-row">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-size:10px;letter-spacing:0.1em;color:#ccc;font-family:'Courier New',monospace;">${t.n}</span>
-          <button onclick="(function(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.textContent='copied';btn.style.color='#22c55e';setTimeout(()=>{btn.textContent='copy';btn.style.color='';},1800);});})(this,${JSON.stringify(t.text)})"
-            style="font-size:10px;font-family:'Courier New',monospace;letter-spacing:0.06em;color:#ccc;background:none;border:1px solid #eee;border-radius:5px;padding:3px 9px;cursor:pointer;">copy</button>
-        </div>
-        <div style="font-size:15px;line-height:1.75;color:#262626;${isShort}${isJp}">${t.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-      </div>`;
-    }).join('');
     el.innerHTML = `
       <h1 class="vd-page-title">Tweet Library</h1>
-      <p class="vd-page-sub" style="margin-bottom:24px;">75 tweets · hover copy button to grab any one</p>
-      ${tweetHTML}
+      <p class="vd-page-sub" style="margin-bottom:24px;">75 tweets · click copy to grab any one</p>
     `;
+    tweets.forEach(t => {
+      const isShort = t.short ? 'font-style:italic;font-size:17px;' : '';
+      const isJp = t.jp ? 'color:#3a3330;' : '';
+      const row = document.createElement('div');
+      row.style.cssText = 'padding:20px 0;border-bottom:1px solid #f0f0f0;';
+      const header = document.createElement('div');
+      header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;';
+      const num = document.createElement('span');
+      num.style.cssText = 'font-size:10px;letter-spacing:0.1em;color:#ccc;font-family:"Courier New",monospace;';
+      num.textContent = t.n;
+      const btn = document.createElement('button');
+      btn.textContent = 'copy';
+      btn.style.cssText = 'font-size:10px;font-family:"Courier New",monospace;letter-spacing:0.06em;color:#ccc;background:none;border:1px solid #eee;border-radius:5px;padding:3px 9px;cursor:pointer;';
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(t.text).then(() => {
+          btn.textContent = 'copied';
+          btn.style.color = '#22c55e';
+          setTimeout(() => { btn.textContent = 'copy'; btn.style.color = '#ccc'; }, 1800);
+        });
+      });
+      const body = document.createElement('div');
+      body.style.cssText = 'font-size:15px;line-height:1.75;color:#262626;' + isShort + isJp;
+      body.textContent = t.text;
+      header.appendChild(num);
+      header.appendChild(btn);
+      row.appendChild(header);
+      row.appendChild(body);
+      el.appendChild(row);
+    });
   }
 
   // ── Initial render ─────────────────────────────────────────────────────────
