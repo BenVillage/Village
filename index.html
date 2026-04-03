@@ -4046,36 +4046,25 @@
     color: #fff;
   }
 
-  /* Mura speech bubble — surfaces from the firefly in Dunbar */
-  #dunbar-mura-bubble {
+  /* Gate text — anchored to the village entrance in world space */
+  #dunbar-gate-text {
     position: fixed; z-index: 10770;
-    background: rgba(10, 8, 4, 0.88);
-    border: 1px solid rgba(200, 168, 75, 0.22);
-    border-radius: 14px;
-    padding: 10px 18px;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px; font-weight: 400; letter-spacing: 0.05em;
+    font-size: 12px; font-weight: 400; letter-spacing: 0.08em;
     color: #c8a84b;
+    text-shadow: 0 0 14px rgba(200, 168, 75, 0.35);
     white-space: nowrap;
     cursor: pointer;
     pointer-events: none;
-    opacity: 0;
-    transform: translate(-50%, 0) translateY(4px);
-    transition: opacity 0.9s ease, transform 0.9s ease;
-    user-select: none;
-  }
-  #dunbar-mura-bubble.showing {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translate(-50%, 0) translateY(0);
-  }
-  #dunbar-mura-bubble::after {
-    content: '';
-    position: absolute;
-    top: 100%; left: 50%;
+    display: none;
     transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: rgba(200, 168, 75, 0.22);
+    user-select: none;
+    animation: dunbar-gate-breathe 5s ease-in-out infinite;
+  }
+  #dunbar-gate-text.visible { display: block; pointer-events: auto; }
+  @keyframes dunbar-gate-breathe {
+    0%, 100% { opacity: 0.48; }
+    50%       { opacity: 0.88; }
   }
   /* Auth modal */
   #dunbar-auth-modal {
@@ -4148,27 +4137,41 @@
   }
   .dunbar-enter-btn:hover { background: #2e2e50; }
 
-  /* Dev toolbar — founder / localhost only */
-  #dev-toolbar {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 10760;
-    display: none; align-items: center; gap: 2px;
-    background: rgba(10,10,22,0.88);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 22px; padding: 6px 10px;
+  /* Dev panel — right-side hamburger, founder / localhost only */
+  #dev-hamburger {
+    position: fixed; right: 0; bottom: 140px; z-index: 10762;
+    display: none; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    background: rgba(10,10,22,0.82);
+    border: 1px solid rgba(255,255,255,0.1); border-right: none;
+    border-radius: 6px 0 0 6px;
+    cursor: pointer; color: rgba(255,255,255,0.45); font-size: 15px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    transition: color 0.18s, background 0.18s;
+    user-select: none;
   }
-  #dev-toolbar.visible { display: flex; }
+  #dev-hamburger.visible { display: flex; }
+  #dev-hamburger:hover { color: rgba(255,255,255,0.9); background: rgba(30,30,55,0.95); }
+  #dev-panel {
+    position: fixed; right: -160px; bottom: 106px; z-index: 10761;
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(10,10,22,0.9);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px 0 0 10px;
+    padding: 10px 10px 10px 14px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: right 0.22s ease;
+  }
+  #dev-panel.open { right: 28px; }
   .dev-tb-btn {
-    background: transparent; color: rgba(255,255,255,0.5);
+    background: transparent; color: rgba(255,255,255,0.48);
     border: none; cursor: pointer;
-    font-size: 11px; letter-spacing: 0.01em;
-    padding: 5px 12px; border-radius: 14px;
+    font-size: 11px; letter-spacing: 0.01em; text-align: left;
+    padding: 5px 8px; border-radius: 6px;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    transition: background 0.18s, color 0.18s; white-space: nowrap;
+    transition: background 0.15s, color 0.15s; white-space: nowrap;
   }
   .dev-tb-btn:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.92); }
-  .dev-tb-sep { width: 1px; height: 13px; background: rgba(255,255,255,0.1); flex-shrink: 0; margin: 0 2px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -9517,6 +9520,15 @@ function updateCamera() {
 
   // Translate, then scale
   world.style.transform = `translate(${cx}px, ${cy}px) scale(${zoomLevel})`;
+
+  // Keep Dunbar gate text anchored to the gate in world space
+  if (window._dunbarMode) {
+    const gEl = document.getElementById('dunbar-gate-text');
+    if (gEl && gEl.classList.contains('visible')) {
+      gEl.style.left = (718 * zoomLevel + cx) + 'px';
+      gEl.style.top  = (628 * zoomLevel + cy) + 'px';
+    }
+  }
 }
 
 function updateLabels() {
@@ -27956,12 +27968,11 @@ function seedMemberLanguage() {
 seedMemberLanguage();
 </script>
 
-<!-- ── Dev Toolbar — founder / localhost only ──────────────────── -->
-<div id="dev-toolbar">
+<!-- ── Dev Panel — right-side hamburger, founder / localhost only ─ -->
+<div id="dev-hamburger">≡</div>
+<div id="dev-panel">
   <button class="dev-tb-btn" id="dev-reset-dunbar">↺ Reset Dunbar</button>
-  <span class="dev-tb-sep"></span>
   <button class="dev-tb-btn" id="dev-clear-profile">⊘ Clear Profile</button>
-  <span class="dev-tb-sep"></span>
   <button class="dev-tb-btn" id="dev-center-map">⊕ Center Map</button>
 </div>
 
@@ -27975,8 +27986,8 @@ seedMemberLanguage();
   </div>
 </div>
 
-<!-- ── Dunbar Mura bubble — speech from the firefly ────────────── -->
-<div id="dunbar-mura-bubble">Ready to find your village?</div>
+<!-- ── Dunbar gate text — anchored to the village entrance ────────── -->
+<div id="dunbar-gate-text">Ready to find your village?</div>
 
 <!-- ── Find Your Village — Auth Modal ─────────────────────────── -->
 <div id="dunbar-auth-modal">
@@ -28020,44 +28031,17 @@ seedMemberLanguage();
     if (w) w.classList.add('dunbar-gone');
   }
 
-  let _bubbleTimer = null;
-
-  function showMuraBubble() {
-    const fly = document.getElementById('mura-firefly');
-    const bubble = document.getElementById('dunbar-mura-bubble');
-    if (!fly || !bubble || !window._dunbarMode) return;
-    const rect = fly.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top;
-    // Clamp so bubble never leaves the viewport
-    // Bubble is ~220px wide (translate -50% centers it on cx)
-    const halfW  = 120;
-    const bubH   = 44;
-    const margin = 16;
-    const clampX = Math.max(halfW + margin, Math.min(window.innerWidth  - halfW  - margin, cx));
-    const clampY = Math.max(bubH  + margin, cy - 52);
-    bubble.style.left = clampX + 'px';
-    bubble.style.top  = clampY + 'px';
-    bubble.classList.add('showing');
-    clearTimeout(_bubbleTimer);
-    _bubbleTimer = setTimeout(hideMuraBubble, 7000);
+  function showGateText() {
+    const el = document.getElementById('dunbar-gate-text');
+    if (el) el.classList.add('visible');
   }
-
-  function hideMuraBubble() {
-    const bubble = document.getElementById('dunbar-mura-bubble');
-    if (bubble) bubble.classList.remove('showing');
-  }
-
-  function scheduleMuraBubble(firstDelay) {
-    setTimeout(function loop() {
-      if (!window._dunbarMode) return;
-      showMuraBubble();
-      setTimeout(loop, 28000 + Math.random() * 22000); // 28–50s between appearances
-    }, firstDelay || 14000);
+  function hideGateText() {
+    const el = document.getElementById('dunbar-gate-text');
+    if (el) el.classList.remove('visible');
   }
   function showDevToolbar() {
-    const tb = document.getElementById('dev-toolbar');
-    if (tb) tb.classList.add('visible');
+    const hb = document.getElementById('dev-hamburger');
+    if (hb) hb.classList.add('visible');
   }
 
   function dismissWelcome() {
@@ -28065,7 +28049,7 @@ seedMemberLanguage();
     if (!w) return;
     w.classList.add('dunbar-fading');
     setTimeout(() => w.classList.add('dunbar-gone'), 1450);
-    scheduleMuraBubble(14000); // first bubble ~14s after entering
+    showGateText();
   }
 
   function enterVillage(role) {
@@ -28073,7 +28057,7 @@ seedMemberLanguage();
     localStorage.setItem(ACCESS_KEY, role || 'member');
     const w = document.getElementById('dunbar-welcome');
     if (w && !w.classList.contains('dunbar-gone')) dismissWelcome();
-    hideMuraBubble();
+    hideGateText();
     const dir = document.getElementById('dunbar-village-dir');
     if (dir) dir.classList.remove('open');
     const auth = document.getElementById('dunbar-auth-modal');
@@ -28141,9 +28125,21 @@ seedMemberLanguage();
     const enterBtn = document.getElementById('dunbar-enter-btn');
     if (enterBtn) enterBtn.addEventListener('click', dismissWelcome);
 
-    // Mura bubble — opens auth modal when clicked
-    const muraBubble = document.getElementById('dunbar-mura-bubble');
-    if (muraBubble) muraBubble.addEventListener('click', openAuth);
+    // Gate text — opens auth modal when clicked
+    const gateText = document.getElementById('dunbar-gate-text');
+    if (gateText) gateText.addEventListener('click', openAuth);
+
+    // Dev hamburger — toggle sliding panel
+    const devHamburger = document.getElementById('dev-hamburger');
+    const devPanel     = document.getElementById('dev-panel');
+    if (devHamburger && devPanel) {
+      devHamburger.addEventListener('click', () => devPanel.classList.toggle('open'));
+      document.addEventListener('click', e => {
+        if (!devHamburger.contains(e.target) && !devPanel.contains(e.target)) {
+          devPanel.classList.remove('open');
+        }
+      });
+    }
 
     // Dunbar entrance spawn — place avatar at gate/bridge, not the bonfire
     if (window._dunbarMode) {
