@@ -12206,7 +12206,7 @@ function checkBonfireProximity() {
 
   if (bonfireNearby && !wasNearby) {
     startBonfireCrackle(); // fire crackles as soon as you're near
-    if (!bonfireChatOpen && !bonfireClosing && !window._dunbarMode) openBonfireChat(false, true);
+    if (!bonfireChatOpen && !bonfireClosing) openBonfireChat(false, true);
     // Studio Alchemy — deliver pending note after a quiet moment
     if (_alchemyPendingNote) {
       const note = _alchemyPendingNote;
