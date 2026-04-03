@@ -4050,9 +4050,11 @@
   #dunbar-gate-text {
     position: fixed; z-index: 10770;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px; font-weight: 400; letter-spacing: 0.08em;
+    font-size: 14px; font-weight: 400; letter-spacing: 0.08em;
     color: #c8a84b;
-    text-shadow: 0 0 14px rgba(200, 168, 75, 0.35);
+    text-shadow: 0 0 20px rgba(200, 168, 75, 0.6);
+    border-bottom: 1px solid rgba(200, 168, 75, 0.4);
+    padding-bottom: 2px;
     white-space: nowrap;
     cursor: pointer;
     pointer-events: none;
@@ -4063,8 +4065,8 @@
   }
   #dunbar-gate-text.visible { display: block; pointer-events: auto; }
   @keyframes dunbar-gate-breathe {
-    0%, 100% { opacity: 0.48; }
-    50%       { opacity: 0.88; }
+    0%, 100% { opacity: 0.65; }
+    50%       { opacity: 1.0; }
   }
   /* Auth modal */
   #dunbar-auth-modal {
@@ -27987,7 +27989,7 @@ seedMemberLanguage();
 </div>
 
 <!-- ── Dunbar gate text — anchored to the village entrance ────────── -->
-<div id="dunbar-gate-text">Ready to find your village?</div>
+<div id="dunbar-gate-text">Find your village</div>
 
 <!-- ── Find Your Village — Auth Modal ─────────────────────────── -->
 <div id="dunbar-auth-modal">
