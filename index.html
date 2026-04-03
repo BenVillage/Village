@@ -28057,7 +28057,7 @@ seedMemberLanguage();
     if (dir) dir.classList.remove('open');
     const auth = document.getElementById('dunbar-auth-modal');
     if (auth) auth.classList.remove('open');
-    if (role === 'founder' || window._IS_LOCAL) showDevToolbar();
+    if (role === 'founder' || _IS_LOCAL) showDevToolbar();
   }
 
   function openAuth() {
@@ -28090,7 +28090,7 @@ seedMemberLanguage();
     const statusEl   = document.getElementById('dunbar-auth-status');
 
     // Show dev toolbar on localhost regardless of Dunbar state
-    if (window._IS_LOCAL) showDevToolbar();
+    if (_IS_LOCAL) showDevToolbar();
 
     // Check Supabase session — founder or returning member bypasses Dunbar
     if (window._supabase) {
