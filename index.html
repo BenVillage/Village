@@ -28029,8 +28029,15 @@ seedMemberLanguage();
     const rect = fly.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top;
-    bubble.style.left = cx + 'px';
-    bubble.style.top  = (cy - 52) + 'px';
+    // Clamp so bubble never leaves the viewport
+    // Bubble is ~220px wide (translate -50% centers it on cx)
+    const halfW  = 120;
+    const bubH   = 44;
+    const margin = 16;
+    const clampX = Math.max(halfW + margin, Math.min(window.innerWidth  - halfW  - margin, cx));
+    const clampY = Math.max(bubH  + margin, cy - 52);
+    bubble.style.left = clampX + 'px';
+    bubble.style.top  = clampY + 'px';
     bubble.classList.add('showing');
     clearTimeout(_bubbleTimer);
     _bubbleTimer = setTimeout(hideMuraBubble, 7000);
