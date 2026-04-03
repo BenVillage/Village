@@ -4048,10 +4048,10 @@
 
   /* Invitation text — bottom center, always present in Dunbar */
   #dunbar-invitation {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10750;
+    position: fixed; bottom: 56px; left: 0; right: 0; z-index: 10770;
     display: none;
     justify-content: center; align-items: center;
-    padding: 22px 0 26px;
+    padding: 16px 0;
     pointer-events: none;
   }
   #dunbar-invitation.visible { display: flex; pointer-events: auto; }
@@ -4064,10 +4064,8 @@
     cursor: pointer;
     animation: dunbar-breathe 5s ease-in-out infinite;
     text-shadow: 0 0 18px rgba(200, 168, 75, 0.38);
-    transition: opacity 0.2s;
     user-select: none;
   }
-  #dunbar-inv-text:hover { opacity: 1 !important; }
   @keyframes dunbar-breathe {
     0%, 100% { opacity: 0.48; }
     50%       { opacity: 0.88; }
