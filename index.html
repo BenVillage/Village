@@ -4046,39 +4046,31 @@
     color: #fff;
   }
 
-  /* Amber firefly dot — top-right, always present in Dunbar */
-  #dunbar-firefly {
-    position: fixed; top: 18px; right: 20px; z-index: 10750;
-    display: none; /* shown via JS when welcome dismissed */
-    align-items: center; gap: 8px;
-    cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 20px;
-    transition: background 0.25s;
+  /* Invitation text — bottom center, always present in Dunbar */
+  #dunbar-invitation {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10750;
+    display: none;
+    justify-content: center; align-items: center;
+    padding: 22px 0 26px;
+    pointer-events: none;
   }
-  #dunbar-firefly:hover { background: rgba(255,255,255,0.08); }
-  #dunbar-firefly.visible { display: flex; }
-  #dunbar-fly-dot {
-    width: 9px; height: 9px; border-radius: 50%;
-    background: #e8941a; flex-shrink: 0;
-    animation: dunbar-fly-pulse 2.8s ease-in-out infinite;
-  }
-  @keyframes dunbar-fly-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(232,148,26,0.55); opacity: 1; }
-    50%       { box-shadow: 0 0 0 7px rgba(232,148,26,0); opacity: 0.75; }
-  }
-  #dunbar-fly-label {
-    font-size: 12px; color: rgba(255,255,255,0.55);
+  #dunbar-invitation.visible { display: flex; pointer-events: auto; }
+  #dunbar-inv-text {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    white-space: nowrap; letter-spacing: 0.01em;
-    opacity: 0; max-width: 0; overflow: hidden;
-    transition: opacity 0.25s, max-width 0.35s;
+    font-size: 13px; font-weight: 400; letter-spacing: 0.07em;
+    color: #c8a84b;
+    border-bottom: 1px solid rgba(200, 168, 75, 0.28);
+    padding-bottom: 3px;
+    cursor: pointer;
+    animation: dunbar-breathe 5s ease-in-out infinite;
+    text-shadow: 0 0 18px rgba(200, 168, 75, 0.38);
+    transition: opacity 0.2s;
+    user-select: none;
   }
-  #dunbar-firefly:hover #dunbar-fly-label {
-    opacity: 1; max-width: 140px;
-  }
-  @media (max-width: 600px) {
-    #dunbar-fly-label { opacity: 1 !important; max-width: 140px !important; }
+  #dunbar-inv-text:hover { opacity: 1 !important; }
+  @keyframes dunbar-breathe {
+    0%, 100% { opacity: 0.48; }
+    50%       { opacity: 0.88; }
   }
   /* Auth modal */
   #dunbar-auth-modal {
@@ -12214,7 +12206,7 @@ function checkBonfireProximity() {
 
   if (bonfireNearby && !wasNearby) {
     startBonfireCrackle(); // fire crackles as soon as you're near
-    if (!bonfireChatOpen && !bonfireClosing) openBonfireChat(false, true);
+    if (!bonfireChatOpen && !bonfireClosing && !window._dunbarMode) openBonfireChat(false, true);
     // Studio Alchemy — deliver pending note after a quiet moment
     if (_alchemyPendingNote) {
       const note = _alchemyPendingNote;
@@ -27978,10 +27970,9 @@ seedMemberLanguage();
   </div>
 </div>
 
-<!-- ── Dunbar Firefly Dot — top-right, always present ─────────── -->
-<div id="dunbar-firefly">
-  <span id="dunbar-fly-dot"></span>
-  <span id="dunbar-fly-label">Find your village</span>
+<!-- ── Dunbar Invitation — bottom center, always present ──────── -->
+<div id="dunbar-invitation">
+  <span id="dunbar-inv-text">Ready to find your village?</span>
 </div>
 
 <!-- ── Find Your Village — Auth Modal ─────────────────────────── -->
@@ -28026,13 +28017,13 @@ seedMemberLanguage();
     if (w) w.classList.add('dunbar-gone');
   }
 
-  function showFirefly() {
-    const fly = document.getElementById('dunbar-firefly');
-    if (fly) fly.classList.add('visible');
+  function showInvitation() {
+    const inv = document.getElementById('dunbar-invitation');
+    if (inv) inv.classList.add('visible');
   }
-  function hideFirefly() {
-    const fly = document.getElementById('dunbar-firefly');
-    if (fly) fly.classList.remove('visible');
+  function hideInvitation() {
+    const inv = document.getElementById('dunbar-invitation');
+    if (inv) inv.classList.remove('visible');
   }
   function showDevToolbar() {
     const tb = document.getElementById('dev-toolbar');
@@ -28044,7 +28035,7 @@ seedMemberLanguage();
     if (!w) return;
     w.classList.add('dunbar-fading');
     setTimeout(() => w.classList.add('dunbar-gone'), 1450);
-    showFirefly();
+    showInvitation();
   }
 
   function enterVillage(role) {
@@ -28052,7 +28043,7 @@ seedMemberLanguage();
     localStorage.setItem(ACCESS_KEY, role || 'member');
     const w = document.getElementById('dunbar-welcome');
     if (w && !w.classList.contains('dunbar-gone')) dismissWelcome();
-    hideFirefly();
+    hideInvitation();
     const dir = document.getElementById('dunbar-village-dir');
     if (dir) dir.classList.remove('open');
     const auth = document.getElementById('dunbar-auth-modal');
@@ -28116,13 +28107,23 @@ seedMemberLanguage();
       });
     }
 
-    // "Enter Dunbar" — dismiss welcome, reveal firefly dot
+    // "Enter Dunbar" — dismiss welcome, reveal invitation text
     const enterBtn = document.getElementById('dunbar-enter-btn');
     if (enterBtn) enterBtn.addEventListener('click', dismissWelcome);
 
-    // Firefly dot — opens auth modal
-    const firefly = document.getElementById('dunbar-firefly');
-    if (firefly) firefly.addEventListener('click', openAuth);
+    // Invitation text — opens auth modal
+    const invitation = document.getElementById('dunbar-invitation');
+    if (invitation) invitation.addEventListener('click', openAuth);
+
+    // Dunbar entrance spawn — place avatar at gate/bridge, not the bonfire
+    if (window._dunbarMode) {
+      try {
+        avatar.x = 690; avatar.y = 665;
+        avatar.vx = 0; avatar.vy = 0;
+        if (typeof updateCamera === 'function') updateCamera();
+        if (typeof updateAvatarDisplay === 'function') updateAvatarDisplay();
+      } catch(_) {}
+    }
 
     // Close auth modal
     document.getElementById('dunbar-auth-close').addEventListener('click', () => {
