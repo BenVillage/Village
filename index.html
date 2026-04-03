@@ -27935,6 +27935,14 @@ function seedMemberLanguage() {
   localStorage.setItem('mura_language_seeded', '1');
 }
 seedMemberLanguage();
+
+// Shift+D — reset Dunbar for testing
+document.addEventListener('keydown', function(e) {
+  if (e.shiftKey && e.key === 'D') {
+    localStorage.removeItem('cvVillageAccess');
+    location.reload();
+  }
+});
 </script>
 
 <!-- ── Dunbar Welcome Overlay ──────────────────────────────────── -->
