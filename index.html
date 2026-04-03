@@ -3991,6 +3991,110 @@
     padding: 4px !important;
   }
   .mura-x:hover { color: #888 !important; }
+
+  /* ── Dunbar Mode ─────────────────────────────────────────────── */
+  #dunbar-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 10700;
+    display: flex; align-items: center; justify-content: center; gap: 20px;
+    padding: 13px 28px;
+    background: rgba(8,8,18,0.80);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    transition: opacity 0.8s ease;
+  }
+  #dunbar-bar.dunbar-hidden { opacity: 0; pointer-events: none; }
+  #dunbar-label {
+    color: rgba(255,255,255,0.46);
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: 0.01em;
+  }
+  #dunbar-find-btn {
+    background: transparent;
+    color: rgba(255,255,255,0.78);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 20px; padding: 7px 18px;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  #dunbar-find-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.42); color: #fff;
+  }
+  /* Auth modal */
+  #dunbar-auth-modal {
+    position: fixed; inset: 0; z-index: 10800;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.52);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  #dunbar-auth-modal.open { display: flex; }
+  #dunbar-auth-card {
+    position: relative;
+    background: #fff; border-radius: 22px;
+    padding: 44px 38px 36px; width: 360px;
+    max-width: calc(100vw - 48px);
+    box-shadow: 0 24px 72px rgba(0,0,0,0.28);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  #dunbar-auth-card h2 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+  #dunbar-auth-card .auth-sub { font-size: 14px; color: #777; margin-bottom: 26px; line-height: 1.55; }
+  #dunbar-email-input {
+    width: 100%; border: 1.5px solid #e4e4e4; border-radius: 10px;
+    padding: 13px 14px; font-size: 15px; outline: none; margin-bottom: 12px;
+    color: #1a1a2e; font-family: inherit; transition: border-color 0.2s; display: block;
+  }
+  #dunbar-email-input:focus { border-color: #4a7c59; }
+  #dunbar-send-btn {
+    width: 100%; background: #1a1a2e; color: #fff; border: none;
+    border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: background 0.2s;
+  }
+  #dunbar-send-btn:hover { background: #2e2e50; }
+  #dunbar-send-btn:disabled { opacity: 0.6; cursor: default; }
+  #dunbar-auth-status { margin-top: 14px; font-size: 13px; color: #666; min-height: 20px; }
+  #dunbar-auth-close {
+    position: absolute; top: 16px; right: 18px;
+    font-size: 24px; line-height: 1; color: #bbb;
+    background: none; border: none; cursor: pointer; padding: 2px;
+  }
+  #dunbar-auth-close:hover { color: #888; }
+  /* Village directory */
+  #dunbar-village-dir {
+    position: fixed; inset: 0; z-index: 10900;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.62);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  #dunbar-village-dir.open { display: flex; }
+  #dunbar-dir-card {
+    background: #fff; border-radius: 26px;
+    padding: 48px 40px 40px; width: 420px;
+    max-width: calc(100vw - 48px);
+    box-shadow: 0 28px 80px rgba(0,0,0,0.3);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  #dunbar-dir-card h2 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+  #dunbar-dir-card .dir-sub { font-size: 14px; color: #777; margin-bottom: 32px; line-height: 1.55; }
+  .dunbar-village-card {
+    background: #f8f5f0; border: 1.5px solid #e8ddd0;
+    border-radius: 16px; padding: 24px; text-align: left;
+  }
+  .dunbar-village-card h3 { font-size: 17px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+  .dunbar-village-card p { font-size: 13px; color: #888; line-height: 1.55; margin-bottom: 18px; }
+  .dunbar-enter-btn {
+    background: #1a1a2e; color: #fff; border: none;
+    border-radius: 10px; padding: 11px 22px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.2s;
+  }
+  .dunbar-enter-btn:hover { background: #2e2e50; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -12006,6 +12110,7 @@ document.getElementById('bonfire-chat-input').addEventListener('keydown', e => {
 });
 
 function sendBonfireMessage() {
+  if (window._dunbarMode) return; // read-only in Dunbar
   const input = document.getElementById('bonfire-chat-input');
   const text = input.value.trim();
   if (!text) return;
@@ -12198,6 +12303,7 @@ let mailboxOwner = null; // profile whose mailbox is open
 let mailboxActiveThread = null; // the other person's id in the active thread
 
 function openMailbox(profileId) {
+  if (window._dunbarMode) return; // not available in Dunbar
   mailboxOwner = profiles.find(p => p.id === profileId);
   if (!mailboxOwner) return;
   mailboxActiveThread = null;
@@ -17799,6 +17905,7 @@ function populateBuildingList() {
 let editingProfileId = null;
 
 function openProfileEditor(profile) {
+  if (window._dunbarMode) return; // not available in Dunbar
   if (!profile) {
     profile = createDefaultProfile();
     editingProfileId = null; // new profile
@@ -27773,6 +27880,166 @@ function seedMemberLanguage() {
   localStorage.setItem('mura_language_seeded', '1');
 }
 seedMemberLanguage();
+</script>
+
+<!-- ── Dunbar Bar ──────────────────────────────────────────────── -->
+<div id="dunbar-bar" class="dunbar-hidden">
+  <span id="dunbar-label">You are in Dunbar. This is not your village yet.</span>
+  <button id="dunbar-find-btn">Find your village →</button>
+</div>
+
+<!-- ── Find Your Village — Auth Modal ─────────────────────────── -->
+<div id="dunbar-auth-modal">
+  <div id="dunbar-auth-card">
+    <button id="dunbar-auth-close">×</button>
+    <h2>Find your village</h2>
+    <p class="auth-sub">Enter your email. We'll send you a magic link — no password needed.</p>
+    <input id="dunbar-email-input" type="email" placeholder="your@email.com" autocomplete="email" />
+    <button id="dunbar-send-btn">Send magic link</button>
+    <div id="dunbar-auth-status"></div>
+  </div>
+</div>
+
+<!-- ── Village Directory ───────────────────────────────────────── -->
+<div id="dunbar-village-dir">
+  <div id="dunbar-dir-card">
+    <h2>Choose your village</h2>
+    <p class="dir-sub">You're in. Now pick where you want to belong.</p>
+    <div class="dunbar-village-card">
+      <h3>🏺 Clay Village</h3>
+      <p>A village for potters and ceramic artists. Walk the lanes, sit at the bonfire, find your people.</p>
+      <button class="dunbar-enter-btn" id="dunbar-enter-clay">Enter Clay Village →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DUNBAR — arrival mode for first-time visitors
+// ═══════════════════════════════════════════════════════════════
+(function initDunbar() {
+  const FOUNDER_EMAIL = 'helloanotherclay@gmail.com';
+  const ACCESS_KEY = 'cvVillageAccess';
+
+  // Synchronous check — have they crossed the threshold before?
+  window._dunbarMode = !localStorage.getItem(ACCESS_KEY);
+
+  function enterVillage(role) {
+    window._dunbarMode = false;
+    localStorage.setItem(ACCESS_KEY, role || 'member');
+    const bar = document.getElementById('dunbar-bar');
+    if (bar) { bar.classList.add('dunbar-hidden'); }
+    const dir = document.getElementById('dunbar-village-dir');
+    if (dir) dir.classList.remove('open');
+    const auth = document.getElementById('dunbar-auth-modal');
+    if (auth) auth.classList.remove('open');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const bar      = document.getElementById('dunbar-bar');
+    const authModal = document.getElementById('dunbar-auth-modal');
+    const dirModal  = document.getElementById('dunbar-village-dir');
+    const emailInput = document.getElementById('dunbar-email-input');
+    const sendBtn   = document.getElementById('dunbar-send-btn');
+    const statusEl  = document.getElementById('dunbar-auth-status');
+
+    // Show bar if in Dunbar mode
+    if (window._dunbarMode && bar) bar.classList.remove('dunbar-hidden');
+
+    // Check Supabase session — founder or returning member bypasses Dunbar
+    if (window._supabase) {
+      window._supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session?.user) return;
+        if (session.user.email === FOUNDER_EMAIL) {
+          enterVillage('founder');
+        } else {
+          enterVillage('member');
+        }
+      });
+
+      // Magic link return — fires when they click the link from their email
+      window._supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          if (session.user.email === FOUNDER_EMAIL) {
+            enterVillage('founder');
+          } else {
+            if (authModal) authModal.classList.remove('open');
+            if (dirModal) dirModal.classList.add('open');
+          }
+        }
+      });
+    }
+
+    // "Find your village" opens auth modal
+    document.getElementById('dunbar-find-btn').addEventListener('click', () => {
+      authModal.classList.add('open');
+      setTimeout(() => emailInput.focus(), 80);
+    });
+
+    // Close auth modal
+    document.getElementById('dunbar-auth-close').addEventListener('click', () => {
+      authModal.classList.remove('open');
+      statusEl.textContent = '';
+      emailInput.value = '';
+      emailInput.disabled = false;
+      sendBtn.disabled = false;
+    });
+    authModal.addEventListener('click', e => {
+      if (e.target === authModal) {
+        authModal.classList.remove('open');
+        statusEl.textContent = '';
+      }
+    });
+
+    // Send magic link
+    sendBtn.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        statusEl.textContent = 'Please enter a valid email address.';
+        return;
+      }
+      statusEl.textContent = 'Sending…';
+      sendBtn.disabled = true;
+      try {
+        const { error } = await window._supabase.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: window.location.origin }
+        });
+        if (error) throw error;
+        statusEl.textContent = '✓ Check your email — your link is on its way.';
+        emailInput.disabled = true;
+      } catch (err) {
+        statusEl.textContent = 'Something went wrong. Try again.';
+        sendBtn.disabled = false;
+        console.warn('[Dunbar auth]', err);
+      }
+    });
+
+    // Enter key sends the magic link request
+    emailInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendBtn.click();
+    });
+
+    // Village directory — enter Clay Village
+    document.getElementById('dunbar-enter-clay').addEventListener('click', () => {
+      enterVillage('member');
+    });
+
+    // Seed bonfire with quiet messages if Dunbar and chat is still empty
+    if (window._dunbarMode) {
+      const BONFIRE_CHAT_KEY = 'clayVillageBonfireChat';
+      const existing = JSON.parse(localStorage.getItem(BONFIRE_CHAT_KEY) || '[]');
+      if (existing.length === 0) {
+        const seeds = [
+          { name: 'Yuki',   text: 'First time I came here I just walked around for an hour. Nobody asked me anything.',          photo: '', ts: Date.now() - 14 * 60000, isPlayer: false },
+          { name: 'Maya',   text: 'This is where I realised I cared more about the community than the algorithm.',               photo: '', ts: Date.now() -  7 * 60000, isPlayer: false },
+          { name: 'Oliver', text: 'Sit for a while. The fire is always warm.',                                                   photo: '', ts: Date.now() -  2 * 60000, isPlayer: false },
+        ];
+        localStorage.setItem(BONFIRE_CHAT_KEY, JSON.stringify(seeds));
+      }
+    }
+  });
+})();
 </script>
 
 </body>
