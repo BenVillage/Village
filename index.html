@@ -3993,37 +3993,92 @@
   .mura-x:hover { color: #888 !important; }
 
   /* ── Dunbar Mode ─────────────────────────────────────────────── */
-  #dunbar-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    z-index: 10700;
-    display: flex; align-items: center; justify-content: center; gap: 20px;
-    padding: 13px 28px;
-    background: rgba(8,8,18,0.80);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255,255,255,0.07);
-    transition: opacity 0.8s ease;
+
+  /* Welcome overlay */
+  #dunbar-welcome {
+    position: fixed; inset: 0; z-index: 10700;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(4,4,14,0.76);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    transition: opacity 1.4s ease;
   }
-  #dunbar-bar.dunbar-hidden { opacity: 0; pointer-events: none; }
-  #dunbar-label {
-    color: rgba(255,255,255,0.46);
-    font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  #dunbar-welcome.dunbar-fading { opacity: 0; pointer-events: none; }
+  #dunbar-welcome.dunbar-gone   { display: none; }
+  #dunbar-welcome-inner {
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    padding: 0 32px;
+    max-width: 480px;
+    animation: dunbar-rise 1.4s ease both;
+  }
+  @keyframes dunbar-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+  #dunbar-welcome-jp {
+    font-size: 36px; font-weight: 300; letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.88); margin-bottom: 18px; display: block;
+  }
+  #dunbar-welcome-title {
+    font-size: 20px; font-weight: 400;
+    color: rgba(255,255,255,0.72); margin-bottom: 16px; display: block;
     letter-spacing: 0.01em;
   }
-  #dunbar-find-btn {
-    background: transparent;
-    color: rgba(255,255,255,0.78);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 20px; padding: 7px 18px;
-    font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
-    white-space: nowrap;
+  #dunbar-welcome-body {
+    font-size: 14px; font-weight: 300; line-height: 1.7;
+    color: rgba(255,255,255,0.42); margin-bottom: 44px; display: block;
   }
-  #dunbar-find-btn:hover {
-    background: rgba(255,255,255,0.12);
-    border-color: rgba(255,255,255,0.42); color: #fff;
+  #dunbar-enter-btn {
+    display: inline-block;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 24px;
+    padding: 11px 32px;
+    font-size: 14px; font-weight: 400; letter-spacing: 0.03em;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.25s, border-color 0.25s, color 0.25s;
+  }
+  #dunbar-enter-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+  }
+
+  /* Amber firefly dot — top-right, always present in Dunbar */
+  #dunbar-firefly {
+    position: fixed; top: 18px; right: 20px; z-index: 10750;
+    display: none; /* shown via JS when welcome dismissed */
+    align-items: center; gap: 8px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 20px;
+    transition: background 0.25s;
+  }
+  #dunbar-firefly:hover { background: rgba(255,255,255,0.08); }
+  #dunbar-firefly.visible { display: flex; }
+  #dunbar-fly-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #e8941a; flex-shrink: 0;
+    animation: dunbar-fly-pulse 2.8s ease-in-out infinite;
+  }
+  @keyframes dunbar-fly-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,148,26,0.55); opacity: 1; }
+    50%       { box-shadow: 0 0 0 7px rgba(232,148,26,0); opacity: 0.75; }
+  }
+  #dunbar-fly-label {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    white-space: nowrap; letter-spacing: 0.01em;
+    opacity: 0; max-width: 0; overflow: hidden;
+    transition: opacity 0.25s, max-width 0.35s;
+  }
+  #dunbar-firefly:hover #dunbar-fly-label {
+    opacity: 1; max-width: 140px;
+  }
+  @media (max-width: 600px) {
+    #dunbar-fly-label { opacity: 1 !important; max-width: 140px !important; }
   }
   /* Auth modal */
   #dunbar-auth-modal {
@@ -27882,10 +27937,20 @@ function seedMemberLanguage() {
 seedMemberLanguage();
 </script>
 
-<!-- ── Dunbar Bar ──────────────────────────────────────────────── -->
-<div id="dunbar-bar" class="dunbar-hidden">
-  <span id="dunbar-label">You are in Dunbar. This is not your village yet.</span>
-  <button id="dunbar-find-btn">Find your village →</button>
+<!-- ── Dunbar Welcome Overlay ──────────────────────────────────── -->
+<div id="dunbar-welcome">
+  <div id="dunbar-welcome-inner">
+    <span id="dunbar-welcome-jp">ようこそ。</span>
+    <span id="dunbar-welcome-title">Welcome to Dunbar.</span>
+    <span id="dunbar-welcome-body">This is not your village yet.<br>Look around. Take your time.</span>
+    <button id="dunbar-enter-btn">Enter Dunbar</button>
+  </div>
+</div>
+
+<!-- ── Dunbar Firefly Dot — top-right, always present ─────────── -->
+<div id="dunbar-firefly">
+  <span id="dunbar-fly-dot"></span>
+  <span id="dunbar-fly-label">Find your village</span>
 </div>
 
 <!-- ── Find Your Village — Auth Modal ─────────────────────────── -->
@@ -27919,32 +27984,61 @@ seedMemberLanguage();
 // ═══════════════════════════════════════════════════════════════
 (function initDunbar() {
   const FOUNDER_EMAIL = 'helloanotherclay@gmail.com';
-  const ACCESS_KEY = 'cvVillageAccess';
+  const ACCESS_KEY    = 'cvVillageAccess';
 
   // Synchronous check — have they crossed the threshold before?
   window._dunbarMode = !localStorage.getItem(ACCESS_KEY);
 
+  // If they have access already, hide the welcome overlay immediately (no flash)
+  if (!window._dunbarMode) {
+    const w = document.getElementById('dunbar-welcome');
+    if (w) w.classList.add('dunbar-gone');
+  }
+
+  function showFirefly() {
+    const fly = document.getElementById('dunbar-firefly');
+    if (fly) fly.classList.add('visible');
+  }
+
+  function hideFirefly() {
+    const fly = document.getElementById('dunbar-firefly');
+    if (fly) fly.classList.remove('visible');
+  }
+
+  function dismissWelcome() {
+    const w = document.getElementById('dunbar-welcome');
+    if (!w) return;
+    w.classList.add('dunbar-fading');
+    setTimeout(() => w.classList.add('dunbar-gone'), 1450);
+    showFirefly();
+  }
+
   function enterVillage(role) {
     window._dunbarMode = false;
     localStorage.setItem(ACCESS_KEY, role || 'member');
-    const bar = document.getElementById('dunbar-bar');
-    if (bar) { bar.classList.add('dunbar-hidden'); }
+    // Dismiss welcome overlay if still showing
+    const w = document.getElementById('dunbar-welcome');
+    if (w && !w.classList.contains('dunbar-gone')) dismissWelcome();
+    hideFirefly();
     const dir = document.getElementById('dunbar-village-dir');
     if (dir) dir.classList.remove('open');
     const auth = document.getElementById('dunbar-auth-modal');
     if (auth) auth.classList.remove('open');
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const bar      = document.getElementById('dunbar-bar');
-    const authModal = document.getElementById('dunbar-auth-modal');
-    const dirModal  = document.getElementById('dunbar-village-dir');
+  function openAuth() {
+    const authModal  = document.getElementById('dunbar-auth-modal');
     const emailInput = document.getElementById('dunbar-email-input');
-    const sendBtn   = document.getElementById('dunbar-send-btn');
-    const statusEl  = document.getElementById('dunbar-auth-status');
+    if (authModal) authModal.classList.add('open');
+    setTimeout(() => { if (emailInput) emailInput.focus(); }, 80);
+  }
 
-    // Show bar if in Dunbar mode
-    if (window._dunbarMode && bar) bar.classList.remove('dunbar-hidden');
+  document.addEventListener('DOMContentLoaded', function() {
+    const authModal  = document.getElementById('dunbar-auth-modal');
+    const dirModal   = document.getElementById('dunbar-village-dir');
+    const emailInput = document.getElementById('dunbar-email-input');
+    const sendBtn    = document.getElementById('dunbar-send-btn');
+    const statusEl   = document.getElementById('dunbar-auth-status');
 
     // Check Supabase session — founder or returning member bypasses Dunbar
     if (window._supabase) {
@@ -27964,17 +28058,19 @@ seedMemberLanguage();
             enterVillage('founder');
           } else {
             if (authModal) authModal.classList.remove('open');
-            if (dirModal) dirModal.classList.add('open');
+            if (dirModal)  dirModal.classList.add('open');
           }
         }
       });
     }
 
-    // "Find your village" opens auth modal
-    document.getElementById('dunbar-find-btn').addEventListener('click', () => {
-      authModal.classList.add('open');
-      setTimeout(() => emailInput.focus(), 80);
-    });
+    // "Enter Dunbar" — dismiss welcome, reveal firefly dot
+    const enterBtn = document.getElementById('dunbar-enter-btn');
+    if (enterBtn) enterBtn.addEventListener('click', dismissWelcome);
+
+    // Firefly dot — opens auth modal
+    const firefly = document.getElementById('dunbar-firefly');
+    if (firefly) firefly.addEventListener('click', openAuth);
 
     // Close auth modal
     document.getElementById('dunbar-auth-close').addEventListener('click', () => {
@@ -28015,7 +28111,7 @@ seedMemberLanguage();
       }
     });
 
-    // Enter key sends the magic link request
+    // Enter key sends the magic link
     emailInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') sendBtn.click();
     });
@@ -28031,9 +28127,9 @@ seedMemberLanguage();
       const existing = JSON.parse(localStorage.getItem(BONFIRE_CHAT_KEY) || '[]');
       if (existing.length === 0) {
         const seeds = [
-          { name: 'Yuki',   text: 'First time I came here I just walked around for an hour. Nobody asked me anything.',          photo: '', ts: Date.now() - 14 * 60000, isPlayer: false },
-          { name: 'Maya',   text: 'This is where I realised I cared more about the community than the algorithm.',               photo: '', ts: Date.now() -  7 * 60000, isPlayer: false },
-          { name: 'Oliver', text: 'Sit for a while. The fire is always warm.',                                                   photo: '', ts: Date.now() -  2 * 60000, isPlayer: false },
+          { name: 'Yuki',   text: 'First time I came here I just walked around for an hour. Nobody asked me anything.',  photo: '', ts: Date.now() - 14 * 60000, isPlayer: false },
+          { name: 'Maya',   text: 'This is where I realised I cared more about the community than the algorithm.',        photo: '', ts: Date.now() -  7 * 60000, isPlayer: false },
+          { name: 'Oliver', text: 'Sit for a while. The fire is always warm.',                                            photo: '', ts: Date.now() -  2 * 60000, isPlayer: false },
         ];
         localStorage.setItem(BONFIRE_CHAT_KEY, JSON.stringify(seeds));
       }
