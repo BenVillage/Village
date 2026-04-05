@@ -5527,7 +5527,7 @@ function updateAmbientSound() {
     </div>
   </div>
   <div id="bottom-row">
-    <button id="sound-toggle" title="Toggle all sounds"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+    <button id="sound-toggle" title="Toggle all sounds" onclick="toggleVillageSound()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
     <button id="rehearsal-btn" title="Choir rehearsal">♪</button>
   </div>
 </div>
@@ -6119,15 +6119,13 @@ document.getElementById('bonfire-drone-zone').addEventListener('click', () => {
 
 document.getElementById('sound-toggle').innerHTML = soundOffSVG;
 var _soundFirstUnmute = true;
-// starts muted — no 'playing' class
-document.getElementById('sound-toggle').addEventListener('click', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  const btn = this;
+
+function toggleVillageSound() {
+  var btn = document.getElementById('sound-toggle');
   gameSoundMuted = !gameSoundMuted;
 
   if (gameSoundMuted) {
-    // MUTE: pause everything
+    // MUTE
     var f = document.getElementById('forest-audio');
     var n = document.getElementById('night-audio');
     if (f) f.pause();
@@ -6137,7 +6135,7 @@ document.getElementById('sound-toggle').addEventListener('click', function(e) {
     btn.classList.remove('playing');
     btn.innerHTML = soundOffSVG;
   } else {
-    // UNMUTE: on first unmute, recreate audio elements to satisfy autoplay policy
+    // UNMUTE — recreate audio on first click (browser autoplay policy)
     if (_soundFirstUnmute) {
       _soundFirstUnmute = false;
       var oldF = document.getElementById('forest-audio');
@@ -6146,21 +6144,22 @@ document.getElementById('sound-toggle').addEventListener('click', function(e) {
         var newF = new Audio('Forest Sounds 22.10.40.mp3');
         newF.id = 'forest-audio'; newF.loop = true; newF.volume = 0.5;
         oldF.parentNode.replaceChild(newF, oldF);
+        newF.play().catch(function() {});
       }
       if (oldN) {
         var newN = new Audio('Nightsound.mp3');
         newN.id = 'night-audio'; newN.loop = true; newN.volume = 0;
         oldN.parentNode.replaceChild(newN, oldN);
       }
+    } else {
+      updateAmbientSound();
     }
-    // Now play
-    updateAmbientSound();
     if (typeof bonfireCrackleEl !== 'undefined' && bonfireCrackleEl) bonfireCrackleEl.muted = false;
-    if (typeof _droneOn !== 'undefined' && _droneOn && _droneAudio) _droneAudio.play().catch(function(e) { console.warn('[drone]', e.message); });
+    if (typeof _droneOn !== 'undefined' && _droneOn && _droneAudio) _droneAudio.play().catch(function() {});
     btn.classList.add('playing');
     btn.innerHTML = soundOnSVG;
   }
-});
+}
 </script>
 
 <!-- Tour Overlay -->
