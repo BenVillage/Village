@@ -3153,20 +3153,27 @@ window._isFounder = false;
 
   /* ===== VAULT ===== */
   #vault-door {
-    display: none; position: fixed; bottom: 80px; right: 80px; z-index: 9050;
-    width: 48px; height: 64px; cursor: pointer;
-    background: linear-gradient(135deg, #5c3d1e, #7a5230, #5c3d1e);
-    border: 2px solid rgba(200,168,75,0.3); border-radius: 4px 4px 0 0;
-    box-shadow: 0 0 16px rgba(200,168,75,0.1), inset 0 0 12px rgba(0,0,0,0.3);
+    display: none; margin: 20px auto 0; width: 220px; cursor: pointer;
+    background: linear-gradient(135deg, rgba(92,61,30,0.15), rgba(122,82,48,0.1));
+    border: 1px solid rgba(200,168,75,0.2); border-radius: 10px;
+    padding: 14px 20px; text-align: center;
+    box-shadow: 0 0 16px rgba(200,168,75,0.06);
     transition: box-shadow 0.3s, border-color 0.3s;
   }
-  #vault-door::after {
-    content: ''; position: absolute; right: 8px; top: 50%;
-    width: 6px; height: 6px; border-radius: 50%;
+  #vault-door .vd-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #c8a84b;
+  }
+  #vault-door .vd-sub {
+    font-size: 10px; color: rgba(200,168,75,0.4); margin-top: 2px;
+  }
+  #vault-door .vd-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
     background: #c8a84b; box-shadow: 0 0 6px #c8a84b;
+    margin-right: 6px; vertical-align: middle;
   }
   #vault-door:hover {
-    box-shadow: 0 0 30px rgba(200,168,75,0.25), inset 0 0 12px rgba(0,0,0,0.3);
+    box-shadow: 0 0 24px rgba(200,168,75,0.15);
     border-color: #c8a84b;
   }
   #vault-overlay {
@@ -7124,7 +7131,7 @@ function toggleVillageSound() {
       <div id="ms-tab-collectors" style="display:none;"></div>
     </div>
       <!-- Vault Door — only visible to studio owner -->
-      <div id="vault-door" title="Your Vault"></div>
+      <div id="vault-door"><span class="vd-dot"></span><span class="vd-label">Your Vault</span><div class="vd-sub">Your record. Your proof. Yours alone.</div></div>
     <div class="bld-manifesto-line" id="sq-manifesto">Make the thing. The rest is noise.</div>
   </div>
 
