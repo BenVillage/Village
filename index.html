@@ -5,7 +5,7 @@
 <title>Clay Village</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://fokujzwgqtifpbmmhdot.supabase.co';
@@ -3068,8 +3068,9 @@ window._isFounder = false;
   }
   /* Brushstroke kanji — large, gestural, abstract form */
   .mondo-header-kanji {
-    font-family: serif; font-size: clamp(80px, 14vw, 140px);
-    color: #c22; line-height: 1; letter-spacing: 0.05em;
+    font-family: 'Noto Sans JP', sans-serif; font-weight: 700;
+    font-size: clamp(80px, 14vw, 140px);
+    color: #c22; line-height: 1; letter-spacing: 0.08em;
     opacity: 0.9; user-select: none; margin-bottom: 12px;
     text-shadow: 0 0 60px rgba(204, 34, 34, 0.15);
   }
@@ -3110,6 +3111,11 @@ window._isFounder = false;
     font-style: italic; font-weight: 300; color: rgba(255,255,255,0.7);
     font-size: 16px; line-height: 1.8;
   }
+  .mondo-jp {
+    font-family: 'Noto Sans JP', sans-serif; font-style: normal;
+    font-weight: 700; color: #c22; font-size: 1.15em;
+    letter-spacing: 0.08em;
+  }
   .mondo-msg-user {
     text-align: right; font-size: 15px; line-height: 1.7;
     color: rgba(255,255,255,0.5); font-weight: 400;
@@ -3119,7 +3125,8 @@ window._isFounder = false;
     text-align: center; margin: 48px 0; padding: 32px 0;
   }
   .mondo-ma-kanji {
-    font-size: 56px; font-family: serif; color: #c22; letter-spacing: 0.15em;
+    font-size: 56px; font-family: 'Noto Sans JP', sans-serif; font-weight: 700;
+    color: #c22; letter-spacing: 0.15em;
     text-shadow: 0 0 40px rgba(204, 34, 34, 0.3);
   }
   .mondo-ma-sub {
@@ -4179,9 +4186,10 @@ window._isFounder = false;
   }
   #mura-message .mura-jp {
     font-style: normal;
-    font-weight: 300;
+    font-weight: 700;
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 1.2em;
+    letter-spacing: 0.08em;
     color: #c8a84b;
     cursor: pointer;
   }
@@ -17205,11 +17213,11 @@ function voteHorizonLocation(choice) {
       var loadEl = document.getElementById('mondo-loading');
       if (loadEl) loadEl.remove();
 
-      // Check if this is the 間 response
-      if (reply.indexOf('\u300C\u9593\u300D') !== -1 || reply.trim().startsWith('\u300C\u9593\u300D')) {
+      // Check if this is the 間 response (breakthrough)
+      if (reply.indexOf('\u300C\u9593\u300D') !== -1 || reply.trim().startsWith('\u300C\u9593\u300D') || reply.trim() === '\u9593') {
         convo.innerHTML += '<div class="mondo-ma"><div class="mondo-ma-kanji">\u300C\u9593\u300D</div><div class="mondo-ma-sub">(ma \u2014 the pause that means something)</div></div>';
       } else {
-        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo">' + _escHtml(reply) + '</div>';
+        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo">' + _styledMondoReply(reply) + '</div>';
       }
       convo.scrollTop = convo.scrollHeight;
     } catch (err) {
@@ -17218,6 +17226,17 @@ function voteHorizonLocation(choice) {
       convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo" style="color:#c88;">Something went wrong. Try again.</div>';
       console.warn('[mondo]', err);
     }
+  }
+
+  function _styledMondoReply(text) {
+    // Escape HTML first, then wrap Japanese character runs in styled spans
+    var safe = _escHtml(text);
+    // Match runs of CJK characters, punctuation, and brackets (Japanese text blocks)
+    safe = safe.replace(/([\u3000-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF\u300C\u300D\u3001\u3002]+)/g,
+      '<span class="mondo-jp">$1</span>');
+    // Convert newlines to <br> for line breaks
+    safe = safe.replace(/\n/g, '<br>');
+    return safe;
   }
 
   function _escHtml(s) {
