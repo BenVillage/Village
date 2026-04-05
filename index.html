@@ -3063,32 +3063,34 @@ window._isFounder = false;
     height: 3px; background: #c22;
   }
   .mondo-header {
-    padding: 48px 32px 24px; text-align: center; flex-shrink: 0;
-    position: relative;
+    padding: 0; text-align: center; flex-shrink: 0;
+    position: relative; min-height: 50vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 55%, rgba(204,34,34,0.04), transparent 70%);
   }
-  /* Brushstroke kanji — large, gestural, abstract form */
+  /* Kanji — cinematic, dominating, title card */
   .mondo-header-kanji {
     font-family: 'Noto Sans JP', sans-serif; font-weight: 700;
-    font-size: clamp(80px, 14vw, 140px);
-    color: #c22; line-height: 1; letter-spacing: 0.08em;
-    opacity: 0.9; user-select: none; margin-bottom: 12px;
-    text-shadow: 0 0 60px rgba(204, 34, 34, 0.15);
+    font-size: clamp(120px, 22vw, 240px);
+    color: #c22; line-height: 0.9; letter-spacing: 0.1em;
+    user-select: none; margin-bottom: 24px;
+    text-shadow: 0 0 80px rgba(204, 34, 34, 0.2), 0 0 160px rgba(204, 34, 34, 0.08);
   }
   .mondo-header-lines {
-    font-size: 13px; color: rgba(255,255,255,0.35); line-height: 2;
-    letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+    font-size: 11px; color: rgba(255,255,255,0.3); line-height: 2.4;
+    letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500;
   }
   .mondo-header-desc {
-    font-size: 12px; color: rgba(255,255,255,0.2); margin-top: 16px;
-    line-height: 1.6; letter-spacing: 0.03em;
+    font-size: 11px; color: rgba(255,255,255,0.15); margin-top: 20px;
+    line-height: 1.6; letter-spacing: 0.06em;
   }
   .mondo-header-jp {
-    font-size: 11px; color: rgba(204, 34, 34, 0.5); margin-top: 8px;
-    letter-spacing: 0.06em;
+    font-size: 10px; color: rgba(204, 34, 34, 0.35); margin-top: 10px;
+    letter-spacing: 0.1em; text-transform: lowercase;
   }
   .mondo-header-rule {
-    width: 40px; height: 1px; background: rgba(204, 34, 34, 0.3);
-    margin: 20px auto 0;
+    width: 32px; height: 2px; background: #c22;
+    margin: 28px auto 0; opacity: 0.4;
   }
   .mondo-leave {
     position: absolute; top: 20px; right: 24px;
