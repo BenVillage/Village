@@ -9356,10 +9356,34 @@ const _IS_LOCAL = location.hostname === 'localhost' || location.hostname === '12
   }
 })();
 
+// Village-scoped localStorage key (first 8 chars of village UUID)
+var _vPrefix = (typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '02dc2b86').slice(0, 8);
+function vKey(name) { return 'v_' + _vPrefix + '_' + name; }
+
+// One-time migration: copy old unscoped keys to new scoped format
+(function _migrateLocalStorageKeys() {
+  if (localStorage.getItem('_vKeyMigrated_' + _vPrefix)) return;
+  var oldKeys = ['clayVillageOutlines','clayVillageRoofs','clayVillageBuildingCoordinates',
+    'clayVillageTreeCanopy','clayVillageNpcPositions','clayVillageTriggerAreas',
+    'clayVillageExitPoints','clayVillageSpawnPoint','clayVillageLanternPositions',
+    'clayVillageProfiles','clayVillageActiveProfile','clayVillageFriends',
+    'clayVillageCommonsDaily','clayVillageCommonsTables','clayVillageCommonsRtVotes',
+    'clayVillageCouncil','clayVillageCouncilPieces','clayVillageJoinDate',
+    'clayVillageBonfireChat','cvBonfireHistory','cvAlchemyPairs'];
+  oldKeys.forEach(function(k) {
+    var val = localStorage.getItem(k);
+    if (val !== null && localStorage.getItem(vKey(k)) === null) {
+      localStorage.setItem(vKey(k), val);
+    }
+  });
+  localStorage.setItem('_vKeyMigrated_' + _vPrefix, '1');
+})();
+
 // Save to localStorage + Supabase (+ file server on localhost)
 function persistData(key, value) {
+  var scopedKey = vKey(key);
   const str = JSON.stringify(value);
-  localStorage.setItem(key, str);
+  localStorage.setItem(scopedKey, str);
   // Sync to Supabase village_config
   if (window._supabase) {
     window._supabase.from('village_config').upsert({
@@ -9382,7 +9406,10 @@ function persistData(key, value) {
 }
 
 function loadWithDefaults(storageKey, defaults) {
-  const stored = localStorage.getItem(storageKey);
+  var scopedKey = vKey(storageKey);
+  var stored = localStorage.getItem(scopedKey);
+  // Fallback to old unscoped key if scoped doesn't exist yet
+  if (stored === null) stored = localStorage.getItem(storageKey);
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
@@ -13725,8 +13752,8 @@ document.addEventListener('click', (e) => {
 });
 
 // === BONFIRE CHAT ===
-const BONFIRE_CHAT_KEY = 'clayVillageBonfireChat';
-const BONFIRE_HISTORY_KEY = 'cvBonfireHistory';
+var BONFIRE_CHAT_KEY = vKey('clayVillageBonfireChat');
+var BONFIRE_HISTORY_KEY = vKey('cvBonfireHistory');
 const BONFIRE_BUILDING = 'Bonfire Plaza';
 const BONFIRE_RX = 100; // ellipse horizontal radius for proximity
 const BONFIRE_RY = 62;  // ellipse vertical radius for proximity
@@ -14331,12 +14358,16 @@ function updateSessionBanner() {
 }
 
 // === DM THREADS ===
-// Thread key: cvThread_idA_idB (ids sorted, so A < B alphabetically)
+// Thread key: village-scoped cvThread_idA_idB (ids sorted)
 function threadKey(id1, id2) {
-  return 'cvThread_' + [id1, id2].sort().join('_');
+  return vKey('cvThread_' + [id1, id2].sort().join('_'));
 }
 function getThread(id1, id2) {
-  return JSON.parse(localStorage.getItem(threadKey(id1, id2)) || '[]');
+  var key = threadKey(id1, id2);
+  var data = localStorage.getItem(key);
+  // Fallback to old unscoped key
+  if (data === null) data = localStorage.getItem('cvThread_' + [id1, id2].sort().join('_'));
+  return JSON.parse(data || '[]');
 }
 function saveThread(id1, id2, msgs) {
   localStorage.setItem(threadKey(id1, id2), JSON.stringify(msgs.slice(-300)));
@@ -14365,12 +14396,18 @@ function sendDM(fromId, toId, text) {
   return msgs;
 }
 function getAllThreadsFor(profileId) {
-  // Scan localStorage for cached threads involving this profile
+  // Scan localStorage for village-scoped threads involving this profile
+  var scopedPrefix = vKey('cvThread_');
+  var oldPrefix = 'cvThread_';
   const threads = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith('cvThread_') && key.includes(profileId)) {
-      const parts = key.replace('cvThread_', '').split('_');
+    if (!key || !key.includes(profileId)) continue;
+    var threadPart = null;
+    if (key.startsWith(scopedPrefix)) threadPart = key.replace(scopedPrefix, '');
+    else if (key.startsWith(oldPrefix)) threadPart = key.replace(oldPrefix, '');
+    if (threadPart) {
+      const parts = threadPart.split('_');
       if (parts.length === 2) {
         const otherId = parts[0] === profileId ? parts[1] : parts[0];
         const msgs = JSON.parse(localStorage.getItem(key) || '[]');
@@ -22455,6 +22492,7 @@ function saveProfile() {
 
   // If this is the current session's profile, update avatar + ring + header + Supabase
   if (profile.id === getCurrentSession()) {
+    window._cachedMemberProfile = profile;
     applySessionToAvatar();
     updateSessionBanner();
     _syncProfileToSupabase();
@@ -25146,7 +25184,7 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     const p = JSON.parse(localStorage.getItem('clayVillageActiveProfile') || 'null');
     return p && p.id ? p.id : 'default-maker';
   }
-  function studioKey(suffix) { return 'clayVillageStudio_' + getUserId() + '_' + suffix; }
+  function studioKey(suffix) { return vKey('clayVillageStudio_' + getUserId() + '_' + suffix); }
   function load(suffix) { return JSON.parse(localStorage.getItem(studioKey(suffix)) || '[]'); }
   function save(suffix, data) {
     localStorage.setItem(studioKey(suffix), JSON.stringify(data));
@@ -27197,7 +27235,7 @@ seedMemberLanguage();
           if (studioRows && studioRows.length) {
             const uid = typeof getCurrentSession === 'function' ? getCurrentSession() : 'default-maker';
             studioRows.forEach(function(row) {
-              localStorage.setItem('clayVillageStudio_' + uid + '_' + row.data_key, JSON.stringify(row.data_value));
+              localStorage.setItem(vKey('clayVillageStudio_' + uid + '_' + row.data_key), JSON.stringify(row.data_value));
             });
           }
         } catch (_e2) {}
@@ -27384,11 +27422,13 @@ seedMemberLanguage();
       if (dir) dir.classList.add('open');
     });
 
-    // Edit Profile button → opens identity overlay (avatar + name)
+    // Edit Profile button → opens the full profile editor
     var _editProfileBtn = document.getElementById('cap-edit-profile-btn');
     if (_editProfileBtn) _editProfileBtn.addEventListener('click', function() {
       _capPanel.classList.remove('open');
-      openSignup();
+      var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+      if (sp && typeof openProfileEditor === 'function') openProfileEditor(sp);
+      else openSignup();
     });
 
     // Corner panel sign out
@@ -27623,15 +27663,15 @@ seedMemberLanguage();
 
     // Seed bonfire with quiet messages if Dunbar and chat is still empty
     if (window._dunbarMode) {
-      const BONFIRE_CHAT_KEY = 'clayVillageBonfireChat';
-      const existing = JSON.parse(localStorage.getItem(BONFIRE_CHAT_KEY) || '[]');
+      var _seedBonfireKey = vKey('clayVillageBonfireChat');
+      var existing = JSON.parse(localStorage.getItem(_seedBonfireKey) || '[]');
       if (existing.length === 0) {
-        const seeds = [
+        var seeds = [
           { name: 'Yuki',   text: 'First time I came here I just walked around for an hour. Nobody asked me anything.',  photo: '', ts: Date.now() - 14 * 60000, isPlayer: false },
           { name: 'Maya',   text: 'This is where I realised I cared more about the community than the algorithm.',        photo: '', ts: Date.now() -  7 * 60000, isPlayer: false },
           { name: 'Oliver', text: 'Sit for a while. The fire is always warm.',                                            photo: '', ts: Date.now() -  2 * 60000, isPlayer: false },
         ];
-        localStorage.setItem(BONFIRE_CHAT_KEY, JSON.stringify(seeds));
+        localStorage.setItem(_seedBonfireKey, JSON.stringify(seeds));
       }
     }
   });
