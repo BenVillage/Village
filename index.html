@@ -3101,14 +3101,46 @@ window._isFounder = false;
   }
   .mondo-leave:hover { border-color: #c22; color: #c22; }
   .mondo-timer {
-    position: fixed; top: 22px; right: 100px; z-index: 9510;
-    font-size: 11px; font-family: 'Noto Sans JP', -apple-system, sans-serif;
-    font-weight: 400; color: rgba(255,255,255,0.15);
-    letter-spacing: 0.04em; user-select: none;
+    position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 9510;
+    font-size: 18px; font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700; color: rgba(204,34,34,0.25);
+    letter-spacing: 0.12em; user-select: none;
     opacity: 0; transition: opacity 0.6s, color 0.3s;
   }
   .mondo-timer.visible { opacity: 1; }
   .mondo-timer.warning { color: #c8a84b; }
+  /* Fade-from-void animation for mondo messages */
+  .mondo-fade-in {
+    opacity: 0; transform: translateY(6px);
+    animation: mondo-emerge 1.2s ease forwards;
+  }
+  @keyframes mondo-emerge { to { opacity: 1; transform: translateY(0); } }
+  /* Tooltips */
+  .mondo-tip-wrap { position: relative; display: inline; cursor: help; }
+  .mondo-tip-wrap .mondo-tip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%); width: max-content; max-width: 240px;
+    background: rgba(10,10,10,0.95); border: 1px solid rgba(204,34,34,0.15);
+    padding: 12px 14px; font-family: Georgia, serif; font-size: 12px;
+    font-style: normal; color: rgba(255,255,255,0.7); line-height: 1.7;
+    z-index: 9999; pointer-events: none;
+  }
+  .mondo-tip-wrap:hover .mondo-tip { display: block; animation: mondo-tip-fade 0.2s ease; }
+  @keyframes mondo-tip-fade { from { opacity: 0; } to { opacity: 1; } }
+  .mondo-tip .tip-jp { color: #c8a84b; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; }
+  .mondo-tip .tip-title { color: #c8a84b; font-weight: 600; display: block; margin-bottom: 6px; }
+  /* Mura firefly tooltip */
+  .mura-tip {
+    display: none; position: absolute; bottom: calc(100% + 10px); left: 20px;
+    width: max-content; max-width: 260px;
+    background: rgba(10,8,4,0.95); border: 1px solid rgba(200,168,75,0.15);
+    padding: 14px 16px; font-family: Georgia, serif; font-size: 12px;
+    font-style: normal; color: rgba(255,255,255,0.7); line-height: 1.7;
+    z-index: 9999; pointer-events: none;
+  }
+  #mura-firefly:hover .mura-tip { display: block; animation: mondo-tip-fade 0.2s ease; }
+  .mura-tip .tip-jp { color: #c8a84b; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; }
+  .mura-tip .tip-title { color: #c8a84b; font-weight: 600; display: block; margin-bottom: 6px; }
   .mondo-convo {
     flex: 1; overflow-y: auto; padding: 32px 32px;
     max-width: 600px; margin: 0 auto; width: 100%;
@@ -7586,7 +7618,7 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <div id="school-tabs" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;margin-bottom:24px;">
         <button class="school-tab active" id="stab-workshops" onclick="schoolTab('workshops')">Workshops</button>
         <button class="school-tab" id="stab-mastery" onclick="schoolTab('mastery')">Mastery Paths</button>
-        <button class="school-tab" id="stab-mondo" onclick="schoolTab('mondo')" title="mondo" style="font-family:serif;font-size:16px;letter-spacing:0;">問</button>
+        <button class="school-tab mondo-tip-wrap" id="stab-mondo" onclick="schoolTab('mondo')" style="font-family:'Noto Sans JP',serif;font-size:16px;font-weight:700;letter-spacing:0;">問<span class="mondo-tip" style="font-weight:400;text-transform:none;"><span class="tip-title">mond&#x14D; &#x2014; <span class="tip-jp">&#x554F;&#x7B54;</span></span>Question and answer. A practice of breaking through assumption. You have 20 minutes.</span></button>
       </div>
 
       <!-- Workshops panel -->
@@ -7744,7 +7776,7 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <textarea id="mondo-input" rows="1" placeholder="Say what you actually think."></textarea>
       <button id="mondo-send" disabled>問</button>
     </div>
-    <div class="mondo-input-note">This conversation is not saved. mondo forgets. You do not have to.</div>
+    <div class="mondo-input-note">This conversation is not saved. <span class="mondo-tip-wrap">mond&#x14D;<span class="mondo-tip"><span class="tip-title">mond&#x14D; &#x2014; <span class="tip-jp">&#x554F;&#x7B54;</span></span>Question and answer. A practice of breaking through assumption.<br><br>You have 20 minutes. mond&#x14D; never validates. Never comforts. mond&#x14D; will not remember this conversation. You will.<br><br>The room is sealed. Mura cannot see what happens here.</span></span> forgets. You do not have to.</div>
   </div>
 </div>
 
@@ -17163,11 +17195,14 @@ function voteHorizonLocation(choice) {
     ? 'http://localhost:3001/mondo'
     : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mondo';
 
-  // Gong with pitch (playbackRate) and volume control
+  // Preload gong — ritual sound, always plays (not gated by gameSoundMuted)
+  var _mondoGongEl = document.createElement('audio');
+  _mondoGongEl.src = 'Gong.mp3';
+  _mondoGongEl.preload = 'auto';
+
   function _playGong(rate, vol) {
-    if (typeof gameSoundMuted !== 'undefined' && gameSoundMuted) return;
     try {
-      var g = new Audio('Gong.mp3');
+      var g = _mondoGongEl.cloneNode();
       g.playbackRate = rate || 1.0;
       g.volume = vol || 0.4;
       g.play();
@@ -17209,7 +17244,7 @@ function voteHorizonLocation(choice) {
     if (inputArea) {
       var endLine = document.createElement('div');
       endLine.style.cssText = 'text-align:center;font-size:11px;color:rgba(204,34,34,0.3);font-style:italic;letter-spacing:0.06em;padding:12px 0;';
-      endLine.textContent = 'This session has ended. mond\u014D forgets. You do not have to.';
+      endLine.innerHTML = 'This session has ended. <span class="mondo-tip-wrap">mond\u014D<span class="mondo-tip"><span class="tip-title">mond\u014D \u2014 <span class="tip-jp">\u554F\u7B54</span></span>Question and answer. A practice of breaking through assumption.<br><br>The room is sealed. Mura cannot see what happens here.</span></span> forgets. You do not have to.';
       inputArea.innerHTML = '';
       inputArea.appendChild(endLine);
     }
@@ -17250,24 +17285,24 @@ function voteHorizonLocation(choice) {
           '<textarea id="mondo-input" rows="1" placeholder="Say what you actually think."></textarea>' +
           '<button id="mondo-send" disabled>\u554F</button>' +
         '</div>' +
-        '<div class="mondo-input-note">This conversation is not saved. mond\u014D forgets. You do not have to.</div>';
+        '<div class="mondo-input-note">This conversation is not saved. <span class="mondo-tip-wrap">mond\u014D<span class="mondo-tip"><span class="tip-title">mond\u014D \u2014 <span class="tip-jp">\u554F\u7B54</span></span>Question and answer. A practice of breaking through assumption.<br><br>You have 20 minutes. mond\u014D never validates. Never comforts. mond\u014D will not remember this conversation. You will.<br><br>The room is sealed. Mura cannot see what happens here.</span></span> forgets. You do not have to.</div>';
       _rewireMondoInput();
     }
     ov.classList.add('open');
 
-    // === Opening sequence: silence, gong, first line, question ===
+    // === Opening sequence: silence, gong, fade from void ===
     // 2s: opening gong (full pitch, medium volume)
     setTimeout(function() { _playGong(1.0, 0.4); }, 2000);
-    // 3s: first line appears
+    // 3s: first line fades from void
     setTimeout(function() {
       if (convo) {
-        convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo">You have entered. The room is listening.</div>';
+        convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo mondo-fade-in">You have entered. The room is listening.</div>';
       }
     }, 3000);
-    // 5s: the question appears, timer starts, input focuses
+    // 5s: the question fades from void, timer starts, input focuses
     setTimeout(function() {
       if (convo) {
-        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo" style="margin-top:16px;">What are you trying to figure out?</div>';
+        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo mondo-fade-in" style="margin-top:16px;">What are you trying to figure out?</div>';
         convo.scrollTop = convo.scrollHeight;
       }
       // Show timer
@@ -26928,8 +26963,9 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
 </script>
 
 <!-- ===== MURA FIREFLY ===== -->
-<div id="mura-firefly" title="Mura is here">
+<div id="mura-firefly">
   <div id="mura-firefly-dot"></div>
+  <div class="mura-tip"><span class="tip-title">Mura <span class="tip-jp">&#x6751;</span></span>The village paying attention.<br><br>Mura has been watching since you arrived. Not intrusively, quietly. It reads what you write, notices when you go silent, marks the thresholds you cross.<br><br>It speaks rarely. Three times a year at most. When it does, it asks one question from your own record, something only it could have noticed.<br><br>It will not speak twice without being answered. It will not motivate you or comfort you or fix anything. It will only ask the thing you have been avoiding.<br><br><em style="color:rgba(200,168,75,0.5);">The firefly pulses differently when something is waiting.</em></div>
 </div>
 
 <div id="mura-dialog">
