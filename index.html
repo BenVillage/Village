@@ -3111,10 +3111,14 @@ window._isFounder = false;
   .mondo-timer.warning { color: #c8a84b; }
   /* Fade-from-void animation for mondo messages */
   .mondo-fade-in {
-    opacity: 0; transform: translateY(6px);
-    animation: mondo-emerge 1.2s ease forwards;
+    opacity: 0; transform: translateY(8px);
+    animation: mondo-emerge 2.5s ease forwards;
   }
   @keyframes mondo-emerge { to { opacity: 1; transform: translateY(0); } }
+  .mondo-input-fade {
+    opacity: 0; animation: mondo-input-appear 2s ease 0.5s forwards;
+  }
+  @keyframes mondo-input-appear { to { opacity: 1; } }
   /* Tooltips */
   .mondo-tip-wrap { position: relative; display: inline; cursor: help; border-bottom: 1px dotted rgba(204,34,34,0.2); }
   .mondo-tip-wrap .mondo-tip {
@@ -4654,16 +4658,21 @@ window._isFounder = false;
     position: fixed;
     bottom: 24px;
     left: 24px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #c8a84b;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
     z-index: 10500;
     display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  #mura-firefly #mura-firefly-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #c8a84b;
     animation: mura-breathe 3.5s ease-in-out infinite;
   }
-  #mura-firefly.mura-active {
+  #mura-firefly.mura-active #mura-firefly-dot {
     animation: mura-glow 2.5s ease-in-out infinite;
   }
   @keyframes mura-breathe {
@@ -17287,13 +17296,19 @@ function voteHorizonLocation(choice) {
         '</div>' +
         '<div class="mondo-input-note">This conversation is not saved. <span class="mondo-tip-wrap">mond\u014D<span class="mondo-tip"><span class="tip-title">mond\u014D \u2014 <span class="tip-jp">\u554F\u7B54</span></span>Question and answer. A practice of breaking through assumption.<br><br>You have 20 minutes. mond\u014D never validates. Never comforts. mond\u014D will not remember this conversation. You will.<br><br>The room is sealed. Mura cannot see what happens here.</span></span> forgets. You do not have to.</div>';
       _rewireMondoInput();
+      // Hide input area until gong
+      inputArea.classList.add('mondo-input-fade');
     }
     ov.classList.add('open');
 
-    // === Opening sequence: silence, gong, fade from void ===
-    // 2s: opening gong (one octave lower, medium volume)
-    setTimeout(function() { _playGong(0.5, 0.4); }, 2000);
-    // 3s: the question fades from void, timer starts, input focuses
+    // === Opening sequence: silence, gong, question emerges slowly ===
+    // 2s: gong plays, input area fades in
+    setTimeout(function() {
+      _playGong(0.5, 0.4);
+      var ia = document.querySelector('.mondo-input-area');
+      if (ia) ia.classList.remove('mondo-input-fade');
+    }, 2000);
+    // 3s: the question fades slowly from void (2.5s animation)
     setTimeout(function() {
       if (convo) {
         convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo mondo-fade-in">What are you trying to figure out?</div>';
@@ -17304,9 +17319,11 @@ function voteHorizonLocation(choice) {
       if (timerEl) timerEl.classList.add('visible');
       _mondoTickInterval = setInterval(_updateMondoTimer, 1000);
       _updateMondoTimer();
-      // Focus input
-      var inp = document.getElementById('mondo-input');
-      if (inp) inp.focus();
+      // Focus input after the text has appeared
+      setTimeout(function() {
+        var inp = document.getElementById('mondo-input');
+        if (inp) inp.focus();
+      }, 2500);
     }, 3000);
 
     // 19-minute warning gong (lower pitch, quieter)
