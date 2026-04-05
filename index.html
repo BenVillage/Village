@@ -14445,7 +14445,7 @@ function sendDM(fromId, toId, text) {
   return msgs;
 }
 function getAllThreadsFor(profileId) {
-  // Scan localStorage for village-scoped threads involving this profile
+  // Scan localStorage for village-scoped threads (immediate, for fast UI)
   var scopedPrefix = vKey('cvThread_');
   var oldPrefix = 'cvThread_';
   const threads = [];
@@ -14464,10 +14464,8 @@ function getAllThreadsFor(profileId) {
       }
     }
   }
-  // On production, also trigger async load from Supabase to backfill
-  if (!_IS_LOCAL && window._supabase && threads.length === 0) {
-    _loadAllThreadHistory(profileId);
-  }
+  // Always trigger Supabase backfill — merges newer messages from other devices
+  if (window._supabase) _loadAllThreadHistory(profileId);
   return threads;
 }
 
@@ -15808,7 +15806,28 @@ const CAFE_DAILY_QUESTIONS = [
 
 var cafeTables = [];
 var cafeNotices = [];
-var cafeDaily = JSON.parse(localStorage.getItem('clayVillageCommonsDaily') || '{}');
+var cafeDaily = JSON.parse(localStorage.getItem(vKey('clayVillageCommonsDaily')) || localStorage.getItem('clayVillageCommonsDaily') || '{}');
+// Load from Supabase on init (async, updates cafeDaily when ready)
+(async function _loadCafeDailyFromSupabase() {
+  if (!window._supabase) return;
+  try {
+    var { data } = await window._supabase.from('cafe_notices')
+      .select('content, created_at')
+      .eq('village_id', _ACTIVE_VILLAGE_ID)
+      .eq('type', 'daily')
+      .eq('user_id', typeof _presenceProfileId === 'function' ? _presenceProfileId() : '')
+      .order('created_at', { ascending: false }).limit(1);
+    if (data && data.length && data[0].content) {
+      try {
+        var remote = JSON.parse(data[0].content);
+        if (remote.lastDate && (!cafeDaily.lastDate || remote.lastDate >= cafeDaily.lastDate)) {
+          cafeDaily = remote;
+          localStorage.setItem(vKey('clayVillageCommonsDaily'), JSON.stringify(cafeDaily));
+        }
+      } catch(_) {}
+    }
+  } catch(_) {}
+})();
 var cafeSaved = [];
 var cafeActiveTab = 'notice';
 var cafeViewingTable = null;
@@ -15939,7 +15958,19 @@ function submitCafeGate() {
   cafeDaily.history.push({ date: today, question: q, answer: answer });
   cafeDaily.lastDate = today;
   cafeDaily.lastQuestion = q;
-  localStorage.setItem('clayVillageCommonsDaily', JSON.stringify(cafeDaily));
+  localStorage.setItem(vKey('clayVillageCommonsDaily'), JSON.stringify(cafeDaily));
+  // Persist daily gate to Supabase
+  if (window._supabase) {
+    window._supabase.from('cafe_notices').upsert({
+      village_id: _ACTIVE_VILLAGE_ID,
+      user_id: typeof _presenceProfileId === 'function' ? _presenceProfileId() : '',
+      type: 'daily',
+      content: JSON.stringify(cafeDaily),
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'village_id,user_id,type' }).then(function(r) {
+      if (r.error) console.warn('[cafe daily]', r.error.message);
+    });
+  }
   logToMura({ building:'commons', entry_type:'journal', content: q + '\n\n' + answer });
 
   // Also save to Library journals (Supabase, village-scoped)
@@ -25238,7 +25269,28 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     return p && p.id ? p.id : 'default-maker';
   }
   function studioKey(suffix) { return vKey('clayVillageStudio_' + getUserId() + '_' + suffix); }
-  function load(suffix) { return JSON.parse(localStorage.getItem(studioKey(suffix)) || '[]'); }
+  function load(suffix) {
+    // localStorage for immediate sync read
+    var local = localStorage.getItem(studioKey(suffix));
+    if (local === null) local = localStorage.getItem('clayVillageStudio_' + getUserId() + '_' + suffix);
+    return JSON.parse(local || '[]');
+  }
+  // Async load from Supabase — backfills localStorage with server data
+  async function _loadStudioFromSupabase() {
+    if (!window._supabase || !window._sbAuthUid) return;
+    try {
+      var { data } = await window._supabase.from('village_studios')
+        .select('data_key, data_value')
+        .eq('member_id', window._sbAuthUid)
+        .eq('village_id', _ACTIVE_VILLAGE_ID);
+      if (data && data.length) {
+        data.forEach(function(row) {
+          localStorage.setItem(studioKey(row.data_key), JSON.stringify(row.data_value));
+        });
+      }
+    } catch(_) {}
+  }
+  _loadStudioFromSupabase();
   function save(suffix, data) {
     localStorage.setItem(studioKey(suffix), JSON.stringify(data));
     // Sync to Supabase if authenticated
