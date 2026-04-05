@@ -3100,6 +3100,15 @@ window._isFounder = false;
     letter-spacing: 0.1em; text-transform: uppercase;
   }
   .mondo-leave:hover { border-color: #c22; color: #c22; }
+  .mondo-timer {
+    position: fixed; top: 22px; right: 100px; z-index: 9510;
+    font-size: 11px; font-family: 'Noto Sans JP', -apple-system, sans-serif;
+    font-weight: 400; color: rgba(255,255,255,0.15);
+    letter-spacing: 0.04em; user-select: none;
+    opacity: 0; transition: opacity 0.6s, color 0.3s;
+  }
+  .mondo-timer.visible { opacity: 1; }
+  .mondo-timer.warning { color: #c8a84b; }
   .mondo-convo {
     flex: 1; overflow-y: auto; padding: 32px 32px;
     max-width: 600px; margin: 0 auto; width: 100%;
@@ -7715,6 +7724,7 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
 <!-- ── mondo room overlay — gear noir ─────────────────────── -->
 <div id="mondo-overlay">
   <button class="mondo-leave" id="mondo-close">LEAVE</button>
+  <div class="mondo-timer" id="mondo-timer"></div>
   <div class="mondo-header">
     <div class="mondo-header-kanji">問答</div>
     <div class="mondo-header-lines">
@@ -17148,25 +17158,54 @@ function voteHorizonLocation(choice) {
   var _mondoSessionEnded = false;
   var _mondoTimer19 = null;
   var _mondoTimer20 = null;
-  var _mondoGong = new Audio('Gong.mp3');
-  _mondoGong.volume = 0.5;
+  var _mondoTickInterval = null;
   var _mondoUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:3001/mondo'
     : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mondo';
 
-  function _playGong() {
-    try { _mondoGong.currentTime = 0; _mondoGong.play(); } catch(_) {}
+  // Gong with pitch (playbackRate) and volume control
+  function _playGong(rate, vol) {
+    if (typeof gameSoundMuted !== 'undefined' && gameSoundMuted) return;
+    try {
+      var g = new Audio('Gong.mp3');
+      g.playbackRate = rate || 1.0;
+      g.volume = vol || 0.4;
+      g.play();
+    } catch(_) {}
+  }
+
+  // Timer display: 18分43秒 format
+  function _updateMondoTimer() {
+    var el = document.getElementById('mondo-timer');
+    if (!el || !_mondoEnteredAt || _mondoSessionEnded) {
+      if (el) { el.classList.remove('visible'); }
+      return;
+    }
+    var elapsed = Math.floor((Date.now() - _mondoEnteredAt) / 1000);
+    var remaining = Math.max(0, 1200 - elapsed);
+    var min = Math.floor(remaining / 60);
+    var sec = remaining % 60;
+    el.textContent = min + '\u5206' + (sec < 10 ? '0' : '') + sec + '\u79D2';
+    // Amber at 1 minute remaining
+    if (remaining <= 60) el.classList.add('warning');
+    else el.classList.remove('warning');
+    if (remaining <= 0) {
+      el.classList.remove('visible');
+      clearInterval(_mondoTickInterval);
+      _mondoTickInterval = null;
+    }
   }
 
   function _mondoEndSession() {
     _mondoSessionEnded = true;
+    if (_mondoTickInterval) { clearInterval(_mondoTickInterval); _mondoTickInterval = null; }
+    var timerEl = document.getElementById('mondo-timer');
+    if (timerEl) timerEl.classList.remove('visible');
     var inp = document.getElementById('mondo-input');
     var sendBtn = document.getElementById('mondo-send');
     var inputArea = document.querySelector('.mondo-input-area');
-    // Hide textarea and send button
     if (inp) inp.style.display = 'none';
     if (sendBtn) sendBtn.style.display = 'none';
-    // Show end-of-session line
     if (inputArea) {
       var endLine = document.createElement('div');
       endLine.style.cssText = 'text-align:center;font-size:11px;color:rgba(204,34,34,0.3);font-style:italic;letter-spacing:0.06em;padding:12px 0;';
@@ -17174,7 +17213,6 @@ function voteHorizonLocation(choice) {
       inputArea.innerHTML = '';
       inputArea.appendChild(endLine);
     }
-    // Door log: record full 20-minute session
     if (window._supabase && window._sbAuthUid) {
       window._supabase.from('mondo_visits').insert({
         user_id: window._sbAuthUid,
@@ -17189,6 +17227,9 @@ function voteHorizonLocation(choice) {
   function _clearMondoTimers() {
     if (_mondoTimer19) { clearTimeout(_mondoTimer19); _mondoTimer19 = null; }
     if (_mondoTimer20) { clearTimeout(_mondoTimer20); _mondoTimer20 = null; }
+    if (_mondoTickInterval) { clearInterval(_mondoTickInterval); _mondoTickInterval = null; }
+    var timerEl = document.getElementById('mondo-timer');
+    if (timerEl) { timerEl.classList.remove('visible', 'warning'); timerEl.textContent = ''; }
   }
 
   function openMondo() {
@@ -17198,9 +17239,9 @@ function voteHorizonLocation(choice) {
     _mondoEnteredAt = Date.now();
     _mondoSessionEnded = false;
     _clearMondoTimers();
-    // Reset conversation area to opening question
+    // Reset conversation area — empty, opening sequence will fill it
     var convo = document.getElementById('mondo-convo');
-    if (convo) convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo">What are you trying to figure out?</div>';
+    if (convo) convo.innerHTML = '';
     // Reset input area
     var inputArea = document.querySelector('.mondo-input-area');
     if (inputArea) {
@@ -17210,28 +17251,49 @@ function voteHorizonLocation(choice) {
           '<button id="mondo-send" disabled>\u554F</button>' +
         '</div>' +
         '<div class="mondo-input-note">This conversation is not saved. mond\u014D forgets. You do not have to.</div>';
-      // Re-wire input events
       _rewireMondoInput();
     }
     ov.classList.add('open');
-    // Opening gong at 2 seconds
-    setTimeout(_playGong, 2000);
-    // Focus input
-    setTimeout(function() { var inp = document.getElementById('mondo-input'); if (inp) inp.focus(); }, 200);
-    // 19-minute warning
+
+    // === Opening sequence: silence, gong, first line, question ===
+    // 2s: opening gong (full pitch, medium volume)
+    setTimeout(function() { _playGong(1.0, 0.4); }, 2000);
+    // 3s: first line appears
+    setTimeout(function() {
+      if (convo) {
+        convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo">You have entered. The room is listening.</div>';
+      }
+    }, 3000);
+    // 5s: the question appears, timer starts, input focuses
+    setTimeout(function() {
+      if (convo) {
+        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo" style="margin-top:16px;">What are you trying to figure out?</div>';
+        convo.scrollTop = convo.scrollHeight;
+      }
+      // Show timer
+      var timerEl = document.getElementById('mondo-timer');
+      if (timerEl) timerEl.classList.add('visible');
+      _mondoTickInterval = setInterval(_updateMondoTimer, 1000);
+      _updateMondoTimer();
+      // Focus input
+      var inp = document.getElementById('mondo-input');
+      if (inp) inp.focus();
+    }, 5000);
+
+    // 19-minute warning gong (lower pitch, quieter)
     _mondoTimer19 = setTimeout(function() {
       if (_mondoSessionEnded) return;
-      _playGong();
+      _playGong(0.85, 0.3);
       var c = document.getElementById('mondo-convo');
       if (c) {
         c.innerHTML += '<div class="mondo-sep">\u554F</div><div class="mondo-msg mondo-msg-mondo">Our time comes to an end.</div>';
         c.scrollTop = c.scrollHeight;
       }
     }, 19 * 60 * 1000);
-    // 20-minute end
+    // 20-minute closing gong (lowest pitch, louder)
     _mondoTimer20 = setTimeout(function() {
       if (_mondoSessionEnded) return;
-      _playGong();
+      _playGong(0.7, 0.5);
       var c = document.getElementById('mondo-convo');
       if (c) {
         c.innerHTML += '<hr class="mondo-hr"><div class="mondo-msg mondo-msg-mondo">The time we had is complete.</div>';
@@ -17245,7 +17307,6 @@ function voteHorizonLocation(choice) {
     var ov = document.getElementById('mondo-overlay');
     if (ov) ov.classList.remove('open');
     _clearMondoTimers();
-    // Door log: write visit duration (unless session already ended and logged 1200)
     if (!_mondoSessionEnded && _mondoEnteredAt && window._supabase && window._sbAuthUid) {
       var duration = Math.floor((Date.now() - _mondoEnteredAt) / 1000);
       window._supabase.from('mondo_visits').insert({
@@ -17259,7 +17320,6 @@ function voteHorizonLocation(choice) {
     _mondoEnteredAt = null;
     _mondoHistory = [];
     _mondoSessionEnded = false;
-    // Reactivate workshops tab
     schoolTab('workshops');
   }
 
