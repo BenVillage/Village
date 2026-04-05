@@ -3093,7 +3093,7 @@ window._isFounder = false;
     margin: 28px auto 0; opacity: 0.4;
   }
   .mondo-leave {
-    position: absolute; top: 20px; right: 24px;
+    position: fixed; top: 20px; right: 24px; z-index: 9520;
     background: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 0;
     padding: 6px 16px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
     cursor: pointer; font-family: inherit; transition: all 0.2s;
@@ -3101,7 +3101,7 @@ window._isFounder = false;
   }
   .mondo-leave:hover { border-color: #c22; color: #c22; }
   .mondo-timer {
-    position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 9510;
+    position: fixed; top: 24px; left: 24px; z-index: 9510;
     font-size: 18px; font-family: 'Noto Sans JP', sans-serif;
     font-weight: 700; color: rgba(204,34,34,0.25);
     letter-spacing: 0.12em; user-select: none;
@@ -3116,14 +3116,13 @@ window._isFounder = false;
   }
   @keyframes mondo-emerge { to { opacity: 1; transform: translateY(0); } }
   /* Tooltips */
-  .mondo-tip-wrap { position: relative; display: inline; cursor: help; }
+  .mondo-tip-wrap { position: relative; display: inline; cursor: help; border-bottom: 1px dotted rgba(204,34,34,0.2); }
   .mondo-tip-wrap .mondo-tip {
-    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
-    transform: translateX(-50%); width: max-content; max-width: 240px;
-    background: rgba(10,10,10,0.95); border: 1px solid rgba(204,34,34,0.15);
-    padding: 12px 14px; font-family: Georgia, serif; font-size: 12px;
+    display: none; position: fixed; width: max-content; max-width: 240px;
+    background: rgba(10,10,10,0.97); border: 1px solid rgba(204,34,34,0.2);
+    padding: 14px 16px; font-family: Georgia, serif; font-size: 12px;
     font-style: normal; color: rgba(255,255,255,0.7); line-height: 1.7;
-    z-index: 9999; pointer-events: none;
+    z-index: 99999; pointer-events: none;
   }
   .mondo-tip-wrap:hover .mondo-tip { display: block; animation: mondo-tip-fade 0.2s ease; }
   @keyframes mondo-tip-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -3138,7 +3137,8 @@ window._isFounder = false;
     font-style: normal; color: rgba(255,255,255,0.7); line-height: 1.7;
     z-index: 9999; pointer-events: none;
   }
-  #mura-firefly:hover .mura-tip { display: block; animation: mondo-tip-fade 0.2s ease; }
+  #mura-firefly:hover .mura-tip { display: block; animation: mondo-tip-fade 0.2s ease !important; }
+  .mura-tip { animation: none !important; }
   .mura-tip .tip-jp { color: #c8a84b; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; }
   .mura-tip .tip-title { color: #c8a84b; font-weight: 600; display: block; margin-bottom: 6px; }
   .mondo-convo {
@@ -17291,18 +17291,12 @@ function voteHorizonLocation(choice) {
     ov.classList.add('open');
 
     // === Opening sequence: silence, gong, fade from void ===
-    // 2s: opening gong (full pitch, medium volume)
-    setTimeout(function() { _playGong(1.0, 0.4); }, 2000);
-    // 3s: first line fades from void
+    // 2s: opening gong (one octave lower, medium volume)
+    setTimeout(function() { _playGong(0.5, 0.4); }, 2000);
+    // 3s: the question fades from void, timer starts, input focuses
     setTimeout(function() {
       if (convo) {
-        convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo mondo-fade-in">You have entered. The room is listening.</div>';
-      }
-    }, 3000);
-    // 5s: the question fades from void, timer starts, input focuses
-    setTimeout(function() {
-      if (convo) {
-        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo mondo-fade-in" style="margin-top:16px;">What are you trying to figure out?</div>';
+        convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo mondo-fade-in">What are you trying to figure out?</div>';
         convo.scrollTop = convo.scrollHeight;
       }
       // Show timer
@@ -17313,12 +17307,12 @@ function voteHorizonLocation(choice) {
       // Focus input
       var inp = document.getElementById('mondo-input');
       if (inp) inp.focus();
-    }, 5000);
+    }, 3000);
 
     // 19-minute warning gong (lower pitch, quieter)
     _mondoTimer19 = setTimeout(function() {
       if (_mondoSessionEnded) return;
-      _playGong(0.85, 0.3);
+      _playGong(0.425, 0.3);
       var c = document.getElementById('mondo-convo');
       if (c) {
         c.innerHTML += '<div class="mondo-sep">\u554F</div><div class="mondo-msg mondo-msg-mondo">Our time comes to an end.</div>';
@@ -17328,7 +17322,7 @@ function voteHorizonLocation(choice) {
     // 20-minute closing gong (lowest pitch, louder)
     _mondoTimer20 = setTimeout(function() {
       if (_mondoSessionEnded) return;
-      _playGong(0.7, 0.5);
+      _playGong(0.35, 0.5);
       var c = document.getElementById('mondo-convo');
       if (c) {
         c.innerHTML += '<hr class="mondo-hr"><div class="mondo-msg mondo-msg-mondo">The time we had is complete.</div>';
@@ -17451,6 +17445,17 @@ function voteHorizonLocation(choice) {
 
   var _mondoClose = document.getElementById('mondo-close');
   if (_mondoClose) _mondoClose.addEventListener('click', closeMondo);
+
+  // Position fixed tooltips above the hovered word
+  document.addEventListener('mouseover', function(e) {
+    var wrap = e.target.closest('.mondo-tip-wrap');
+    if (!wrap) return;
+    var tip = wrap.querySelector('.mondo-tip');
+    if (!tip) return;
+    var rect = wrap.getBoundingClientRect();
+    tip.style.left = Math.max(8, rect.left + rect.width / 2 - 120) + 'px';
+    tip.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+  });
 
   // Escape key closes mondo (not the school behind it)
   document.addEventListener('keydown', function(e) {
