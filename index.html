@@ -3049,6 +3049,87 @@ window._isFounder = false;
   .cm-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #262626; color: #fff; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; z-index: 9999; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); pointer-events: none; border: 1px solid #262626; }
   .cm-toast.show { transform: translateX(-50%) translateY(0); }
 
+  /* ===== MONDO ROOM ===== */
+  #mondo-overlay {
+    position: fixed; inset: 0; z-index: 9500;
+    background: #f8f7f5; display: none; flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  #mondo-overlay.open { display: flex; }
+  .mondo-header {
+    padding: 40px 32px 20px; text-align: center; flex-shrink: 0;
+    border-bottom: 1px solid #e0ddd8;
+  }
+  .mondo-header-lines {
+    font-size: 14px; color: #555; line-height: 1.8; font-style: italic;
+  }
+  .mondo-header-desc {
+    font-size: 12px; color: #888; margin-top: 12px; line-height: 1.6;
+  }
+  .mondo-header-jp {
+    font-size: 11px; color: #aaa; margin-top: 8px; letter-spacing: 0.04em;
+  }
+  .mondo-leave {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: 1px solid #d0cdc8; border-radius: 8px;
+    padding: 6px 14px; font-size: 12px; font-weight: 500; color: #666;
+    cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s;
+  }
+  .mondo-leave:hover { border-color: #999; color: #333; }
+  .mondo-convo {
+    flex: 1; overflow-y: auto; padding: 28px 32px;
+    max-width: 640px; margin: 0 auto; width: 100%;
+  }
+  .mondo-msg { margin-bottom: 20px; }
+  .mondo-msg-mondo {
+    text-align: left; font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic; font-weight: 400; color: #444;
+    font-size: 15px; line-height: 1.7;
+  }
+  .mondo-msg-user {
+    text-align: right; font-size: 15px; line-height: 1.7; color: #222;
+  }
+  .mondo-hr { border: none; border-top: 1px solid #e8e5e0; margin: 16px 0; }
+  .mondo-ma {
+    text-align: center; margin: 32px 0;
+  }
+  .mondo-ma-kanji {
+    font-size: 36px; font-family: serif; color: #333; letter-spacing: 0.1em;
+  }
+  .mondo-ma-sub {
+    font-size: 12px; color: #999; font-style: italic; margin-top: 6px;
+  }
+  .mondo-input-area {
+    flex-shrink: 0; padding: 16px 32px 20px;
+    border-top: 1px solid #e0ddd8; max-width: 640px;
+    margin: 0 auto; width: 100%;
+  }
+  .mondo-input-row { display: flex; gap: 10px; align-items: flex-end; }
+  #mondo-input {
+    flex: 1; resize: none; border: 1px solid #d0cdc8; border-radius: 10px;
+    padding: 10px 14px; font-size: 14px; font-family: inherit;
+    color: #222; background: #fff; outline: none; min-height: 40px; max-height: 120px;
+    line-height: 1.5; transition: border-color 0.15s;
+  }
+  #mondo-input:focus { border-color: #c8a84b; }
+  #mondo-input::placeholder { color: #bbb; font-style: italic; }
+  #mondo-send {
+    width: 40px; height: 40px; border-radius: 50%; border: none;
+    background: #333; color: #f8f7f5; font-family: serif; font-size: 18px;
+    cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+  }
+  #mondo-send:hover { background: #555; }
+  #mondo-send:disabled { opacity: 0.3; cursor: default; }
+  .mondo-input-note {
+    font-size: 11px; color: #bbb; text-align: center; margin-top: 8px;
+    font-style: italic;
+  }
+  .mondo-loading {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #c8a84b; animation: mondo-pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes mondo-pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
   /* ===== COGNITIVE AGENCY ===== */
   .ca-progress { height: 3px; background: #f0f0f0; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
   .ca-progress-fill { height: 100%; background: #2A8A74; border-radius: 3px; transition: width 0.5s; }
@@ -7246,6 +7327,7 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <div id="school-tabs" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;margin-bottom:24px;">
         <button class="school-tab active" id="stab-workshops" onclick="schoolTab('workshops')">Workshops</button>
         <button class="school-tab" id="stab-mastery" onclick="schoolTab('mastery')">Mastery Paths</button>
+        <button class="school-tab" id="stab-mondo" onclick="schoolTab('mondo')" title="mondo" style="font-family:serif;font-size:16px;letter-spacing:0;">問</button>
       </div>
 
       <!-- Workshops panel -->
@@ -7366,6 +7448,30 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
   </div>
 </div>
 <div class="cm-toast" id="cm-toast"></div>
+
+<!-- ── mondo room overlay ──────────────────────────────────── -->
+<div id="mondo-overlay">
+  <button class="mondo-leave" id="mondo-close">Leave</button>
+  <div class="mondo-header">
+    <div class="mondo-header-lines">
+      You are not being watched here.<br>
+      Mura cannot see this room.<br>
+      Say what you actually think.
+    </div>
+    <div class="mondo-header-desc">mondo exists because an unexamined assumption is the most expensive thing you own.</div>
+    <div class="mondo-header-jp">問答 (mondo) — question and answer. Not to find comfort. To break through.</div>
+  </div>
+  <div class="mondo-convo" id="mondo-convo">
+    <div class="mondo-msg mondo-msg-mondo">What are you trying to figure out?</div>
+  </div>
+  <div class="mondo-input-area">
+    <div class="mondo-input-row">
+      <textarea id="mondo-input" rows="1" placeholder="Say what you actually think."></textarea>
+      <button id="mondo-send" disabled>問</button>
+    </div>
+    <div class="mondo-input-note">This conversation is not saved. mondo forgets. You do not have to.</div>
+  </div>
+</div>
 
 <!-- ==================== THE ROUNDTABLE ==================== -->
 <style>
@@ -16740,16 +16846,26 @@ function voteHorizonLocation(choice) {
     const mst = document.getElementById('school-mastery');
     const twsBtn  = document.getElementById('stab-workshops');
     const tmstBtn = document.getElementById('stab-mastery');
+    const tmoBtn  = document.getElementById('stab-mondo');
     if (!ws || !mst) return;
+
+    // Deactivate all tabs
+    twsBtn?.classList.remove('active');
+    tmstBtn?.classList.remove('active');
+    tmoBtn?.classList.remove('active');
+    ws.style.display  = 'none';
+    mst.style.display = 'none';
+
     if (tab === 'workshops') {
       ws.style.display  = 'block';
-      mst.style.display = 'none';
       twsBtn?.classList.add('active');
-      tmstBtn?.classList.remove('active');
+    } else if (tab === 'mondo') {
+      // mondo opens its own full-screen overlay, not a panel
+      tmoBtn?.classList.add('active');
+      if (window._villageRole === 'guest') return; // guests cannot use mondo
+      openMondo();
     } else {
-      ws.style.display  = 'none';
       mst.style.display = 'block';
-      twsBtn?.classList.remove('active');
       tmstBtn?.classList.add('active');
       renderOverview();
       renderTree();
@@ -16759,6 +16875,140 @@ function voteHorizonLocation(choice) {
   document.getElementById('school-close').addEventListener('click', () => {
     document.getElementById('school-overlay').style.display = 'none';
     if (typeof placeAvatarAtBuilding === 'function') placeAvatarAtBuilding('School');
+  });
+
+  // ===== MONDO ENGINE =====
+  var _mondoHistory = [];
+  var _mondoEnteredAt = null;
+  var _mondoUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3001/mondo'
+    : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mondo';
+
+  function openMondo() {
+    var ov = document.getElementById('mondo-overlay');
+    if (!ov) return;
+    _mondoHistory = [];
+    _mondoEnteredAt = Date.now();
+    // Reset conversation area to opening question
+    var convo = document.getElementById('mondo-convo');
+    if (convo) convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo">What are you trying to figure out?</div>';
+    // Reset input
+    var inp = document.getElementById('mondo-input');
+    if (inp) { inp.value = ''; inp.style.height = 'auto'; }
+    document.getElementById('mondo-send').disabled = true;
+    ov.classList.add('open');
+    setTimeout(function() { if (inp) inp.focus(); }, 200);
+  }
+
+  async function closeMondo() {
+    var ov = document.getElementById('mondo-overlay');
+    if (ov) ov.classList.remove('open');
+    // Door log: write visit duration to Supabase
+    if (_mondoEnteredAt && window._supabase && window._sbAuthUid) {
+      var duration = Math.floor((Date.now() - _mondoEnteredAt) / 1000);
+      window._supabase.from('mondo_visits').insert({
+        user_id: window._sbAuthUid,
+        village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : null,
+        duration_seconds: duration
+      }).then(function(r) {
+        if (r.error) console.warn('[mondo_visits]', r.error.message);
+      });
+    }
+    _mondoEnteredAt = null;
+    _mondoHistory = [];
+    // Reactivate workshops tab
+    schoolTab('workshops');
+  }
+
+  async function sendToMondo(text) {
+    if (!text.trim()) return;
+    var convo = document.getElementById('mondo-convo');
+    var inp = document.getElementById('mondo-input');
+    var sendBtn = document.getElementById('mondo-send');
+
+    // Add user message to UI
+    convo.innerHTML += '<hr class="mondo-hr"><div class="mondo-msg mondo-msg-user">' + _escHtml(text) + '</div>';
+
+    // Add loading dot
+    convo.innerHTML += '<hr class="mondo-hr"><div class="mondo-msg mondo-msg-mondo" id="mondo-loading"><span class="mondo-loading"></span></div>';
+    convo.scrollTop = convo.scrollHeight;
+
+    // Clear input
+    inp.value = '';
+    inp.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    // Add to history
+    _mondoHistory.push({ role: 'user', content: text });
+
+    try {
+      var resp = await fetch(_mondoUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: _mondoHistory })
+      });
+      var data = await resp.json();
+      var reply = (data && data.text) || 'I have nothing to ask right now.';
+      _mondoHistory.push({ role: 'assistant', content: reply });
+
+      // Remove loading dot
+      var loadEl = document.getElementById('mondo-loading');
+      if (loadEl) loadEl.remove();
+
+      // Check if this is the 間 response
+      if (reply.indexOf('\u300C\u9593\u300D') !== -1 || reply.trim().startsWith('\u300C\u9593\u300D')) {
+        convo.innerHTML += '<div class="mondo-ma"><div class="mondo-ma-kanji">\u300C\u9593\u300D</div><div class="mondo-ma-sub">(ma \u2014 the pause that means something)</div></div>';
+      } else {
+        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo">' + _escHtml(reply) + '</div>';
+      }
+      convo.scrollTop = convo.scrollHeight;
+    } catch (err) {
+      var loadEl = document.getElementById('mondo-loading');
+      if (loadEl) loadEl.remove();
+      convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo" style="color:#c88;">Something went wrong. Try again.</div>';
+      console.warn('[mondo]', err);
+    }
+  }
+
+  function _escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // Wire up mondo UI
+  var _mondoInp = document.getElementById('mondo-input');
+  var _mondoSend = document.getElementById('mondo-send');
+  var _mondoClose = document.getElementById('mondo-close');
+
+  if (_mondoInp) {
+    _mondoInp.addEventListener('input', function() {
+      _mondoSend.disabled = !_mondoInp.value.trim();
+      // Auto-resize textarea
+      _mondoInp.style.height = 'auto';
+      _mondoInp.style.height = Math.min(_mondoInp.scrollHeight, 120) + 'px';
+    });
+    _mondoInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (_mondoInp.value.trim()) sendToMondo(_mondoInp.value.trim());
+      }
+    });
+  }
+  if (_mondoSend) _mondoSend.addEventListener('click', function() {
+    if (_mondoInp && _mondoInp.value.trim()) sendToMondo(_mondoInp.value.trim());
+  });
+  if (_mondoClose) _mondoClose.addEventListener('click', closeMondo);
+
+  // Escape key closes mondo (not the school behind it)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var ov = document.getElementById('mondo-overlay');
+      if (ov && ov.classList.contains('open')) {
+        e.stopPropagation();
+        closeMondo();
+      }
+    }
   });
 })();
 
