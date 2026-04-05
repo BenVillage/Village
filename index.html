@@ -17145,31 +17145,108 @@ function voteHorizonLocation(choice) {
   // ===== MONDO ENGINE =====
   var _mondoHistory = [];
   var _mondoEnteredAt = null;
+  var _mondoSessionEnded = false;
+  var _mondoTimer19 = null;
+  var _mondoTimer20 = null;
+  var _mondoGong = new Audio('Gong.mp3');
+  _mondoGong.volume = 0.5;
   var _mondoUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:3001/mondo'
     : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mondo';
+
+  function _playGong() {
+    try { _mondoGong.currentTime = 0; _mondoGong.play(); } catch(_) {}
+  }
+
+  function _mondoEndSession() {
+    _mondoSessionEnded = true;
+    var inp = document.getElementById('mondo-input');
+    var sendBtn = document.getElementById('mondo-send');
+    var inputArea = document.querySelector('.mondo-input-area');
+    // Hide textarea and send button
+    if (inp) inp.style.display = 'none';
+    if (sendBtn) sendBtn.style.display = 'none';
+    // Show end-of-session line
+    if (inputArea) {
+      var endLine = document.createElement('div');
+      endLine.style.cssText = 'text-align:center;font-size:11px;color:rgba(204,34,34,0.3);font-style:italic;letter-spacing:0.06em;padding:12px 0;';
+      endLine.textContent = 'This session has ended. mond\u014D forgets. You do not have to.';
+      inputArea.innerHTML = '';
+      inputArea.appendChild(endLine);
+    }
+    // Door log: record full 20-minute session
+    if (window._supabase && window._sbAuthUid) {
+      window._supabase.from('mondo_visits').insert({
+        user_id: window._sbAuthUid,
+        village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : null,
+        duration_seconds: 1200
+      }).then(function(r) {
+        if (r.error) console.warn('[mondo_visits]', r.error.message);
+      });
+    }
+  }
+
+  function _clearMondoTimers() {
+    if (_mondoTimer19) { clearTimeout(_mondoTimer19); _mondoTimer19 = null; }
+    if (_mondoTimer20) { clearTimeout(_mondoTimer20); _mondoTimer20 = null; }
+  }
 
   function openMondo() {
     var ov = document.getElementById('mondo-overlay');
     if (!ov) return;
     _mondoHistory = [];
     _mondoEnteredAt = Date.now();
+    _mondoSessionEnded = false;
+    _clearMondoTimers();
     // Reset conversation area to opening question
     var convo = document.getElementById('mondo-convo');
     if (convo) convo.innerHTML = '<div class="mondo-msg mondo-msg-mondo">What are you trying to figure out?</div>';
-    // Reset input
-    var inp = document.getElementById('mondo-input');
-    if (inp) { inp.value = ''; inp.style.height = 'auto'; }
-    document.getElementById('mondo-send').disabled = true;
+    // Reset input area
+    var inputArea = document.querySelector('.mondo-input-area');
+    if (inputArea) {
+      inputArea.innerHTML =
+        '<div class="mondo-input-row">' +
+          '<textarea id="mondo-input" rows="1" placeholder="Say what you actually think."></textarea>' +
+          '<button id="mondo-send" disabled>\u554F</button>' +
+        '</div>' +
+        '<div class="mondo-input-note">This conversation is not saved. mond\u014D forgets. You do not have to.</div>';
+      // Re-wire input events
+      _rewireMondoInput();
+    }
     ov.classList.add('open');
-    setTimeout(function() { if (inp) inp.focus(); }, 200);
+    // Opening gong at 2 seconds
+    setTimeout(_playGong, 2000);
+    // Focus input
+    setTimeout(function() { var inp = document.getElementById('mondo-input'); if (inp) inp.focus(); }, 200);
+    // 19-minute warning
+    _mondoTimer19 = setTimeout(function() {
+      if (_mondoSessionEnded) return;
+      _playGong();
+      var c = document.getElementById('mondo-convo');
+      if (c) {
+        c.innerHTML += '<div class="mondo-sep">\u554F</div><div class="mondo-msg mondo-msg-mondo">Our time comes to an end.</div>';
+        c.scrollTop = c.scrollHeight;
+      }
+    }, 19 * 60 * 1000);
+    // 20-minute end
+    _mondoTimer20 = setTimeout(function() {
+      if (_mondoSessionEnded) return;
+      _playGong();
+      var c = document.getElementById('mondo-convo');
+      if (c) {
+        c.innerHTML += '<hr class="mondo-hr"><div class="mondo-msg mondo-msg-mondo">The time we had is complete.</div>';
+        c.scrollTop = c.scrollHeight;
+      }
+      _mondoEndSession();
+    }, 20 * 60 * 1000);
   }
 
   async function closeMondo() {
     var ov = document.getElementById('mondo-overlay');
     if (ov) ov.classList.remove('open');
-    // Door log: write visit duration to Supabase
-    if (_mondoEnteredAt && window._supabase && window._sbAuthUid) {
+    _clearMondoTimers();
+    // Door log: write visit duration (unless session already ended and logged 1200)
+    if (!_mondoSessionEnded && _mondoEnteredAt && window._supabase && window._sbAuthUid) {
       var duration = Math.floor((Date.now() - _mondoEnteredAt) / 1000);
       window._supabase.from('mondo_visits').insert({
         user_id: window._sbAuthUid,
@@ -17181,12 +17258,13 @@ function voteHorizonLocation(choice) {
     }
     _mondoEnteredAt = null;
     _mondoHistory = [];
+    _mondoSessionEnded = false;
     // Reactivate workshops tab
     schoolTab('workshops');
   }
 
   async function sendToMondo(text) {
-    if (!text.trim()) return;
+    if (!text.trim() || _mondoSessionEnded) return;
     var convo = document.getElementById('mondo-convo');
     var inp = document.getElementById('mondo-input');
     var sendBtn = document.getElementById('mondo-send');
@@ -17252,28 +17330,31 @@ function voteHorizonLocation(choice) {
     return d.innerHTML;
   }
 
-  // Wire up mondo UI
-  var _mondoInp = document.getElementById('mondo-input');
-  var _mondoSend = document.getElementById('mondo-send');
-  var _mondoClose = document.getElementById('mondo-close');
-
-  if (_mondoInp) {
-    _mondoInp.addEventListener('input', function() {
-      _mondoSend.disabled = !_mondoInp.value.trim();
-      // Auto-resize textarea
-      _mondoInp.style.height = 'auto';
-      _mondoInp.style.height = Math.min(_mondoInp.scrollHeight, 120) + 'px';
-    });
-    _mondoInp.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if (_mondoInp.value.trim()) sendToMondo(_mondoInp.value.trim());
-      }
+  // Wire up mondo UI — called on init and after input area rebuild
+  function _rewireMondoInput() {
+    var inp = document.getElementById('mondo-input');
+    var send = document.getElementById('mondo-send');
+    if (inp) {
+      inp.addEventListener('input', function() {
+        send.disabled = !inp.value.trim();
+        inp.style.height = 'auto';
+        inp.style.height = Math.min(inp.scrollHeight, 120) + 'px';
+      });
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (inp.value.trim()) sendToMondo(inp.value.trim());
+        }
+      });
+    }
+    if (send) send.addEventListener('click', function() {
+      var inp2 = document.getElementById('mondo-input');
+      if (inp2 && inp2.value.trim()) sendToMondo(inp2.value.trim());
     });
   }
-  if (_mondoSend) _mondoSend.addEventListener('click', function() {
-    if (_mondoInp && _mondoInp.value.trim()) sendToMondo(_mondoInp.value.trim());
-  });
+  _rewireMondoInput();
+
+  var _mondoClose = document.getElementById('mondo-close');
   if (_mondoClose) _mondoClose.addEventListener('click', closeMondo);
 
   // Escape key closes mondo (not the school behind it)
