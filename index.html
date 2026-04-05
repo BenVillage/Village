@@ -3205,6 +3205,7 @@ window._isFounder = false;
   .vlt-stat-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a3008; margin-top: 6px; }
   .vlt-passport { display: grid; grid-template-columns: 200px 1fr; gap: 48px; max-width: 720px; margin: 0 auto; padding: 56px 32px; align-items: start; }
   .vlt-token-wrap { text-align: center; cursor: pointer; }
+  .vlt-token-wrap video { display: block; margin: 0 auto; }
   .vlt-token-hint { font-size: 10px; color: #3a2008; margin-top: 8px; letter-spacing: 0.06em; }
   .vlt-pf { margin-bottom: 16px; }
   .vlt-pf-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a3008; margin-bottom: 3px; }
@@ -7611,7 +7612,7 @@ function toggleVillageSound() {
 </div>
 <div id="vault-token-modal">
   <button class="vtm-close" id="vtm-close">&times;</button>
-  <canvas id="vtm-token-sm" width="120" height="120"></canvas>
+  <video id="vtm-token-sm" src="token.mov" autoplay loop muted playsinline width="120" height="120" style="border-radius:50%;object-fit:cover;"></video>
   <div class="vtm-terminal" id="vtm-terminal"></div>
   <div class="vtm-final" id="vtm-final">&#x4E00;&#x671F;&#x4E00;&#x4F1A; &#x2014; this moment is in the record.</div>
 </div>
@@ -20951,7 +20952,7 @@ Mura facilitates. People decide.`;
     // Passport section with token canvas
     html += '<div class="vlt-passport">';
     html += '<div class="vlt-token-wrap" id="vault-token-trigger">';
-    html += '<canvas id="vault-token-canvas" width="180" height="180"></canvas>';
+    html += '<video id="vault-token-video" src="token.mov" autoplay loop muted playsinline width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"></video>';
     html += '<div class="vlt-token-hint">tap to inspect</div>';
     html += '</div>';
     html += '<div>';
@@ -21014,7 +21015,7 @@ Mura facilitates. People decide.`;
     el.innerHTML = html;
 
     // Draw token after render
-    requestAnimationFrame(function() { startTokenAnimation('vault-token-canvas', data); });
+    // Token video plays automatically (autoplay loop muted)
 
     // Wire token click
     var trigger = document.getElementById('vault-token-trigger');
@@ -21129,7 +21130,7 @@ Mura facilitates. People decide.`;
     modal.classList.add('open');
 
     // Draw small token
-    startTokenAnimation('vtm-token-sm', data);
+    // Modal token video plays automatically
 
     // Terminal typing effect
     var terminal = document.getElementById('vtm-terminal');
