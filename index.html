@@ -21014,8 +21014,9 @@ Mura facilitates. People decide.`;
 
     el.innerHTML = html;
 
-    // Draw token after render
-    // Token video plays automatically (autoplay loop muted)
+    // Start token video (autoplay may not fire on dynamically inserted elements)
+    var tokenVid = document.getElementById('vault-token-video');
+    if (tokenVid) tokenVid.play().catch(function() {});
 
     // Wire token click
     var trigger = document.getElementById('vault-token-trigger');
