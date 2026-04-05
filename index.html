@@ -3150,13 +3150,14 @@ window._isFounder = false;
   }
   @keyframes mondo-pulse { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
 
-  /* ===== VAULT ROOM ===== */
+
+  /* ===== VAULT ===== */
   #vault-door {
     display: none; position: fixed; bottom: 80px; right: 80px; z-index: 9050;
     width: 48px; height: 64px; cursor: pointer;
     background: linear-gradient(135deg, #5c3d1e, #7a5230, #5c3d1e);
-    border: 2px solid rgba(200,168,75,0.4); border-radius: 4px 4px 0 0;
-    box-shadow: 0 0 20px rgba(200,168,75,0.15), inset 0 0 12px rgba(0,0,0,0.3);
+    border: 2px solid rgba(200,168,75,0.3); border-radius: 4px 4px 0 0;
+    box-shadow: 0 0 16px rgba(200,168,75,0.1), inset 0 0 12px rgba(0,0,0,0.3);
     transition: box-shadow 0.3s, border-color 0.3s;
   }
   #vault-door::after {
@@ -3165,195 +3166,70 @@ window._isFounder = false;
     background: #c8a84b; box-shadow: 0 0 6px #c8a84b;
   }
   #vault-door:hover {
-    box-shadow: 0 0 30px rgba(200,168,75,0.3), inset 0 0 12px rgba(0,0,0,0.3);
+    box-shadow: 0 0 30px rgba(200,168,75,0.25), inset 0 0 12px rgba(0,0,0,0.3);
     border-color: #c8a84b;
   }
   #vault-overlay {
-    position: fixed; inset: 0; z-index: 9200; display: none;
-    background: radial-gradient(ellipse at 50% 60%, rgba(40,25,10,0.95), rgba(12,8,4,1));
-    flex-direction: column; align-items: center; overflow-y: auto;
+    position: fixed; inset: 0; z-index: 15000; display: none;
+    background: #060401; overflow-y: auto; overflow-x: hidden;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: rgba(232,213,184,0.85);
+    color: #c8a84b;
   }
-  #vault-overlay.open { display: flex; }
-  .vault-close {
-    position: fixed; top: 20px; right: 24px; z-index: 9210;
-    background: none; border: 1px solid rgba(200,168,75,0.2); border-radius: 8px;
-    padding: 6px 16px; font-size: 12px; color: rgba(232,213,184,0.5);
-    cursor: pointer; font-family: inherit; transition: all 0.2s;
-  }
-  .vault-close:hover { border-color: #c8a84b; color: #c8a84b; }
-  .vault-room {
-    width: 100%; max-width: 800px; padding: 60px 32px 40px;
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px 24px;
-    align-content: start; min-height: 100vh;
-  }
-  .vault-zone {
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .vault-zone-label {
-    font-size: 10px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.1em; color: rgba(200,168,75,0.4); margin-bottom: 4px;
-  }
-  /* Candle */
-  .vault-candle {
-    grid-column: 2; text-align: center; padding: 20px 0;
-  }
-  .vault-candle-flame {
-    display: inline-block; width: 8px; height: 16px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    background: #c8a84b; box-shadow: 0 0 12px #c8a84b, 0 0 24px rgba(200,168,75,0.3);
-    animation: vault-flicker 2s ease-in-out infinite alternate;
-  }
-  @keyframes vault-flicker {
-    0% { opacity: 0.8; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(1.1) rotate(2deg); }
-    100% { opacity: 0.85; transform: scaleY(0.95) rotate(-1deg); }
-  }
-  .vault-candle-wick {
-    display: inline-block; width: 2px; height: 20px; background: rgba(200,150,80,0.3);
-    margin-top: -2px;
-  }
-  .vault-candle-date {
-    font-size: 11px; color: rgba(200,168,75,0.4); margin-top: 8px;
-    font-style: italic; letter-spacing: 0.04em;
-  }
-  /* Fire */
-  .vault-fire {
-    grid-column: 2; text-align: center; padding: 16px 0;
-  }
-  .vault-fire-glow {
-    display: inline-block; border-radius: 50%;
-    background: radial-gradient(circle, rgba(200,130,40,0.6), rgba(200,100,20,0.2), transparent);
-    animation: vault-fire-breathe 3s ease-in-out infinite;
-  }
-  @keyframes vault-fire-breathe {
-    0%,100% { opacity: 0.7; } 50% { opacity: 1; }
-  }
-  .vault-fire-label {
-    font-size: 11px; color: rgba(200,168,75,0.35); margin-top: 6px;
-    font-style: italic;
-  }
-  /* Shelf */
-  .vault-shelf { grid-column: 1; grid-row: 1 / 3; }
-  .vault-shelf-items {
-    display: flex; flex-wrap: wrap; gap: 4px; min-height: 40px;
-  }
-  .vault-shelf-item {
-    width: 14px; height: 18px; border-radius: 2px;
-    background: linear-gradient(135deg, rgba(200,168,75,0.25), rgba(160,120,60,0.2));
-    border: 1px solid rgba(200,168,75,0.15);
-  }
-  /* Wall */
-  .vault-wall { grid-column: 1; }
-  .vault-wall-items {
-    display: flex; flex-wrap: wrap; gap: 3px; min-height: 30px;
-  }
-  .vault-wall-item {
-    width: 18px; height: 14px; border-radius: 1px;
-    background: rgba(232,213,184,0.08); border: 1px solid rgba(232,213,184,0.06);
-    transform: rotate(var(--r, 0deg));
-  }
-  /* Books */
-  .vault-books { grid-column: 3; grid-row: 1 / 3; }
-  .vault-book-spines {
-    display: flex; gap: 2px; min-height: 40px; align-items: flex-end;
-  }
-  .vault-book {
-    width: 8px; border-radius: 1px;
-    background: linear-gradient(180deg, rgba(120,80,40,0.4), rgba(80,50,25,0.3));
-    border: 1px solid rgba(200,168,75,0.1);
-  }
-  /* Thread */
-  .vault-thread {
-    grid-column: 1 / 4; text-align: center; padding: 12px 0;
-    position: relative;
-  }
-  .vault-thread-line {
-    height: 1px; background: linear-gradient(90deg, transparent, #c8a84b, transparent);
-    margin: 8px 0;
-  }
-  .vault-thread-badge {
-    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
-    box-shadow: 0 0 8px rgba(200,168,75,0.4);
-  }
-  .vault-thread-badge.founder { background: #c8a84b; }
-  .vault-thread-badge.member { background: rgba(200,168,75,0.5); }
-  /* Mirror */
-  .vault-mirror { grid-column: 1; }
-  .vault-mirror-frame {
-    width: 60px; height: 80px; border-radius: 30px 30px 4px 4px;
-    border: 2px solid rgba(200,168,75,0.2);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: border-color 0.3s;
-    overflow: hidden;
-  }
-  .vault-mirror-frame:hover { border-color: rgba(200,168,75,0.5); }
-  .vault-mirror-cloth {
-    width: 100%; height: 100%;
-    background: linear-gradient(135deg, rgba(80,60,30,0.6), rgba(60,40,20,0.4));
-  }
-  .vault-mirror-glass {
-    width: 100%; height: 100%;
-    background: linear-gradient(180deg, rgba(200,168,75,0.06), rgba(200,168,75,0.02));
-  }
-  /* Passport */
-  .vault-passport {
-    grid-column: 3; padding: 16px;
-    background: rgba(200,168,75,0.04); border: 1px solid rgba(200,168,75,0.1);
-    border-radius: 10px;
-  }
-  .vault-passport-avatar {
-    width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px;
-    background-size: cover; background-position: center;
-    border: 2px solid rgba(200,168,75,0.3);
-  }
-  .vault-passport-name { font-size: 14px; font-weight: 600; color: #e8d5b8; }
-  .vault-passport-village { font-size: 11px; color: rgba(200,168,75,0.5); margin-top: 2px; }
-  .vault-passport-stats {
-    margin-top: 10px; font-size: 12px; color: rgba(232,213,184,0.5); line-height: 1.8;
-  }
-  .vault-passport-verify {
-    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-    background: #c8a84b; margin-left: 4px; vertical-align: middle;
-  }
-  .vault-passport-note {
-    font-size: 10px; color: rgba(200,168,75,0.3); margin-top: 10px;
-    font-style: italic;
-  }
-  /* Download */
-  .vault-download {
-    grid-column: 1 / 4; text-align: center; padding: 20px 0;
-  }
-  .vault-download-btn {
+  #vault-overlay.open { display: block; }
+  .vlt-close {
+    position: fixed; top: 20px; right: 24px; z-index: 15010;
     background: none; border: 1px solid rgba(200,168,75,0.15);
-    color: rgba(200,168,75,0.4); font-size: 11px; padding: 6px 16px;
-    border-radius: 6px; cursor: pointer; font-family: inherit;
-    transition: all 0.2s; letter-spacing: 0.04em;
+    padding: 6px 16px; font-size: 11px; font-weight: 600; color: rgba(200,168,75,0.4);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+    letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .vault-download-btn:hover { border-color: rgba(200,168,75,0.4); color: #c8a84b; }
-  /* Animation */
-  .vault-anim-zone { opacity: 0; transform: translateY(8px); transition: opacity 0.6s, transform 0.6s; }
-  .vault-anim-zone.visible { opacity: 1; transform: translateY(0); }
-  /* Long Mirror overlay */
-  #vault-mirror-overlay {
-    position: fixed; inset: 0; z-index: 9300; display: none;
-    background: rgba(8,5,2,0.95); align-items: center; justify-content: center;
-    flex-direction: column; padding: 40px;
-  }
-  #vault-mirror-overlay.open { display: flex; }
-  .vault-mirror-words {
-    max-width: 500px; text-align: center; font-family: Georgia, 'Times New Roman', serif;
-    font-size: 16px; font-style: italic; color: rgba(232,213,184,0.6);
-    line-height: 1.8; margin-bottom: 40px;
-  }
-  .vault-mirror-question {
-    font-size: 14px; color: rgba(200,168,75,0.5); font-style: italic;
-  }
-  .vault-mirror-close {
-    position: absolute; top: 20px; right: 24px;
-    background: none; border: none; color: rgba(232,213,184,0.3);
-    font-size: 20px; cursor: pointer;
-  }
+  .vlt-close:hover { border-color: #c8a84b; color: #c8a84b; }
+  .vlt-hero { position: relative; text-align: center; padding: 80px 32px 48px; overflow: hidden; }
+  .vlt-hero-circles { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .vlt-hero-circles .c { position: absolute; border: 1px solid rgba(200,168,75,0.04); border-radius: 50%; animation: vlt-spin 60s linear infinite; }
+  @keyframes vlt-spin { to { transform: rotate(360deg); } }
+  .vlt-hero-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: #3a2008; position: relative; }
+  .vlt-hero-name { font-size: 48px; font-family: Georgia, serif; font-weight: 700; color: #c8a84b; margin: 12px 0 8px; position: relative; }
+  .vlt-hero-sub { font-size: 13px; color: #4a3008; position: relative; letter-spacing: 0.04em; }
+  .vlt-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgba(200,168,75,0.08); border-bottom: 1px solid rgba(200,168,75,0.08); }
+  .vlt-stat { text-align: center; padding: 32px 16px; border-right: 1px solid rgba(200,168,75,0.08); }
+  .vlt-stat:last-child { border-right: none; }
+  .vlt-stat-num { font-size: 36px; font-weight: 700; color: #f0d060; font-family: Georgia, serif; }
+  .vlt-stat-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a3008; margin-top: 6px; }
+  .vlt-passport { display: grid; grid-template-columns: 200px 1fr; gap: 48px; max-width: 720px; margin: 0 auto; padding: 56px 32px; align-items: start; }
+  .vlt-token-wrap { text-align: center; cursor: pointer; }
+  .vlt-token-hint { font-size: 10px; color: #3a2008; margin-top: 8px; letter-spacing: 0.06em; }
+  .vlt-pf { margin-bottom: 16px; }
+  .vlt-pf-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a3008; margin-bottom: 3px; }
+  .vlt-pf-value { font-size: 15px; color: #c8a84b; }
+  .vlt-pf-value.big { font-size: 22px; font-weight: 700; font-family: 'Noto Sans JP', Georgia, serif; }
+  .vlt-pf-value.active { color: #f0d060; }
+  #vault-token-modal { position: fixed; inset: 0; z-index: 16000; display: none; background: rgba(4,2,0,0.95); align-items: center; justify-content: center; flex-direction: column; padding: 40px; }
+  #vault-token-modal.open { display: flex; }
+  .vtm-close { position: absolute; top: 20px; right: 24px; background: none; border: none; color: rgba(200,168,75,0.3); font-size: 20px; cursor: pointer; }
+  .vtm-terminal { max-width: 520px; width: 100%; margin-top: 24px; font-family: 'Courier New', monospace; font-size: 13px; color: #c8a84b; line-height: 1.7; white-space: pre-wrap; }
+  .vtm-final { text-align: center; margin-top: 32px; font-family: 'Noto Sans JP', Georgia, serif; font-size: 18px; color: #f0d060; opacity: 0; transition: opacity 2s; }
+  .vtm-final.visible { opacity: 1; }
+  .vlt-manifesto { max-width: 640px; margin: 0 auto; padding: 56px 32px; }
+  .vlt-man-section { margin-bottom: 48px; }
+  .vlt-man-heading { font-size: 22px; font-family: Georgia, serif; font-weight: 700; color: #f0d060; margin-bottom: 16px; }
+  .vlt-man-body { font-size: 15px; color: #8a6a30; line-height: 1.9; }
+  .vlt-man-quote { border-left: 2px solid #c8a84b; padding-left: 20px; margin: 20px 0; font-style: italic; color: #c8a84b; font-size: 18px; line-height: 1.7; }
+  .vlt-man-sep { border: none; border-top: 1px solid rgba(200,168,75,0.08); margin: 48px 0; }
+  .vlt-man-kanji { text-align: center; font-family: 'Noto Sans JP', serif; font-weight: 700; font-size: 48px; color: #f0d060; margin: 48px 0 8px; }
+  .vlt-man-kanji-sub { text-align: center; font-size: 12px; color: #4a3008; font-style: italic; }
+  .vlt-record { max-width: 640px; margin: 0 auto; padding: 32px; }
+  .vlt-record-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #3a2008; margin-bottom: 16px; }
+  .vlt-record-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(200,168,75,0.06); font-size: 13px; }
+  .vlt-record-dot { width: 6px; height: 6px; border-radius: 50%; background: #c8a84b; flex-shrink: 0; margin-top: 6px; }
+  .vlt-record-text { flex: 1; color: #8a6a30; }
+  .vlt-record-date { color: #3a2008; font-size: 11px; flex-shrink: 0; }
+  .vlt-download { text-align: center; padding: 40px 32px; }
+  .vlt-download-btn { background: none; border: 1px solid rgba(200,168,75,0.2); color: #c8a84b; font-size: 11px; padding: 12px 32px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .vlt-download-btn:hover { border-color: #c8a84b; color: #f0d060; }
+  .vlt-footer { text-align: center; padding: 32px; font-size: 11px; color: #2a1808; letter-spacing: 0.06em; }
+  .vlt-loading { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #c8a84b; animation: vlt-pulse 1.2s ease-in-out infinite; }
+  @keyframes vlt-pulse { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
 
   /* ===== COGNITIVE AGENCY ===== */
   .ca-progress { height: 3px; background: #f0f0f0; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
@@ -7722,21 +7598,16 @@ function toggleVillageSound() {
   </div>
 </div>
 <div class="cm-toast" id="cm-toast"></div>
-
-<!-- ── Vault Room overlay ──────────────────────────────────── -->
 <div id="vault-overlay">
-  <button class="vault-close" id="vault-close">&times;</button>
-  <div class="vault-room" id="vault-room"></div>
+  <button class="vlt-close" id="vault-close">CLOSE</button>
+  <div id="vault-content"><div style="text-align:center;padding:200px 0;"><span class="vlt-loading"></span></div></div>
 </div>
-
-<!-- ── Long Mirror overlay ─────────────────────────────────── -->
-<div id="vault-mirror-overlay">
-  <button class="vault-mirror-close" id="vault-mirror-close">&times;</button>
-  <div class="vault-mirror-words" id="vault-mirror-words"></div>
-  <div class="vault-mirror-question">What do you notice?</div>
+<div id="vault-token-modal">
+  <button class="vtm-close" id="vtm-close">&times;</button>
+  <canvas id="vtm-token-sm" width="120" height="120"></canvas>
+  <div class="vtm-terminal" id="vtm-terminal"></div>
+  <div class="vtm-final" id="vtm-final">&#x4E00;&#x671F;&#x4E00;&#x4F1A; &#x2014; this moment is in the record.</div>
 </div>
-
-<!-- ── mondo room overlay — gear noir ─────────────────────── -->
 <div id="mondo-overlay">
   <button class="mondo-leave" id="mondo-close">LEAVE</button>
   <div class="mondo-timer" id="mondo-timer"></div>
@@ -20914,323 +20785,489 @@ Mura facilitates. People decide.`;
   };
 })();
 
-// ===== VAULT ROOM =====
+// ===== VAULT =====
 (function() {
-  var _vaultData = null;
-  var _vaultAnimPlayed = false;
-
+  /* ---------- helpers ---------- */
   function _isStudioOwner() {
-    return window._sbAuthUid && window._villageRole !== 'guest';
+    var role = typeof _deriveRole === 'function' ? _deriveRole() : 'guest';
+    return role === 'founder' || role === 'citizen';
   }
 
-  // Show/hide vault door when Studio Quarter opens
+  function _escV(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+  function _fmtDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  function _statCell(num, label) {
+    return '<div class="vlt-stat"><div class="vlt-stat-num">' + num + '</div><div class="vlt-stat-label">' + label + '</div></div>';
+  }
+
+  function _pf(label, value, cls) {
+    return '<div class="vlt-pf"><div class="vlt-pf-label">' + label + '</div><div class="vlt-pf-value' + (cls ? ' ' + cls : '') + '">' + _escV(value || '\u2014') + '</div></div>';
+  }
+
+  /* ---------- vault door visibility ---------- */
   var _origOpenSQ = window.openStudioQuarter;
   window.openStudioQuarter = function() {
-    _origOpenSQ();
+    if (_origOpenSQ) _origOpenSQ();
     var door = document.getElementById('vault-door');
     if (door) door.style.display = _isStudioOwner() ? 'block' : 'none';
   };
 
-  // Door click → open vault
-  var vaultDoor = document.getElementById('vault-door');
-  if (vaultDoor) vaultDoor.addEventListener('click', openVault);
+  // Also hide when Studio Quarter closes
+  var sqOv = document.getElementById('studio-quarter-overlay');
+  if (sqOv) {
+    var obs = new MutationObserver(function(muts) {
+      muts.forEach(function(m) {
+        if (m.attributeName === 'style' && sqOv.style.display === 'none') {
+          var door = document.getElementById('vault-door');
+          if (door) door.style.display = 'none';
+        }
+      });
+    });
+    obs.observe(sqOv, { attributes: true, attributeFilter: ['style'] });
+  }
 
-  async function openVault() {
+  /* ---------- data fetching ---------- */
+  function fetchVaultData() {
+    return new Promise(function(resolve) {
+      var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+      var uid = typeof _presenceProfileId === 'function' ? _presenceProfileId() : null;
+      var data = {
+        profile: sp || {},
+        practiceLog: [],
+        processBoard: [],
+        failureWall: [],
+        memberSince: null,
+        friends: 0,
+        studioVisits: 0,
+        messages: 0
+      };
+
+      if (!window._supabase || !uid) { resolve(data); return; }
+
+      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '00000001-0000-0000-0000-000000000001';
+      var promises = [];
+
+      // Practice log count
+      promises.push(
+        window._supabase.from('studio_practice_log').select('id,date,mood,text', { count: 'exact' })
+          .eq('village_id', vid).eq('user_id', uid).order('created_at', { ascending: false }).limit(20)
+          .then(function(r) { if (!r.error && r.data) { data.practiceLog = r.data; data.practiceCount = r.count || r.data.length; } })
+      );
+
+      // Process board posts
+      promises.push(
+        window._supabase.from('studio_process_board').select('id,text,created_at', { count: 'exact' })
+          .eq('village_id', vid).eq('author_id', uid).order('created_at', { ascending: false }).limit(10)
+          .then(function(r) { if (!r.error && r.data) { data.processBoard = r.data; data.processBoardCount = r.count || r.data.length; } })
+      );
+
+      // Failure wall entries
+      promises.push(
+        window._supabase.from('studio_failure_wall').select('id,failure_note,lesson_note,created_at', { count: 'exact' })
+          .eq('village_id', vid).eq('author_id', uid).order('created_at', { ascending: false }).limit(10)
+          .then(function(r) { if (!r.error && r.data) { data.failureWall = r.data; data.failureWallCount = r.count || r.data.length; } })
+      );
+
+      // Member since date
+      promises.push(
+        window._supabase.from('village_members').select('created_at')
+          .eq('auth_id', uid).eq('village_id', vid).limit(1).single()
+          .then(function(r) { if (!r.error && r.data) data.memberSince = r.data.created_at; })
+      );
+
+      // Friends count
+      promises.push(
+        window._supabase.from('friends').select('id', { count: 'exact' })
+          .eq('village_id', vid).or('user_id.eq.' + uid + ',friend_id.eq.' + uid)
+          .then(function(r) { data.friends = (r.count || (r.data ? r.data.length : 0)); })
+          .catch(function() { data.friends = window._friendsSet ? window._friendsSet.size : 0; })
+      );
+
+      // Message thread count
+      promises.push(
+        window._supabase.from('dm_messages').select('id', { count: 'exact' })
+          .eq('village_id', vid).eq('sender_id', uid)
+          .then(function(r) { data.messages = r.count || (r.data ? r.data.length : 0); })
+          .catch(function() { data.messages = 0; })
+      );
+
+      Promise.all(promises).then(function() { resolve(data); }).catch(function() { resolve(data); });
+    });
+  }
+
+  /* ---------- render ---------- */
+  function renderVault(data) {
+    var el = document.getElementById('vault-content');
+    if (!el) return;
+    var p = data.profile || {};
+    var name = p.villageName || p.name || 'Unnamed';
+    var practice = p.mainPractice || 'clay';
+    var level = p.level || 'beginner';
+    var years = p.yearsPracticing || 0;
+    var city = p.city || '';
+    var country = p.country || '';
+    var location = [city, country].filter(Boolean).join(', ');
+    var memberDate = _fmtDate(data.memberSince);
+    var logCount = data.practiceCount || data.practiceLog.length;
+    var pbCount = data.processBoardCount || data.processBoard.length;
+    var fwCount = data.failureWallCount || data.failureWall.length;
+    var friendCount = data.friends || 0;
+
+    var html = '';
+
+    // Hero section with rotating circles
+    html += '<div class="vlt-hero">';
+    html += '<div class="vlt-hero-circles">';
+    for (var ci = 1; ci <= 5; ci++) {
+      var sz = 80 + ci * 80;
+      html += '<div class="c" style="width:' + sz + 'px;height:' + sz + 'px;animation-duration:' + (40 + ci * 15) + 's;animation-direction:' + (ci % 2 === 0 ? 'reverse' : 'normal') + ';"></div>';
+    }
+    html += '</div>';
+    html += '<div class="vlt-hero-label">VILLAGE VAULT</div>';
+    html += '<div class="vlt-hero-name">' + _escV(name) + '</div>';
+    html += '<div class="vlt-hero-sub">' + _escV(practice) + ' \u00B7 ' + _escV(level) + (years > 0 ? ' \u00B7 ' + years + ' years' : '') + '</div>';
+    html += '</div>';
+
+    // Stats row
+    html += '<div class="vlt-stats">';
+    html += _statCell(logCount, 'Practice logs');
+    html += _statCell(pbCount, 'Process posts');
+    html += _statCell(fwCount, 'Failures shared');
+    html += _statCell(friendCount, 'Connections');
+    html += '</div>';
+
+    // Passport section with token canvas
+    html += '<div class="vlt-passport">';
+    html += '<div class="vlt-token-wrap" id="vault-token-trigger">';
+    html += '<canvas id="vault-token-canvas" width="180" height="180"></canvas>';
+    html += '<div class="vlt-token-hint">tap to inspect</div>';
+    html += '</div>';
+    html += '<div>';
+    html += _pf('Village name', name, 'big');
+    html += _pf('Location', location || 'Undisclosed');
+    html += _pf('Practice', practice);
+    html += _pf('Level', level, 'active');
+    html += _pf('Member since', memberDate || 'Today');
+    html += _pf('Identity', p.identity);
+    html += '</div>';
+    html += '</div>';
+
+    // Manifesto
+    html += '<div class="vlt-manifesto">';
+    html += '<div class="vlt-man-kanji">\u571F</div>';
+    html += '<div class="vlt-man-kanji-sub">tsuchi \u2014 earth, soil, clay</div>';
+    html += '<hr class="vlt-man-sep">';
+
+    html += '<div class="vlt-man-section">';
+    html += '<div class="vlt-man-heading">Why this exists</div>';
+    html += '<div class="vlt-man-body">Your vault is a private record of your presence in this village. Not metrics. Not performance. Just proof that you were here, that your hands were in the clay, and that you showed up.</div>';
+    html += '</div>';
+
+    html += '<div class="vlt-man-section">';
+    html += '<div class="vlt-man-heading">What it holds</div>';
+    html += '<div class="vlt-man-body">Every practice log you wrote. Every process post you shared. Every failure you had the courage to name. Every connection you made. This is your record \u2014 not for anyone else, just for you.</div>';
+    html += '</div>';
+
+    html += '<div class="vlt-man-quote">The pot remembers every hand that touched it.</div>';
+
+    html += '<div class="vlt-man-section">';
+    html += '<div class="vlt-man-heading">The token</div>';
+    html += '<div class="vlt-man-body">The spinning token is your village seal. It encodes your identity, your practice, and the moment you arrived. It cannot be faked, traded, or performed. It is simply yours.</div>';
+    html += '</div>';
+
+    html += '<hr class="vlt-man-sep">';
+    html += '<div class="vlt-man-kanji">\u4E00\u671F\u4E00\u4F1A</div>';
+    html += '<div class="vlt-man-kanji-sub">ichigo ichie \u2014 one time, one meeting</div>';
+    html += '</div>';
+
+    // Activity record
+    html += _buildRecordList('PRACTICE LOG', data.practiceLog, function(item) {
+      return (item.mood ? item.mood + ' ' : '') + (item.text || 'Session logged');
+    }, function(item) { return _fmtDate(item.date); });
+
+    html += _buildRecordList('PROCESS BOARD', data.processBoard, function(item) {
+      return item.text || 'Post shared';
+    }, function(item) { return _fmtDate(item.created_at); });
+
+    html += _buildRecordList('FAILURE WALL', data.failureWall, function(item) {
+      return (item.failure_note || 'Failure noted') + (item.lesson_note ? ' \u2014 ' + item.lesson_note : '');
+    }, function(item) { return _fmtDate(item.created_at); });
+
+    // Download
+    html += '<div class="vlt-download"><button class="vlt-download-btn" id="vault-download-btn">DOWNLOAD RECORD</button></div>';
+
+    // Footer
+    html += '<div class="vlt-footer">Clay Village \u00B7 ' + new Date().getFullYear() + ' \u00B7 Your record is yours alone</div>';
+
+    el.innerHTML = html;
+
+    // Draw token after render
+    requestAnimationFrame(function() { startTokenAnimation('vault-token-canvas', data); });
+
+    // Wire token click
+    var trigger = document.getElementById('vault-token-trigger');
+    if (trigger) trigger.addEventListener('click', function() { openTokenModal(data); });
+
+    // Wire download
+    var dlBtn = document.getElementById('vault-download-btn');
+    if (dlBtn) dlBtn.addEventListener('click', function() { downloadVaultRecord(data); });
+  }
+
+  function _buildRecordList(label, items, textFn, dateFn) {
+    if (!items || items.length === 0) return '';
+    var html = '<div class="vlt-record">';
+    html += '<div class="vlt-record-label">' + label + '</div>';
+    items.forEach(function(item) {
+      var text = textFn(item);
+      if (text.length > 120) text = text.substring(0, 117) + '\u2026';
+      html += '<div class="vlt-record-item">';
+      html += '<div class="vlt-record-dot"></div>';
+      html += '<div class="vlt-record-text">' + _escV(text) + '</div>';
+      html += '<div class="vlt-record-date">' + _escV(dateFn(item)) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  /* ---------- token animation ---------- */
+  var _tokenRAF = null;
+
+  function startTokenAnimation(canvasId, data) {
+    var canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width, h = canvas.height;
+    var cx = w / 2, cy = h / 2;
+    var p = data.profile || {};
+    var name = p.villageName || p.name || '?';
+    var level = p.level || 'beginner';
+    var practice = p.mainPractice || 'clay';
+
+    // Hash name for unique angles
+    var hash = 0;
+    for (var i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) & 0xffffffff;
+
+    var startTime = Date.now();
+    function draw() {
+      var t = (Date.now() - startTime) / 1000;
+      ctx.clearRect(0, 0, w, h);
+
+      // Outer ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.min(cx, cy) - 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(200,168,75,0.15)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Rotating inner ring
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(t * 0.3 + (hash % 100) * 0.01);
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.min(cx, cy) - 16, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(200,168,75,0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Tick marks
+      for (var ti = 0; ti < 12; ti++) {
+        var angle = (ti / 12) * Math.PI * 2;
+        var r1 = Math.min(cx, cy) - 16;
+        var r2 = r1 - 6;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * r1, Math.sin(angle) * r1);
+        ctx.lineTo(Math.cos(angle) * r2, Math.sin(angle) * r2);
+        ctx.strokeStyle = 'rgba(200,168,75,' + (0.1 + 0.1 * Math.sin(t + ti)) + ')';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Center kanji
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.font = 'bold ' + (w > 150 ? '36' : '24') + 'px "Noto Sans JP", Georgia, serif';
+      ctx.fillStyle = '#f0d060';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.8 + 0.2 * Math.sin(t * 0.5);
+      ctx.fillText('\u571F', 0, -4);
+      ctx.restore();
+
+      // Practice text at bottom
+      ctx.font = '9px -apple-system, sans-serif';
+      ctx.fillStyle = 'rgba(200,168,75,0.3)';
+      ctx.textAlign = 'center';
+      ctx.fillText(practice.toUpperCase(), cx, h - 10);
+
+      _tokenRAF = requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  function stopTokenAnimation() {
+    if (_tokenRAF) { cancelAnimationFrame(_tokenRAF); _tokenRAF = null; }
+  }
+
+  /* ---------- token modal ---------- */
+  function openTokenModal(data) {
+    var modal = document.getElementById('vault-token-modal');
+    if (!modal) return;
+    modal.classList.add('open');
+
+    // Draw small token
+    startTokenAnimation('vtm-token-sm', data);
+
+    // Terminal typing effect
+    var terminal = document.getElementById('vtm-terminal');
+    var finalEl = document.getElementById('vtm-final');
+    if (terminal) terminal.textContent = '';
+    if (finalEl) finalEl.classList.remove('visible');
+
+    var p = data.profile || {};
+    var name = p.villageName || p.name || 'Unknown';
+    var lines = [
+      '> VAULT TOKEN INSPECTION',
+      '> ========================',
+      '',
+      '> holder:    ' + name,
+      '> practice:  ' + (p.mainPractice || 'clay'),
+      '> level:     ' + (p.level || 'beginner'),
+      '> years:     ' + (p.yearsPracticing || 0),
+      '> location:  ' + ([p.city, p.country].filter(Boolean).join(', ') || 'undisclosed'),
+      '',
+      '> issued:    ' + _fmtDate(data.memberSince) || 'today',
+      '> logs:      ' + (data.practiceCount || data.practiceLog.length),
+      '> posts:     ' + (data.processBoardCount || data.processBoard.length),
+      '> failures:  ' + (data.failureWallCount || data.failureWall.length),
+      '> bonds:     ' + (data.friends || 0),
+      '',
+      '> status:    AUTHENTIC',
+      '> this token cannot be traded or transferred.',
+      '> it exists because you showed up.'
+    ];
+
+    var lineIdx = 0, charIdx = 0;
+    var currentText = '';
+    function typeChar() {
+      if (lineIdx >= lines.length) {
+        if (finalEl) setTimeout(function() { finalEl.classList.add('visible'); }, 600);
+        return;
+      }
+      var line = lines[lineIdx];
+      if (charIdx >= line.length) {
+        currentText += '\n';
+        lineIdx++;
+        charIdx = 0;
+        if (terminal) terminal.textContent = currentText;
+        setTimeout(typeChar, line === '' ? 100 : 40);
+        return;
+      }
+      currentText += line[charIdx];
+      charIdx++;
+      if (terminal) terminal.textContent = currentText;
+      setTimeout(typeChar, 18 + Math.random() * 12);
+    }
+    setTimeout(typeChar, 400);
+  }
+
+  function closeTokenModal() {
+    var modal = document.getElementById('vault-token-modal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  /* ---------- download ---------- */
+  function downloadVaultRecord(data) {
+    var p = data.profile || {};
+    var name = p.villageName || p.name || 'Unknown';
+    var lines = [];
+    lines.push('CLAY VILLAGE \u2014 VAULT RECORD');
+    lines.push('================================');
+    lines.push('');
+    lines.push('Holder:        ' + name);
+    lines.push('Practice:      ' + (p.mainPractice || 'clay'));
+    lines.push('Level:         ' + (p.level || 'beginner'));
+    lines.push('Years:         ' + (p.yearsPracticing || 0));
+    lines.push('Location:      ' + ([p.city, p.country].filter(Boolean).join(', ') || 'Undisclosed'));
+    lines.push('Member since:  ' + (_fmtDate(data.memberSince) || 'Today'));
+    lines.push('');
+    lines.push('--- PRACTICE LOG ---');
+    (data.practiceLog || []).forEach(function(item) {
+      lines.push(_fmtDate(item.date) + '  ' + (item.mood || '') + '  ' + (item.text || 'Session'));
+    });
+    lines.push('');
+    lines.push('--- PROCESS BOARD ---');
+    (data.processBoard || []).forEach(function(item) {
+      lines.push(_fmtDate(item.created_at) + '  ' + (item.text || 'Post'));
+    });
+    lines.push('');
+    lines.push('--- FAILURE WALL ---');
+    (data.failureWall || []).forEach(function(item) {
+      lines.push(_fmtDate(item.created_at) + '  ' + (item.failure_note || '') + (item.lesson_note ? ' \u2014 ' + item.lesson_note : ''));
+    });
+    lines.push('');
+    lines.push('================================');
+    lines.push('Downloaded ' + new Date().toISOString().split('T')[0]);
+    lines.push('Your record is yours alone.');
+
+    var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'clay-village-vault-' + name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  /* ---------- open / close vault ---------- */
+  function openVault() {
     var ov = document.getElementById('vault-overlay');
-    if (!ov || !window._sbAuthUid) return;
+    if (!ov) return;
     ov.classList.add('open');
-    await fetchVaultData();
-    renderVault();
+    document.body.style.overflow = 'hidden';
+    // Show loading, fetch data, render
+    var content = document.getElementById('vault-content');
+    if (content) content.innerHTML = '<div style="text-align:center;padding:200px 0;"><span class="vlt-loading"></span></div>';
+    fetchVaultData().then(function(data) { renderVault(data); });
   }
 
   function closeVault() {
     var ov = document.getElementById('vault-overlay');
     if (ov) ov.classList.remove('open');
+    document.body.style.overflow = '';
+    stopTokenAnimation();
   }
 
-  document.getElementById('vault-close')?.addEventListener('click', closeVault);
+  /* ---------- wire events ---------- */
+  var doorEl = document.getElementById('vault-door');
+  if (doorEl) doorEl.addEventListener('click', openVault);
+
+  var closeBtn = document.getElementById('vault-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeVault);
+
+  var vtmClose = document.getElementById('vtm-close');
+  if (vtmClose) vtmClose.addEventListener('click', closeTokenModal);
+
+  // Escape key closes vault or token modal
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      var ov = document.getElementById('vault-overlay');
-      if (ov && ov.classList.contains('open')) { e.stopPropagation(); closeVault(); }
+      var tokenModal = document.getElementById('vault-token-modal');
+      if (tokenModal && tokenModal.classList.contains('open')) { closeTokenModal(); return; }
+      var vaultOv = document.getElementById('vault-overlay');
+      if (vaultOv && vaultOv.classList.contains('open')) { closeVault(); }
     }
   });
 
-  async function fetchVaultData() {
-    if (!window._supabase || !window._sbAuthUid) return;
-    var uid = window._sbAuthUid;
-    var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : null;
-
-    try {
-      var [gallery, processBoard, journals, mondoVisits, presence, bonfire, membership] = await Promise.all([
-        window._supabase.from('gallery_pieces').select('id,title,created_at').eq('village_id', vid).eq('user_id', uid),
-        window._supabase.from('studio_process_board').select('id,created_at').eq('village_id', vid).eq('author_id', uid),
-        window._supabase.from('library_journals').select('id,title,body,created_at').eq('village_id', vid).eq('user_id', uid).order('created_at', { ascending: true }),
-        window._supabase.from('mondo_visits').select('id').eq('user_id', uid),
-        window._supabase.from('presence').select('last_seen_at').eq('profile_id', uid).eq('village_id', vid),
-        window._supabase.from('bonfire_messages').select('id,message,display_name,created_at').eq('village_id', vid).eq('user_id', uid).order('created_at', { ascending: true }),
-        window._supabase.from('village_members').select('created_at,role').eq('auth_id', uid).eq('village_id', vid).single()
-      ]);
-
-      // Calculate distinct presence days in last 90 days
-      var now = Date.now();
-      var ninetyDaysAgo = now - 90 * 24 * 60 * 60 * 1000;
-      var presenceDays = new Set();
-      if (presence.data) {
-        presence.data.forEach(function(r) {
-          var d = new Date(r.last_seen_at);
-          if (d.getTime() > ninetyDaysAgo) {
-            presenceDays.add(d.toISOString().slice(0, 10));
-          }
-        });
-      }
-
-      // Find first words (earliest bonfire message, journal, or process note)
-      var firstWords = null;
-      var candidates = [];
-      if (bonfire.data && bonfire.data.length) candidates.push({ text: bonfire.data[0].message, date: bonfire.data[0].created_at, source: 'bonfire' });
-      if (journals.data && journals.data.length) candidates.push({ text: journals.data[0].body || journals.data[0].title, date: journals.data[0].created_at, source: 'journal' });
-      if (processBoard.data && processBoard.data.length) {
-        var sorted = processBoard.data.sort(function(a,b) { return new Date(a.created_at) - new Date(b.created_at); });
-        candidates.push({ text: sorted[0].text || '', date: sorted[0].created_at, source: 'process' });
-      }
-      if (candidates.length) {
-        candidates.sort(function(a,b) { return new Date(a.date) - new Date(b.date); });
-        firstWords = candidates[0];
-      }
-
-      _vaultData = {
-        shelfCount: (gallery.data ? gallery.data.length : 0) + (processBoard.data ? processBoard.data.length : 0),
-        wallCount: (journals.data ? journals.data.length : 0),
-        bookCount: mondoVisits.data ? mondoVisits.data.length : 0,
-        fireDays: presenceDays.size,
-        connectionCount: bonfire.data ? bonfire.data.length : 0,
-        joinedAt: membership.data ? membership.data.created_at : null,
-        role: membership.data ? membership.data.role : 'member',
-        firstWords: firstWords,
-        galleryPieces: gallery.data || [],
-        journals: journals.data || [],
-        bonfireMessages: bonfire.data || [],
-        profile: typeof getSessionProfile === 'function' ? getSessionProfile() : {}
-      };
-    } catch (err) {
-      console.warn('[Vault] fetch error:', err);
-      _vaultData = { shelfCount: 0, wallCount: 0, bookCount: 0, fireDays: 0, connectionCount: 0, joinedAt: null, role: 'member', firstWords: null, galleryPieces: [], journals: [], bonfireMessages: [], profile: {} };
-    }
-  }
-
-  function renderVault() {
-    var room = document.getElementById('vault-room');
-    if (!room || !_vaultData) return;
-    var d = _vaultData;
-    var p = d.profile;
-    var joinDate = d.joinedAt ? new Date(d.joinedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Unknown';
-    var membershipDays = d.joinedAt ? Math.floor((Date.now() - new Date(d.joinedAt).getTime()) / (1000 * 60 * 60 * 24)) : 0;
-    var hasOneYear = membershipDays >= 365;
-    var animate = !_vaultAnimPlayed;
-    var ac = animate ? ' vault-anim-zone' : '';
-
-    // Fire size based on presence days
-    var fireSize = 8, fireLabel = 'An ember';
-    if (d.fireDays >= 90) { fireSize = 48; fireLabel = 'A hearth fire'; }
-    else if (d.fireDays >= 60) { fireSize = 32; fireLabel = 'A steady flame'; }
-    else if (d.fireDays >= 30) { fireSize = 20; fireLabel = 'A small fire'; }
-
-    // Build shelf items
-    var shelfItems = '';
-    for (var i = 0; i < Math.min(d.shelfCount, 80); i++) {
-      var hue = 20 + (i * 7) % 30;
-      shelfItems += '<div class="vault-shelf-item" style="background:linear-gradient(135deg, hsla(' + hue + ',40%,35%,0.3), hsla(' + hue + ',30%,25%,0.2));"></div>';
-    }
-
-    // Build wall items
-    var wallItems = '';
-    for (var j = 0; j < Math.min(d.wallCount, 60); j++) {
-      var rot = -8 + (j * 13) % 16;
-      wallItems += '<div class="vault-wall-item" style="--r:' + rot + 'deg;"></div>';
-    }
-
-    // Build book spines
-    var bookSpines = '';
-    for (var k = 0; k < Math.min(d.bookCount, 30); k++) {
-      var h = 28 + (k * 11) % 24;
-      bookSpines += '<div class="vault-book" style="height:' + h + 'px;"></div>';
-    }
-
-    room.innerHTML =
-      // Shelf (left, row 1-2)
-      '<div class="vault-zone vault-shelf' + ac + '">' +
-        '<div class="vault-zone-label">Things made</div>' +
-        '<div class="vault-shelf-items">' + (shelfItems || '<span style="font-size:11px;color:rgba(200,168,75,0.2);font-style:italic;">Empty. Make something.</span>') + '</div>' +
-      '</div>' +
-
-      // Fire (center, row 1)
-      '<div class="vault-zone vault-fire' + ac + '">' +
-        '<div class="vault-zone-label">Presence</div>' +
-        '<div class="vault-fire-glow" style="width:' + fireSize + 'px;height:' + fireSize + 'px;"></div>' +
-        '<div class="vault-fire-label">' + fireLabel + '<br>' + d.fireDays + ' days in 90</div>' +
-      '</div>' +
-
-      // Books (right, row 1-2)
-      '<div class="vault-zone vault-books' + ac + '">' +
-        '<div class="vault-zone-label">Thinking</div>' +
-        '<div class="vault-book-spines">' + (bookSpines || '<span style="font-size:11px;color:rgba(200,168,75,0.2);font-style:italic;">No visits yet.</span>') + '</div>' +
-      '</div>' +
-
-      // Wall (left, row 3)
-      '<div class="vault-zone vault-wall' + ac + '">' +
-        '<div class="vault-zone-label">Written</div>' +
-        '<div class="vault-wall-items">' + (wallItems || '<span style="font-size:11px;color:rgba(200,168,75,0.2);font-style:italic;">Nothing yet.</span>') + '</div>' +
-      '</div>' +
-
-      // Candle (center, row 2)
-      '<div class="vault-zone vault-candle' + ac + '">' +
-        '<div><span class="vault-candle-flame"></span></div>' +
-        '<div><span class="vault-candle-wick"></span></div>' +
-        '<div class="vault-candle-date">Lit on ' + joinDate + '</div>' +
-      '</div>' +
-
-      // Passport (right, row 3)
-      '<div class="vault-zone vault-passport' + ac + '">' +
-        '<div class="vault-passport-avatar" style="' + (p.photo ? 'background-image:url(' + p.photo + ');' : 'background:rgba(200,168,75,0.15);') + '"></div>' +
-        '<div class="vault-passport-name">' + _escVault(p.name || 'You') + '<span class="vault-passport-verify"></span></div>' +
-        '<div class="vault-passport-village">' + _escVault(p.villageName || 'Clay Village') + '</div>' +
-        '<div class="vault-passport-stats">' +
-          d.shelfCount + ' things made<br>' +
-          d.fireDays + ' days present<br>' +
-          d.connectionCount + ' messages shared' +
-        '</div>' +
-        '<div class="vault-passport-note">This record is yours. It travels with you.</div>' +
-      '</div>' +
-
-      // Thread (full width)
-      '<div class="vault-zone vault-thread' + ac + '">' +
-        '<div class="vault-thread-line"></div>' +
-        '<span class="vault-thread-badge ' + (d.role === 'founder' ? 'founder' : 'member') + '"></span>' +
-      '</div>' +
-
-      // Mirror (left)
-      '<div class="vault-zone vault-mirror' + ac + '">' +
-        '<div class="vault-zone-label">The Mirror</div>' +
-        '<div class="vault-mirror-frame" id="vault-mirror-trigger">' +
-          (hasOneYear ? '<div class="vault-mirror-glass"></div>' : '<div class="vault-mirror-cloth"></div>') +
-        '</div>' +
-        '<div style="font-size:10px;color:rgba(200,168,75,0.25);margin-top:4px;font-style:italic;">' +
-          (hasOneYear ? 'Click to look.' : 'Covered. One year reveals it.') +
-        '</div>' +
-      '</div>' +
-
-      // Empty center
-      '<div></div>' +
-
-      // Download (right)
-      '<div class="vault-zone" style="align-self:end;">' +
-        '<button class="vault-download-btn" id="vault-download">Download your record</button>' +
-      '</div>';
-
-    // Wire mirror click
-    var mirrorTrigger = document.getElementById('vault-mirror-trigger');
-    if (mirrorTrigger && hasOneYear && d.firstWords) {
-      mirrorTrigger.addEventListener('click', function() {
-        openLongMirror(d.firstWords);
-      });
-    }
-
-    // Wire download
-    var dlBtn = document.getElementById('vault-download');
-    if (dlBtn) dlBtn.addEventListener('click', function() { downloadRecord(d); });
-
-    // Animate if first visit
-    if (animate) {
-      _vaultAnimPlayed = true;
-      var zones = room.querySelectorAll('.vault-anim-zone');
-      zones.forEach(function(z, i) {
-        setTimeout(function() { z.classList.add('visible'); }, 300 + i * 250);
-      });
-    }
-  }
-
-  function _escVault(s) {
-    var d = document.createElement('div'); d.textContent = s; return d.innerHTML;
-  }
-
-  // Long Mirror
-  function openLongMirror(firstWords) {
-    var ov = document.getElementById('vault-mirror-overlay');
-    var wordsEl = document.getElementById('vault-mirror-words');
-    if (!ov || !wordsEl) return;
-    var text = firstWords.text || '';
-    if (text.length > 500) text = text.substring(0, 500) + '...';
-    wordsEl.textContent = text;
-    ov.classList.add('open');
-  }
-
-  document.getElementById('vault-mirror-close')?.addEventListener('click', function() {
-    document.getElementById('vault-mirror-overlay')?.classList.remove('open');
-  });
-
-  // Download markdown record
-  function downloadRecord(d) {
-    var p = d.profile || {};
-    var lines = [];
-    lines.push('# ' + (p.name || 'Your') + "'s Village Record");
-    lines.push('Village: ' + (p.villageName || 'Clay Village'));
-    lines.push('Member since: ' + (d.joinedAt ? new Date(d.joinedAt).toLocaleDateString('en-GB') : 'Unknown'));
-    lines.push('Downloaded: ' + new Date().toLocaleDateString('en-GB'));
-    lines.push('');
-    lines.push('## Things made');
-    if (d.galleryPieces.length) {
-      d.galleryPieces.forEach(function(g) {
-        lines.push('- ' + (g.title || 'Untitled') + ' (' + new Date(g.created_at).toLocaleDateString('en-GB') + ')');
-      });
-    } else {
-      lines.push('None yet.');
-    }
-    lines.push('');
-    lines.push('## Mondo visits');
-    lines.push(d.bookCount + ' sessions. Contents private.');
-    lines.push('');
-    lines.push('## Village presence');
-    lines.push(d.fireDays + ' days present in the last 90 days');
-    lines.push('');
-    lines.push('## Connections');
-    lines.push(d.connectionCount + ' messages shared at the bonfire');
-    lines.push('');
-    lines.push('## Your words at the bonfire');
-    if (d.bonfireMessages.length) {
-      d.bonfireMessages.slice(-20).forEach(function(m) {
-        lines.push('- [' + new Date(m.created_at).toLocaleDateString('en-GB') + '] ' + m.message);
-      });
-    } else {
-      lines.push('No messages yet.');
-    }
-    lines.push('');
-    lines.push('## Your journal entries');
-    if (d.journals.length) {
-      d.journals.forEach(function(j) {
-        lines.push('### ' + (j.title || 'Untitled') + ' (' + new Date(j.created_at).toLocaleDateString('en-GB') + ')');
-        lines.push(j.body || '');
-        lines.push('');
-      });
-    } else {
-      lines.push('No entries yet.');
-    }
-    lines.push('---');
-    lines.push('This record was generated from Clay Village.');
-    lines.push('village.anotherclay.com');
-
-    var md = lines.join('\n');
-    var blob = new Blob([md], { type: 'text/markdown' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = (p.name || 'village') + '-record.md';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  // Expose for external access
+  window.openVault = openVault;
+  window.closeVault = closeVault;
 })();
+
 
 // ── Library / Archive — Journals + Process Notes + Glaze Library ──
 // Backed by Supabase with village_id scoping + realtime subscriptions
@@ -22588,6 +22625,7 @@ function closeAllFlyouts(includeBonfire = false) {
 navItems.forEach(item => {
   item.addEventListener('click', () => {
     const panelName = item.dataset.panel;
+
 
     // Messages uses openMailbox/closeMailbox
     if (panelName === 'messages') {
@@ -24126,6 +24164,35 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     drawAnimFrame();
   });
 
+
+  // --- LOAD SAVED SLOTS FROM LOCALSTORAGE ---
+  const savedSlots=localStorage.getItem('clayVillageSlots');
+  if(savedSlots){
+    try{
+      const data=JSON.parse(savedSlots);
+      data.forEach((sd,i)=>{
+        if(!sd||!sd.dataUrl) return;
+        slots[i].boxes=sd.boxes||[];
+        slots[i].mirrorH=sd.mirrorH||[];
+        slots[i].mirrorV=sd.mirrorV||[];
+        slots[i].alpha=sd.alpha||100;
+        slots[i].glow=sd.glow||0;
+        slots[i].dataUrl=sd.dataUrl;
+        const img=new Image();
+        img.onload=()=>{
+          slots[i].img=img;
+          slots[i].frames=processSlotFrames(i).filter(Boolean);
+          const def=SLOTS[i];
+          if(slots[i].frames.length>0){
+            if(def.type==='idle') idleFrames[def.dir]=slots[i].frames.length===1?slots[i].frames[0]:slots[i].frames;
+            else spriteFrames[def.dir]=slots[i].frames;
+          }
+        };
+        img.src=sd.dataUrl;
+      });
+    }catch(e){}
+  }
+})();
 
 // ===== BUILDING COORDINATE PICKER (Skill) =====
 (function() {
