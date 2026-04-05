@@ -5007,7 +5007,7 @@ const _BLDG_SLUG = {
   'Observatory / World':  'observatory',
   'Gallery / Market':     'gallery',
 };
-const _ACTIVE_VILLAGE_ID = localStorage.getItem('cvCurrentVillageId') || '00000001-0000-0000-0000-000000000001';
+const _ACTIVE_VILLAGE_ID = localStorage.getItem('cvCurrentVillageId') || '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae';
 let _presenceLocation = 'map';
 
 function _presenceProfileId() {
@@ -7132,7 +7132,7 @@ function toggleVillageSound() {
       <div id="ms-tab-collectors" style="display:none;"></div>
     </div>
       <!-- Vault Door — only visible to studio owner -->
-      <div id="vault-door"><span class="vd-dot"></span><span class="vd-label">Your Vault</span><div class="vd-sub">Your record. Your proof. Yours alone.</div></div>
+      <div id="vault-door" onclick="window.openVault()"><span class="vd-dot"></span><span class="vd-label">Your Vault</span><div class="vd-sub">Your record. Your proof. Yours alone.</div></div>
     <div class="bld-manifesto-line" id="sq-manifesto">Make the thing. The rest is noise.</div>
   </div>
 
@@ -9363,7 +9363,7 @@ function persistData(key, value) {
   // Sync to Supabase village_config
   if (window._supabase) {
     window._supabase.from('village_config').upsert({
-      village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '00000001-0000-0000-0000-000000000001',
+      village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae',
       config_key: key,
       config_value: value,
       updated_at: new Date().toISOString()
@@ -9443,7 +9443,7 @@ function saveSmokeZonesToStorage() {
 (async function _loadConfigFromSupabase() {
   if (!window._supabase) return;
   try {
-    const vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '00000001-0000-0000-0000-000000000001';
+    const vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae';
     const { data: rows, error } = await window._supabase
       .from('village_config')
       .select('config_key, config_value')
@@ -20857,7 +20857,7 @@ Mura facilitates. People decide.`;
 
       if (!window._supabase || !uid) { resolve(data); return; }
 
-      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '00000001-0000-0000-0000-000000000001';
+      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae';
       var promises = [];
 
       // Practice log count
@@ -21234,7 +21234,7 @@ Mura facilitates. People decide.`;
   }
 
   /* ---------- open / close vault ---------- */
-  function openVault() {
+  window.openVault = function openVault() {
     var ov = document.getElementById('vault-overlay');
     if (!ov) return;
     ov.classList.add('open');
@@ -25146,7 +25146,7 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     if (window._supabase && window._sbAuthUid) {
       window._supabase.from('village_studios').upsert({
         member_id: window._sbAuthUid,
-        village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '00000001-0000-0000-0000-000000000001',
+        village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae',
         data_key: suffix,
         data_value: data,
         updated_at: new Date().toISOString()
@@ -27045,7 +27045,7 @@ seedMemberLanguage();
       const sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
       window._supabase.from('village_members').upsert({
         auth_id: window._sbAuthUid,
-        village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '00000001-0000-0000-0000-000000000001',
+        village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae',
         display_name: sp?.name || '',
         village_name: sp?.villageName || '',
         avatar_url: sp?.photo || '',
