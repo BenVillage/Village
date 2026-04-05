@@ -13,3 +13,10 @@ VISION.md
 
 # Deploy script contains Vercel token — never commit
 deploy.sh
+
+# VNP-1 architecture documents — private, never public
+VNP-1-protocol.md
+VNP-1-roadmap.md
+VNP-1-security.md
+VNP-1-nfc.md
+VNP-1-honest.md
