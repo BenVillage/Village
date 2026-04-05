@@ -3239,6 +3239,40 @@ window._isFounder = false;
   .vlt-loading { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #c8a84b; animation: vlt-pulse 1.2s ease-in-out infinite; }
   @keyframes vlt-pulse { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
 
+  /* ===== APPLICATION SYSTEM ===== */
+  #apply-overlay {
+    position: fixed; inset: 0; z-index: 10900; display: none;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  #apply-overlay.open { display: flex; }
+  .apply-card {
+    background: #fff; border-radius: 22px; padding: 40px 36px 32px;
+    width: 420px; max-width: calc(100vw - 48px); text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.2);
+  }
+  .apply-card h2 { font-size: 20px; font-weight: 700; color: #262626; margin: 0 0 6px; }
+  .apply-card .apply-sub { font-size: 13px; color: #8e8e8e; margin-bottom: 20px; line-height: 1.5; }
+  .apply-card .apply-question { font-size: 15px; color: #262626; font-style: italic; margin-bottom: 16px; line-height: 1.6; }
+  #apply-answer {
+    width: 100%; box-sizing: border-box; min-height: 100px; resize: vertical;
+    border: 1.5px solid #dbdbdb; border-radius: 10px; padding: 12px 14px;
+    font-size: 14px; font-family: inherit; color: #262626; outline: none;
+    line-height: 1.6; margin-bottom: 8px;
+  }
+  #apply-answer:focus { border-color: #c8a84b; }
+  .apply-charcount { font-size: 11px; color: #8e8e8e; text-align: right; margin-bottom: 12px; }
+  .apply-submit {
+    width: 100%; padding: 12px; border-radius: 10px; border: none;
+    background: #c8a84b; color: #1a1008; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: background 0.15s;
+  }
+  .apply-submit:hover { background: #b89438; }
+  .apply-submit:disabled { background: #e0d8c8; color: #aaa; cursor: default; }
+  .apply-status { font-size: 13px; margin-top: 12px; }
+  .apply-close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: #8e8e8e; font-size: 22px; cursor: pointer; }
+
   /* ===== COGNITIVE AGENCY ===== */
   .ca-progress { height: 3px; background: #f0f0f0; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
   .ca-progress-fill { height: 100%; background: #2A8A74; border-radius: 3px; transition: width 0.5s; }
@@ -6535,6 +6569,7 @@ function toggleVillageSound() {
         <button class="obs-tab" data-obs-tab="roundtable">Roundtable Lens</button>
         <button class="obs-tab" data-obs-tab="longview">Long View</button>
         <button class="obs-tab" data-obs-tab="log" id="obs-tab-log-btn">Founder's Log</button>
+        <button class="obs-tab" data-obs-tab="applications" id="obs-tab-applications" style="display:none;">Applications</button>
         <button class="obs-tab" data-obs-tab="found">Found a Village ·</button>
       </div>
 
@@ -7616,6 +7651,20 @@ function toggleVillageSound() {
   <div class="vtm-terminal" id="vtm-terminal"></div>
   <div class="vtm-final" id="vtm-final">&#x4E00;&#x671F;&#x4E00;&#x4F1A; &#x2014; this moment is in the record.</div>
 </div>
+<!-- ── Application Overlay ─────────────────────────────── -->
+<div id="apply-overlay">
+  <div class="apply-card" style="position:relative;">
+    <button class="apply-close" id="apply-close">&times;</button>
+    <h2 id="apply-village-name">Apply to join</h2>
+    <div class="apply-sub">Answer one question. The village founder will review your application.</div>
+    <div class="apply-question">Why do you want to be here?</div>
+    <textarea id="apply-answer" placeholder="Write at least 50 characters..."></textarea>
+    <div class="apply-charcount" id="apply-charcount">0 / 50 minimum</div>
+    <button class="apply-submit" id="apply-submit" disabled>Submit Application</button>
+    <div class="apply-status" id="apply-status"></div>
+  </div>
+</div>
+
 <div id="mondo-overlay">
   <button class="mondo-leave" id="mondo-close">LEAVE</button>
   <div class="mondo-timer" id="mondo-timer"></div>
@@ -18754,6 +18803,10 @@ Mura facilitates. People decide.`;
         if (key === 'found') {
           if (window.initObsFoundWizard) window.initObsFoundWizard();
         }
+        // Applications: render pending applications for founder
+        if (key === 'applications') {
+          if (typeof window._renderApplications === 'function') window._renderApplications();
+        }
       });
     }
 
@@ -27133,22 +27186,228 @@ seedMemberLanguage();
       const card = document.createElement('div');
       card.className = 'dunbar-village-card';
       const emoji = _DUNBAR_CRAFT_EMOJI[v.craft_focus] || '🏡';
+      // Skip Dunbar in the directory (it's the lobby, not a village to join)
+      if (v.id === _DUNBAR_VILLAGE_ID) return;
       card.innerHTML = `
         <h3>${emoji} ${v.name}</h3>
         <p>${v.founding_line || ''}</p>
-        <button class="dunbar-enter-btn">Enter ${v.name} →</button>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="dunbar-enter-btn" data-action="visit" style="flex:1;background:#f0f0f0;color:#262626;">Visit</button>
+          <button class="dunbar-enter-btn" data-action="apply" style="flex:1;">Apply</button>
+        </div>
       `;
-      card.querySelector('button').addEventListener('click', () => {
+      card.querySelector('[data-action="visit"]').addEventListener('click', () => {
         localStorage.setItem('cvCurrentVillageId', v.id);
         localStorage.setItem('cvCurrentVillageSlug', v.slug);
-        // Update village name label to the selected village
         const _vnl = document.getElementById('village-name-label');
         if (_vnl) _vnl.textContent = v.name;
-        enterVillage('member');
+        enterVillage('guest');
+      });
+      card.querySelector('[data-action="apply"]').addEventListener('click', () => {
+        openApplyOverlay(v.id, v.name);
       });
       container.appendChild(card);
     });
   }
+
+  // ── Application System ─────────────────────────────────────
+  function openApplyOverlay(villageId, villageName) {
+    var ov = document.getElementById('apply-overlay');
+    if (!ov) return;
+    document.getElementById('apply-village-name').textContent = 'Apply to ' + villageName;
+    document.getElementById('apply-answer').value = '';
+    document.getElementById('apply-charcount').textContent = '0 / 50 minimum';
+    document.getElementById('apply-submit').disabled = true;
+    document.getElementById('apply-status').textContent = '';
+    ov.dataset.villageId = villageId;
+    ov.dataset.villageName = villageName;
+    ov.classList.add('open');
+    setTimeout(function() { document.getElementById('apply-answer').focus(); }, 100);
+  }
+
+  // Close
+  document.getElementById('apply-close')?.addEventListener('click', function() {
+    document.getElementById('apply-overlay').classList.remove('open');
+  });
+  document.getElementById('apply-overlay')?.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+  // Character count + enable/disable
+  document.getElementById('apply-answer')?.addEventListener('input', function() {
+    var len = this.value.trim().length;
+    var countEl = document.getElementById('apply-charcount');
+    var btn = document.getElementById('apply-submit');
+    if (countEl) countEl.textContent = len + ' / 50 minimum';
+    if (btn) btn.disabled = len < 50;
+  });
+
+  // Submit application
+  document.getElementById('apply-submit')?.addEventListener('click', async function() {
+    var ov = document.getElementById('apply-overlay');
+    var answer = document.getElementById('apply-answer').value.trim();
+    var statusEl = document.getElementById('apply-status');
+    var villageId = ov.dataset.villageId;
+    if (!answer || answer.length < 50 || !villageId || !window._sbAuthUid) return;
+
+    this.disabled = true;
+    if (statusEl) statusEl.textContent = 'Submitting...';
+
+    try {
+      var { error } = await window._supabase.from('applications').upsert({
+        profile_id: window._sbAuthUid,
+        village_id: villageId,
+        message: answer,
+        status: 'pending'
+      }, { onConflict: 'profile_id,village_id' });
+
+      if (error) throw error;
+      if (statusEl) {
+        statusEl.style.color = '#22c55e';
+        statusEl.textContent = 'Application submitted. The founder will review it.';
+      }
+      // Update corner panel to show pending status
+      _updatePendingApplicationStatus();
+    } catch (err) {
+      if (statusEl) {
+        statusEl.style.color = '#e88070';
+        statusEl.textContent = 'Something went wrong. Try again.';
+      }
+      this.disabled = false;
+    }
+  });
+
+  // Check for pending application and show in corner panel
+  async function _updatePendingApplicationStatus() {
+    if (!window._supabase || !window._sbAuthUid) return;
+    try {
+      var { data } = await window._supabase
+        .from('applications')
+        .select('village_id, status')
+        .eq('profile_id', window._sbAuthUid)
+        .eq('status', 'pending')
+        .limit(1);
+      var statusEl = document.getElementById('cap-application-status');
+      if (data && data.length > 0 && statusEl) {
+        // Get village name
+        var { data: vData } = await window._supabase
+          .from('villages')
+          .select('name')
+          .eq('id', data[0].village_id)
+          .single();
+        statusEl.textContent = 'Applied to ' + (vData ? vData.name : 'a village') + ' — waiting';
+        statusEl.style.display = '';
+      } else if (statusEl) {
+        statusEl.style.display = 'none';
+      }
+    } catch(_) {}
+  }
+
+  // Check on load
+  if (window._villageRole === 'resident') _updatePendingApplicationStatus();
+
+  // ── Founder: review applications in Observatory ──
+  // Show the applications tab only for founders
+  if (window._isFounder) {
+    var appTab = document.getElementById('obs-tab-applications');
+    if (appTab) appTab.style.display = '';
+  }
+
+  // When applications tab is clicked, render pending applications
+  window._renderApplications = async function() {
+    // Find or create the applications panel
+    var panel = document.getElementById('obs-applications-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'obs-applications-panel';
+      panel.className = 'obs-panel';
+      panel.setAttribute('data-obs-panel', 'applications');
+      // Insert into Observatory body
+      var obsBody = document.querySelector('#observatory-overlay .bld-inner');
+      if (obsBody) obsBody.appendChild(panel);
+    }
+
+    if (!window._supabase) return;
+    panel.innerHTML = '<div style="text-align:center;padding:40px;"><span class="vlt-loading"></span></div>';
+
+    try {
+      var { data: apps } = await window._supabase
+        .from('applications')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (!apps || apps.length === 0) {
+        panel.innerHTML = '<div style="text-align:center;padding:40px;color:#8e8e8e;font-size:14px;">No pending applications.</div>';
+        return;
+      }
+
+      var html = '<div style="padding:4px 0;">';
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#262626;margin-bottom:16px;">' + apps.length + ' Pending Application' + (apps.length > 1 ? 's' : '') + '</div>';
+
+      for (var i = 0; i < apps.length; i++) {
+        var app = apps[i];
+        var date = new Date(app.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        html += '<div style="background:#fff;border:1px solid #dbdbdb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">';
+        html += '<div style="font-size:13px;color:#262626;line-height:1.6;margin-bottom:12px;font-style:italic;">"' + _escApp(app.message) + '"</div>';
+        html += '<div style="font-size:11px;color:#8e8e8e;margin-bottom:10px;">Applied ' + date + '</div>';
+        html += '<div style="display:flex;gap:8px;">';
+        html += '<button onclick="approveApplication(\'' + app.id + '\', \'' + app.profile_id + '\', \'' + app.village_id + '\')" style="flex:1;padding:8px;border-radius:8px;border:none;background:#22c55e;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">Approve</button>';
+        html += '<button onclick="declineApplication(\'' + app.id + '\')" style="flex:1;padding:8px;border-radius:8px;border:1px solid #dbdbdb;background:#fff;color:#8e8e8e;font-size:12px;font-weight:500;cursor:pointer;">Decline</button>';
+        html += '</div></div>';
+      }
+      html += '</div>';
+      panel.innerHTML = html;
+    } catch(err) {
+      panel.innerHTML = '<div style="color:#e88070;padding:20px;">Error loading applications.</div>';
+    }
+  };
+
+  function _escApp(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+  window.approveApplication = async function(appId, profileId, villageId) {
+    if (!window._supabase) return;
+    try {
+      // Create village_members row for the applicant
+      await window._supabase.from('village_members').upsert({
+        auth_id: profileId,
+        village_id: villageId,
+        role: 'citizen',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'auth_id,village_id' });
+
+      // Update application status
+      await window._supabase.from('applications').update({
+        status: 'approved',
+        reviewed_by: window._sbAuthUid,
+        reviewed_at: new Date().toISOString()
+      }).eq('id', appId);
+
+      // Refresh the list
+      window._renderApplications();
+    } catch(err) {
+      console.warn('[approve]', err);
+    }
+  };
+
+  window.declineApplication = async function(appId) {
+    if (!window._supabase) return;
+    try {
+      await window._supabase.from('applications').update({
+        status: 'declined',
+        reviewed_by: window._sbAuthUid,
+        reviewed_at: new Date().toISOString()
+      }).eq('id', appId);
+      window._renderApplications();
+    } catch(err) {
+      console.warn('[decline]', err);
+    }
+  };
+
+  // Wire applications tab to render on click
+  document.getElementById('obs-tab-applications')?.addEventListener('click', function() {
+    if (typeof window._renderApplications === 'function') window._renderApplications();
+  });
 
   // Shift+D — reset Dunbar (signs out of Supabase too so session doesn't re-bypass it)
   document.addEventListener('keydown', function(e) {
