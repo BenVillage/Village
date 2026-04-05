@@ -1756,9 +1756,10 @@ window._isFounder = false;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.12s;
     flex-shrink: 0;
   }
+  #sound-toggle:active { transform: scale(0.85); }
   #sound-toggle svg { width: 18px; height: 18px; display: block; }
   #sound-toggle.playing {
     background: rgba(20, 16, 10, 0.72);
@@ -5509,9 +5510,9 @@ function updateAmbientSound() {
   const nightVol  = t * 0.25;
   forest.volume = forestVol;
   night.volume  = nightVol;
-  if (forestVol > 0.01) { if (forest.paused) forest.play().catch(() => {}); }
+  if (forestVol > 0.01) { if (forest.paused) forest.play().catch(function(e) { console.warn('[forest]', e.message); }); }
   else forest.pause();
-  if (nightVol > 0.01)  { if (night.paused) { night.currentTime = 0; night.play().catch(() => {}); } }
+  if (nightVol > 0.01)  { if (night.paused) { night.currentTime = 0; night.play().catch(function(e) { console.warn('[night]', e.message); }); } }
   else night.pause();
 }
 </script>
@@ -6121,6 +6122,11 @@ document.getElementById('sound-toggle').innerHTML = soundOffSVG;
 document.getElementById('sound-toggle').addEventListener('click', function() {
   const btn = this;
   gameSoundMuted = !gameSoundMuted;
+
+  // Visual snap — scale down briefly then back
+  btn.style.transform = 'scale(0.85)';
+  setTimeout(function() { btn.style.transform = ''; }, 120);
+
   if (gameSoundMuted) {
     updateAmbientSound(); // pauses both tracks
     if (typeof bonfireCrackleEl !== 'undefined' && bonfireCrackleEl) bonfireCrackleEl.muted = true;
@@ -6128,9 +6134,15 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
     btn.classList.remove('playing');
     btn.innerHTML = soundOffSVG;
   } else {
+    // Resume any suspended AudioContext (browser autoplay policy)
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      ac.close();
+    } catch(_) {}
     updateAmbientSound(); // plays whichever track suits the current night level
     if (typeof bonfireCrackleEl !== 'undefined' && bonfireCrackleEl) bonfireCrackleEl.muted = false;
-    if (typeof _droneOn !== 'undefined' && _droneOn && _droneAudio) _droneAudio.play().catch(() => {});
+    if (typeof _droneOn !== 'undefined' && _droneOn && _droneAudio) _droneAudio.play().catch(function(e) { console.warn('[sound]', e.message); });
     btn.classList.add('playing');
     btn.innerHTML = soundOnSVG;
   }
