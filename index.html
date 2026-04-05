@@ -3158,6 +3158,211 @@ window._isFounder = false;
   }
   @keyframes mondo-pulse { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
 
+  /* ===== VAULT ROOM ===== */
+  #vault-door {
+    display: none; position: fixed; bottom: 80px; right: 80px; z-index: 9050;
+    width: 48px; height: 64px; cursor: pointer;
+    background: linear-gradient(135deg, #5c3d1e, #7a5230, #5c3d1e);
+    border: 2px solid rgba(200,168,75,0.4); border-radius: 4px 4px 0 0;
+    box-shadow: 0 0 20px rgba(200,168,75,0.15), inset 0 0 12px rgba(0,0,0,0.3);
+    transition: box-shadow 0.3s, border-color 0.3s;
+  }
+  #vault-door::after {
+    content: ''; position: absolute; right: 8px; top: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #c8a84b; box-shadow: 0 0 6px #c8a84b;
+  }
+  #vault-door:hover {
+    box-shadow: 0 0 30px rgba(200,168,75,0.3), inset 0 0 12px rgba(0,0,0,0.3);
+    border-color: #c8a84b;
+  }
+  #vault-overlay {
+    position: fixed; inset: 0; z-index: 9200; display: none;
+    background: radial-gradient(ellipse at 50% 60%, rgba(40,25,10,0.95), rgba(12,8,4,1));
+    flex-direction: column; align-items: center; overflow-y: auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: rgba(232,213,184,0.85);
+  }
+  #vault-overlay.open { display: flex; }
+  .vault-close {
+    position: fixed; top: 20px; right: 24px; z-index: 9210;
+    background: none; border: 1px solid rgba(200,168,75,0.2); border-radius: 8px;
+    padding: 6px 16px; font-size: 12px; color: rgba(232,213,184,0.5);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .vault-close:hover { border-color: #c8a84b; color: #c8a84b; }
+  .vault-room {
+    width: 100%; max-width: 800px; padding: 60px 32px 40px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px 24px;
+    align-content: start; min-height: 100vh;
+  }
+  .vault-zone {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .vault-zone-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em; color: rgba(200,168,75,0.4); margin-bottom: 4px;
+  }
+  /* Candle */
+  .vault-candle {
+    grid-column: 2; text-align: center; padding: 20px 0;
+  }
+  .vault-candle-flame {
+    display: inline-block; width: 8px; height: 16px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: #c8a84b; box-shadow: 0 0 12px #c8a84b, 0 0 24px rgba(200,168,75,0.3);
+    animation: vault-flicker 2s ease-in-out infinite alternate;
+  }
+  @keyframes vault-flicker {
+    0% { opacity: 0.8; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1) rotate(2deg); }
+    100% { opacity: 0.85; transform: scaleY(0.95) rotate(-1deg); }
+  }
+  .vault-candle-wick {
+    display: inline-block; width: 2px; height: 20px; background: rgba(200,150,80,0.3);
+    margin-top: -2px;
+  }
+  .vault-candle-date {
+    font-size: 11px; color: rgba(200,168,75,0.4); margin-top: 8px;
+    font-style: italic; letter-spacing: 0.04em;
+  }
+  /* Fire */
+  .vault-fire {
+    grid-column: 2; text-align: center; padding: 16px 0;
+  }
+  .vault-fire-glow {
+    display: inline-block; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,130,40,0.6), rgba(200,100,20,0.2), transparent);
+    animation: vault-fire-breathe 3s ease-in-out infinite;
+  }
+  @keyframes vault-fire-breathe {
+    0%,100% { opacity: 0.7; } 50% { opacity: 1; }
+  }
+  .vault-fire-label {
+    font-size: 11px; color: rgba(200,168,75,0.35); margin-top: 6px;
+    font-style: italic;
+  }
+  /* Shelf */
+  .vault-shelf { grid-column: 1; grid-row: 1 / 3; }
+  .vault-shelf-items {
+    display: flex; flex-wrap: wrap; gap: 4px; min-height: 40px;
+  }
+  .vault-shelf-item {
+    width: 14px; height: 18px; border-radius: 2px;
+    background: linear-gradient(135deg, rgba(200,168,75,0.25), rgba(160,120,60,0.2));
+    border: 1px solid rgba(200,168,75,0.15);
+  }
+  /* Wall */
+  .vault-wall { grid-column: 1; }
+  .vault-wall-items {
+    display: flex; flex-wrap: wrap; gap: 3px; min-height: 30px;
+  }
+  .vault-wall-item {
+    width: 18px; height: 14px; border-radius: 1px;
+    background: rgba(232,213,184,0.08); border: 1px solid rgba(232,213,184,0.06);
+    transform: rotate(var(--r, 0deg));
+  }
+  /* Books */
+  .vault-books { grid-column: 3; grid-row: 1 / 3; }
+  .vault-book-spines {
+    display: flex; gap: 2px; min-height: 40px; align-items: flex-end;
+  }
+  .vault-book {
+    width: 8px; border-radius: 1px;
+    background: linear-gradient(180deg, rgba(120,80,40,0.4), rgba(80,50,25,0.3));
+    border: 1px solid rgba(200,168,75,0.1);
+  }
+  /* Thread */
+  .vault-thread {
+    grid-column: 1 / 4; text-align: center; padding: 12px 0;
+    position: relative;
+  }
+  .vault-thread-line {
+    height: 1px; background: linear-gradient(90deg, transparent, #c8a84b, transparent);
+    margin: 8px 0;
+  }
+  .vault-thread-badge {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    box-shadow: 0 0 8px rgba(200,168,75,0.4);
+  }
+  .vault-thread-badge.founder { background: #c8a84b; }
+  .vault-thread-badge.member { background: rgba(200,168,75,0.5); }
+  /* Mirror */
+  .vault-mirror { grid-column: 1; }
+  .vault-mirror-frame {
+    width: 60px; height: 80px; border-radius: 30px 30px 4px 4px;
+    border: 2px solid rgba(200,168,75,0.2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: border-color 0.3s;
+    overflow: hidden;
+  }
+  .vault-mirror-frame:hover { border-color: rgba(200,168,75,0.5); }
+  .vault-mirror-cloth {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(80,60,30,0.6), rgba(60,40,20,0.4));
+  }
+  .vault-mirror-glass {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(200,168,75,0.06), rgba(200,168,75,0.02));
+  }
+  /* Passport */
+  .vault-passport {
+    grid-column: 3; padding: 16px;
+    background: rgba(200,168,75,0.04); border: 1px solid rgba(200,168,75,0.1);
+    border-radius: 10px;
+  }
+  .vault-passport-avatar {
+    width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px;
+    background-size: cover; background-position: center;
+    border: 2px solid rgba(200,168,75,0.3);
+  }
+  .vault-passport-name { font-size: 14px; font-weight: 600; color: #e8d5b8; }
+  .vault-passport-village { font-size: 11px; color: rgba(200,168,75,0.5); margin-top: 2px; }
+  .vault-passport-stats {
+    margin-top: 10px; font-size: 12px; color: rgba(232,213,184,0.5); line-height: 1.8;
+  }
+  .vault-passport-verify {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #c8a84b; margin-left: 4px; vertical-align: middle;
+  }
+  .vault-passport-note {
+    font-size: 10px; color: rgba(200,168,75,0.3); margin-top: 10px;
+    font-style: italic;
+  }
+  /* Download */
+  .vault-download {
+    grid-column: 1 / 4; text-align: center; padding: 20px 0;
+  }
+  .vault-download-btn {
+    background: none; border: 1px solid rgba(200,168,75,0.15);
+    color: rgba(200,168,75,0.4); font-size: 11px; padding: 6px 16px;
+    border-radius: 6px; cursor: pointer; font-family: inherit;
+    transition: all 0.2s; letter-spacing: 0.04em;
+  }
+  .vault-download-btn:hover { border-color: rgba(200,168,75,0.4); color: #c8a84b; }
+  /* Animation */
+  .vault-anim-zone { opacity: 0; transform: translateY(8px); transition: opacity 0.6s, transform 0.6s; }
+  .vault-anim-zone.visible { opacity: 1; transform: translateY(0); }
+  /* Long Mirror overlay */
+  #vault-mirror-overlay {
+    position: fixed; inset: 0; z-index: 9300; display: none;
+    background: rgba(8,5,2,0.95); align-items: center; justify-content: center;
+    flex-direction: column; padding: 40px;
+  }
+  #vault-mirror-overlay.open { display: flex; }
+  .vault-mirror-words {
+    max-width: 500px; text-align: center; font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px; font-style: italic; color: rgba(232,213,184,0.6);
+    line-height: 1.8; margin-bottom: 40px;
+  }
+  .vault-mirror-question {
+    font-size: 14px; color: rgba(200,168,75,0.5); font-style: italic;
+  }
+  .vault-mirror-close {
+    position: absolute; top: 20px; right: 24px;
+    background: none; border: none; color: rgba(232,213,184,0.3);
+    font-size: 20px; cursor: pointer;
+  }
+
   /* ===== COGNITIVE AGENCY ===== */
   .ca-progress { height: 3px; background: #f0f0f0; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
   .ca-progress-fill { height: 100%; background: #2A8A74; border-radius: 3px; transition: width 0.5s; }
@@ -7003,6 +7208,8 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <div id="ms-tab-workshops" style="display:none;"></div>
       <div id="ms-tab-collectors" style="display:none;"></div>
     </div>
+      <!-- Vault Door — only visible to studio owner -->
+      <div id="vault-door" title="Your Vault"></div>
     <div class="bld-manifesto-line" id="sq-manifesto">Make the thing. The rest is noise.</div>
   </div>
 
@@ -7476,6 +7683,19 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
   </div>
 </div>
 <div class="cm-toast" id="cm-toast"></div>
+
+<!-- ── Vault Room overlay ──────────────────────────────────── -->
+<div id="vault-overlay">
+  <button class="vault-close" id="vault-close">&times;</button>
+  <div class="vault-room" id="vault-room"></div>
+</div>
+
+<!-- ── Long Mirror overlay ─────────────────────────────────── -->
+<div id="vault-mirror-overlay">
+  <button class="vault-mirror-close" id="vault-mirror-close">&times;</button>
+  <div class="vault-mirror-words" id="vault-mirror-words"></div>
+  <div class="vault-mirror-question">What do you notice?</div>
+</div>
 
 <!-- ── mondo room overlay — gear noir ─────────────────────── -->
 <div id="mondo-overlay">
@@ -20582,6 +20802,324 @@ Mura facilitates. People decide.`;
     subscribeChannel('sq-fw-' + _ACTIVE_VILLAGE_ID, 'studio_failure_wall',
       'village_id=eq.' + _ACTIVE_VILLAGE_ID, function() { fetchSQData().then(function() { renderFailureWall(); }); });
   };
+})();
+
+// ===== VAULT ROOM =====
+(function() {
+  var _vaultData = null;
+  var _vaultAnimPlayed = false;
+
+  function _isStudioOwner() {
+    return window._sbAuthUid && window._villageRole !== 'guest';
+  }
+
+  // Show/hide vault door when Studio Quarter opens
+  var _origOpenSQ = window.openStudioQuarter;
+  window.openStudioQuarter = function() {
+    _origOpenSQ();
+    var door = document.getElementById('vault-door');
+    if (door) door.style.display = _isStudioOwner() ? 'block' : 'none';
+  };
+
+  // Door click → open vault
+  var vaultDoor = document.getElementById('vault-door');
+  if (vaultDoor) vaultDoor.addEventListener('click', openVault);
+
+  async function openVault() {
+    var ov = document.getElementById('vault-overlay');
+    if (!ov || !window._sbAuthUid) return;
+    ov.classList.add('open');
+    await fetchVaultData();
+    renderVault();
+  }
+
+  function closeVault() {
+    var ov = document.getElementById('vault-overlay');
+    if (ov) ov.classList.remove('open');
+  }
+
+  document.getElementById('vault-close')?.addEventListener('click', closeVault);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var ov = document.getElementById('vault-overlay');
+      if (ov && ov.classList.contains('open')) { e.stopPropagation(); closeVault(); }
+    }
+  });
+
+  async function fetchVaultData() {
+    if (!window._supabase || !window._sbAuthUid) return;
+    var uid = window._sbAuthUid;
+    var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : null;
+
+    try {
+      var [gallery, processBoard, journals, mondoVisits, presence, bonfire, membership] = await Promise.all([
+        window._supabase.from('gallery_pieces').select('id,title,created_at').eq('village_id', vid).eq('user_id', uid),
+        window._supabase.from('studio_process_board').select('id,created_at').eq('village_id', vid).eq('author_id', uid),
+        window._supabase.from('library_journals').select('id,title,body,created_at').eq('village_id', vid).eq('user_id', uid).order('created_at', { ascending: true }),
+        window._supabase.from('mondo_visits').select('id').eq('user_id', uid),
+        window._supabase.from('presence').select('last_seen_at').eq('profile_id', uid).eq('village_id', vid),
+        window._supabase.from('bonfire_messages').select('id,message,display_name,created_at').eq('village_id', vid).eq('user_id', uid).order('created_at', { ascending: true }),
+        window._supabase.from('village_members').select('created_at,role').eq('auth_id', uid).eq('village_id', vid).single()
+      ]);
+
+      // Calculate distinct presence days in last 90 days
+      var now = Date.now();
+      var ninetyDaysAgo = now - 90 * 24 * 60 * 60 * 1000;
+      var presenceDays = new Set();
+      if (presence.data) {
+        presence.data.forEach(function(r) {
+          var d = new Date(r.last_seen_at);
+          if (d.getTime() > ninetyDaysAgo) {
+            presenceDays.add(d.toISOString().slice(0, 10));
+          }
+        });
+      }
+
+      // Find first words (earliest bonfire message, journal, or process note)
+      var firstWords = null;
+      var candidates = [];
+      if (bonfire.data && bonfire.data.length) candidates.push({ text: bonfire.data[0].message, date: bonfire.data[0].created_at, source: 'bonfire' });
+      if (journals.data && journals.data.length) candidates.push({ text: journals.data[0].body || journals.data[0].title, date: journals.data[0].created_at, source: 'journal' });
+      if (processBoard.data && processBoard.data.length) {
+        var sorted = processBoard.data.sort(function(a,b) { return new Date(a.created_at) - new Date(b.created_at); });
+        candidates.push({ text: sorted[0].text || '', date: sorted[0].created_at, source: 'process' });
+      }
+      if (candidates.length) {
+        candidates.sort(function(a,b) { return new Date(a.date) - new Date(b.date); });
+        firstWords = candidates[0];
+      }
+
+      _vaultData = {
+        shelfCount: (gallery.data ? gallery.data.length : 0) + (processBoard.data ? processBoard.data.length : 0),
+        wallCount: (journals.data ? journals.data.length : 0),
+        bookCount: mondoVisits.data ? mondoVisits.data.length : 0,
+        fireDays: presenceDays.size,
+        connectionCount: bonfire.data ? bonfire.data.length : 0,
+        joinedAt: membership.data ? membership.data.created_at : null,
+        role: membership.data ? membership.data.role : 'member',
+        firstWords: firstWords,
+        galleryPieces: gallery.data || [],
+        journals: journals.data || [],
+        bonfireMessages: bonfire.data || [],
+        profile: typeof getSessionProfile === 'function' ? getSessionProfile() : {}
+      };
+    } catch (err) {
+      console.warn('[Vault] fetch error:', err);
+      _vaultData = { shelfCount: 0, wallCount: 0, bookCount: 0, fireDays: 0, connectionCount: 0, joinedAt: null, role: 'member', firstWords: null, galleryPieces: [], journals: [], bonfireMessages: [], profile: {} };
+    }
+  }
+
+  function renderVault() {
+    var room = document.getElementById('vault-room');
+    if (!room || !_vaultData) return;
+    var d = _vaultData;
+    var p = d.profile;
+    var joinDate = d.joinedAt ? new Date(d.joinedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Unknown';
+    var membershipDays = d.joinedAt ? Math.floor((Date.now() - new Date(d.joinedAt).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+    var hasOneYear = membershipDays >= 365;
+    var animate = !_vaultAnimPlayed;
+    var ac = animate ? ' vault-anim-zone' : '';
+
+    // Fire size based on presence days
+    var fireSize = 8, fireLabel = 'An ember';
+    if (d.fireDays >= 90) { fireSize = 48; fireLabel = 'A hearth fire'; }
+    else if (d.fireDays >= 60) { fireSize = 32; fireLabel = 'A steady flame'; }
+    else if (d.fireDays >= 30) { fireSize = 20; fireLabel = 'A small fire'; }
+
+    // Build shelf items
+    var shelfItems = '';
+    for (var i = 0; i < Math.min(d.shelfCount, 80); i++) {
+      var hue = 20 + (i * 7) % 30;
+      shelfItems += '<div class="vault-shelf-item" style="background:linear-gradient(135deg, hsla(' + hue + ',40%,35%,0.3), hsla(' + hue + ',30%,25%,0.2));"></div>';
+    }
+
+    // Build wall items
+    var wallItems = '';
+    for (var j = 0; j < Math.min(d.wallCount, 60); j++) {
+      var rot = -8 + (j * 13) % 16;
+      wallItems += '<div class="vault-wall-item" style="--r:' + rot + 'deg;"></div>';
+    }
+
+    // Build book spines
+    var bookSpines = '';
+    for (var k = 0; k < Math.min(d.bookCount, 30); k++) {
+      var h = 28 + (k * 11) % 24;
+      bookSpines += '<div class="vault-book" style="height:' + h + 'px;"></div>';
+    }
+
+    room.innerHTML =
+      // Shelf (left, row 1-2)
+      '<div class="vault-zone vault-shelf' + ac + '">' +
+        '<div class="vault-zone-label">Things made</div>' +
+        '<div class="vault-shelf-items">' + (shelfItems || '<span style="font-size:11px;color:rgba(200,168,75,0.2);font-style:italic;">Empty. Make something.</span>') + '</div>' +
+      '</div>' +
+
+      // Fire (center, row 1)
+      '<div class="vault-zone vault-fire' + ac + '">' +
+        '<div class="vault-zone-label">Presence</div>' +
+        '<div class="vault-fire-glow" style="width:' + fireSize + 'px;height:' + fireSize + 'px;"></div>' +
+        '<div class="vault-fire-label">' + fireLabel + '<br>' + d.fireDays + ' days in 90</div>' +
+      '</div>' +
+
+      // Books (right, row 1-2)
+      '<div class="vault-zone vault-books' + ac + '">' +
+        '<div class="vault-zone-label">Thinking</div>' +
+        '<div class="vault-book-spines">' + (bookSpines || '<span style="font-size:11px;color:rgba(200,168,75,0.2);font-style:italic;">No visits yet.</span>') + '</div>' +
+      '</div>' +
+
+      // Wall (left, row 3)
+      '<div class="vault-zone vault-wall' + ac + '">' +
+        '<div class="vault-zone-label">Written</div>' +
+        '<div class="vault-wall-items">' + (wallItems || '<span style="font-size:11px;color:rgba(200,168,75,0.2);font-style:italic;">Nothing yet.</span>') + '</div>' +
+      '</div>' +
+
+      // Candle (center, row 2)
+      '<div class="vault-zone vault-candle' + ac + '">' +
+        '<div><span class="vault-candle-flame"></span></div>' +
+        '<div><span class="vault-candle-wick"></span></div>' +
+        '<div class="vault-candle-date">Lit on ' + joinDate + '</div>' +
+      '</div>' +
+
+      // Passport (right, row 3)
+      '<div class="vault-zone vault-passport' + ac + '">' +
+        '<div class="vault-passport-avatar" style="' + (p.photo ? 'background-image:url(' + p.photo + ');' : 'background:rgba(200,168,75,0.15);') + '"></div>' +
+        '<div class="vault-passport-name">' + _escVault(p.name || 'You') + '<span class="vault-passport-verify"></span></div>' +
+        '<div class="vault-passport-village">' + _escVault(p.villageName || 'Clay Village') + '</div>' +
+        '<div class="vault-passport-stats">' +
+          d.shelfCount + ' things made<br>' +
+          d.fireDays + ' days present<br>' +
+          d.connectionCount + ' messages shared' +
+        '</div>' +
+        '<div class="vault-passport-note">This record is yours. It travels with you.</div>' +
+      '</div>' +
+
+      // Thread (full width)
+      '<div class="vault-zone vault-thread' + ac + '">' +
+        '<div class="vault-thread-line"></div>' +
+        '<span class="vault-thread-badge ' + (d.role === 'founder' ? 'founder' : 'member') + '"></span>' +
+      '</div>' +
+
+      // Mirror (left)
+      '<div class="vault-zone vault-mirror' + ac + '">' +
+        '<div class="vault-zone-label">The Mirror</div>' +
+        '<div class="vault-mirror-frame" id="vault-mirror-trigger">' +
+          (hasOneYear ? '<div class="vault-mirror-glass"></div>' : '<div class="vault-mirror-cloth"></div>') +
+        '</div>' +
+        '<div style="font-size:10px;color:rgba(200,168,75,0.25);margin-top:4px;font-style:italic;">' +
+          (hasOneYear ? 'Click to look.' : 'Covered. One year reveals it.') +
+        '</div>' +
+      '</div>' +
+
+      // Empty center
+      '<div></div>' +
+
+      // Download (right)
+      '<div class="vault-zone" style="align-self:end;">' +
+        '<button class="vault-download-btn" id="vault-download">Download your record</button>' +
+      '</div>';
+
+    // Wire mirror click
+    var mirrorTrigger = document.getElementById('vault-mirror-trigger');
+    if (mirrorTrigger && hasOneYear && d.firstWords) {
+      mirrorTrigger.addEventListener('click', function() {
+        openLongMirror(d.firstWords);
+      });
+    }
+
+    // Wire download
+    var dlBtn = document.getElementById('vault-download');
+    if (dlBtn) dlBtn.addEventListener('click', function() { downloadRecord(d); });
+
+    // Animate if first visit
+    if (animate) {
+      _vaultAnimPlayed = true;
+      var zones = room.querySelectorAll('.vault-anim-zone');
+      zones.forEach(function(z, i) {
+        setTimeout(function() { z.classList.add('visible'); }, 300 + i * 250);
+      });
+    }
+  }
+
+  function _escVault(s) {
+    var d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+  }
+
+  // Long Mirror
+  function openLongMirror(firstWords) {
+    var ov = document.getElementById('vault-mirror-overlay');
+    var wordsEl = document.getElementById('vault-mirror-words');
+    if (!ov || !wordsEl) return;
+    var text = firstWords.text || '';
+    if (text.length > 500) text = text.substring(0, 500) + '...';
+    wordsEl.textContent = text;
+    ov.classList.add('open');
+  }
+
+  document.getElementById('vault-mirror-close')?.addEventListener('click', function() {
+    document.getElementById('vault-mirror-overlay')?.classList.remove('open');
+  });
+
+  // Download markdown record
+  function downloadRecord(d) {
+    var p = d.profile || {};
+    var lines = [];
+    lines.push('# ' + (p.name || 'Your') + "'s Village Record");
+    lines.push('Village: ' + (p.villageName || 'Clay Village'));
+    lines.push('Member since: ' + (d.joinedAt ? new Date(d.joinedAt).toLocaleDateString('en-GB') : 'Unknown'));
+    lines.push('Downloaded: ' + new Date().toLocaleDateString('en-GB'));
+    lines.push('');
+    lines.push('## Things made');
+    if (d.galleryPieces.length) {
+      d.galleryPieces.forEach(function(g) {
+        lines.push('- ' + (g.title || 'Untitled') + ' (' + new Date(g.created_at).toLocaleDateString('en-GB') + ')');
+      });
+    } else {
+      lines.push('None yet.');
+    }
+    lines.push('');
+    lines.push('## Mondo visits');
+    lines.push(d.bookCount + ' sessions. Contents private.');
+    lines.push('');
+    lines.push('## Village presence');
+    lines.push(d.fireDays + ' days present in the last 90 days');
+    lines.push('');
+    lines.push('## Connections');
+    lines.push(d.connectionCount + ' messages shared at the bonfire');
+    lines.push('');
+    lines.push('## Your words at the bonfire');
+    if (d.bonfireMessages.length) {
+      d.bonfireMessages.slice(-20).forEach(function(m) {
+        lines.push('- [' + new Date(m.created_at).toLocaleDateString('en-GB') + '] ' + m.message);
+      });
+    } else {
+      lines.push('No messages yet.');
+    }
+    lines.push('');
+    lines.push('## Your journal entries');
+    if (d.journals.length) {
+      d.journals.forEach(function(j) {
+        lines.push('### ' + (j.title || 'Untitled') + ' (' + new Date(j.created_at).toLocaleDateString('en-GB') + ')');
+        lines.push(j.body || '');
+        lines.push('');
+      });
+    } else {
+      lines.push('No entries yet.');
+    }
+    lines.push('---');
+    lines.push('This record was generated from Clay Village.');
+    lines.push('village.anotherclay.com');
+
+    var md = lines.join('\n');
+    var blob = new Blob([md], { type: 'text/markdown' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (p.name || 'village') + '-record.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 })();
 
 // ── Library / Archive — Journals + Process Notes + Glaze Library ──
