@@ -11,7 +11,9 @@
   const SUPABASE_URL = 'https://fokujzwgqtifpbmmhdot.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3VqendncXRpZnBibW1oZG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzM0OTIsImV4cCI6MjA5MDcwOTQ5Mn0.Tk8Y4lH0T4EUA7U4Lb22xeFyJAt4ha2CEHG_Idibux8';
   const FOUNDER_EMAIL = 'helloanotherclay@gmail.com';
+  const _DUNBAR_VILLAGE_ID = '00000000-0000-0000-0000-000000000000';
 window._isFounder = false;
+  window._villageRole = 'guest'; // guest | resident | citizen | founder
   function _initSupabase() {
     if (window.supabase && !window._supabase) {
       window._supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -4422,12 +4424,12 @@ window._isFounder = false;
   }
   .avatar-grid-item {
     width: 56px; height: 56px; border-radius: 50%; cursor: pointer;
-    border: 2px solid transparent; overflow: hidden;
-    transition: border-color 0.2s, transform 0.15s; margin: 0 auto;
+    border: 3px solid transparent; overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; margin: 0 auto;
   }
   .avatar-grid-item img { width: 100%; height: 100%; object-fit: cover; }
-  .avatar-grid-item:hover { transform: scale(1.1); }
-  .avatar-grid-item.selected { border-color: rgba(200,150,80,0.8); box-shadow: 0 0 12px rgba(200,150,80,0.3); }
+  .avatar-grid-item:hover { transform: scale(1.08); border-color: rgba(200,150,80,0.3); }
+  .avatar-grid-item.selected { border-color: #c8a84b; box-shadow: 0 0 0 3px rgba(200,168,75,0.35), 0 0 16px rgba(200,168,75,0.4); transform: scale(1.08); }
   .signup-input {
     display: block; width: 100%; padding: 10px 14px; margin-bottom: 10px;
     background: rgba(255,255,255,0.06); border: 1px solid rgba(200,150,80,0.2);
@@ -5954,7 +5956,7 @@ document.getElementById('sound-toggle').addEventListener('click', function() {
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2C10.5 5.5 8 8.5 8.5 12.5C7 11 6.5 8.5 7 6.5C4.5 9 3.5 12 3.5 14.5C3.5 19 7.3 22.5 12 22.5C16.7 22.5 20.5 19 20.5 14.5C20.5 10.5 18.5 7.5 16 5.5C16.5 7.5 16 10 14.5 11.5C15 8 13.5 4.5 12.5 2Z"/><path d="M9.5 16C8.5 17.5 9 20 10.5 20C10 18.5 10 16.5 9.5 16Z"/></svg></span>
       <span class="admin-nav-label">Bonfire Chat</span>
     </div>
-    <div class="admin-nav-item" data-panel="messages" id="messages-nav-item" title="Messages" style="position:relative;">
+    <div class="admin-nav-item" data-panel="messages" id="messages-nav-item" title="Messages" style="position:relative;display:none;">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
       <span class="admin-nav-label">Messages</span>
       <span id="dm-unread-badge" style="display:none;position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#c8a84b;color:#fff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);pointer-events:none;"></span>
@@ -9673,9 +9675,19 @@ window._cachedMemberProfile = null;
 window._sbAuthEmail = null;
 window._friendsSet = new Set();
 function _deriveRole() {
-  if (!window._sbAuthUid) return 'guest';
-  if (window._sbAuthEmail === FOUNDER_EMAIL) return 'founder';
-  return 'member';
+  return window._villageRole || 'guest';
+}
+function _resolveVillageRole() {
+  if (!window._sbAuthUid) { window._villageRole = 'guest'; return; }
+  if (window._sbAuthEmail === FOUNDER_EMAIL) { window._villageRole = 'founder'; return; }
+  if (window._cachedMemberProfile) {
+    // Dunbar-only members are residents, not citizens
+    var vid = window._cachedMemberProfile._villageId;
+    if (vid && vid === _DUNBAR_VILLAGE_ID) { window._villageRole = 'resident'; }
+    else { window._villageRole = 'citizen'; }
+  } else {
+    window._villageRole = 'resident';
+  }
 }
 
 // 12 illustrated guest avatars — warm, diverse human faces
@@ -12933,7 +12945,7 @@ function checkBuildingProximity() {
 let _gateWasIn  = false;
 
 function checkGateProximity() {
-  if (!window._dunbarMode && (window._sbAuthUid || _IS_LOCAL)) return;
+  if (window._villageRole !== 'guest') return; // gate text only for unsigned guests
 
   const gatePoly = typeof buildingTriggerAreas !== 'undefined' && buildingTriggerAreas['Village Gate'];
   if (!gatePoly || gatePoly.length < 3) return;
@@ -13939,7 +13951,7 @@ document.getElementById('bonfire-chat-input').addEventListener('keydown', e => {
 });
 
 function sendBonfireMessage() {
-  if (window._dunbarMode) return; // read-only in Dunbar
+  if (window._villageRole === 'guest') return; // guests cannot post
   const input = document.getElementById('bonfire-chat-input');
   const text = input.value.trim();
   if (!text) return;
@@ -14080,6 +14092,7 @@ function _onAuthProfile(memberData) {
   var pd = (memberData && memberData.profile_data) ? { ...memberData.profile_data } : {};
   pd.id = window._sbAuthUid;
   pd.isGuest = false;
+  if (memberData && memberData.village_id) pd._villageId = memberData.village_id;
   // Ensure display fields are populated
   if (!pd.name && memberData.display_name) pd.name = memberData.display_name;
   if (!pd.villageName && memberData.village_name) pd.villageName = memberData.village_name;
@@ -14154,7 +14167,7 @@ function sendDM(fromId, toId, text) {
   });
   saveThread(fromId, toId, msgs);
   // Sync to Supabase so DMs persist across devices
-  if (window._supabase && !window._dunbarMode) {
+  if (window._supabase && window._villageRole !== 'guest') {
     window._supabase.from('direct_messages').insert({
       village_id: _ACTIVE_VILLAGE_ID,
       sender_id: fromId,
@@ -14220,7 +14233,7 @@ let mailboxOwner = null; // profile whose mailbox is open
 let mailboxActiveThread = null; // the other person's id in the active thread
 
 function openMailbox(profileId) {
-  if (window._dunbarMode) return; // not available in Dunbar
+  if (window._villageRole === 'guest' || window._villageRole === 'resident') return; // citizens only
   mailboxOwner = profiles.find(p => p.id === profileId);
   if (!mailboxOwner) return;
   mailboxActiveThread = null;
@@ -14843,7 +14856,7 @@ function _startPositionBroadcast() {
     // Poll at 50ms; only actually send when avatar moved OR as a 2s heartbeat.
     // This gives ~instant visual movement on the other side without spamming Supabase.
     setInterval(function() {
-      if (!_posBroadcastChannel || window._dunbarMode) return; // never send from welcome screen
+      if (!_posBroadcastChannel || window._villageRole === 'guest' || window._villageRole === 'resident') return; // only citizens broadcast presence
       var me = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
       if (!me) return;
       var cx = Math.round(avatar.x), cy = Math.round(avatar.y);
@@ -14877,8 +14890,8 @@ function _startPositionBroadcast() {
 
 // Render other players as avatar circles inside #world (world-space coordinates)
 function _renderOtherPlayers() {
-  // Never show other players during the welcome screen
-  if (window._dunbarMode) {
+  // Only citizens see other players — Dunbar is a liminal space
+  if (window._villageRole === 'guest' || window._villageRole === 'resident') {
     document.querySelectorAll('.other-player-avatar').forEach(function(el) { el.remove(); });
     return;
   }
@@ -15153,7 +15166,7 @@ function createBuildingChat(slug, containerEl, buildingLabel, placeholder) {
   }
 
   function _send() {
-    if (window._dunbarMode) return;
+    if (window._villageRole === 'guest') return; // guests cannot post
     var text = inputEl.value.trim();
     if (!text) return;
     var sender = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
@@ -21356,7 +21369,7 @@ function populateBuildingList() {
 let editingProfileId = null;
 
 function openProfileEditor(profile) {
-  if (window._dunbarMode) return; // not available in Dunbar
+  if (window._villageRole === 'guest') return; // guests cannot edit profiles
   if (!profile) {
     profile = createDefaultProfile();
     editingProfileId = null; // new profile
@@ -26425,15 +26438,27 @@ seedMemberLanguage();
 
   // Authenticated users see village welcome (not Dunbar), click to enter
   function showVillageWelcome(userData, profileData, role) {
-    // Switch welcome screen from Dunbar to village name
     var _titleEl = document.getElementById('dunbar-welcome-title');
     var _bodyEl  = document.getElementById('dunbar-welcome-body');
     var _villEl  = document.getElementById('dunbar-welcome-village');
-    if (_titleEl) _titleEl.style.display = 'none';
-    if (_bodyEl)  _bodyEl.style.display = 'none';
-    if (_villEl) {
-      _villEl.style.display = 'block';
-      _villEl.textContent = _selVillageName || 'Clay Village';
+    var _jpEl    = document.getElementById('dunbar-welcome-jp');
+
+    if (role === 'resident') {
+      // Resident — "Welcome back, [name]."
+      var displayName = (profileData && profileData.name) || (userData && userData.email && userData.email.split('@')[0]) || '';
+      if (_jpEl) _jpEl.style.display = 'none';
+      if (_titleEl) { _titleEl.style.display = ''; _titleEl.textContent = 'Welcome back' + (displayName ? ', ' + displayName : '') + '.'; }
+      if (_bodyEl) { _bodyEl.style.display = ''; _bodyEl.innerHTML = 'You are a Dunbar resident.<br>Find your village when you\'re ready.'; }
+      if (_villEl) _villEl.style.display = 'none';
+    } else {
+      // Citizen or Founder — village name welcome
+      if (_jpEl) _jpEl.style.display = '';
+      if (_titleEl) _titleEl.style.display = 'none';
+      if (_bodyEl)  _bodyEl.style.display = 'none';
+      if (_villEl) {
+        _villEl.style.display = 'block';
+        _villEl.textContent = _selVillageName || 'Clay Village';
+      }
     }
     // Store role so click-to-enter uses the right one
     window._pendingEnterRole = role || 'member';
@@ -26452,29 +26477,45 @@ seedMemberLanguage();
     if (hb) hb.classList.add('visible');
   }
 
-  // Gate all founder-only UI based on verified Supabase auth
+  // Gate nav items by role: guest < resident < citizen < founder
   function _applyFounderGates() {
+    var role = window._villageRole || 'guest';
+    var isCitizenPlus = (role === 'citizen' || role === 'founder');
+    var isFounder = window._isFounder;
+
+    // Bonfire nav — visible for resident, citizen, founder
+    var bonfireNav = document.getElementById('bonfire-nav-item');
+    if (bonfireNav) bonfireNav.style.display = (role !== 'guest') ? 'flex' : 'none';
+
+    // Messages nav — visible for citizen and founder only
+    var messagesNav = document.getElementById('messages-nav-item');
+    if (messagesNav) messagesNav.style.display = isCitizenPlus ? 'flex' : 'none';
+
+    // Sign out in sidebar — visible for resident, citizen, founder
+    var signoutNav = document.getElementById('nav-signout');
+    if (signoutNav) signoutNav.style.display = (role !== 'guest') ? '' : 'none';
+
     // Founder-only sidebar nav items (by ID)
     ['open-roundtable', 'open-cognitive-agency', 'admin-mode-toggle'].forEach(function(id) {
       var el = document.getElementById(id);
-      if (el) el.style.display = window._isFounder ? '' : 'none';
+      if (el) el.style.display = isFounder ? '' : 'none';
     });
     // Founder-only nav items (by data-panel)
     ['map-tools', 'avatar', 'settings'].forEach(function(panel) {
       var el = document.querySelector('.admin-nav-item[data-panel="' + panel + '"]');
-      if (el) el.style.display = window._isFounder ? 'flex' : 'none';
+      if (el) el.style.display = isFounder ? 'flex' : 'none';
     });
     // Profiles flyout nav item (founder-only admin tool)
     var profilesNav = document.querySelector('.admin-nav-item[data-panel="profiles"]');
-    if (profilesNav) profilesNav.style.display = window._isFounder ? 'flex' : 'none';
+    if (profilesNav) profilesNav.style.display = isFounder ? 'flex' : 'none';
     // Dev toolbar
     var devHb = document.getElementById('dev-hamburger');
     if (devHb) {
-      if (window._isFounder) devHb.classList.add('visible');
+      if (isFounder) devHb.classList.add('visible');
       else devHb.classList.remove('visible');
     }
     // Admin mode state
-    if (window._isFounder) {
+    if (isFounder) {
       isAdminMode = true;
       var badge = document.getElementById('admin-mode-badge');
       if (badge) { badge.textContent = 'ON'; badge.style.background = '#e8f4fd'; badge.style.color = '#0095f6'; }
@@ -26544,9 +26585,10 @@ seedMemberLanguage();
 
   function enterVillage(role) {
     window._dunbarMode = false;
-    // Role derived from Supabase auth — never stored in localStorage
-    var _resolvedRole = role || _deriveRole();
-    // Apply founder gates BEFORE revealing UI — prevents flash of admin tools
+    // Update villageRole if a specific role was passed
+    if (role && role !== 'guest') window._villageRole = role;
+    var _resolvedRole = _deriveRole();
+    // Apply role-based gates BEFORE revealing UI — prevents flash of admin tools
     _applyFounderGates();
     // Reveal nav, village name, and avatar now that the player is entering
     const _apRev = document.getElementById('admin-panel');
@@ -26570,8 +26612,8 @@ seedMemberLanguage();
     if (dir) dir.classList.remove('open');
     const auth = document.getElementById('dunbar-auth-modal');
     if (auth) auth.classList.remove('open');
-    // Upsert member row to Supabase so profile persists across devices
-    if (window._supabase && window._sbAuthUid) {
+    // Upsert member row — only for citizens/founders of the current village, never for guests/residents
+    if (window._supabase && window._sbAuthUid && (window._villageRole === 'citizen' || window._villageRole === 'founder')) {
       const sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
       window._supabase.from('village_members').upsert({
         auth_id: window._sbAuthUid,
@@ -26683,18 +26725,32 @@ seedMemberLanguage();
         window._sbAuthUid = session.user.id;
         window._sbAuthEmail = session.user.email;
         window._isFounder = session.user.email === FOUNDER_EMAIL;
-        // Load profile from Supabase if exists
+        // Load profile from Supabase — try current village first, then Dunbar
+        var member = null;
         try {
-          const { data: member } = await window._supabase
+          const { data: m1 } = await window._supabase
             .from('village_members')
             .select('*')
             .eq('auth_id', session.user.id)
             .eq('village_id', _ACTIVE_VILLAGE_ID)
             .single();
-          if (member && typeof _onAuthProfile === 'function') {
-            _onAuthProfile(member);
-          }
+          member = m1;
         } catch (_e) {}
+        // If no row for current village, try Dunbar (new signup)
+        if (!member) {
+          try {
+            const { data: m2 } = await window._supabase
+              .from('village_members')
+              .select('*')
+              .eq('auth_id', session.user.id)
+              .eq('village_id', _DUNBAR_VILLAGE_ID)
+              .single();
+            member = m2;
+          } catch (_e) {}
+        }
+        if (member && typeof _onAuthProfile === 'function') {
+          _onAuthProfile(member);
+        }
         // Load studio data from Supabase → cache in localStorage
         try {
           const { data: studioRows } = await window._supabase
@@ -26724,9 +26780,18 @@ seedMemberLanguage();
             localStorage.setItem('clayVillageFriends', JSON.stringify([...merged]));
           }
         } catch (_e3) {}
-        // Authenticated user — show village welcome (not Dunbar), click to enter
-        var _autoRole = session.user.email === FOUNDER_EMAIL ? 'founder' : 'member';
-        showVillageWelcome(session.user, (member || {}).profile_data || member || {}, _autoRole);
+        // Resolve village role based on auth + membership
+        _resolveVillageRole();
+        var _autoRole = window._villageRole;
+        // Citizens and founders skip welcome — go straight to their village
+        if (_autoRole === 'citizen' || _autoRole === 'founder') {
+          showVillageWelcome(session.user, (member || {}).profile_data || member || {}, _autoRole);
+          // Auto-enter after a brief moment (let the welcome flash then fade)
+          setTimeout(function() { enterVillage(_autoRole); }, 400);
+        } else {
+          // Residents see welcome with "Welcome back, [name]"
+          showVillageWelcome(session.user, (member || {}).profile_data || member || {}, _autoRole);
+        }
       });
 
       // Track Supabase auth UID globally for _presenceProfileId() and member sync
@@ -26740,6 +26805,7 @@ seedMemberLanguage();
           window._sbAuthEmail = null;
           window._isFounder = false;
         }
+        _resolveVillageRole();
         _applyFounderGates();
         // Magic link return — fires when they click the link from their email
         if (event === 'SIGNED_IN' && session?.user) {
@@ -26756,7 +26822,7 @@ seedMemberLanguage();
           _signupName = localStorage.getItem('cvSignupName');
 
           if (_signupAvatar || _signupName) {
-            // New signup — create village_members row with chosen avatar and name
+            // New signup — create Dunbar resident row
             var _newProfile = {
               name: _signupName || session.user.email.split('@')[0],
               photo: _signupAvatar ? _signupAvatar.svg : null,
@@ -26764,11 +26830,11 @@ seedMemberLanguage();
             };
             window._supabase.from('village_members').upsert({
               auth_id: session.user.id,
-              village_id: _ACTIVE_VILLAGE_ID,
+              village_id: _DUNBAR_VILLAGE_ID,
               display_name: _newProfile.name,
               avatar_url: _newProfile.photo || '',
               profile_data: _newProfile,
-              role: session.user.email === FOUNDER_EMAIL ? 'founder' : 'member',
+              role: 'resident',
               updated_at: new Date().toISOString()
             }, { onConflict: 'auth_id,village_id' }).then(function(r) {
               if (r.error) console.warn('[signup upsert]', r.error.message);
@@ -26776,12 +26842,15 @@ seedMemberLanguage();
             // Clean up
             localStorage.removeItem('cvSignupAvatar');
             localStorage.removeItem('cvSignupName');
-            // Cache the profile locally
-            _onAuthProfile({ profile_data: _newProfile, display_name: _newProfile.name, avatar_url: _newProfile.photo || '' });
+            // Cache the profile locally and re-resolve role
+            _onAuthProfile({ profile_data: _newProfile, display_name: _newProfile.name, avatar_url: _newProfile.photo || '', village_id: _DUNBAR_VILLAGE_ID });
+            _resolveVillageRole();
+            _applyFounderGates();
           }
 
-          // Show village welcome — click to enter
-          var _mlRole = session.user.email === FOUNDER_EMAIL ? 'founder' : 'member';
+          // Show welcome based on resolved role
+          _resolveVillageRole();
+          var _mlRole = window._villageRole;
           showVillageWelcome(session.user, {}, _mlRole);
         }
       });
@@ -26813,7 +26882,7 @@ seedMemberLanguage();
       }
 
       if (currentRole === 'guest') {
-        // Guest state
+        // Guest — show illustrated avatar, create identity button
         var ga = _getGuestAvatar();
         if (avatar) _setCapImg(avatar, ga.svg);
         if (name) name.textContent = 'Guest';
@@ -26822,12 +26891,25 @@ seedMemberLanguage();
         if (residentAct) residentAct.style.display = 'none';
         if (citizenAct) citizenAct.style.display = 'none';
         if (signoutBtn) signoutBtn.style.display = 'none';
-      } else {
-        // Authenticated (member or founder)
+      } else if (currentRole === 'resident') {
+        // Resident — has account, no home village yet
         var sp = getSessionProfile();
         if (avatar) _setCapImg(avatar, (sp && sp.photo) || null);
         if (name) name.textContent = (sp && sp.name) || (window._sbAuthEmail || 'You');
-        if (role) role.textContent = currentRole === 'founder' ? 'Village Founder' : 'Village Member';
+        if (role) role.textContent = 'Dunbar resident';
+        if (guestAct) guestAct.style.display = 'none';
+        if (residentAct) residentAct.style.display = '';
+        if (citizenAct) citizenAct.style.display = 'none';
+        if (signoutBtn) signoutBtn.style.display = '';
+      } else {
+        // Citizen or Founder — full village member
+        var sp = getSessionProfile();
+        if (avatar) _setCapImg(avatar, (sp && sp.photo) || null);
+        if (name) name.textContent = (sp && sp.name) || (window._sbAuthEmail || 'You');
+        if (role) {
+          var villageName = _selVillageName || 'Clay Village';
+          role.textContent = currentRole === 'founder' ? 'Village Founder' : villageName;
+        }
         if (guestAct) guestAct.style.display = 'none';
         if (residentAct) residentAct.style.display = 'none';
         if (citizenAct) citizenAct.style.display = '';
@@ -26838,7 +26920,7 @@ seedMemberLanguage();
     // Toggle corner panel on ring click
     if (_capRing) _capRing.addEventListener('click', function(e) {
       e.stopPropagation();
-      if (window._dunbarMode) return; // don't open during welcome screen
+      if (window._dunbarMode) return; // not during welcome overlay animation
       updateCornerPanel();
       _capPanel.classList.toggle('open');
     });
@@ -26930,17 +27012,20 @@ seedMemberLanguage();
     if (_sNameInput) _sNameInput.addEventListener('input', _checkSignupReady);
     if (_sEmailInput) _sEmailInput.addEventListener('input', _checkSignupReady);
 
-    // Close signup overlay
-    var _signupClose = document.getElementById('signup-close');
-    if (_signupClose) _signupClose.addEventListener('click', function() {
+    // Close signup overlay — clear any uncommitted signup data
+    function _closeSignup() {
       _signupOverlay.classList.remove('open');
       document.getElementById('signup-status').textContent = '';
-    });
-    if (_signupOverlay) _signupOverlay.addEventListener('click', function(e) {
-      if (e.target === _signupOverlay) {
-        _signupOverlay.classList.remove('open');
-        document.getElementById('signup-status').textContent = '';
+      // Clear stored signup data if magic link hasn't been confirmed yet
+      if (!window._sbAuthUid) {
+        localStorage.removeItem('cvSignupAvatar');
+        localStorage.removeItem('cvSignupName');
       }
+    }
+    var _signupClose = document.getElementById('signup-close');
+    if (_signupClose) _signupClose.addEventListener('click', _closeSignup);
+    if (_signupOverlay) _signupOverlay.addEventListener('click', function(e) {
+      if (e.target === _signupOverlay) _closeSignup();
     });
 
     // Submit signup — send magic link
@@ -26961,7 +27046,7 @@ seedMemberLanguage();
 
         var { error } = await window._supabase.auth.signInWithOtp({
           email: email,
-          options: { emailRedirectTo: window.location.origin }
+          options: { emailRedirectTo: window.location.origin + window.location.pathname }
         });
         if (error) throw error;
         if (statusEl) statusEl.textContent = '✓ Check your email — your link is on its way.';
@@ -27031,7 +27116,7 @@ seedMemberLanguage();
       try {
         const { error } = await window._supabase.auth.signInWithOtp({
           email,
-          options: { emailRedirectTo: window.location.origin }
+          options: { emailRedirectTo: window.location.origin + window.location.pathname }
         });
         if (error) throw error;
         statusEl.textContent = '✓ Check your email — your link is on its way.';
