@@ -6,3 +6,6 @@
 
 # Backup files
 *.backup*
+
+# Private vision document — never public
+VISION.md
