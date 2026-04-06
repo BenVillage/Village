@@ -2566,15 +2566,55 @@ window._isFounder = false;
     background: radial-gradient(ellipse at center, rgba(200,168,75,0.12) 0%, transparent 70%);
     pointer-events: none;
   }
-  .pp-token-video {
+  /* Coin flip — two faces: token video / profile photo */
+  .pp-token-wrap { perspective: 800px; } /* perspective must be on parent for 3D children */
+  .pp-coin {
     width: 110px;
     height: 110px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(200,168,75,0.8);
-    box-shadow: 0 0 28px rgba(200,168,75,0.45), 0 0 6px rgba(200,168,75,0.3);
     position: relative;
     z-index: 1;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .pp-coin.pp-coin-flipped { transform: rotateY(180deg); }
+  .pp-coin-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(200,168,75,0.8);
+    box-shadow: 0 0 28px rgba(200,168,75,0.45), 0 0 8px rgba(200,168,75,0.25);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .pp-coin-back {
+    transform: rotateY(180deg);
+    background: #1a1008;
+  }
+  .pp-coin-photo {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a1c08;
+  }
+  /* Letter fallback on photo face */
+  .pp-coin-letter {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 700;
+    color: rgba(200,168,75,0.9);
+    background: #1a1008;
+  }
+  .pp-token-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .pp-visitor-badge {
     position: absolute;
@@ -9483,10 +9523,17 @@ renderRtTable = function() {
 <div id="player-popup">
   <button class="pp-close" id="pp-close">&times;</button>
   <div class="pp-token-wrap" id="pp-token-wrap">
-    <video class="pp-token-video" id="pp-token-video" autoplay loop muted playsinline preload="auto">
-      <source src="Token.mp4" type="video/mp4">
-      <source src="Token.mov" type="video/quicktime">
-    </video>
+    <div class="pp-coin" id="pp-coin">
+      <div class="pp-coin-face pp-coin-front">
+        <video class="pp-token-video" id="pp-token-video" autoplay loop muted playsinline preload="auto">
+          <source src="Token.mp4" type="video/mp4">
+          <source src="Token.mov" type="video/quicktime">
+        </video>
+      </div>
+      <div class="pp-coin-face pp-coin-back">
+        <div class="pp-coin-photo" id="pp-coin-photo"></div>
+      </div>
+    </div>
     <div class="pp-visitor-badge" id="pp-visitor-badge" style="display:none;"></div>
   </div>
   <div class="pp-body">
@@ -15783,6 +15830,34 @@ function _renderOtherPlayers() {
 }
 
 // ── Player identity popup ────────────────────────────────────────────────────
+var _ppFlipTimer = null;
+var _ppShowingToken = true;
+
+function _ppStopFlip() {
+  if (_ppFlipTimer) { clearInterval(_ppFlipTimer); _ppFlipTimer = null; }
+}
+
+function _ppStartFlip(hasPhoto) {
+  _ppStopFlip();
+  _ppShowingToken = true;
+  var coin = document.getElementById('pp-coin');
+  if (coin) coin.classList.remove('pp-coin-flipped');
+
+  // If there's no photo face, nothing to flip to
+  if (!hasPhoto) return;
+
+  _ppFlipTimer = setInterval(function() {
+    var coin = document.getElementById('pp-coin');
+    if (!coin) { _ppStopFlip(); return; }
+    _ppShowingToken = !_ppShowingToken;
+    if (_ppShowingToken) {
+      coin.classList.remove('pp-coin-flipped');
+    } else {
+      coin.classList.add('pp-coin-flipped');
+    }
+  }, 2800); // pause 2.8s on each face, then 0.65s flip
+}
+
 function _showPlayerPopup(data, e) {
   var pp = document.getElementById('player-popup');
   if (!pp) return;
@@ -15823,12 +15898,30 @@ function _showPlayerPopup(data, e) {
     bioEl.style.display = bio ? '' : 'none';
   }
 
-  // Token video — the identity proof. It plays for every citizen — the token travels with them.
+  // Token video — front face; always plays
   var vid = document.getElementById('pp-token-video');
-  if (vid) {
-    vid.load();
-    vid.play().catch(function() {});
+  if (vid) { vid.load(); vid.play().catch(function() {}); }
+
+  // Photo face — back of the coin
+  var photoEl = document.getElementById('pp-coin-photo');
+  var photoSrc = (profile && profile.photo) ? profile.photo : (data.photo || '');
+  var hasPhoto = false;
+  if (photoEl) {
+    if (photoSrc) {
+      photoEl.innerHTML = '';
+      photoEl.style.backgroundImage = 'url(' + JSON.stringify(photoSrc) + ')';
+      hasPhoto = true;
+    } else {
+      // Letter fallback — initial on dark background
+      var initial = (data.name || '?')[0].toUpperCase();
+      photoEl.style.backgroundImage = 'none';
+      photoEl.innerHTML = '<div class="pp-coin-letter">' + initial + '</div>';
+      hasPhoto = true; // still flip — letter face is charming
+    }
   }
+
+  // Start the coin flip cycle
+  _ppStartFlip(hasPhoto);
 
   // Message button — only citizens can DM
   var msgBtn = document.getElementById('pp-msg-btn');
@@ -15837,6 +15930,7 @@ function _showPlayerPopup(data, e) {
     msgBtn.style.display = canDM ? '' : 'none';
     msgBtn.onclick = function() {
       pp.classList.remove('open');
+      _ppStopFlip();
       if (profile && typeof openMailbox === 'function') openMailbox(profile.id || data.uid);
     };
   }
@@ -15861,6 +15955,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (ppClose) ppClose.addEventListener('click', function() {
     var pp = document.getElementById('player-popup');
     if (pp) { pp.classList.remove('open'); }
+    _ppStopFlip();
   });
 });
 // Click outside to close player popup
@@ -15868,6 +15963,7 @@ document.addEventListener('click', function(e) {
   var pp = document.getElementById('player-popup');
   if (pp && pp.classList.contains('open') && !pp.contains(e.target)) {
     pp.classList.remove('open');
+    _ppStopFlip();
   }
 }, true);
 
