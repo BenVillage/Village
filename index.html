@@ -125,6 +125,7 @@ window._isFounder = false;
     background: #6a6a8a;
     border: 2px solid #fff;
     overflow: hidden;
+    perspective: 400px;
   }
   /* Avatar hover label */
   #avatar-tour-label {
@@ -148,6 +149,12 @@ window._isFounder = false;
     height: 100%;
     object-fit: cover;
   }
+  /* Map avatar coin flip (token badge on hover) */
+  .map-coin { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.45,0,0.55,1); }
+  .map-coin.map-coin-flipped { transform: rotateY(180deg); }
+  .map-coin-face { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .map-coin-back { transform: rotateY(180deg); }
+  .map-coin-back video { width: 100%; height: 100%; object-fit: cover; display: block; }
   #shadow {
     position: absolute;
     pointer-events: none;
@@ -11105,15 +11112,57 @@ function updateAvatarDisplay() {
 
   const avatarEl = document.getElementById('avatar');
   if (avatarEl) {
-    // Avatar click → start tour
+    // Avatar click → open vault
     avatarEl.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (window.tourActive) { document.getElementById('tour-btn').click(); } else { window._startTour('quick'); }
+      if (typeof window.openVault === 'function') window.openVault();
     });
-    // Avatar hover → show "Tour" label
+    // Avatar hover → flip to token if granted, otherwise show "Vault" label
     const tourLabel = document.getElementById('avatar-tour-label');
-    avatarEl.addEventListener('mouseenter', () => { tourLabel.style.display = 'block'; });
-    avatarEl.addEventListener('mouseleave', () => { tourLabel.style.display = 'none'; });
+    if (tourLabel) tourLabel.textContent = 'Vault';
+    // Inject coin flip structure when token is granted (checked after auth resolves)
+    function _setupAvatarCoinFlip() {
+      if (window._myTokenStatus !== 'granted') {
+        // No token — just show Vault label on hover
+        avatarEl.addEventListener('mouseenter', function() { if (tourLabel) tourLabel.style.display = 'block'; });
+        avatarEl.addEventListener('mouseleave', function() { if (tourLabel) tourLabel.style.display = 'none'; });
+        return;
+      }
+      // Has token — build coin structure inside avatar
+      var existingImg = avatarEl.querySelector('img');
+      var existingContent = existingImg ? existingImg.src : '';
+      avatarEl.innerHTML = '';
+      var coin = document.createElement('div');
+      coin.className = 'map-coin';
+      var front = document.createElement('div');
+      front.className = 'map-coin-face map-coin-front';
+      if (existingContent) {
+        var img = document.createElement('img');
+        img.src = existingContent;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        front.appendChild(img);
+      }
+      var back = document.createElement('div');
+      back.className = 'map-coin-face map-coin-back';
+      var vid = document.createElement('video');
+      vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
+      vid.setAttribute('preload', 'auto');
+      var src = document.createElement('source');
+      src.src = 'Token.mp4'; src.type = 'video/mp4';
+      vid.appendChild(src);
+      back.appendChild(vid);
+      coin.appendChild(front);
+      coin.appendChild(back);
+      avatarEl.appendChild(coin);
+      avatarEl._mapCoin = coin;
+      avatarEl._mapVid = vid;
+      avatarEl.addEventListener('mouseenter', function() { coin.classList.add('map-coin-flipped'); vid.play().catch(function(){}); });
+      avatarEl.addEventListener('mouseleave', function() { coin.classList.remove('map-coin-flipped'); });
+    }
+    // Defer setup until after auth + vault data resolves token status
+    setTimeout(_setupAvatarCoinFlip, 4000);
+    // Also re-check when vault sets _myTokenStatus
+    window._setupAvatarCoinFlip = _setupAvatarCoinFlip;
   }
 
   // Wire NPC hover reactions — surprise movement on hover, no tooltip banner
@@ -15949,21 +15998,58 @@ function _renderOtherPlayers() {
         return (p.villageName || p.name) === data.name;
       }) : null;
       var _photoSrc = (_localProfile && _localProfile.photo) ? _localProfile.photo : (data.photo || '');
-      function _showLetterFallback(target) {
-        target.style.background = typeof getProfileColor === 'function' ? getProfileColor(data.uid) : '#c8a84b';
-        target.style.display = 'flex'; target.style.alignItems = 'center'; target.style.justifyContent = 'center';
-        target.style.color = '#fff'; target.style.fontWeight = '700'; target.style.fontSize = '16px';
-        target.innerHTML = '';
-        target.textContent = (data.name || '?')[0].toUpperCase();
-      }
-      if (_photoSrc) {
-        var img = document.createElement('img');
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-        img.onerror = function() { _showLetterFallback(el); };
-        img.src = _photoSrc;
-        el.appendChild(img);
+
+      if (data.hasToken) {
+        // Coin structure: photo front, token video back — flips on hover
+        el.style.perspective = '400px';
+        var coin = document.createElement('div');
+        coin.className = 'map-coin';
+        var front = document.createElement('div');
+        front.className = 'map-coin-face map-coin-front';
+        if (_photoSrc) {
+          var img = document.createElement('img');
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+          img.src = _photoSrc;
+          front.appendChild(img);
+        } else {
+          front.style.background = typeof getProfileColor === 'function' ? getProfileColor(data.uid) : '#c8a84b';
+          front.style.display = 'flex'; front.style.alignItems = 'center'; front.style.justifyContent = 'center';
+          front.style.color = '#fff'; front.style.fontWeight = '700'; front.style.fontSize = '16px';
+          front.textContent = (data.name || '?')[0].toUpperCase();
+        }
+        var back = document.createElement('div');
+        back.className = 'map-coin-face map-coin-back';
+        var vid = document.createElement('video');
+        vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
+        vid.setAttribute('preload', 'auto');
+        var src = document.createElement('source');
+        src.src = 'Token.mp4'; src.type = 'video/mp4';
+        vid.appendChild(src);
+        back.appendChild(vid);
+        coin.appendChild(front);
+        coin.appendChild(back);
+        el.appendChild(coin);
+        el.addEventListener('mouseenter', function() { coin.classList.add('map-coin-flipped'); vid.play().catch(function(){}); });
+        el.addEventListener('mouseleave', function() { coin.classList.remove('map-coin-flipped'); });
       } else {
-        _showLetterFallback(el);
+        // No token — plain photo or letter
+        if (_photoSrc) {
+          var img = document.createElement('img');
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+          img.onerror = function() {
+            el.style.background = typeof getProfileColor === 'function' ? getProfileColor(data.uid) : '#c8a84b';
+            el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+            el.style.color = '#fff'; el.style.fontWeight = '700'; el.style.fontSize = '16px';
+            el.innerHTML = ''; el.textContent = (data.name || '?')[0].toUpperCase();
+          };
+          img.src = _photoSrc;
+          el.appendChild(img);
+        } else {
+          el.style.background = typeof getProfileColor === 'function' ? getProfileColor(data.uid) : '#c8a84b';
+          el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+          el.style.color = '#fff'; el.style.fontWeight = '700'; el.style.fontSize = '16px';
+          el.textContent = (data.name || '?')[0].toUpperCase();
+        }
       }
       el.title = data.name;
       el.addEventListener('click', function(e) {
@@ -22628,6 +22714,10 @@ Mura facilitates. People decide.`;
     fetchVaultData().then(function(data) {
       // Cache token status for position broadcast
       window._myTokenStatus = (data.token && data.token.status) || 'locked';
+      // Update map avatar coin flip if token just became granted
+      if (window._myTokenStatus === 'granted' && typeof window._setupAvatarCoinFlip === 'function') {
+        window._setupAvatarCoinFlip();
+      }
       // First-time seeing granted? → fire celebration BEFORE showing vault
       var tokenStatus = (data.token && data.token.status) || 'locked';
       var celebKey = vKey('tokenCelebrated');
