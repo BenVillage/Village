@@ -6355,7 +6355,7 @@ function toggleVillageSound() {
       <span class="admin-nav-label">Map Tools</span>
     </div>
     <div class="admin-nav-divider"></div>
-    <div class="admin-nav-item" data-panel="settings" title="Settings" style="display:none!important;">
+    <div class="admin-nav-item" data-panel="settings" title="Settings" style="display:none!important;"></div>
     <div class="admin-nav-item" data-panel="bonfire" id="bonfire-nav-item" title="Bonfire Chat">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2C10.5 5.5 8 8.5 8.5 12.5C7 11 6.5 8.5 7 6.5C4.5 9 3.5 12 3.5 14.5C3.5 19 7.3 22.5 12 22.5C16.7 22.5 20.5 19 20.5 14.5C20.5 10.5 18.5 7.5 16 5.5C16.5 7.5 16 10 14.5 11.5C15 8 13.5 4.5 12.5 2Z"/><path d="M9.5 16C8.5 17.5 9 20 10.5 20C10 18.5 10 16.5 9.5 16Z"/></svg></span>
       <span class="admin-nav-label">Bonfire Chat</span>
@@ -29447,7 +29447,7 @@ seedMemberLanguage();
       var _zone=null;
       function mv(ev){
         var nl=ol+ev.clientX-sx, nt=ot+ev.clientY-sy;
-        var z=nt<40?'top':nl<40?'left':nl>window.innerWidth-40?'right':null;
+        var z=nt<6?'top':nl<6?'left':nl>window.innerWidth-6?'right':null;
         if(z!==_zone){_zone=z;_showSnap(z);}
         // Only move the window when not hovering a snap zone
         if(!z){_sp(ov,'left',nl+'px');_sp(ov,'top',nt+'px');if(ovId)_positionChat(ovId);}
