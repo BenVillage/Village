@@ -27989,5 +27989,487 @@ seedMemberLanguage();
 })();
 </script>
 
+<style>
+/* ===== WIDGET SYSTEM ===== */
+.wg-seg { display:inline-flex; border:1.5px solid #dbdbdb; border-radius:8px; overflow:hidden; margin-left:12px; }
+.wg-seg button { padding:5px 12px; font-size:11px; font-family:inherit; border:none; background:#fff; color:#8e8e8e; cursor:pointer; font-weight:500; transition:all 0.15s; }
+.wg-seg button.active { background:#c8a84b; color:#fff; }
+.wg-lib-btn { padding:5px 12px; font-size:11px; font-weight:600; border:1.5px solid #c8a84b; border-radius:8px; background:transparent; color:#c8a84b; cursor:pointer; margin-left:8px; font-family:inherit; transition:all 0.15s; }
+.wg-lib-btn:hover { background:rgba(200,168,75,0.08); }
+
+.widget-grid { display:none; grid-template-columns:repeat(4,1fr); gap:12px; padding:20px 0; }
+.widget-grid.active { display:grid; }
+.widget-card { background:#fff; border:1.5px solid #dbdbdb; border-radius:10px; overflow:hidden; position:relative; min-height:180px; }
+.widget-card.minimised { min-height:auto; }
+.widget-card.minimised .wc-body { display:none; }
+.wc-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #f0f0f0; background:#fafafa; }
+.wc-title { font-size:11px; font-weight:600; color:#262626; text-transform:uppercase; letter-spacing:0.06em; }
+.wc-actions { display:flex; gap:4px; }
+.wc-actions button { background:none; border:none; cursor:pointer; font-size:13px; color:#8e8e8e; padding:2px 4px; }
+.wc-actions button:hover { color:#262626; }
+.wc-body { padding:12px 14px; font-size:13px; color:#262626; overflow:auto; max-height:160px; }
+.wc-resize { position:absolute; right:0; top:0; bottom:0; width:8px; cursor:col-resize; }
+.wc-resize:hover { background:rgba(200,168,75,0.15); }
+
+/* Bottom sheet */
+.wg-sheet-backdrop { position:fixed; inset:0; z-index:9100; background:rgba(0,0,0,0.3); display:none; align-items:flex-end; justify-content:center; }
+.wg-sheet-backdrop.open { display:flex; }
+.wg-sheet { background:#fff; border-radius:16px 16px 0 0; width:100%; max-width:560px; max-height:70vh; overflow-y:auto; padding-bottom:20px; animation:wg-slide-up 0.25s ease; }
+@keyframes wg-slide-up { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.wg-sheet-handle { width:36px; height:4px; background:#dbdbdb; border-radius:4px; margin:10px auto 0; }
+.wg-sheet-header { position:sticky; top:0; background:#fff; padding:16px 20px 12px; border-bottom:1px solid #f0f0f0; z-index:1; }
+.wg-sheet-title { font-size:16px; font-weight:700; color:#262626; }
+.wg-sheet-slots { font-size:12px; color:#8e8e8e; margin-top:2px; }
+.wg-sheet-close { position:absolute; top:14px; right:16px; background:none; border:none; font-size:20px; color:#8e8e8e; cursor:pointer; }
+.wg-sheet-section { padding:0 20px; }
+.wg-sheet-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#8e8e8e; margin:16px 0 10px; }
+.wg-lib-card { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid #f5f5f5; }
+.wg-lib-preview { width:64px; height:48px; background:#fafafa; border:1px solid #e8e8e8; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:20px; }
+.wg-lib-info { flex:1; }
+.wg-lib-name { font-size:13px; font-weight:600; color:#262626; }
+.wg-lib-desc { font-size:11px; color:#8e8e8e; margin-top:2px; line-height:1.4; }
+.wg-lib-add { padding:5px 14px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit; border:1.5px solid #c8a84b; background:transparent; color:#c8a84b; flex-shrink:0; transition:all 0.15s; }
+.wg-lib-add:hover { background:rgba(200,168,75,0.08); }
+.wg-lib-add.remove { border-color:#e88070; color:#e88070; }
+.wg-lib-add:disabled { opacity:0.3; cursor:default; }
+.wg-lib-locked { padding:5px 14px; font-size:11px; color:#8e8e8e; font-style:italic; flex-shrink:0; }
+
+/* Widget-specific */
+.wg-timer-display { font-size:32px; font-weight:700; color:#262626; text-align:center; font-variant-numeric:tabular-nums; margin:8px 0; }
+.wg-timer-btns { display:flex; gap:6px; justify-content:center; }
+.wg-timer-btns button { padding:4px 12px; border-radius:6px; border:1px solid #dbdbdb; background:#fff; font-size:11px; cursor:pointer; font-family:inherit; }
+.wg-timer-btns button:hover { border-color:#c8a84b; }
+.wg-mood-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:8px 0; }
+.wg-mood-btn { font-size:24px; cursor:pointer; opacity:0.4; transition:opacity 0.15s,transform 0.15s; padding:4px; border:none; background:none; }
+.wg-mood-btn.selected { opacity:1; transform:scale(1.2); }
+.wg-swatch-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.wg-swatch { width:28px; height:28px; border-radius:6px; border:1.5px solid #dbdbdb; cursor:pointer; position:relative; }
+.wg-swatch.add { display:flex; align-items:center; justify-content:center; color:#8e8e8e; font-size:16px; }
+.wg-rules-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:13px; }
+.wg-rules-item input { flex:1; border:none; border-bottom:1px solid #e8e8e8; padding:4px 0; font-family:inherit; font-size:13px; color:#262626; outline:none; }
+.wg-rules-item input:focus { border-color:#c8a84b; }
+.wg-rules-del { background:none; border:none; color:#e88070; cursor:pointer; font-size:14px; }
+.wg-np-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; display:inline-block; margin-right:6px; animation:wg-np-pulse 1.5s ease-in-out infinite; }
+@keyframes wg-np-pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+.wg-sticky-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.wg-sticky-grid textarea { min-height:60px; border:1px solid #e8e8e8; border-radius:6px; padding:6px 8px; font-size:11px; font-family:inherit; resize:none; color:#262626; outline:none; }
+.wg-sticky-grid textarea:focus { border-color:#c8a84b; }
+.wg-reading-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f5f5f5; font-size:12px; }
+.wg-reading-status { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; cursor:pointer; border:1px solid #dbdbdb; }
+.wg-fire-table { width:100%; font-size:11px; border-collapse:collapse; }
+.wg-fire-table th { text-align:left; padding:4px 6px; color:#8e8e8e; font-weight:600; border-bottom:1px solid #e8e8e8; }
+.wg-fire-table td { padding:4px 6px; border-bottom:1px solid #f5f5f5; }
+@media(max-width:600px) {
+  .widget-grid { grid-template-columns:1fr; }
+  .wc-resize { display:none; }
+}
+</style>
+
+<script>
+(function() {
+  // ===== WIDGET SYSTEM =====
+  var BUILDINGS = [
+    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:['practice-log'], available:['work-timer','current-project','glaze-palette','studio-rules','firing-log'], defaultMode:'conservative' },
+    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:2, fixed:['community-journals'], available:['reading-list','pinned-quote','research-notes'], defaultMode:'conservative' },
+    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:2, fixed:['commons-chat'], available:['mood-today','now-playing','sticky-notes'], defaultMode:'widgets' },
+    { id:'observatory-overlay', slug:'obs', name:'The Observatory', headerSel:'.bld-top', bodySel:'.bld-inner', slots:2, fixed:[], available:['reflection-prompt','horizon-notes'], defaultMode:'conservative' }
+  ];
+
+  var WIDGETS = {
+    'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'\u{1F4DD}', defaultSpan:4 },
+    'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'\u{1F4D6}', defaultSpan:4 },
+    'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'\u2615', defaultSpan:4 },
+    'work-timer': { name:'Work Timer', desc:'25-minute focus countdown', emoji:'\u23F1', defaultSpan:1,
+      render: function(el, data, save) {
+        var d = data || { remaining:1500, running:false };
+        var iv = null;
+        function fmt(s) { return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60; }
+        function draw() {
+          el.innerHTML = '<div class="wg-timer-display">'+fmt(d.remaining)+'</div><div class="wg-timer-btns"><button id="wt-toggle">'+(d.running?'Pause':'Start')+'</button><button id="wt-reset">Reset</button><button id="wt-plus">+5</button></div>';
+          el.querySelector('#wt-toggle').onclick = function() { d.running=!d.running; if(d.running) tick(); draw(); };
+          el.querySelector('#wt-reset').onclick = function() { d.running=false; d.remaining=1500; save(d); draw(); };
+          el.querySelector('#wt-plus').onclick = function() { d.remaining+=300; save(d); draw(); };
+        }
+        function tick() { if(!d.running||d.remaining<=0){d.running=false;save(d);draw();return;} d.remaining--; save(d); draw(); setTimeout(tick,1000); }
+        draw(); if(d.running) tick();
+      }
+    },
+    'current-project': { name:'Current Project', desc:'What you are working on now', emoji:'\u{1F3AF}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What are you working on?">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput = function() { d.text=this.value; clearTimeout(tm); tm=setTimeout(function(){save(d);},800); };
+      }
+    },
+    'glaze-palette': { name:'Glaze Palette', desc:'Colour swatches with names', emoji:'\u{1F3A8}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { swatches:[] };
+        function draw() {
+          var h = '<div class="wg-swatch-grid">';
+          d.swatches.forEach(function(s,i) { h+='<div class="wg-swatch" style="background:'+s.color+'" title="'+(s.name||'')+'" data-i="'+i+'"></div>'; });
+          if(d.swatches.length<12) h+='<div class="wg-swatch add" id="wg-swatch-add">+</div>';
+          h+='</div>';
+          el.innerHTML = h;
+          var addBtn = el.querySelector('#wg-swatch-add');
+          if(addBtn) addBtn.onclick = function() { var c=prompt('Hex colour (e.g. #c8a84b):'); var n=prompt('Name:'); if(c){d.swatches.push({color:c,name:n||''}); save(d); draw();} };
+          el.querySelectorAll('.wg-swatch[data-i]').forEach(function(sw) { sw.onclick = function() { if(confirm('Remove this swatch?')){d.swatches.splice(parseInt(sw.dataset.i),1);save(d);draw();} }; });
+        }
+        draw();
+      }
+    },
+    'studio-rules': { name:'Studio Rules', desc:'Your personal studio rules', emoji:'\u{1F4CB}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { rules:[] };
+        function draw() {
+          var h = '';
+          d.rules.forEach(function(r,i) { h+='<div class="wg-rules-item"><span style="color:#8e8e8e;font-size:11px;min-width:16px;">'+(i+1)+'.</span><input value="'+_wEsc(r)+'" data-i="'+i+'"><button class="wg-rules-del" data-i="'+i+'">&times;</button></div>'; });
+          if(d.rules.length<8) h+='<button style="font-size:11px;color:#c8a84b;background:none;border:1px solid #c8a84b;border-radius:6px;padding:4px 10px;cursor:pointer;margin-top:4px;" id="wg-rule-add">+ Add rule</button>';
+          el.innerHTML = h;
+          el.querySelectorAll('input').forEach(function(inp) { inp.onchange = function() { d.rules[parseInt(this.dataset.i)]=this.value; save(d); }; });
+          el.querySelectorAll('.wg-rules-del').forEach(function(btn) { btn.onclick = function() { d.rules.splice(parseInt(this.dataset.i),1); save(d); draw(); }; });
+          var ab = el.querySelector('#wg-rule-add');
+          if(ab) ab.onclick = function() { d.rules.push(''); save(d); draw(); };
+        }
+        draw();
+      }
+    },
+    'firing-log': { name:'Firing Log', desc:'Track your firings', emoji:'\u{1F525}', defaultSpan:4,
+      render: function(el, data, save) {
+        var d = data || { entries:[] };
+        function draw() {
+          var h = '<table class="wg-fire-table"><tr><th>Date</th><th>Pieces</th><th>Result</th><th></th></tr>';
+          d.entries.forEach(function(e,i) { h+='<tr><td>'+_wEsc(e.date)+'</td><td>'+e.count+'</td><td>'+_wEsc(e.result)+'</td><td><button class="wg-rules-del" data-i="'+i+'">&times;</button></td></tr>'; });
+          h+='</table><div style="display:flex;gap:6px;margin-top:8px;"><input id="wf-date" placeholder="Date" style="flex:1;border:1px solid #e8e8e8;border-radius:4px;padding:4px 6px;font-size:11px;"><input id="wf-count" type="number" placeholder="#" style="width:40px;border:1px solid #e8e8e8;border-radius:4px;padding:4px 6px;font-size:11px;"><input id="wf-result" placeholder="Result" style="flex:1;border:1px solid #e8e8e8;border-radius:4px;padding:4px 6px;font-size:11px;"><button style="border:1px solid #c8a84b;background:none;color:#c8a84b;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;" id="wf-add">+</button></div>';
+          el.innerHTML = h;
+          el.querySelectorAll('.wg-rules-del').forEach(function(b){b.onclick=function(){d.entries.splice(parseInt(b.dataset.i),1);save(d);draw();};});
+          var ab=el.querySelector('#wf-add'); if(ab) ab.onclick=function(){var dt=el.querySelector('#wf-date').value,ct=el.querySelector('#wf-count').value,rs=el.querySelector('#wf-result').value; if(dt){d.entries.push({date:dt,count:parseInt(ct)||0,result:rs||''}); save(d); draw();}};
+        }
+        draw();
+      }
+    },
+    'reading-list': { name:'Reading List', desc:'Books you are reading', emoji:'\u{1F4DA}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { books:[] }; var states=['reading','done','want']; var colors={reading:'#c8a84b',done:'#22c55e',want:'#8e8e8e'};
+        function draw() {
+          var h = '';
+          d.books.forEach(function(b,i) { h+='<div class="wg-reading-item"><span class="wg-reading-status" style="border-color:'+colors[b.status]+';color:'+colors[b.status]+'" data-i="'+i+'">'+b.status+'</span><span style="flex:1">'+_wEsc(b.title)+'</span><button class="wg-rules-del" data-i="'+i+'">&times;</button></div>'; });
+          h+='<div style="display:flex;gap:6px;margin-top:6px;"><input id="wr-title" placeholder="Book title" style="flex:1;border:1px solid #e8e8e8;border-radius:4px;padding:4px 6px;font-size:11px;"><button style="border:1px solid #c8a84b;background:none;color:#c8a84b;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;" id="wr-add">+</button></div>';
+          el.innerHTML = h;
+          el.querySelectorAll('.wg-reading-status').forEach(function(s){s.onclick=function(){var idx=parseInt(s.dataset.i);var si=states.indexOf(d.books[idx].status);d.books[idx].status=states[(si+1)%3];save(d);draw();};});
+          el.querySelectorAll('.wg-rules-del').forEach(function(b){b.onclick=function(){d.books.splice(parseInt(b.dataset.i),1);save(d);draw();};});
+          var ab=el.querySelector('#wr-add');if(ab)ab.onclick=function(){var t=el.querySelector('#wr-title').value.trim();if(t){d.books.push({title:t,status:'want'});save(d);draw();}};
+        }
+        draw();
+      }
+    },
+    'pinned-quote': { name:'Pinned Quote', desc:'A quote that matters', emoji:'\u{1F4AC}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { quote:'', author:'' };
+        function draw() {
+          if(d.quote) {
+            el.innerHTML = '<div style="font-style:italic;font-size:14px;color:#262626;line-height:1.6;border-left:2px solid #c8a84b;padding-left:12px;">\u201C'+_wEsc(d.quote)+'\u201D</div><div style="font-size:12px;color:#8e8e8e;margin-top:6px;">\u2014 '+_wEsc(d.author||'Unknown')+'</div><button style="font-size:11px;color:#8e8e8e;background:none;border:none;cursor:pointer;margin-top:8px;" id="wq-edit">Edit</button>';
+            el.querySelector('#wq-edit').onclick = function() { d.quote=''; draw(); };
+          } else {
+            el.innerHTML = '<textarea id="wq-text" placeholder="Enter a quote..." style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;resize:none;height:50px;margin-bottom:6px;"></textarea><input id="wq-auth" placeholder="Attribution" style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:12px;margin-bottom:6px;"><button style="border:1px solid #c8a84b;background:none;color:#c8a84b;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;" id="wq-save">Save</button>';
+            el.querySelector('#wq-save').onclick = function() { d.quote=el.querySelector('#wq-text').value;d.author=el.querySelector('#wq-auth').value;save(d);draw(); };
+          }
+        }
+        draw();
+      }
+    },
+    'research-notes': { name:'Research Notes', desc:'Scratch pad for ideas', emoji:'\u{1F52C}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="Research notes...">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput = function() { d.text=this.value; clearTimeout(tm); tm=setTimeout(function(){save(d);},800); };
+      }
+    },
+    'mood-today': { name:'Mood Today', desc:'How are you feeling?', emoji:'\u{1F60A}', defaultSpan:1,
+      render: function(el, data, save) {
+        var d = data || { mood:null, date:null }; var today = new Date().toISOString().slice(0,10);
+        if(d.date !== today) { d.mood=null; d.date=today; }
+        var moods = ['\u{1F60A}','\u{1F60C}','\u{1F525}','\u{1F624}','\u{1F622}','\u{1F914}','\u{1F634}'];
+        var h = '<div class="wg-mood-row">';
+        moods.forEach(function(m) { h+='<button class="wg-mood-btn'+(d.mood===m?' selected':'')+'" data-m="'+m+'">'+m+'</button>'; });
+        h+='</div>';
+        el.innerHTML = h;
+        el.querySelectorAll('.wg-mood-btn').forEach(function(b) { b.onclick=function() { d.mood=b.dataset.m; d.date=today; save(d); el.querySelectorAll('.wg-mood-btn').forEach(function(x){x.classList.remove('selected');}); b.classList.add('selected'); }; });
+      }
+    },
+    'now-playing': { name:'Now Playing', desc:'What you are listening to', emoji:'\u{1F3B5}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { track:'', artist:'', active:false }; var tm=null;
+        el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'+(d.active?'<span class="wg-np-dot"></span>':'<span style="width:8px;height:8px;border-radius:50%;background:#dbdbdb;display:inline-block;margin-right:6px;"></span>')+'<button style="font-size:10px;border:1px solid #dbdbdb;border-radius:4px;padding:2px 8px;background:none;cursor:pointer;color:#8e8e8e;" id="wnp-toggle">'+(d.active?'Stop':'Live')+'</button></div><input placeholder="Track" value="'+_wEsc(d.track)+'" style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:13px;margin-bottom:4px;" id="wnp-track"><input placeholder="Artist" value="'+_wEsc(d.artist)+'" style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:12px;color:#8e8e8e;" id="wnp-artist">';
+        function wire() {
+          el.querySelector('#wnp-toggle').onclick=function(){d.active=!d.active;save(d);el.querySelector('.wg-np-dot,span[style*="dbdbdb"]').outerHTML=d.active?'<span class="wg-np-dot"></span>':'<span style="width:8px;height:8px;border-radius:50%;background:#dbdbdb;display:inline-block;margin-right:6px;"></span>';this.textContent=d.active?'Stop':'Live';};
+          ['wnp-track','wnp-artist'].forEach(function(id){var inp=el.querySelector('#'+id);if(inp)inp.oninput=function(){d[id==='wnp-track'?'track':'artist']=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},600);};});
+        }
+        wire();
+      }
+    },
+    'sticky-notes': { name:'Sticky Notes', desc:'Four quick notes', emoji:'\u{1F4CC}', defaultSpan:4,
+      render: function(el, data, save) {
+        var d = data || { n:['',' ','',''] }; if(!d.n||d.n.length<4)d.n=['','','',''];
+        el.innerHTML = '<div class="wg-sticky-grid"><textarea data-i="0">'+_wEsc(d.n[0])+'</textarea><textarea data-i="1">'+_wEsc(d.n[1])+'</textarea><textarea data-i="2">'+_wEsc(d.n[2])+'</textarea><textarea data-i="3">'+_wEsc(d.n[3])+'</textarea></div>';
+        el.querySelectorAll('textarea').forEach(function(ta){var tm2=null;ta.oninput=function(){d.n[parseInt(ta.dataset.i)]=ta.value;clearTimeout(tm2);tm2=setTimeout(function(){save(d);},600);};});
+      }
+    },
+    'reflection-prompt': { name:'Reflection Prompt', desc:'Rotating questions to sit with', emoji:'\u{1FA9E}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { idx:0, notes:'' }; var tm=null;
+        var qs = ['What surprised you this week?','What are you avoiding?','What would you make if no one was watching?','What broke recently that taught you something?','What do you know now that you did not know a month ago?','What is the gap between what you say and what you do?','What would Mura notice about your silence?'];
+        el.innerHTML = '<div style="font-style:italic;font-size:13px;color:#262626;line-height:1.6;margin-bottom:10px;">\u201C'+qs[d.idx%qs.length]+'\u201D</div><button style="font-size:10px;color:#c8a84b;background:none;border:1px solid #c8a84b;border-radius:4px;padding:2px 8px;cursor:pointer;margin-bottom:8px;" id="wrp-next">Next</button><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:12px;font-family:inherit;resize:none;height:50px;" placeholder="Your notes...">'+_wEsc(d.notes)+'</textarea>';
+        el.querySelector('#wrp-next').onclick=function(){d.idx++;save(d);el.querySelector('div').textContent='\u201C'+qs[d.idx%qs.length]+'\u201D';};
+        el.querySelector('textarea').oninput=function(){d.notes=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'horizon-notes': { name:'Horizon Notes', desc:'Long-view observations', emoji:'\u{1F52D}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What do you see from here?">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    }
+  };
+
+  function _wEsc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function _getLayout(slug) {
+    try { return JSON.parse(localStorage.getItem(vKey('widgets_'+slug))||'null'); } catch(_){return null;}
+  }
+  function _saveLayout(slug, layout) {
+    localStorage.setItem(vKey('widgets_'+slug), JSON.stringify(layout));
+    if(typeof persistData==='function') persistData('widgets_'+slug, layout);
+  }
+  function _getWData(slug, wid) {
+    try { return JSON.parse(localStorage.getItem(vKey('wd_'+slug+'_'+wid))||'null'); } catch(_){return null;}
+  }
+  function _saveWData(slug, wid, data) {
+    localStorage.setItem(vKey('wd_'+slug+'_'+wid), JSON.stringify(data));
+  }
+
+  function _getMode(bldg) {
+    var firstKey = vKey('wFirst_'+bldg.slug);
+    var modeKey = vKey('wMode_'+bldg.slug);
+    if(!localStorage.getItem(firstKey)) {
+      localStorage.setItem(firstKey, '1');
+      localStorage.setItem(modeKey, bldg.defaultMode);
+      return bldg.defaultMode;
+    }
+    return localStorage.getItem(modeKey) || bldg.defaultMode;
+  }
+  function _setMode(bldg, mode) {
+    localStorage.setItem(vKey('wMode_'+bldg.slug), mode);
+  }
+
+  // Render placed widgets
+  function renderWidgetGrid(bldg) {
+    var grid = document.getElementById('wg-'+bldg.slug);
+    if(!grid) return;
+    var mode = _getMode(bldg);
+    grid.classList.toggle('active', mode==='widgets');
+    if(mode!=='widgets') return;
+
+    var layout = _getLayout(bldg.slug) || { placed:[], sizes:{} };
+    grid.innerHTML = '';
+
+    layout.placed.forEach(function(wid) {
+      var w = WIDGETS[wid]; if(!w || !w.render) return;
+      var span = layout.sizes[wid] || w.defaultSpan || 2;
+      var card = document.createElement('div');
+      card.className = 'widget-card';
+      card.style.gridColumn = 'span '+span;
+
+      var head = document.createElement('div');
+      head.className = 'wc-head';
+      head.innerHTML = '<span class="wc-title">'+(w.emoji||'')+' '+w.name+'</span><div class="wc-actions"><button class="wc-min" title="Minimise">\u2212</button><button class="wc-rem" title="Remove">\u00D7</button></div>';
+      card.appendChild(head);
+
+      var body = document.createElement('div');
+      body.className = 'wc-body';
+      card.appendChild(body);
+
+      // Resize handle
+      var handle = document.createElement('div');
+      handle.className = 'wc-resize';
+      card.appendChild(handle);
+
+      grid.appendChild(card);
+
+      // Render widget content
+      w.render(body, _getWData(bldg.slug, wid), function(d){ _saveWData(bldg.slug, wid, d); });
+
+      // Minimise
+      head.querySelector('.wc-min').onclick = function() {
+        card.classList.toggle('minimised');
+        this.textContent = card.classList.contains('minimised') ? '+' : '\u2212';
+      };
+
+      // Remove
+      head.querySelector('.wc-rem').onclick = function() {
+        layout.placed = layout.placed.filter(function(x){return x!==wid;});
+        delete layout.sizes[wid];
+        _saveLayout(bldg.slug, layout);
+        renderWidgetGrid(bldg);
+      };
+
+      // Resize drag
+      var startX=0, startSpan=span;
+      handle.addEventListener('mousedown', function(e) {
+        startX=e.clientX; startSpan=parseInt(card.style.gridColumn.replace('span ',''))||span;
+        function onMove(ev) {
+          var dx = ev.clientX - startX;
+          var colW = grid.offsetWidth / 4;
+          var newSpan = Math.max(1, Math.min(4, Math.round((startSpan*colW+dx)/colW)));
+          if(newSpan!==1&&newSpan!==2&&newSpan!==4) newSpan=newSpan<2?1:newSpan<4?2:4;
+          card.style.gridColumn = 'span '+newSpan;
+        }
+        function onUp() {
+          document.removeEventListener('mousemove',onMove);
+          document.removeEventListener('mouseup',onUp);
+          var final = parseInt(card.style.gridColumn.replace('span ',''))||span;
+          layout.sizes[wid] = final;
+          _saveLayout(bldg.slug, layout);
+        }
+        document.addEventListener('mousemove',onMove);
+        document.addEventListener('mouseup',onUp);
+      });
+    });
+  }
+
+  // Bottom sheet library
+  function openLibrary(bldg) {
+    var existing = document.getElementById('wg-sheet-'+bldg.slug);
+    if(existing) existing.remove();
+
+    var layout = _getLayout(bldg.slug) || { placed:[], sizes:{} };
+    var usedSlots = layout.placed.length;
+    var full = usedSlots >= bldg.slots;
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'wg-sheet-backdrop open';
+    backdrop.id = 'wg-sheet-'+bldg.slug;
+
+    var sheet = document.createElement('div');
+    sheet.className = 'wg-sheet';
+
+    var h = '<div class="wg-sheet-handle"></div>';
+    h += '<div class="wg-sheet-header"><div class="wg-sheet-title">'+bldg.name+' Widgets</div><div class="wg-sheet-slots">'+usedSlots+' / '+bldg.slots+' slots used</div><button class="wg-sheet-close" id="wgs-close-'+bldg.slug+'">&times;</button></div>';
+
+    // Fixed section
+    if(bldg.fixed.length) {
+      h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Built-in</div>';
+      bldg.fixed.forEach(function(wid) {
+        var w = WIDGETS[wid]; if(!w) return;
+        h += '<div class="wg-lib-card"><div class="wg-lib-preview">'+w.emoji+'</div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><span class="wg-lib-locked">Locked</span></div>';
+      });
+      h += '</div>';
+    }
+
+    // Available section
+    h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Add Widgets</div>';
+    bldg.available.forEach(function(wid) {
+      var w = WIDGETS[wid]; if(!w) return;
+      var placed = layout.placed.indexOf(wid) !== -1;
+      h += '<div class="wg-lib-card"><div class="wg-lib-preview">'+w.emoji+'</div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+wid+'"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
+    });
+    h += '</div>';
+
+    sheet.innerHTML = h;
+    backdrop.appendChild(sheet);
+    document.body.appendChild(backdrop);
+
+    // Close handlers
+    backdrop.addEventListener('click', function(e) { if(e.target===backdrop) backdrop.remove(); });
+    var closeBtn = document.getElementById('wgs-close-'+bldg.slug);
+    if(closeBtn) closeBtn.onclick = function() { backdrop.remove(); };
+
+    // Add/Remove handlers
+    sheet.querySelectorAll('.wg-lib-add').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var wid = btn.dataset.wid;
+        var isPlaced = layout.placed.indexOf(wid) !== -1;
+        if(isPlaced) {
+          layout.placed = layout.placed.filter(function(x){return x!==wid;});
+          delete layout.sizes[wid];
+        } else {
+          if(layout.placed.length >= bldg.slots) return;
+          layout.placed.push(wid);
+          layout.sizes[wid] = WIDGETS[wid].defaultSpan || 2;
+        }
+        _saveLayout(bldg.slug, layout);
+        renderWidgetGrid(bldg);
+        backdrop.remove();
+        openLibrary(bldg);
+      });
+    });
+  }
+
+  // Inject into buildings on DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', function() {
+    BUILDINGS.forEach(function(bldg) {
+      var overlay = document.getElementById(bldg.id);
+      if(!overlay) return;
+
+      // Find header
+      var header = overlay.querySelector(bldg.headerSel);
+      if(!header) return;
+
+      // Find body (for grid injection)
+      var body = overlay.querySelector(bldg.bodySel);
+
+      // Inject segmented control into header
+      var spacer = header.querySelector('div[style*="width:80px"]') || header.lastElementChild;
+      var seg = document.createElement('div');
+      seg.className = 'wg-seg';
+      seg.innerHTML = '<button data-m="conservative">Content</button><button data-m="widgets">Widgets</button>';
+      header.insertBefore(seg, spacer);
+
+      // Inject Widgets library button
+      var libBtn = document.createElement('button');
+      libBtn.className = 'wg-lib-btn';
+      libBtn.textContent = 'Widgets';
+      libBtn.onclick = function() { openLibrary(bldg); };
+      header.insertBefore(libBtn, spacer);
+
+      // Inject widget grid
+      var grid = document.createElement('div');
+      grid.className = 'widget-grid';
+      grid.id = 'wg-'+bldg.slug;
+      if(body) {
+        var manifesto = body.querySelector('.bld-manifesto-line');
+        if(manifesto) body.insertBefore(grid, manifesto);
+        else body.appendChild(grid);
+      }
+
+      // Set initial mode
+      var mode = _getMode(bldg);
+      seg.querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.m===mode); });
+      grid.classList.toggle('active', mode==='widgets');
+
+      // Mode toggle
+      seg.querySelectorAll('button').forEach(function(b) {
+        b.addEventListener('click', function() {
+          seg.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
+          b.classList.add('active');
+          _setMode(bldg, b.dataset.m);
+          grid.classList.toggle('active', b.dataset.m==='widgets');
+          if(b.dataset.m==='widgets') renderWidgetGrid(bldg);
+        });
+      });
+
+      // MutationObserver: re-render when building opens
+      new MutationObserver(function() {
+        if(overlay.style.display !== 'none' && overlay.style.display !== '') {
+          var m = _getMode(bldg);
+          grid.classList.toggle('active', m==='widgets');
+          if(m==='widgets') renderWidgetGrid(bldg);
+        }
+      }).observe(overlay, { attributes:true, attributeFilter:['style','class'] });
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
