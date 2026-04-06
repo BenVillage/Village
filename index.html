@@ -2535,6 +2535,111 @@ window._isFounder = false;
     pointer-events: auto;
   }
   #profile-card-small.open { display: block; }
+
+  /* ── Player identity popup (map click) ─────────────────────────── */
+  #player-popup {
+    position: fixed;
+    display: none;
+    width: 272px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 36px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 1100;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  #player-popup.open { display: block; }
+  .pp-token-wrap {
+    position: relative;
+    height: 156px;
+    background: #0e0a04;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .pp-token-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,168,75,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .pp-token-video {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(200,168,75,0.8);
+    box-shadow: 0 0 28px rgba(200,168,75,0.45), 0 0 6px rgba(200,168,75,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .pp-visitor-badge {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(14,10,4,0.72);
+    border: 1px solid rgba(200,168,75,0.7);
+    color: #c8a84b;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .pp-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    border: none;
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+  .pp-close:hover { background: rgba(0,0,0,0.65); }
+  .pp-body { padding: 13px 15px 15px; }
+  .pp-name { font-size: 15px; font-weight: 700; color: #262626; margin-bottom: 2px; }
+  .pp-sub { font-size: 11px; color: #8e8e8e; margin-bottom: 8px; }
+  .pp-bio {
+    font-size: 11.5px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 11px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pp-msg-btn {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    background: #faf5e8;
+    border: 1px solid #e6d9b0;
+    color: #8a6020;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .pp-msg-btn:hover { background: #f0e6c8; }
+
   .pc-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
   .pc-photo {
     width: 52px; height: 52px; border-radius: 50%;
@@ -7913,7 +8018,7 @@ function toggleVillageSound() {
 </div>
 <div id="vault-token-modal">
   <button class="vtm-close" id="vtm-close">&times;</button>
-  <video id="vtm-token-sm" src="Token.mov" autoplay loop muted playsinline preload="auto" width="120" height="120" style="border-radius:50%;object-fit:cover;"></video>
+  <video id="vtm-token-sm" autoplay loop muted playsinline preload="auto" width="120" height="120" style="border-radius:50%;object-fit:cover;"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video>
   <div class="vtm-terminal" id="vtm-terminal"></div>
   <div class="vtm-final" id="vtm-final">&#x4E00;&#x671F;&#x4E00;&#x4F1A; &#x2014; this moment is in the record.</div>
 </div>
@@ -9372,6 +9477,24 @@ renderRtTable = function() {
     <button class="pc-btn" id="pc-add-friend">+ Add Friend</button>
   </div>
   <div id="pc-mailbox-preview"></div>
+</div>
+
+<!-- Player identity popup — appears when clicking another player's dot on the map -->
+<div id="player-popup">
+  <button class="pp-close" id="pp-close">&times;</button>
+  <div class="pp-token-wrap" id="pp-token-wrap">
+    <video class="pp-token-video" id="pp-token-video" autoplay loop muted playsinline preload="auto">
+      <source src="Token.mp4" type="video/mp4">
+      <source src="Token.mov" type="video/quicktime">
+    </video>
+    <div class="pp-visitor-badge" id="pp-visitor-badge" style="display:none;"></div>
+  </div>
+  <div class="pp-body">
+    <div class="pp-name" id="pp-name"></div>
+    <div class="pp-sub" id="pp-sub"></div>
+    <div class="pp-bio" id="pp-bio"></div>
+    <button class="pp-msg-btn" id="pp-msg-btn">✉ Send message</button>
+  </div>
 </div>
 
 <!-- Bonfire Chat (flyout panel) -->
@@ -15554,7 +15677,7 @@ function _startPositionBroadcast() {
     if (!d || !d.uid) return;
     var myUid = typeof _presenceProfileId === 'function' ? _presenceProfileId() : '';
     if (d.uid === myUid) return; // skip own echo
-    _otherPlayers[d.uid] = { x: d.x, y: d.y, photo: d.photo || '', name: d.name || '?', uid: d.uid, ts: Date.now() };
+    _otherPlayers[d.uid] = { x: d.x, y: d.y, photo: d.photo || '', name: d.name || '?', uid: d.uid, fromVillage: d.fromVillage || '', ts: Date.now() };
     // Render immediately when a position update arrives (no waiting for the interval)
     _renderOtherPlayers();
   }).subscribe(function(status) {
@@ -15574,7 +15697,7 @@ function _startPositionBroadcast() {
         _posBroadcastChannel.send({
           type: 'broadcast',
           event: 'pos',
-          payload: { uid: myUid, x: cx, y: cy, photo: me.photo || '', name: me.villageName || me.name || '' }
+          payload: { uid: myUid, x: cx, y: cy, photo: me.photo || '', name: me.villageName || me.name || '', fromVillage: (window._travellingFrom ? window._travellingFrom.name : '') }
         }).catch(function(){});
         _lastX = cx; _lastY = cy; _lastSentTs = Date.now();
       }
@@ -15645,10 +15768,7 @@ function _renderOtherPlayers() {
       el.title = data.name;
       el.addEventListener('click', function(e) {
         e.stopPropagation();
-        var profile = typeof profiles !== 'undefined' ? profiles.find(function(p) {
-          return (p.villageName || p.name) === data.name;
-        }) : null;
-        if (profile && typeof showProfileCard === 'function') showProfileCard(profile);
+        _showPlayerPopup(data, e);
       });
       world.appendChild(el);
     }
@@ -15661,6 +15781,95 @@ function _renderOtherPlayers() {
     if (!seen[uid]) existingEls[uid].remove();
   });
 }
+
+// ── Player identity popup ────────────────────────────────────────────────────
+function _showPlayerPopup(data, e) {
+  var pp = document.getElementById('player-popup');
+  if (!pp) return;
+
+  // Name
+  var nameEl = document.getElementById('pp-name');
+  if (nameEl) nameEl.textContent = data.name || 'Villager';
+
+  // Visitor badge — shown when this player is visiting from another village
+  var badge = document.getElementById('pp-visitor-badge');
+  if (badge) {
+    if (data.fromVillage) {
+      badge.textContent = 'Visiting from ' + data.fromVillage;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // Sub-line: practice · location from local profiles cache
+  var profile = typeof profiles !== 'undefined' ? profiles.find(function(p) {
+    return (p.villageName || p.name) === data.name || p.id === data.uid;
+  }) : null;
+  var subParts = [];
+  if (profile) {
+    if (profile.mainPractice) subParts.push(profile.mainPractice);
+    if (profile.city) subParts.push(profile.city);
+    if (profile.country && !profile.city) subParts.push(profile.country);
+  }
+  var subEl = document.getElementById('pp-sub');
+  if (subEl) subEl.textContent = subParts.join(' · ');
+
+  // Bio
+  var bio = (profile && profile.bio) ? profile.bio : '';
+  var bioEl = document.getElementById('pp-bio');
+  if (bioEl) {
+    bioEl.textContent = bio;
+    bioEl.style.display = bio ? '' : 'none';
+  }
+
+  // Token video — the identity proof. It plays for every citizen — the token travels with them.
+  var vid = document.getElementById('pp-token-video');
+  if (vid) {
+    vid.load();
+    vid.play().catch(function() {});
+  }
+
+  // Message button — only citizens can DM
+  var msgBtn = document.getElementById('pp-msg-btn');
+  if (msgBtn) {
+    var canDM = window._villageRole === 'citizen' || window._villageRole === 'founder';
+    msgBtn.style.display = canDM ? '' : 'none';
+    msgBtn.onclick = function() {
+      pp.classList.remove('open');
+      if (profile && typeof openMailbox === 'function') openMailbox(profile.id || data.uid);
+    };
+  }
+
+  // Position near the click, avoid viewport edges
+  var vw = window.innerWidth, vh = window.innerHeight;
+  var pw = 272, ph = 380;
+  var x = e.clientX + 14;
+  var y = e.clientY - Math.round(ph / 2);
+  if (x + pw > vw - 10) x = e.clientX - pw - 14;
+  if (y < 10) y = 10;
+  if (y + ph > vh - 10) y = vh - ph - 10;
+  pp.style.left = x + 'px';
+  pp.style.top = y + 'px';
+
+  pp.classList.add('open');
+}
+
+// Wire player popup close button (runs after DOM ready)
+document.addEventListener('DOMContentLoaded', function() {
+  var ppClose = document.getElementById('pp-close');
+  if (ppClose) ppClose.addEventListener('click', function() {
+    var pp = document.getElementById('player-popup');
+    if (pp) { pp.classList.remove('open'); }
+  });
+});
+// Click outside to close player popup
+document.addEventListener('click', function(e) {
+  var pp = document.getElementById('player-popup');
+  if (pp && pp.classList.contains('open') && !pp.contains(e.target)) {
+    pp.classList.remove('open');
+  }
+}, true);
 
 // ── Building Chat Sidebar ─────────────────────────────────────────────────────
 // SQL needed in Supabase (run once):
@@ -21549,7 +21758,7 @@ Mura facilitates. People decide.`;
     // Passport section with token canvas
     html += '<div class="vlt-passport">';
     html += '<div class="vlt-token-wrap" id="vault-token-trigger">';
-    html += '<video id="vault-token-video" src="Token.mov" autoplay loop muted playsinline preload="auto" width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"></video>';
+    html += '<video id="vault-token-video" autoplay loop muted playsinline preload="auto" width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video>';
     html += '<div class="vlt-token-hint">tap to inspect</div>';
     html += '</div>';
     html += '<div>';
