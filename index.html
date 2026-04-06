@@ -22053,6 +22053,10 @@ Mura facilitates. People decide.`;
         html += '</div>';
       }
       html += '<div class="vtj-travel-badge">\u25C6 Travel pass active</div>';
+      // Founder-only: reset for ceremony testing
+      if (window._villageRole === 'founder' || window._IS_LOCAL) {
+        html += '<div style="margin-top:24px;"><button id="vtj-reset-test-btn" style="background:none;border:1px solid rgba(200,168,75,0.25);color:#4a3008;font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit;letter-spacing:0.04em;">↺ Reset for testing</button></div>';
+      }
       html += '</div>';
       html += '</div>';
     } else {
@@ -22128,6 +22132,21 @@ Mura facilitates. People decide.`;
     // Wire request button (exists in journey view)
     var reqBtn = document.getElementById('vtj-request-btn');
     if (reqBtn) reqBtn.addEventListener('click', function() { _requestToken(data); });
+
+    // Wire test-reset button (founder only — for ceremony testing)
+    var resetBtn = document.getElementById('vtj-reset-test-btn');
+    if (resetBtn) resetBtn.addEventListener('click', async function() {
+      resetBtn.disabled = true; resetBtn.textContent = 'Resetting\u2026';
+      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+      await window._supabase.from('village_tokens').update({
+        status: 'requested',
+        requested_at: new Date().toISOString(),
+        granted_by: null, granted_by_name: null,
+        granted_at: null, granted_message: null
+      }).eq('village_id', vid).eq('user_id', window._sbAuthUid);
+      window._myTokenStatus = 'requested';
+      fetchVaultData().then(function(d) { renderVault(d); });
+    });
 
     // Wire download
     var dlBtn = document.getElementById('vault-download-btn');
