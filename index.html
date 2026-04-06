@@ -1918,12 +1918,58 @@ window._isFounder = false;
   .cafe-gate-btn.primary:hover { background:#363636; }
   .cafe-gate-sub { font-size:11px; color:#8e8e8e; margin-top:12px; }
 
-  #cafe-main { display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0; background:#fafafa; }
+  #cafe-main { display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0; background:#f4f2ef; }
   #cafe-main.open { display:flex; }
-  .cafe-tabs { display:flex; gap:2px; padding:0 16px; background:#fff; border-bottom:1px solid #dbdbdb; flex-shrink:0; overflow-x:auto; }
-  .cafe-tab { padding:10px 16px; font-size:12px; font-weight:600; color:#8e8e8e; cursor:pointer; border:none; background:none; white-space:nowrap; border-bottom:2px solid transparent; transition:all 0.2s; font-family:inherit; }
-  .cafe-tab:hover { color:#262626; }
-  .cafe-tab.active { color:#c8a84b; border-bottom-color:#c8a84b; }
+  /* ── Commons scroll nav (replaces tab bar) ── */
+  #commons-scroll-nav {
+    display:flex; overflow-x:auto; padding:0 20px; background:#fff;
+    border-bottom:1px solid #e8e8e8; flex-shrink:0; gap:0;
+    scrollbar-width:none; position:sticky; top:0; z-index:2;
+  }
+  #commons-scroll-nav::-webkit-scrollbar { display:none; }
+  .csn-link {
+    padding:11px 14px; font-size:12px; font-weight:600; color:#8e8e8e;
+    cursor:pointer; white-space:nowrap; border-bottom:2px solid transparent;
+    transition:color 0.15s, border-color 0.15s; user-select:none; flex-shrink:0;
+  }
+  .csn-link:hover { color:#262626; }
+  .csn-link.active { color:#c8a84b; border-bottom-color:#c8a84b; }
+  /* ── Widget canvas ── */
+  #commons-canvas {
+    flex:1; overflow-y:auto; padding:18px 20px;
+    display:flex; flex-direction:column; gap:14px;
+    scrollbar-width:thin; scrollbar-color:#dbdbdb transparent;
+  }
+  .cv-widget-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .cv-widget {
+    background:#fff; border:1px solid #e8e8e8; border-radius:12px;
+    overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 1px 4px rgba(0,0,0,0.05);
+  }
+  .cv-widget-head {
+    display:flex; align-items:center; gap:8px; padding:11px 16px;
+    border-bottom:1px solid #f0f0f0; flex-shrink:0; background:#fff;
+  }
+  .cv-widget-title {
+    flex:1; font-size:11px; font-weight:700; color:#262626;
+    letter-spacing:0.06em; text-transform:uppercase;
+  }
+  .cv-widget-opts {
+    width:24px; height:24px; border:none; background:none; cursor:pointer;
+    color:#ccc; font-size:16px; border-radius:6px; display:flex;
+    align-items:center; justify-content:center; font-family:inherit;
+    transition:background 0.1s, color 0.1s; padding:0; line-height:1;
+  }
+  .cv-widget-opts:hover { background:#f5f5f5; color:#666; }
+  .cv-widget-body { flex:1; overflow-y:auto; }
+  .cv-widget-half .cv-widget-body { max-height:380px; }
+  /* tab-content inside widget: strip old background/flex */
+  .cv-widget .cafe-tab-content {
+    flex:none; background:#fff; padding:16px 18px;
+    max-width:none;
+  }
+  /* keep old classes non-breaking for any JS that still toggles display */
+  .cafe-tabs { display:none; }
   .cafe-tab-content { flex:1; overflow-y:auto; padding:20px 24px; scrollbar-width:thin; scrollbar-color:#dbdbdb transparent; background:#fafafa; }
   .cafe-tab-content > div { max-width:1100px; margin:0 auto; }
 
@@ -6674,26 +6720,87 @@ function toggleVillageSound() {
       </div>
       <div class="cafe-gate-sub">Your answers build a private journal in the Library.</div>
     </div>
-    <!-- Main tabbed interior -->
+    <!-- Main widget canvas -->
     <div id="cafe-main">
-      <div class="cafe-tabs">
-        <button class="cafe-tab active" data-cafe-tab="notice">Notice Board</button>
-        <button class="cafe-tab" data-cafe-tab="tables">Tables</button>
-        <button class="cafe-tab" data-cafe-tab="roundtable">Roundtable Corner</button>
-        <button class="cafe-tab" data-cafe-tab="wall">Maker's Wall</button>
-        <button class="cafe-tab" data-cafe-tab="council">The Council</button>
+      <!-- Scroll nav -->
+      <div id="commons-scroll-nav">
+        <span class="csn-link active" data-target="cw-notice">Notice Board</span>
+        <span class="csn-link" data-target="cw-tables">Tables</span>
+        <span class="csn-link" data-target="cw-wall">Maker's Wall</span>
+        <span class="csn-link" data-target="cw-council">The Council</span>
+        <span class="csn-link" data-target="cw-roundtable">Roundtable Corner</span>
+        <span class="csn-link" data-target="cw-invite">Invite for Tea</span>
       </div>
-      <div class="cafe-tab-content" id="cafe-tab-notice"></div>
-      <div class="cafe-tab-content" id="cafe-tab-tables" style="display:none;"></div>
-      <div class="cafe-tab-content" id="cafe-tab-roundtable" style="display:none;"></div>
-      <div class="cafe-tab-content" id="cafe-tab-wall" style="display:none;"></div>
-      <div class="cafe-tab-content" id="cafe-tab-council" style="display:none;"></div>
-      <!-- Invite bar at bottom -->
-      <div id="cafe-invite-bar">
-        <div class="cafe-invite-label">Invite someone for tea</div>
-        <div id="cafe-invite-chips"></div>
-      </div>
-    </div>
+      <!-- Widget canvas -->
+      <div id="commons-canvas">
+
+        <!-- Notice Board — full width -->
+        <div class="cv-widget" id="cw-notice">
+          <div class="cv-widget-head">
+            <span class="cv-widget-title">Notice Board</span>
+            <button class="cv-widget-opts" title="Options">···</button>
+          </div>
+          <div class="cv-widget-body">
+            <div class="cafe-tab-content" id="cafe-tab-notice"></div>
+          </div>
+        </div>
+
+        <!-- Tables + Maker's Wall — half / half -->
+        <div class="cv-widget-row">
+          <div class="cv-widget cv-widget-half" id="cw-tables">
+            <div class="cv-widget-head">
+              <span class="cv-widget-title">Tables</span>
+              <button class="cv-widget-opts" title="Options">···</button>
+            </div>
+            <div class="cv-widget-body">
+              <div class="cafe-tab-content" id="cafe-tab-tables"></div>
+            </div>
+          </div>
+          <div class="cv-widget cv-widget-half" id="cw-wall">
+            <div class="cv-widget-head">
+              <span class="cv-widget-title">Maker's Wall</span>
+              <button class="cv-widget-opts" title="Options">···</button>
+            </div>
+            <div class="cv-widget-body">
+              <div class="cafe-tab-content" id="cafe-tab-wall"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Council — full width -->
+        <div class="cv-widget" id="cw-council">
+          <div class="cv-widget-head">
+            <span class="cv-widget-title">The Council</span>
+            <button class="cv-widget-opts" title="Options">···</button>
+          </div>
+          <div class="cv-widget-body">
+            <div class="cafe-tab-content" id="cafe-tab-council"></div>
+          </div>
+        </div>
+
+        <!-- Roundtable Corner + Invite for Tea — half / half -->
+        <div class="cv-widget-row">
+          <div class="cv-widget cv-widget-half" id="cw-roundtable">
+            <div class="cv-widget-head">
+              <span class="cv-widget-title">Roundtable Corner</span>
+              <button class="cv-widget-opts" title="Options">···</button>
+            </div>
+            <div class="cv-widget-body">
+              <div class="cafe-tab-content" id="cafe-tab-roundtable"></div>
+            </div>
+          </div>
+          <div class="cv-widget cv-widget-half" id="cw-invite">
+            <div class="cv-widget-head">
+              <span class="cv-widget-title">Invite for Tea</span>
+            </div>
+            <div class="cv-widget-body" style="padding:14px 16px;">
+              <div id="cafe-invite-chips"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /commons-canvas -->
+    </div><!-- /cafe-main -->
   </div>
 </div>
 
@@ -16333,25 +16440,47 @@ function skipCafeGate() {
   document.getElementById('cafe-daily-gate').style.display = 'none';
   document.getElementById('cafe-main').classList.add('open');
   cafeActiveTab = 'notice';
-  switchCafeTab('notice');
   seedCafeNotices();
+  // Render all widgets at once — canvas shows everything
+  renderCafeNotices();
+  renderCafeTables();
+  renderCouncil();
+  renderCafeRoundtable();
+  renderCafeMakerWall();
 }
 
-// === TAB SYSTEM ===
-document.querySelector('.cafe-tabs')?.addEventListener('click', e => {
-  const tab = e.target.closest('.cafe-tab');
-  if (!tab) return;
-  switchCafeTab(tab.dataset.cafeTab);
+// === WIDGET SCROLL NAV ===
+document.getElementById('commons-scroll-nav')?.addEventListener('click', function(e) {
+  const link = e.target.closest('.csn-link');
+  if (!link) return;
+  const targetId = link.dataset.target;
+  // Active state
+  document.querySelectorAll('.csn-link').forEach(l => l.classList.remove('active'));
+  link.classList.add('active');
+  // Scroll widget into view within canvas
+  const canvas = document.getElementById('commons-canvas');
+  const widget = document.getElementById(targetId);
+  if (canvas && widget) {
+    canvas.scrollTo({ top: widget.offsetTop - canvas.offsetTop - 8, behavior: 'smooth' });
+  }
+  // Keep cafeActiveTab in sync for backward compat
+  const tabMap = { 'cw-notice':'notice', 'cw-tables':'tables', 'cw-roundtable':'roundtable', 'cw-wall':'wall', 'cw-council':'council' };
+  if (tabMap[targetId]) cafeActiveTab = tabMap[targetId];
 });
 
 function switchCafeTab(name) {
+  // Scrolls to the named widget — all widgets stay visible on canvas
   cafeActiveTab = name;
-  cafeViewingTable = null;
-  document.querySelectorAll('.cafe-tab').forEach(t => t.classList.toggle('active', t.dataset.cafeTab === name));
-  ['notice', 'tables', 'roundtable', 'wall', 'council'].forEach(n => {
-    const el = document.getElementById('cafe-tab-' + n);
-    if (el) el.style.display = n === name ? '' : 'none';
-  });
+  if (name === 'tables') cafeViewingTable = null;
+  const widgetMap = { notice:'cw-notice', tables:'cw-tables', roundtable:'cw-roundtable', wall:'cw-wall', council:'cw-council' };
+  const widgetId = widgetMap[name];
+  if (widgetId) {
+    const canvas = document.getElementById('commons-canvas');
+    const widget = document.getElementById(widgetId);
+    if (canvas && widget) canvas.scrollTo({ top: widget.offsetTop - canvas.offsetTop - 8, behavior:'smooth' });
+    document.querySelectorAll('.csn-link').forEach(l => l.classList.toggle('active', l.dataset.target === widgetId));
+  }
+  // Re-render the target widget in case data changed
   if (name === 'notice') renderCafeNotices();
   if (name === 'tables') renderCafeTables();
   if (name === 'council') renderCouncil();
@@ -29876,25 +30005,35 @@ body.wm-browser-fs #admin-panel:hover {
     var currentId = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : '';
     container.innerHTML = '';
 
-    villages.forEach(function(v) {
-      if (v.id === '00000000-0000-0000-0000-000000000000') return; // skip Dunbar
+    // Sort: Dunbar first, then others
+    villages.sort(function(a, b) {
+      if (a.id === '00000000-0000-0000-0000-000000000000') return -1;
+      if (b.id === '00000000-0000-0000-0000-000000000000') return 1;
+      return 0;
+    });
 
+    villages.forEach(function(v) {
+      var isDunbar = (v.id === '00000000-0000-0000-0000-000000000000');
       var isCurrent = (v.id === currentId);
       var card = document.createElement('div');
-      card.className = 'travel-card' + (isCurrent ? ' travel-card-here' : '');
+      card.className = 'travel-card' + (isCurrent ? ' travel-card-here' : '') + (isDunbar ? ' travel-card-dunbar' : '');
 
-      var emoji = _craftEmoji[v.craft_focus] || '🏡';
+      var emoji = isDunbar ? '⛩️' : (_craftEmoji[v.craft_focus] || '🏡');
+      var name = isDunbar ? 'Dunbar' : v.name;
+      var line = isDunbar ? 'The arrival square. Where everyone begins.' : (v.founding_line || '');
+      var badge = isDunbar ? '<span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;background:#f0f0f0;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;">Arrival Square</span>' : '';
+
       card.innerHTML =
         '<div class="travel-card-left">' +
           '<div class="travel-card-emoji">' + emoji + '</div>' +
           '<div style="min-width:0;">' +
-            '<div class="travel-card-name">' + v.name + '</div>' +
-            '<div class="travel-card-line">' + (v.founding_line || '') + '</div>' +
+            '<div class="travel-card-name">' + name + '</div>' +
+            '<div class="travel-card-line">' + line + '</div>' +
           '</div>' +
         '</div>' +
         (isCurrent
           ? '<div class="travel-here-badge">You are here</div>'
-          : '<button class="travel-visit-btn">Visit →</button>');
+          : (badge + '<button class="travel-visit-btn">Visit →</button>'));
 
       if (!isCurrent) {
         card.querySelector('.travel-visit-btn').addEventListener('click', function() {
