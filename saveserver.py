@@ -116,8 +116,45 @@ class Handler(BaseHTTPRequestHandler):
             self.send_cors()
             self.end_headers()
             self.wfile.write(body)
+        elif self.path == '/vision':
+            vision_path = os.path.join(os.path.dirname(__file__), 'VISION.md')
+            try:
+                with open(vision_path, encoding='utf-8') as f:
+                    content = f.read()
+                mtime = os.path.getmtime(vision_path)
+                body = json.dumps({'content': content, 'mtime': mtime}).encode()
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception as e:
+                self.send_response(500)
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({'error': str(e)}).encode())
 
     def do_POST(self):
+        if self.path == '/vision':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                content = data.get('content', '')
+                vision_path = os.path.join(os.path.dirname(__file__), 'VISION.md')
+                with open(vision_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(b'{"ok":true}')
+            except Exception as e:
+                self.send_response(400)
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({'error': str(e)}).encode())
+            return
         if self.path == '/mura':
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
