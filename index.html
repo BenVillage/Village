@@ -28550,304 +28550,475 @@ seedMemberLanguage();
 })();
 </script>
 
-<!-- ===== SIDE PANEL ARCHITECTURE ===== -->
+<!-- ===== WINDOW MANAGER ===== -->
 <style>
-/* Tab strip */
-#bldg-tab-strip {
-  position:fixed; left:0; top:0; bottom:0; width:44px; z-index:9050;
-  background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-  border-right:1px solid #dbdbdb; display:flex; flex-direction:column;
-  align-items:center; padding:60px 0 16px; gap:2px; overflow-y:auto;
-  scrollbar-width:none; transition:transform 0.3s ease;
+/* Taskbar — right edge, vertical strip */
+#wm-taskbar {
+  position:fixed; right:0; top:0; bottom:0; width:56px; z-index:9300;
+  background:rgba(255,255,255,0.97); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-left:1px solid #dbdbdb; display:flex; flex-direction:column;
+  align-items:center; padding:8px 0; gap:2px; overflow-y:auto;
+  scrollbar-width:none;
 }
-#bldg-tab-strip::-webkit-scrollbar { display:none; }
-.bt-tab {
-  width:36px; height:36px; border-radius:8px; border:none; background:transparent;
+#wm-taskbar::-webkit-scrollbar { display:none; }
+.wm-tb-btn {
+  width:40px; height:40px; border-radius:10px; border:none; background:transparent;
   cursor:pointer; display:flex; align-items:center; justify-content:center;
-  position:relative; transition:background 0.15s, color 0.15s;
-  color:#8e8e8e; font-size:10px; font-weight:600; font-family:inherit;
+  position:relative; transition:background 0.15s; color:#8e8e8e;
+  font-size:11px; font-weight:700; font-family:inherit;
 }
-.bt-tab:hover { background:rgba(200,168,75,0.08); color:#262626; }
-.bt-tab.active { background:#262626; color:#fff; }
-.bt-tab-dot {
-  position:absolute; top:4px; right:4px; width:6px; height:6px;
+.wm-tb-btn:hover { background:rgba(200,168,75,0.08); color:#262626; }
+.wm-tb-btn.active { background:#262626; color:#fff; }
+.wm-tb-btn.minimised { background:rgba(200,168,75,0.06); }
+.wm-tb-dot {
+  position:absolute; bottom:4px; right:4px; width:5px; height:5px;
   border-radius:50%; background:#c8a84b; display:none;
 }
-.bt-tab-dot.live { display:block; animation:bt-dot-pulse 2s ease-in-out infinite; }
-@keyframes bt-dot-pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
-.bt-label {
-  font-size:8px; color:#8e8e8e; text-align:center; margin-top:1px;
-  line-height:1.1; max-width:40px; overflow:hidden;
-}
+.wm-tb-dot.live { display:block; }
+.wm-tb-sep { width:28px; height:1px; background:#e8e8e8; margin:4px 0; }
 
-/* Panel overrides — desktop only */
+/* Window — overlays become windows */
 @media(min-width:769px) {
-  body.panel-mode #bldg-tab-strip { display:flex; }
-  body.panel-mode #viewport { transition:margin 0.35s cubic-bezier(0.34,1.56,0.64,1); margin-left:44px; }
-  body.panel-mode.panel-open-left #viewport { margin-left:var(--panel-w, 50vw); }
-  body.panel-mode.panel-open-right #viewport { margin-right:calc(var(--panel-w, 50vw) + 56px); }
-  body.panel-mode #top-controls { transition:left 0.35s cubic-bezier(0.34,1.56,0.64,1); left:54px; }
-  body.panel-mode.panel-open-left #top-controls { left:calc(var(--panel-w, 50vw) + 10px); }
-
-  /* Override all building overlays from fullscreen to side panel */
-  body.panel-mode #observatory-overlay,
-  body.panel-mode #mentor-overlay,
-  body.panel-mode #studio-quarter-overlay,
-  body.panel-mode #library-overlay,
-  body.panel-mode #gallery-overlay,
-  body.panel-mode #bonfire-manifesto-overlay,
-  body.panel-mode #exchange-overlay,
-  body.panel-mode #school-overlay,
-  body.panel-mode #cafe-room-overlay {
+  body.wm-mode #wm-taskbar { display:flex; }
+  /* Override all building overlays */
+  body.wm-mode #observatory-overlay,
+  body.wm-mode #mentor-overlay,
+  body.wm-mode #studio-quarter-overlay,
+  body.wm-mode #library-overlay,
+  body.wm-mode #gallery-overlay,
+  body.wm-mode #bonfire-manifesto-overlay,
+  body.wm-mode #exchange-overlay,
+  body.wm-mode #school-overlay,
+  body.wm-mode #cafe-room-overlay {
     position:fixed !important; inset:auto !important;
-    top:0 !important; bottom:0 !important; left:44px !important; right:auto !important;
-    width:var(--panel-w, 50vw) !important; max-width:720px !important; min-width:420px !important;
-    display:flex !important; flex-direction:column !important;
-    transform:translateX(-110%); transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1) !important;
-    box-shadow:4px 0 24px rgba(0,0,0,0.08) !important;
+    border-radius:12px !important; overflow:hidden !important;
+    box-shadow:0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06) !important;
+    border:1px solid #dbdbdb !important;
+    display:none !important; flex-direction:column !important;
+    z-index:9100 !important; transition:none !important;
+    min-width:380px; min-height:300px;
   }
-  body.panel-mode #studio-quarter-overlay.panel-open,
-  body.panel-mode #gallery-overlay.panel-open,
-  body.panel-mode #bonfire-manifesto-overlay.panel-open,
-  body.panel-mode #library-overlay.panel-open,
-  body.panel-mode #cafe-room-overlay.panel-open,
-  body.panel-mode #observatory-overlay.panel-open,
-  body.panel-mode #school-overlay.panel-open,
-  body.panel-mode #mentor-overlay.panel-open,
-  body.panel-mode #exchange-overlay.panel-open {
-    transform:translateX(0) !important; visibility:visible !important;
+  body.wm-mode #studio-quarter-overlay.wm-win-open,
+  body.wm-mode #library-overlay.wm-win-open,
+  body.wm-mode #gallery-overlay.wm-win-open,
+  body.wm-mode #observatory-overlay.wm-win-open,
+  body.wm-mode #school-overlay.wm-win-open,
+  body.wm-mode #mentor-overlay.wm-win-open,
+  body.wm-mode #exchange-overlay.wm-win-open,
+  body.wm-mode #bonfire-manifesto-overlay.wm-win-open,
+  body.wm-mode #cafe-room-overlay.wm-win-open {
+    display:flex !important;
   }
-  /* Right-side panels */
-  body.panel-mode .bldg-panel-right {
-    left:auto !important; right:56px !important;
-    transform:translateX(110%) !important;
+  /* Docked left half — use ID selectors to beat the general rule */
+  body.wm-mode #studio-quarter-overlay.wm-dock-left,
+  body.wm-mode #library-overlay.wm-dock-left,
+  body.wm-mode #gallery-overlay.wm-dock-left,
+  body.wm-mode #observatory-overlay.wm-dock-left,
+  body.wm-mode #school-overlay.wm-dock-left,
+  body.wm-mode #mentor-overlay.wm-dock-left,
+  body.wm-mode #exchange-overlay.wm-dock-left,
+  body.wm-mode #bonfire-manifesto-overlay.wm-dock-left,
+  body.wm-mode #cafe-room-overlay.wm-dock-left {
+    top:8px !important; left:8px !important; bottom:8px !important; right:auto !important;
+    width:calc(50vw - 40px) !important;
   }
-  body.panel-mode .bldg-panel-right.panel-open {
-    transform:translateX(0) !important; visibility:visible !important;
+  /* Docked right half */
+  body.wm-mode #studio-quarter-overlay.wm-dock-right,
+  body.wm-mode #library-overlay.wm-dock-right,
+  body.wm-mode #gallery-overlay.wm-dock-right,
+  body.wm-mode #observatory-overlay.wm-dock-right,
+  body.wm-mode #school-overlay.wm-dock-right,
+  body.wm-mode #mentor-overlay.wm-dock-right,
+  body.wm-mode #exchange-overlay.wm-dock-right,
+  body.wm-mode #bonfire-manifesto-overlay.wm-dock-right,
+  body.wm-mode #cafe-room-overlay.wm-dock-right {
+    top:8px !important; right:64px !important; bottom:8px !important; left:auto !important;
+    width:calc(50vw - 40px) !important;
   }
-  /* Hide panel content when not open (prevent flash) */
-  body.panel-mode .bldg-panel-left:not(.panel-open),
-  body.panel-mode .bldg-panel-right:not(.panel-open) {
-    visibility:hidden;
+  /* Maximised */
+  body.wm-mode #studio-quarter-overlay.wm-maximised,
+  body.wm-mode #library-overlay.wm-maximised,
+  body.wm-mode #gallery-overlay.wm-maximised,
+  body.wm-mode #observatory-overlay.wm-maximised,
+  body.wm-mode #school-overlay.wm-maximised,
+  body.wm-mode #mentor-overlay.wm-maximised,
+  body.wm-mode #exchange-overlay.wm-maximised,
+  body.wm-mode #bonfire-manifesto-overlay.wm-maximised,
+  body.wm-mode #cafe-room-overlay.wm-maximised {
+    top:8px !important; left:8px !important; right:64px !important; bottom:8px !important;
+    width:auto !important;
+  }
+  /* Floating — positioned via inline style, just needs border-radius */
+  body.wm-mode #studio-quarter-overlay.wm-floating,
+  body.wm-mode #library-overlay.wm-floating,
+  body.wm-mode #gallery-overlay.wm-floating,
+  body.wm-mode #observatory-overlay.wm-floating,
+  body.wm-mode #school-overlay.wm-floating,
+  body.wm-mode #mentor-overlay.wm-floating,
+  body.wm-mode #exchange-overlay.wm-floating,
+  body.wm-mode #bonfire-manifesto-overlay.wm-floating,
+  body.wm-mode #cafe-room-overlay.wm-floating {
+    top:auto !important; left:auto !important; right:auto !important; bottom:auto !important;
+    width:auto !important;
   }
 }
 
-/* Resize handle */
-.panel-resize-handle {
-  position:absolute; top:0; bottom:0; width:6px; cursor:col-resize; z-index:2;
-  transition:background 0.15s;
+/* Window title bar — injected into .bld-top */
+.wm-controls {
+  display:flex; gap:6px; align-items:center; margin-left:auto;
 }
-.panel-resize-handle:hover, .panel-resize-handle.dragging { background:rgba(200,168,75,0.2); }
-.bldg-panel-left .panel-resize-handle { right:-3px; }
-.bldg-panel-right .panel-resize-handle { left:-3px; }
+.wm-ctrl-btn {
+  width:24px; height:24px; border-radius:6px; border:none;
+  background:transparent; cursor:pointer; font-size:13px;
+  color:#8e8e8e; display:flex; align-items:center; justify-content:center;
+  transition:background 0.1s, color 0.1s;
+}
+.wm-ctrl-btn:hover { background:#f0f0f0; color:#262626; }
+.wm-ctrl-btn.close:hover { background:#fee; color:#e55; }
 
-/* Hide tab strip on mobile */
-@media(max-width:768px) { #bldg-tab-strip { display:none !important; } }
-/* Panel mode: disable the bldg-chat-open right shift */
-@media(min-width:769px) {
-  body.panel-mode #admin-panel { z-index:9200; }
-  body.panel-mode.bldg-chat-open #studio-quarter-overlay,
-  body.panel-mode.bldg-chat-open #library-overlay,
-  body.panel-mode.bldg-chat-open #gallery-overlay,
-  body.panel-mode.bldg-chat-open #observatory-overlay,
-  body.panel-mode.bldg-chat-open #school-overlay,
-  body.panel-mode.bldg-chat-open #mentor-overlay,
-  body.panel-mode.bldg-chat-open #exchange-overlay {
-    right:auto !important;
-  }
+/* Resize handles */
+.wm-resize-e, .wm-resize-w, .wm-resize-s, .wm-resize-se, .wm-resize-sw {
+  position:absolute; z-index:3;
 }
+.wm-resize-e { top:12px; right:-3px; bottom:12px; width:6px; cursor:ew-resize; }
+.wm-resize-w { top:12px; left:-3px; bottom:12px; width:6px; cursor:ew-resize; }
+.wm-resize-s { left:12px; right:12px; bottom:-3px; height:6px; cursor:ns-resize; }
+.wm-resize-se { right:-3px; bottom:-3px; width:14px; height:14px; cursor:nwse-resize; }
+.wm-resize-sw { left:-3px; bottom:-3px; width:14px; height:14px; cursor:nesw-resize; }
+
+@media(max-width:768px) { #wm-taskbar { display:none !important; } }
 </style>
 
 <script>
 (function() {
-  // ===== SIDE PANEL SYSTEM =====
-  if (window.innerWidth < 769) return; // Mobile stays fullscreen
+  // ===== WINDOW MANAGER =====
+  if (window.innerWidth < 769) return;
 
-  var PANEL_BUILDINGS = [
-    { id:'studio-quarter-overlay', slug:'studio', label:'Studio', icon:'S' },
-    { id:'gallery-overlay', slug:'gallery', label:'Gallery', icon:'G' },
-    { id:'bonfire-manifesto-overlay', slug:'bonfire', label:'Bonfire', icon:'B' },
-    { id:'library-overlay', slug:'library', label:'Library', icon:'L' },
-    { id:'cafe-room-overlay', slug:'cafe', label:'Commons', icon:'C' },
-    { id:'observatory-overlay', slug:'obs', label:'Obs', icon:'O' },
-    { id:'school-overlay', slug:'school', label:'School', icon:'Sc' },
-    { id:'mentor-overlay', slug:'mentor', label:'Mentor', icon:'M' },
-    { id:'exchange-overlay', slug:'exchange', label:'Exch', icon:'E' }
+  var BUILDINGS = [
+    { id:'studio-quarter-overlay', label:'Studio', icon:'St' },
+    { id:'gallery-overlay', label:'Gallery', icon:'Ga' },
+    { id:'library-overlay', label:'Library', icon:'Li' },
+    { id:'cafe-room-overlay', label:'Commons', icon:'Co' },
+    { id:'observatory-overlay', label:'Obs', icon:'Ob' },
+    { id:'school-overlay', label:'School', icon:'Sc' },
+    { id:'mentor-overlay', label:'Mentor', icon:'Me' },
+    { id:'exchange-overlay', label:'Exchange', icon:'Ex' },
+    { id:'bonfire-manifesto-overlay', label:'Bonfire', icon:'Bf' }
   ];
 
-  var _activePanel = null;
-  var _panelSide = localStorage.getItem(typeof vKey==='function' ? vKey('panelSide') : 'panelSide') || 'left';
-  var _panelWidth = parseInt(localStorage.getItem(typeof vKey==='function' ? vKey('panelWidth') : 'panelWidth')) || 0;
+  var _openWindows = {}; // id -> { state: 'docked-left'|'docked-right'|'maximised'|'floating'|'minimised', x, y, w, h }
+  var _topZ = 9100;
 
-  document.body.classList.add('panel-mode');
-  if (_panelWidth > 0) document.body.style.setProperty('--panel-w', _panelWidth + 'px');
+  document.body.classList.add('wm-mode');
 
-  // Build tab strip
-  var strip = document.createElement('div');
-  strip.id = 'bldg-tab-strip';
+  // Build taskbar
+  var taskbar = document.createElement('div');
+  taskbar.id = 'wm-taskbar';
 
-  PANEL_BUILDINGS.forEach(function(b) {
-    var tab = document.createElement('button');
-    tab.className = 'bt-tab';
-    tab.dataset.bid = b.id;
-    tab.title = b.label;
-    tab.innerHTML = '<span>' + b.icon + '</span><span class="bt-tab-dot"></span>';
-    tab.addEventListener('click', function() {
-      if (_activePanel === b.id) {
-        closePanel();
-      } else {
-        openPanel(b.id);
-      }
-    });
-    strip.appendChild(tab);
+  // Replace the admin panel with our taskbar (hide admin panel)
+  var adminPanel = document.getElementById('admin-panel');
+  if (adminPanel) adminPanel.style.display = 'none';
 
-    var label = document.createElement('div');
-    label.className = 'bt-label';
-    label.textContent = b.label;
-    strip.appendChild(label);
+  BUILDINGS.forEach(function(b) {
+    var btn = document.createElement('button');
+    btn.className = 'wm-tb-btn';
+    btn.dataset.wid = b.id;
+    btn.title = b.label;
+    btn.textContent = b.icon;
+    var dot = document.createElement('span');
+    dot.className = 'wm-tb-dot';
+    btn.appendChild(dot);
+    btn.addEventListener('click', function() { toggleWindow(b.id); });
+    taskbar.appendChild(btn);
   });
 
-  document.body.appendChild(strip);
+  // Separator
+  var sep = document.createElement('div');
+  sep.className = 'wm-tb-sep';
+  taskbar.appendChild(sep);
 
-  // Add panel-side class, strip conflicting inline styles, add resize handle
-  PANEL_BUILDINGS.forEach(function(b) {
+  // Re-add essential admin buttons to taskbar (bonfire chat, messages, sign out)
+  var bonfireBtn = document.createElement('button');
+  bonfireBtn.className = 'wm-tb-btn';
+  bonfireBtn.title = 'Bonfire Chat';
+  bonfireBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12.5 2C10.5 5.5 8 8.5 8.5 12.5C7 11 6.5 8.5 7 6.5C4.5 9 3.5 12 3.5 14.5C3.5 19 7.3 22.5 12 22.5C16.7 22.5 20.5 19 20.5 14.5C20.5 10.5 18.5 7.5 16 5.5C16.5 7.5 16 10 14.5 11.5C15 8 13.5 4.5 12.5 2Z"/></svg>';
+  bonfireBtn.addEventListener('click', function() {
+    var bfNav = document.getElementById('bonfire-nav-item');
+    if (bfNav) bfNav.click();
+  });
+  taskbar.appendChild(bonfireBtn);
+
+  document.body.appendChild(taskbar);
+
+  // Strip inline styles from all building overlays
+  BUILDINGS.forEach(function(b) {
     var ov = document.getElementById(b.id);
     if (!ov) return;
-    // Nuke the inline style — CSS handles everything in panel mode
     ov.removeAttribute('style');
-    ov.classList.add(_panelSide === 'right' ? 'bldg-panel-right' : 'bldg-panel-left');
 
-    // Add resize handle
-    var handle = document.createElement('div');
-    handle.className = 'panel-resize-handle';
-    ov.appendChild(handle);
+    // Inject window controls into the header bar
+    var header = ov.querySelector('.bld-top, #cafe-room-top');
+    if (header) {
+      // Remove existing leave button
+      var leaveBtn = header.querySelector('.bld-leave, #cafe-room-leave');
 
-    // Resize drag
-    var startX = 0, startW = 0;
-    handle.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-      startX = e.clientX;
-      startW = ov.offsetWidth;
-      handle.classList.add('dragging');
-      function onMove(ev) {
-        var isLeft = ov.classList.contains('bldg-panel-left');
-        var dx = isLeft ? (ev.clientX - startX) : (startX - ev.clientX);
-        var newW = Math.max(420, Math.min(window.innerWidth * 0.7, startW + dx));
-        document.body.style.setProperty('--panel-w', newW + 'px');
-      }
-      function onUp() {
-        handle.classList.remove('dragging');
-        var w = parseInt(getComputedStyle(document.body).getPropertyValue('--panel-w'));
-        if (w) {
-          _panelWidth = w;
-          localStorage.setItem(typeof vKey==='function' ? vKey('panelWidth') : 'panelWidth', w);
+      var controls = document.createElement('div');
+      controls.className = 'wm-controls';
+      controls.innerHTML =
+        '<button class="wm-ctrl-btn" data-wm="dock-left" title="Dock left half">◧</button>' +
+        '<button class="wm-ctrl-btn" data-wm="dock-right" title="Dock right half">◨</button>' +
+        '<button class="wm-ctrl-btn" data-wm="maximise" title="Maximise">□</button>' +
+        '<button class="wm-ctrl-btn" data-wm="minimise" title="Minimise to taskbar">−</button>' +
+        '<button class="wm-ctrl-btn close" data-wm="close" title="Close">×</button>';
+
+      controls.addEventListener('click', function(e) {
+        var action = e.target.closest('[data-wm]')?.dataset.wm;
+        if (!action) return;
+        e.stopPropagation();
+        if (action === 'close') closeWindow(b.id);
+        else if (action === 'minimise') minimiseWindow(b.id);
+        else if (action === 'dock-left') dockWindow(b.id, 'left');
+        else if (action === 'dock-right') dockWindow(b.id, 'right');
+        else if (action === 'maximise') maximiseWindow(b.id);
+      });
+
+      // Replace the leave button with controls, or append
+      if (leaveBtn) header.replaceChild(controls, leaveBtn);
+      else header.appendChild(controls);
+
+      // Make header draggable (move window)
+      header.style.cursor = 'grab';
+      header.addEventListener('mousedown', function(e) {
+        if (e.target.closest('.wm-controls, button, input, select')) return;
+        var ovEl = document.getElementById(b.id);
+        if (!ovEl || !ovEl.classList.contains('wm-floating')) return;
+        e.preventDefault();
+        header.style.cursor = 'grabbing';
+        var startX = e.clientX, startY = e.clientY;
+        var rect = ovEl.getBoundingClientRect();
+        var origLeft = rect.left, origTop = rect.top;
+        function onMove(ev) {
+          ovEl.style.left = (origLeft + ev.clientX - startX) + 'px';
+          ovEl.style.top = (origTop + ev.clientY - startY) + 'px';
         }
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-      }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+        function onUp() {
+          header.style.cursor = 'grab';
+          _saveWinState(b.id);
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    }
+
+    // Add resize handles
+    ['e','w','s','se','sw'].forEach(function(dir) {
+      var h = document.createElement('div');
+      h.className = 'wm-resize-' + dir;
+      h.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var ovEl = document.getElementById(b.id);
+        if (!ovEl) return;
+        var rect = ovEl.getBoundingClientRect();
+        var startX = e.clientX, startY = e.clientY;
+        var startW = rect.width, startH = rect.height;
+        var startL = rect.left, startT = rect.top;
+
+        // Switch to floating mode if docked
+        if (!ovEl.classList.contains('wm-floating')) {
+          ovEl.classList.remove('wm-dock-left','wm-dock-right','wm-maximised');
+          ovEl.classList.add('wm-floating');
+          ovEl.style.left = startL + 'px';
+          ovEl.style.top = startT + 'px';
+          ovEl.style.width = startW + 'px';
+          ovEl.style.height = startH + 'px';
+        }
+
+        function onMove(ev) {
+          var dx = ev.clientX - startX, dy = ev.clientY - startY;
+          if (dir.includes('e')) ovEl.style.width = Math.max(380, startW + dx) + 'px';
+          if (dir.includes('w')) { ovEl.style.width = Math.max(380, startW - dx) + 'px'; ovEl.style.left = (startL + dx) + 'px'; }
+          if (dir.includes('s')) ovEl.style.height = Math.max(300, startH + dy) + 'px';
+        }
+        function onUp() {
+          _saveWinState(b.id);
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+      ov.appendChild(h);
     });
   });
 
-  // Flag to prevent existing open functions from doing display changes
-  window._panelModeActive = true;
-
-  function openPanel(buildingId) {
-    // Close any currently open panel (just remove class, don't trigger close functions)
-    if (_activePanel && _activePanel !== buildingId) {
-      var prevOv = document.getElementById(_activePanel);
-      if (prevOv) prevOv.classList.remove('panel-open');
+  function toggleWindow(id) {
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    if (ov.classList.contains('wm-win-open')) {
+      if (ov.classList.contains('wm-minimised-state')) {
+        // Restore from minimised
+        restoreWindow(id);
+      } else {
+        closeWindow(id);
+      }
+    } else {
+      openWindow(id);
     }
+  }
 
-    var ov = document.getElementById(buildingId);
+  function openWindow(id) {
+    var ov = document.getElementById(id);
     if (!ov) return;
 
-    // The overlays have display:flex from CSS. Add slide class + force transform via JS.
-    ov.classList.add('panel-open');
-    // CSS !important should handle this but inline style from old open functions can interfere
-    ov.style.setProperty('transform', 'translateX(0)', 'important');
-    ov.style.setProperty('visibility', 'visible', 'important');
+    // Load saved state or default to docked-left
+    var saved = _loadWinState(id);
+    ov.classList.remove('wm-dock-left','wm-dock-right','wm-maximised','wm-floating','wm-minimised-state');
 
-    // Update body class for map compression
-    document.body.classList.remove('panel-open-left', 'panel-open-right');
-    document.body.classList.add(_panelSide === 'right' ? 'panel-open-right' : 'panel-open-left');
+    if (saved && saved.state === 'floating') {
+      ov.classList.add('wm-floating');
+      ov.style.left = saved.x + 'px'; ov.style.top = saved.y + 'px';
+      ov.style.width = saved.w + 'px'; ov.style.height = saved.h + 'px';
+    } else if (saved && saved.state === 'docked-right') {
+      ov.classList.add('wm-dock-right');
+    } else if (saved && saved.state === 'maximised') {
+      ov.classList.add('wm-maximised');
+    } else {
+      ov.classList.add('wm-dock-left');
+    }
 
-    // Update tab active state
-    strip.querySelectorAll('.bt-tab').forEach(function(t) {
-      t.classList.toggle('active', t.dataset.bid === buildingId);
+    ov.classList.add('wm-win-open');
+    bringToFront(ov);
+    _updateTaskbar();
+  }
+
+  function closeWindow(id) {
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    ov.classList.remove('wm-win-open','wm-dock-left','wm-dock-right','wm-maximised','wm-floating','wm-minimised-state');
+    ov.style.removeProperty('left'); ov.style.removeProperty('top');
+    ov.style.removeProperty('width'); ov.style.removeProperty('height');
+    _updateTaskbar();
+  }
+
+  function minimiseWindow(id) {
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    ov.classList.add('wm-minimised-state');
+    ov.style.display = 'none';
+    _updateTaskbar();
+  }
+
+  function restoreWindow(id) {
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    ov.classList.remove('wm-minimised-state');
+    ov.style.removeProperty('display');
+    bringToFront(ov);
+    _updateTaskbar();
+  }
+
+  function dockWindow(id, side) {
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    ov.classList.remove('wm-dock-left','wm-dock-right','wm-maximised','wm-floating','wm-minimised-state');
+    ov.style.removeProperty('left'); ov.style.removeProperty('top');
+    ov.style.removeProperty('width'); ov.style.removeProperty('height');
+    ov.classList.add(side === 'right' ? 'wm-dock-right' : 'wm-dock-left');
+    ov.style.removeProperty('display');
+    bringToFront(ov);
+    _saveWinState(id, { state: 'docked-' + side });
+  }
+
+  function maximiseWindow(id) {
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    ov.classList.remove('wm-dock-left','wm-dock-right','wm-floating','wm-minimised-state');
+    ov.style.removeProperty('left'); ov.style.removeProperty('top');
+    ov.style.removeProperty('width'); ov.style.removeProperty('height');
+    ov.classList.add('wm-maximised');
+    ov.style.removeProperty('display');
+    bringToFront(ov);
+    _saveWinState(id, { state: 'maximised' });
+  }
+
+  function bringToFront(ov) {
+    _topZ++;
+    ov.style.zIndex = _topZ;
+  }
+
+  function _updateTaskbar() {
+    taskbar.querySelectorAll('.wm-tb-btn[data-wid]').forEach(function(btn) {
+      var ov = document.getElementById(btn.dataset.wid);
+      if (!ov) return;
+      var isOpen = ov.classList.contains('wm-win-open');
+      var isMin = ov.classList.contains('wm-minimised-state');
+      btn.classList.toggle('active', isOpen && !isMin);
+      btn.classList.toggle('minimised', isOpen && isMin);
     });
-
-    _activePanel = buildingId;
-
-    // Re-center camera on avatar after map compresses
-    setTimeout(function() {
-      if (typeof updateCamera === 'function') updateCamera();
-    }, 400);
   }
 
-  function closePanel() {
-    if (!_activePanel) return;
-    var ov = document.getElementById(_activePanel);
-    if (ov) {
-      ov.classList.remove('panel-open');
-      // After transition, hide via the original method
-      // In panel mode, CSS handles visibility via transform — don't set display:none
+  function _saveWinState(id, state) {
+    if (!state) {
+      var ov = document.getElementById(id);
+      if (!ov) return;
+      var rect = ov.getBoundingClientRect();
+      state = { state: 'floating', x: rect.left, y: rect.top, w: rect.width, h: rect.height };
+      if (ov.classList.contains('wm-dock-left')) state = { state: 'docked-left' };
+      else if (ov.classList.contains('wm-dock-right')) state = { state: 'docked-right' };
+      else if (ov.classList.contains('wm-maximised')) state = { state: 'maximised' };
     }
-    document.body.classList.remove('panel-open-left', 'panel-open-right');
-    strip.querySelectorAll('.bt-tab').forEach(function(t) { t.classList.remove('active'); });
-    _activePanel = null;
-    setTimeout(function() { if (typeof updateCamera === 'function') updateCamera(); }, 400);
+    try { localStorage.setItem(typeof vKey==='function' ? vKey('wm_'+id) : 'wm_'+id, JSON.stringify(state)); } catch(_) {}
   }
 
-  // Override existing close buttons to use closePanel instead
-  document.addEventListener('click', function(e) {
-    if (!_activePanel) return;
-    var btn = e.target.closest('.bld-leave, #cafe-room-leave');
-    if (btn) {
-      e.preventDefault();
-      e.stopPropagation();
-      closePanel();
-    }
-  }, true);
+  function _loadWinState(id) {
+    try { return JSON.parse(localStorage.getItem(typeof vKey==='function' ? vKey('wm_'+id) : 'wm_'+id)); } catch(_) { return null; }
+  }
 
-  // Escape closes the active panel
+  // Click on window brings to front
+  BUILDINGS.forEach(function(b) {
+    var ov = document.getElementById(b.id);
+    if (ov) ov.addEventListener('mousedown', function() { if (ov.classList.contains('wm-win-open')) bringToFront(ov); });
+  });
+
+  // Override building proximity enter
+  var _origOpenBP = window.openBuildingPage;
+  if (typeof _origOpenBP === 'function') {
+    window.openBuildingPage = function(name) {
+      var mapping = {
+        'Studio Quarter':'studio-quarter-overlay', 'Library / Archive':'library-overlay',
+        'Gallery / Market':'gallery-overlay', 'Commons / Café':'cafe-room-overlay',
+        'Observatory / World':'observatory-overlay', 'School':'school-overlay',
+        'Mentor Cluster':'mentor-overlay', 'Residency / Exchange':'exchange-overlay',
+        'Bonfire Plaza':'bonfire-manifesto-overlay'
+      };
+      var panelId = mapping[name];
+      if (panelId && window.innerWidth >= 769) openWindow(panelId);
+      else _origOpenBP(name);
+    };
+  }
+
+  // Escape closes the frontmost window
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && _activePanel) {
-      // Don't close panel if mondo or vault is open
+    if (e.key === 'Escape') {
       var mondo = document.getElementById('mondo-overlay');
       if (mondo && mondo.classList.contains('open')) return;
       var vault = document.getElementById('vault-overlay');
       if (vault && vault.classList.contains('open')) return;
-      closePanel();
-      e.stopPropagation();
+      // Find the topmost open window
+      var topWin = null, topZVal = 0;
+      BUILDINGS.forEach(function(b) {
+        var ov = document.getElementById(b.id);
+        if (ov && ov.classList.contains('wm-win-open') && !ov.classList.contains('wm-minimised-state')) {
+          var z = parseInt(ov.style.zIndex) || 0;
+          if (z >= topZVal) { topZVal = z; topWin = b.id; }
+        }
+      });
+      if (topWin) { closeWindow(topWin); e.stopPropagation(); }
     }
   });
-
-  // Override building proximity enter to use panel instead of fullscreen
-  var _origOpenBP = window.openBuildingPage;
-  if (typeof _origOpenBP === 'function') {
-    window.openBuildingPage = function(name) {
-      // Find which panel this building maps to
-      var mapping = {
-        'Studio Quarter': 'studio-quarter-overlay',
-        'Library / Archive': 'library-overlay',
-        'Gallery / Market': 'gallery-overlay',
-        'Commons / Café': 'cafe-room-overlay',
-        'Observatory / World': 'observatory-overlay',
-        'School': 'school-overlay',
-        'Mentor Cluster': 'mentor-overlay',
-        'Residency / Exchange': 'exchange-overlay',
-        'Bonfire Plaza': 'bonfire-manifesto-overlay'
-      };
-      var panelId = mapping[name];
-      if (panelId && window.innerWidth >= 769) {
-        openPanel(panelId);
-      } else {
-        _origOpenBP(name);
-      }
-    };
-  }
 })();
 </script>
 
