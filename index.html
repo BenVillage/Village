@@ -6350,8 +6350,6 @@ function toggleVillageSound() {
     <div class="admin-spacer"></div>
   </div>
   <div class="admin-nav">
-    <div class="admin-nav-item" data-panel="settings" title="Settings" style="display:none!important;"></div>
-    <div class="admin-nav-item" id="admin-mode-toggle" title="Toggle Admin Mode" style="display:none!important;"></div>
     <div class="admin-nav-divider"></div>
     <div class="admin-nav-item" data-panel="bonfire" id="bonfire-nav-item" title="Bonfire Chat">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2C10.5 5.5 8 8.5 8.5 12.5C7 11 6.5 8.5 7 6.5C4.5 9 3.5 12 3.5 14.5C3.5 19 7.3 22.5 12 22.5C16.7 22.5 20.5 19 20.5 14.5C20.5 10.5 18.5 7.5 16 5.5C16.5 7.5 16 10 14.5 11.5C15 8 13.5 4.5 12.5 2Z"/><path d="M9.5 16C8.5 17.5 9 20 10.5 20C10 18.5 10 16.5 9.5 16Z"/></svg></span>
@@ -23450,7 +23448,7 @@ const adminModeToggle = document.getElementById('admin-mode-toggle');
 const adminModeBadge = document.getElementById('admin-mode-badge');
 const adminOnlyNavItems = adminPanel.querySelectorAll('.admin-nav-item[data-panel="map-tools"]');
 
-adminModeToggle.addEventListener('click', () => {
+adminModeToggle?.addEventListener('click', () => {
   isAdminMode = !isAdminMode;
   adminModeBadge.textContent = isAdminMode ? 'ON' : 'OFF';
   adminModeBadge.style.background = isAdminMode ? '#e8f4fd' : '#f0f0f0';
@@ -27663,16 +27661,8 @@ seedMemberLanguage();
     var signoutNav = document.getElementById('nav-signout');
     if (signoutNav) signoutNav.style.display = (role !== 'guest') ? '' : 'none';
 
-    // Founder-only sidebar nav items (by ID)
-    ['admin-mode-toggle'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.style.display = isFounder ? '' : 'none';
-    });
-    // Founder-only nav items (by data-panel)
-    ['settings'].forEach(function(panel) {
-      var el = document.querySelector('.admin-nav-item[data-panel="' + panel + '"]');
-      if (el) el.style.display = isFounder ? 'flex' : 'none';
-    });
+    // (founder-only toggle items removed from nav)
+    // (settings and admin-mode-toggle items removed from nav HTML)
     // Travel — visible for citizen and founder (future: visit other villages)
     var travelNav = document.getElementById('nav-travel');
     if (travelNav) travelNav.style.display = isCitizenPlus ? 'flex' : 'none';
@@ -29249,6 +29239,15 @@ seedMemberLanguage();
 }
 /* Dev hamburger — hidden */
 #dev-hamburger { display:none !important; }
+/* Nav slides off-screen in browser fullscreen — hover near right edge to reveal */
+body.wm-browser-fs #admin-panel {
+  transform: translateX(50px);
+  transition: transform 0.25s ease;
+}
+body.wm-browser-fs #admin-panel:hover {
+  transform: translateX(0);
+  transition: transform 0.15s ease;
+}
 /* Vault token — clickable cue on hover */
 .vlt-token-wrap { position:relative; }
 .vlt-token-wrap video { transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease; border-radius:50%; }
@@ -29440,9 +29439,9 @@ seedMemberLanguage();
   function _showSnap(zone) {
     if (!zone) { _snapPrev.style.display='none'; return; }
     var sp=_snapPrev.style; sp.display='block';
-    if(zone==='top')  {sp.top='0';sp.left='0';   sp.width='100vw';sp.height='100vh';}
-    if(zone==='left') {sp.top='0';sp.left='0';   sp.width='50vw'; sp.height='100vh';}
-    if(zone==='right'){sp.top='0';sp.left='50vw';sp.width='50vw'; sp.height='100vh';}
+    if(zone==='top')  {sp.top='0';sp.left='0';   sp.width='100vw';          sp.height='100vh';}
+    if(zone==='left') {sp.top='0';sp.left='0';   sp.width='50vw';           sp.height='100vh';}
+    if(zone==='right'){sp.top='0';sp.left='50vw';sp.width='calc(50vw - 56px)';sp.height='100vh';}
   }
 
   function _makeDrag(handle, ov, ovId) {
@@ -29472,7 +29471,7 @@ seedMemberLanguage();
       var _zone=null;
       function mv(ev){
         var nl=ol+ev.clientX-sx, nt=ot+ev.clientY-sy;
-        var z=ev.clientY<6?'top':ev.clientX<6?'left':ev.clientX>window.innerWidth-6?'right':null;
+        var z=ev.clientY<6?'top':ev.clientX<6?'left':ev.clientX>window.innerWidth-62?'right':null;
         if(z!==_zone){_zone=z;_showSnap(z);}
         // Only move the window when not hovering a snap zone
         if(!z){_sp(ov,'left',nl+'px');_sp(ov,'top',nt+'px');if(ovId)_positionChat(ovId);}
@@ -29490,7 +29489,7 @@ seedMemberLanguage();
             _setPos(ov,'0px','0px','50vw','100vh');
             _sp(ov,'border-radius','0px');ov.dataset.wmSnap='left';
           }else{
-            _setPos(ov,'50vw','0px','50vw','100vh');
+            _setPos(ov,'50vw','0px','calc(50vw - 56px)','100vh');
             _sp(ov,'border-radius','0px');ov.dataset.wmSnap='right';
           }
         }
@@ -29625,7 +29624,12 @@ seedMemberLanguage();
     }
   });
   document.addEventListener('fullscreenchange', function() {
-    if (!document.fullscreenElement) fsBtn.innerHTML = _fsIconExpand;
+    if (document.fullscreenElement) {
+      document.body.classList.add('wm-browser-fs');
+    } else {
+      document.body.classList.remove('wm-browser-fs');
+      fsBtn.innerHTML = _fsIconExpand;
+    }
   });
   // Insert at the very top of admin-nav (just below the profile pic, first nav item)
   var adminNav = document.querySelector('.admin-nav');
