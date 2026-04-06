@@ -3620,6 +3620,20 @@ window._isFounder = false;
   .vtj-coin-back { transform: rotateY(180deg); background: #1a1008; }
   .vtj-coin-back-photo { width: 100%; height: 100%; background-size: cover; background-position: center; background-color: #2a1c08; }
   .vtj-coin-back-letter { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; font-weight: 700; color: rgba(200,168,75,0.9); background: #1a1008; }
+  .vtj-key-wrap { display: flex; align-items: center; gap: 10px; margin-top: 14px; justify-content: center; }
+  .vtj-key {
+    display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px;
+    border: 1px solid rgba(200,168,75,0.3); border-radius: 16px;
+    background: rgba(200,168,75,0.06); color: #8a6020; font-size: 11px;
+    cursor: grab; user-select: none; -webkit-user-select: none;
+    transition: all 0.2s; letter-spacing: 0.03em;
+  }
+  .vtj-key:hover { border-color: rgba(200,168,75,0.6); background: rgba(200,168,75,0.12); color: #c8a84b; }
+  .vtj-key:active { cursor: grabbing; }
+  .vtj-key.vtj-key-dragging { opacity: 0.5; transform: scale(0.9); }
+  .vtj-coin.vtj-coin-drop-target { box-shadow: 0 0 60px rgba(200,168,75,0.8), 0 0 20px rgba(200,168,75,0.5); }
+  .vtj-coin.vtj-coin-unlocking { animation: vtj-unlock 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes vtj-unlock { 0% { transform: scale(1); } 30% { transform: scale(1.1); } 60% { transform: scale(0.95); } 100% { transform: scale(1); } }
   .vtj-granted-message {
     margin-top: 20px; padding: 20px; border: 1px solid rgba(200,168,75,0.2);
     border-radius: 8px; background: rgba(200,168,75,0.04);
@@ -22079,7 +22093,12 @@ Mura facilitates. People decide.`;
         html += '<div class="vtj-coin-back-letter">' + _escV(_initial) + '</div>';
       }
       html += '</div></div>';
-      html += '<div class="vlt-token-hint" style="margin-top:10px;font-size:11px;color:#4a3008;letter-spacing:0.04em;">tap to flip</div>';
+      html += '<div class="vtj-key-wrap">';
+      html += '<div class="vlt-token-hint" style="font-size:11px;color:#4a3008;letter-spacing:0.04em;">tap to flip</div>';
+      html += '</div>';
+      html += '<div class="vtj-key-wrap" style="margin-top:8px;">';
+      html += '<div class="vtj-key" id="vtj-key" draggable="true">\uD83D\uDD11 drag to inspect</div>';
+      html += '</div>';
       html += '</div>';
       html += '<div>';
       html += _pf('Village name', name, 'big');
@@ -22172,6 +22191,33 @@ Mura facilitates. People decide.`;
         vtjCoin.classList.toggle('vtj-coin-flipped');
       });
     }
+    // Key drag → drop on coin → open token modal
+    var vtjKey = document.getElementById('vtj-key');
+    if (vtjKey && vtjCoin) {
+      // HTML5 drag events
+      vtjKey.addEventListener('dragstart', function(e) {
+        vtjKey.classList.add('vtj-key-dragging');
+        e.dataTransfer.setData('text/plain', 'key');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      vtjKey.addEventListener('dragend', function() { vtjKey.classList.remove('vtj-key-dragging'); vtjCoin.classList.remove('vtj-coin-drop-target'); });
+      vtjCoin.addEventListener('dragover', function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; vtjCoin.classList.add('vtj-coin-drop-target'); });
+      vtjCoin.addEventListener('dragleave', function() { vtjCoin.classList.remove('vtj-coin-drop-target'); });
+      vtjCoin.addEventListener('drop', function(e) {
+        e.preventDefault();
+        vtjCoin.classList.remove('vtj-coin-drop-target');
+        vtjKey.classList.remove('vtj-key-dragging');
+        // Unlock animation then open modal
+        vtjCoin.classList.add('vtj-coin-unlocking');
+        setTimeout(function() { vtjCoin.classList.remove('vtj-coin-unlocking'); openTokenModal(data); }, 600);
+      });
+      // Touch fallback — tap key to open modal directly (drag is hard on mobile)
+      vtjKey.addEventListener('click', function(e) {
+        e.stopPropagation();
+        vtjCoin.classList.add('vtj-coin-unlocking');
+        setTimeout(function() { vtjCoin.classList.remove('vtj-coin-unlocking'); openTokenModal(data); }, 400);
+      });
+    }
 
     // Wire request button (exists in journey view)
     var reqBtn = document.getElementById('vtj-request-btn');
@@ -22189,6 +22235,8 @@ Mura facilitates. People decide.`;
         granted_at: null, granted_message: null
       }).eq('village_id', vid).eq('user_id', window._sbAuthUid);
       window._myTokenStatus = 'requested';
+      // Clear celebration flag so next grant triggers ceremony
+      localStorage.removeItem(vKey('tokenCelebrated'));
       fetchVaultData().then(function(d) { renderVault(d); });
     });
 
@@ -22555,14 +22603,15 @@ Mura facilitates. People decide.`;
     requestAnimationFrame(function() {
       requestAnimationFrame(function() { el.classList.add('tc-stage-1'); });
     });
-    // Close handler — goes to vault
+    // Close handler — vault is already open underneath
     var closeBtn = document.getElementById('tc-close');
     if (closeBtn) closeBtn.onclick = function() {
       el.classList.remove('open', 'tc-stage-1');
       if (_tcParticleTimer) { clearInterval(_tcParticleTimer); _tcParticleTimer = null; }
       if (particles) particles.innerHTML = '';
-      // Open the vault to show the granted state
-      if (typeof window.openVault === 'function') window.openVault();
+      // Vault is already rendered underneath — just scroll to top
+      var vc = document.getElementById('vault-content');
+      if (vc) vc.scrollTop = 0;
     };
   }
   window._openTokenCelebration = _openTokenCelebration;
@@ -22579,6 +22628,18 @@ Mura facilitates. People decide.`;
     fetchVaultData().then(function(data) {
       // Cache token status for position broadcast
       window._myTokenStatus = (data.token && data.token.status) || 'locked';
+      // First-time seeing granted? → fire celebration BEFORE showing vault
+      var tokenStatus = (data.token && data.token.status) || 'locked';
+      var celebKey = vKey('tokenCelebrated');
+      if (tokenStatus === 'granted' && !localStorage.getItem(celebKey)) {
+        localStorage.setItem(celebKey, '1');
+        var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
+        var celebName = sp.villageName || sp.name || 'Maker';
+        _openTokenCelebration(data.token, celebName);
+        // Render vault underneath — it'll be visible after celebration closes
+        renderVault(data);
+        return;
+      }
       renderVault(data);
     });
   }
@@ -29034,29 +29095,31 @@ seedMemberLanguage();
         granted_message: msg || null
       }).eq('id', tokenId);
       window._myTokenStatus = 'granted';
+      // Clear celebration flag so vault opening triggers the ceremony
+      var celebKey = typeof vKey === 'function' ? vKey('tokenCelebrated') : 'tokenCelebrated';
+      localStorage.removeItem(celebKey);
       // Send DM to the receiver — something special is waiting
+      // Write to Supabase for cross-device
       window._supabase.from('direct_messages').insert({
         village_id: vid,
-        sender_id: window._sbAuthUid,
+        sender_id: 'clay-village',
         recipient_id: userId,
         message: 'Something special is waiting for you in your vault. Go there now. \u2728'
       }).then(function(){}).catch(function(){});
-      // Also persist in localStorage thread for the DM mailbox
-      if (typeof sendDM === 'function') {
-        sendDM(window._sbAuthUid, userId, 'Something special is waiting for you in your vault. Go there now. \u2728');
+      // Write to localStorage thread so DM mailbox shows it immediately
+      if (typeof getThread === 'function' && typeof saveThread === 'function') {
+        var _dmThread = getThread('clay-village', userId);
+        _dmThread.push({
+          from: 'clay-village',
+          fromName: 'Clay Village',
+          fromPhoto: '',
+          text: 'Something special is waiting for you in your vault. Go there now. \u2728',
+          ts: Date.now()
+        });
+        saveThread('clay-village', userId, _dmThread);
       }
-      // If granting to yourself (same browser) — fire celebration directly,
-      // broadcast won't loop back to the sender in the same tab
-      if (userId === window._sbAuthUid) {
-        var sp2 = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
-        var celebName = sp2.villageName || sp2.name || memberName || 'Maker';
-        setTimeout(function() {
-          if (typeof window._openTokenCelebration === 'function') {
-            window._openTokenCelebration({ granted_message: msg, granted_by_name: myName }, celebName);
-          }
-        }, 400);
-      } else {
-        // Broadcast to another member online in the same village
+      // Broadcast to other member if they're online (they'll see DM notification)
+      if (userId !== window._sbAuthUid) {
         window._supabase.channel('token-grants-' + vid).send({
           type: 'broadcast', event: 'token-granted',
           payload: { user_id: userId, granted_by_name: myName, granted_message: msg }
@@ -29116,12 +29179,19 @@ seedMemberLanguage();
         .on('broadcast', { event: 'token-granted' }, function(msg) {
           var d = msg.payload;
           if (!d || d.user_id !== window._sbAuthUid) return;
-          // It's for me — show celebration
-          var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
-          var name = sp.villageName || sp.name || 'Maker';
-          if (typeof window._openTokenCelebration === 'function') {
-            window._openTokenCelebration({ granted_message: d.granted_message, granted_by_name: d.granted_by_name }, name);
+          // Token granted for me — clear celebration flag so vault triggers it
+          var _cKey = typeof vKey === 'function' ? vKey('tokenCelebrated') : 'tokenCelebrated';
+          localStorage.removeItem(_cKey);
+          window._myTokenStatus = 'granted';
+          // Write DM to localStorage so mailbox picks it up
+          if (typeof getThread === 'function' && typeof saveThread === 'function') {
+            var _th = getThread('clay-village', window._sbAuthUid);
+            _th.push({ from: 'clay-village', fromName: 'Clay Village', fromPhoto: '',
+              text: 'Something special is waiting for you in your vault. Go there now. \u2728', ts: Date.now() });
+            saveThread('clay-village', window._sbAuthUid, _th);
           }
+          // Show toast notification
+          if (typeof showToast === 'function') showToast('\u2728 You have a new message');
         }).subscribe();
     }, 3000);
   });
