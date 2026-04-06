@@ -6365,7 +6365,11 @@ function toggleVillageSound() {
       <span class="admin-nav-label">Travel</span>
     </div>
     <div class="admin-nav-divider"></div>
-    <div class="admin-nav-item" id="nav-signout" title="Sign Out">
+    <div class="admin-nav-item" id="nav-signin" title="Sign In" style="display:none;">
+      <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span>
+      <span class="admin-nav-label">Sign In</span>
+    </div>
+    <div class="admin-nav-item" id="nav-signout" title="Sign Out" style="display:none;">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
       <span class="admin-nav-label">Sign Out</span>
     </div>
@@ -27561,10 +27565,13 @@ seedMemberLanguage();
   // Always show welcome screen — user must click to enter
   window._dunbarMode = true;
 
-  // Hide nav, village name, and avatar until player enters
-  ['admin-panel','village-name-label','avatar','shadow','top-controls'].forEach(function(id) {
+  // Hide map elements until player enters — nav stays visible above the welcome screen
+  ['village-name-label','avatar','shadow','top-controls'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.style.display = 'none';
   });
+  // Keep nav visible but float it above the welcome overlay (z-index 10700)
+  var _apEl = document.getElementById('admin-panel');
+  if (_apEl) { _apEl.style.display = 'flex'; _apEl.style.zIndex = '10750'; }
 
   // Welcome screen is just text — click anywhere to enter Dunbar
 
@@ -27657,9 +27664,12 @@ seedMemberLanguage();
     var messagesNav = document.getElementById('messages-nav-item');
     if (messagesNav) messagesNav.style.display = isCitizenPlus ? 'flex' : 'none';
 
-    // Sign out in sidebar — visible for resident, citizen, founder
+    // Sign In — only visible for guests (no session)
+    var signinNav = document.getElementById('nav-signin');
+    if (signinNav) signinNav.style.display = (role === 'guest') ? 'flex' : 'none';
+    // Sign Out — visible for resident, citizen, founder
     var signoutNav = document.getElementById('nav-signout');
-    if (signoutNav) signoutNav.style.display = (role !== 'guest') ? '' : 'none';
+    if (signoutNav) signoutNav.style.display = (role !== 'guest') ? 'flex' : 'none';
 
     // (founder-only toggle items removed from nav)
     // (settings and admin-mode-toggle items removed from nav HTML)
@@ -27755,7 +27765,7 @@ seedMemberLanguage();
     const _apRev = document.getElementById('admin-panel');
     const _avRev = document.getElementById('avatar');
     const _shRev = document.getElementById('shadow');
-    if (_apRev) _apRev.style.display = 'flex';
+    if (_apRev) { _apRev.style.display = 'flex'; _apRev.style.zIndex = ''; }
     if (_avRev) _avRev.style.display = '';
     if (_shRev) _shRev.style.display = '';
     const _vnl = document.getElementById('village-name-label');
@@ -28067,6 +28077,16 @@ seedMemberLanguage();
     const statusEl   = document.getElementById('dunbar-auth-status');
 
     // Dev toolbar only shown after Supabase founder verification (via _applyFounderGates)
+
+    // Wire Sign In button — opens the auth modal
+    var _signinBtn = document.getElementById('nav-signin');
+    if (_signinBtn) {
+      _signinBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // don't let click-to-enter-dunbar fire
+        var modal = document.getElementById('dunbar-auth-modal');
+        if (modal) modal.classList.add('open');
+      });
+    }
 
     // Wire Travel button (placeholder — Village Network Protocol, Phase 3+)
     var _travelBtn = document.getElementById('nav-travel');
