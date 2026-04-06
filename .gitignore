@@ -7,8 +7,9 @@
 # Backup files
 *.backup*
 
-# Private vision document — never public
+# Private vision documents — never public, never deployed
 VISION.md
+vision.html
 .vercel
 
 # Deploy script contains Vercel token — never commit
