@@ -28908,8 +28908,19 @@ seedMemberLanguage();
         granted_at: new Date().toISOString(),
         granted_message: msg || null
       }).eq('id', tokenId);
-      // Broadcast the grant so the member sees it if they're online
-      if (window._supabase) {
+      window._myTokenStatus = 'granted';
+      // If granting to yourself (same browser) — fire celebration directly,
+      // broadcast won't loop back to the sender in the same tab
+      if (userId === window._sbAuthUid) {
+        var sp2 = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
+        var celebName = sp2.villageName || sp2.name || memberName || 'Maker';
+        setTimeout(function() {
+          if (typeof window._openTokenCelebration === 'function') {
+            window._openTokenCelebration({ granted_message: msg, granted_by_name: myName }, celebName);
+          }
+        }, 400);
+      } else {
+        // Broadcast to another member online in the same village
         window._supabase.channel('token-grants-' + vid).send({
           type: 'broadcast', event: 'token-granted',
           payload: { user_id: userId, granted_by_name: myName, granted_message: msg }
