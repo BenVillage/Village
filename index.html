@@ -28069,17 +28069,17 @@ seedMemberLanguage();
 (function() {
   // ===== WIDGET SYSTEM =====
   var BUILDINGS = [
-    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:['practice-log'], available:['work-timer','current-project','glaze-palette','studio-rules','firing-log'], defaultMode:'conservative' },
-    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:2, fixed:['community-journals'], available:['reading-list','pinned-quote','research-notes'], defaultMode:'conservative' },
-    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:2, fixed:['commons-chat'], available:['mood-today','now-playing','sticky-notes'], defaultMode:'widgets' },
-    { id:'observatory-overlay', slug:'obs', name:'The Observatory', headerSel:'.bld-top', bodySel:'.bld-inner', slots:2, fixed:[], available:['reflection-prompt','horizon-notes'], defaultMode:'conservative' }
+    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:4, fixed:['practice-log'], available:['work-timer','current-project','glaze-palette','firing-log','what-i-noticed','unseen-work','practicing-not-performing','unlearning'], defaultMode:'conservative' },
+    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:['community-journals'], available:['reading-list','pinned-quote','research-notes','old-new-story','unsent-letter','reflection-prompt'], defaultMode:'conservative' },
+    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:3, fixed:['commons-chat'], available:['mood-today','now-playing','sticky-notes','what-i-need','offer-village','what-i-noticed'], defaultMode:'widgets' },
+    { id:'observatory-overlay', slug:'obs', name:'The Observatory', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:[], available:['reflection-prompt','horizon-notes','old-new-story','unlearning','practicing-not-performing'], defaultMode:'conservative' }
   ];
 
   var WIDGETS = {
     'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'\u{1F4DD}', defaultSpan:4 },
     'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'\u{1F4D6}', defaultSpan:4 },
     'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'\u2615', defaultSpan:4 },
-    'work-timer': { name:'Work Timer', desc:'25-minute focus countdown', emoji:'\u23F1', defaultSpan:1,
+    'work-timer': { name:'Time at the Wheel', desc:'25 minutes of presence', emoji:'\u23F1', defaultSpan:1,
       render: function(el, data, save) {
         var d = data || { remaining:1500, running:false };
         var iv = null;
@@ -28094,7 +28094,7 @@ seedMemberLanguage();
         draw(); if(d.running) tick();
       }
     },
-    'current-project': { name:'Current Project', desc:'What you are working on now', emoji:'\u{1F3AF}', defaultSpan:2,
+    'current-project': { name:'What I\u2019m Making', desc:'What has your hands right now', emoji:'\u{1F3AF}', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What are you working on?">'+_wEsc(d.text)+'</textarea>';
@@ -28133,7 +28133,7 @@ seedMemberLanguage();
         draw();
       }
     },
-    'firing-log': { name:'Firing Log', desc:'Track your firings', emoji:'\u{1F525}', defaultSpan:4,
+    'firing-log': { name:'What Went Into the Kiln', desc:'Each firing is an experiment', emoji:'\u{1F525}', defaultSpan:4,
       render: function(el, data, save) {
         var d = data || { entries:[] };
         function draw() {
@@ -28184,7 +28184,7 @@ seedMemberLanguage();
         el.querySelector('textarea').oninput = function() { d.text=this.value; clearTimeout(tm); tm=setTimeout(function(){save(d);},800); };
       }
     },
-    'mood-today': { name:'Mood Today', desc:'How are you feeling?', emoji:'\u{1F60A}', defaultSpan:1,
+    'mood-today': { name:'How the Day Feels', desc:'One honest read before closing the laptop', emoji:'\u{1F60A}', defaultSpan:1,
       render: function(el, data, save) {
         var d = data || { mood:null, date:null }; var today = new Date().toISOString().slice(0,10);
         if(d.date !== today) { d.mood=null; d.date=today; }
@@ -28227,6 +28227,65 @@ seedMemberLanguage();
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What do you see from here?">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'what-i-noticed': { name:'What I Noticed Today', desc:'One observation from the world outside a screen', emoji:'\u{1F33F}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { entries:[] }; var today=new Date().toISOString().slice(0,10);
+        var todayEntry = d.entries.find(function(e){return e.date===today;});
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What did you notice today?</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:50px;color:#262626;outline:none;" placeholder="One small thing...">'+(todayEntry?_wEsc(todayEntry.text):'')+'</textarea>'+(d.entries.length>1?'<div style="font-size:11px;color:#8e8e8e;margin-top:6px;">'+d.entries.length+' observations so far</div>':'');
+        var tm=null;el.querySelector('textarea').oninput=function(){var v=this.value;clearTimeout(tm);tm=setTimeout(function(){if(todayEntry)todayEntry.text=v;else{d.entries.push({date:today,text:v});todayEntry=d.entries[d.entries.length-1];}save(d);},600);};
+      }
+    },
+    'unseen-work': { name:'What I Made That No One Will See', desc:'The inverse of performance', emoji:'\u{1F54A}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What did you make that was never for an audience?</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:80px;" placeholder="Something made without caring how it looks...">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'old-new-story': { name:'Old Story / New Story', desc:'What you used to believe, and how it is shifting', emoji:'\u{1F504}', defaultSpan:4,
+      render: function(el, data, save) {
+        var d = data || { old:'', new_:'' }; var tm=null;
+        el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#8e8e8e;margin-bottom:6px;">Old story</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:60px;color:#262626;outline:none;" id="wons-old" placeholder="Something I used to believe...">'+_wEsc(d.old)+'</textarea></div><div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#c8a84b;margin-bottom:6px;">New story</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:60px;color:#262626;outline:none;" id="wons-new" placeholder="How that belief is shifting...">'+_wEsc(d.new_)+'</textarea></div></div>';
+        el.querySelector('#wons-old').oninput=function(){d.old=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+        el.querySelector('#wons-new').oninput=function(){d.new_=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'offer-village': { name:'What I Want to Offer', desc:'Time, attention, knowledge, presence', emoji:'\u{1F91D}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">Not skills for trade. Something more open.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:80px;" placeholder="What you want to give...">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'what-i-need': { name:'What I Need Right Now', desc:'Naming a need without apologising', emoji:'\u{1F331}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What do you need? Visible to no one.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="Just say it...">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'unlearning': { name:'Something I\u2019m Unlearning', desc:'When a belief loosens, it goes here', emoji:'\u{1F9F9}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">Not updated daily. When something loosens.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="A belief about productivity, worth, what counts...">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'unsent-letter': { name:'A Letter I Haven\u2019t Sent', desc:'Write to a specific person. It stays private.', emoji:'\u{2709}', defaultSpan:4,
+      render: function(el, data, save) {
+        var d = data || { to:'', text:'' }; var tm=null;
+        el.innerHTML = '<div style="margin-bottom:8px;"><input style="border:none;border-bottom:1px solid #e8e8e8;padding:4px 0;font-size:13px;font-family:inherit;color:#262626;outline:none;width:200px;" id="wul-to" placeholder="Dear..." value="'+_wEsc(d.to)+'"></div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:80px;" id="wul-body" placeholder="What you want to say...">'+_wEsc(d.text)+'</textarea>';
+        el.querySelector('#wul-to').oninput=function(){d.to=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+        el.querySelector('#wul-body').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+      }
+    },
+    'practicing-not-performing': { name:'Practicing, Not Performing', desc:'Something you do without caring how it looks', emoji:'\u{1F3AF}', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { text:'' }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">The distinction the manifesto makes, made personal.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="What are you doing without an audience?">'+_wEsc(d.text)+'</textarea>';
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     }
