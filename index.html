@@ -28076,18 +28076,7 @@ seedMemberLanguage();
 .wg-mood-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:8px 0; }
 .wg-mood-btn { font-size:24px; cursor:pointer; opacity:0.4; transition:opacity 0.15s,transform 0.15s; padding:4px; border:none; background:none; }
 .wg-mood-btn.selected { opacity:1; transform:scale(1.2); }
-.wg-swatch-grid { display:flex; flex-wrap:wrap; gap:6px; }
-.wg-swatch { width:28px; height:28px; border-radius:6px; border:1.5px solid #dbdbdb; cursor:pointer; position:relative; }
-.wg-swatch.add { display:flex; align-items:center; justify-content:center; color:#8e8e8e; font-size:16px; }
-.wg-rules-item { display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:13px; }
-.wg-rules-item input { flex:1; border:none; border-bottom:1px solid #e8e8e8; padding:4px 0; font-family:inherit; font-size:13px; color:#262626; outline:none; }
-.wg-rules-item input:focus { border-color:#c8a84b; }
 .wg-rules-del { background:none; border:none; color:#e88070; cursor:pointer; font-size:14px; }
-.wg-np-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; display:inline-block; margin-right:6px; animation:wg-np-pulse 1.5s ease-in-out infinite; }
-@keyframes wg-np-pulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
-.wg-sticky-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.wg-sticky-grid textarea { min-height:60px; border:1px solid #e8e8e8; border-radius:6px; padding:6px 8px; font-size:11px; font-family:inherit; resize:none; color:#262626; outline:none; }
-.wg-sticky-grid textarea:focus { border-color:#c8a84b; }
 .wg-reading-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f5f5f5; font-size:12px; }
 .wg-reading-status { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; cursor:pointer; border:1px solid #dbdbdb; }
 .wg-fire-table { width:100%; font-size:11px; border-collapse:collapse; }
@@ -28103,9 +28092,9 @@ seedMemberLanguage();
 (function() {
   // ===== WIDGET SYSTEM =====
   var BUILDINGS = [
-    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:4, fixed:['practice-log'], available:['work-timer','current-project','glaze-palette','firing-log','what-i-noticed','unseen-work','practicing-not-performing','unlearning'], defaultMode:'conservative' },
-    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:['community-journals'], available:['reading-list','pinned-quote','research-notes','old-new-story','unsent-letter','reflection-prompt'], defaultMode:'conservative' },
-    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:3, fixed:['commons-chat'], available:['mood-today','now-playing','sticky-notes','what-i-need','offer-village','what-i-noticed'], defaultMode:'widgets' },
+    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:4, fixed:['practice-log'], available:['work-timer','current-project','firing-log','what-i-noticed','unseen-work','practicing-not-performing','someone-to-thank'], defaultMode:'conservative' },
+    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:['community-journals'], available:['reading-list','pinned-quote','old-new-story','unsent-letter','reflection-prompt'], defaultMode:'conservative' },
+    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:3, fixed:['commons-chat'], available:['mood-today','what-i-need','offer-village','what-i-noticed','question-for-village','who-was-at-fire'], defaultMode:'widgets' },
     { id:'observatory-overlay', slug:'obs', name:'The Observatory', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:[], available:['reflection-prompt','horizon-notes','old-new-story','unlearning','practicing-not-performing'], defaultMode:'conservative' }
   ];
 
@@ -28113,19 +28102,25 @@ seedMemberLanguage();
     'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'\u{1F4DD}', defaultSpan:4, color:'amber' },
     'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'\u{1F4D6}', defaultSpan:4, color:'slate' },
     'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'\u2615', defaultSpan:4, color:'clay' },
-    'work-timer': { name:'Time at the Wheel', desc:'25 minutes of presence', emoji:'\u23F1', defaultSpan:1, color:'amber',
+    'work-timer': { name:'Time at the Wheel', desc:'Press when you begin. Press when you stop.', emoji:'', defaultSpan:1, color:'amber',
       render: function(el, data, save) {
-        var d = data || { remaining:1500, running:false };
-        var iv = null;
-        function fmt(s) { return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60; }
+        var d = data || { sessions:[], running:false, startedAt:null };
+        var iv=null;
+        function elapsed() { return d.startedAt ? Math.floor((Date.now()-d.startedAt)/1000) : 0; }
+        function fmtDur(s) { var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60; return (h?h+'h ':'')+(m?m+'m ':'')+(sc+'s'); }
+        function totalToday() { var today=new Date().toISOString().slice(0,10); var t=0; d.sessions.forEach(function(s){if(s.date===today)t+=s.duration;}); return t; }
         function draw() {
-          el.innerHTML = '<div class="wg-timer-display">'+fmt(d.remaining)+'</div><div class="wg-timer-btns"><button id="wt-toggle">'+(d.running?'Pause':'Start')+'</button><button id="wt-reset">Reset</button><button id="wt-plus">+5</button></div>';
-          el.querySelector('#wt-toggle').onclick = function() { d.running=!d.running; if(d.running) tick(); draw(); };
-          el.querySelector('#wt-reset').onclick = function() { d.running=false; d.remaining=1500; save(d); draw(); };
-          el.querySelector('#wt-plus').onclick = function() { d.remaining+=300; save(d); draw(); };
+          if(d.running) {
+            el.innerHTML='<div style="text-align:center;"><div style="font-size:28px;font-weight:700;color:#262626;font-variant-numeric:tabular-nums;" id="wt-elapsed">'+fmtDur(elapsed())+'</div><button style="margin-top:8px;padding:6px 20px;border-radius:8px;border:1.5px solid #b07070;background:none;color:#b07070;font-size:12px;cursor:pointer;font-family:inherit;" id="wt-stop">Stop</button></div>';
+            el.querySelector('#wt-stop').onclick=function(){var dur=elapsed();d.sessions.push({date:new Date().toISOString().slice(0,10),duration:dur});d.running=false;d.startedAt=null;save(d);clearInterval(iv);draw();};
+            iv=setInterval(function(){var e=el.querySelector('#wt-elapsed');if(e)e.textContent=fmtDur(elapsed());},1000);
+          } else {
+            var tt=totalToday();
+            el.innerHTML='<div style="text-align:center;"><div style="font-size:11px;color:#8e8e8e;margin-bottom:6px;">Today: '+fmtDur(tt)+'</div><button style="padding:8px 24px;border-radius:8px;border:1.5px solid #6b8f71;background:none;color:#6b8f71;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" id="wt-start">Begin</button>'+(d.sessions.length?'<div style="font-size:10px;color:#8e8e8e;margin-top:8px;">'+d.sessions.length+' sessions logged</div>':'')+'</div>';
+            el.querySelector('#wt-start').onclick=function(){d.running=true;d.startedAt=Date.now();save(d);draw();};
+          }
         }
-        function tick() { if(!d.running||d.remaining<=0){d.running=false;save(d);draw();return;} d.remaining--; save(d); draw(); setTimeout(tick,1000); }
-        draw(); if(d.running) tick();
+        draw();
       }
     },
     'current-project': { name:'What I\u2019m Making', desc:'What has your hands right now', emoji:'\u{1F3AF}', defaultSpan:2, color:'clay',
@@ -28133,38 +28128,6 @@ seedMemberLanguage();
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What are you working on?">'+_wEsc(d.text)+'</textarea>';
         el.querySelector('textarea').oninput = function() { d.text=this.value; clearTimeout(tm); tm=setTimeout(function(){save(d);},800); };
-      }
-    },
-    'glaze-palette': { name:'Glaze Palette', desc:'Colour swatches with names', emoji:'\u{1F3A8}', defaultSpan:2,
-      render: function(el, data, save) {
-        var d = data || { swatches:[] };
-        function draw() {
-          var h = '<div class="wg-swatch-grid">';
-          d.swatches.forEach(function(s,i) { h+='<div class="wg-swatch" style="background:'+s.color+'" title="'+(s.name||'')+'" data-i="'+i+'"></div>'; });
-          if(d.swatches.length<12) h+='<div class="wg-swatch add" id="wg-swatch-add">+</div>';
-          h+='</div>';
-          el.innerHTML = h;
-          var addBtn = el.querySelector('#wg-swatch-add');
-          if(addBtn) addBtn.onclick = function() { var c=prompt('Hex colour (e.g. #c8a84b):'); var n=prompt('Name:'); if(c){d.swatches.push({color:c,name:n||''}); save(d); draw();} };
-          el.querySelectorAll('.wg-swatch[data-i]').forEach(function(sw) { sw.onclick = function() { if(confirm('Remove this swatch?')){d.swatches.splice(parseInt(sw.dataset.i),1);save(d);draw();} }; });
-        }
-        draw();
-      }
-    },
-    'studio-rules': { name:'Studio Rules', desc:'Your personal studio rules', emoji:'\u{1F4CB}', defaultSpan:2,
-      render: function(el, data, save) {
-        var d = data || { rules:[] };
-        function draw() {
-          var h = '';
-          d.rules.forEach(function(r,i) { h+='<div class="wg-rules-item"><span style="color:#8e8e8e;font-size:11px;min-width:16px;">'+(i+1)+'.</span><input value="'+_wEsc(r)+'" data-i="'+i+'"><button class="wg-rules-del" data-i="'+i+'">&times;</button></div>'; });
-          if(d.rules.length<8) h+='<button style="font-size:11px;color:#c8a84b;background:none;border:1px solid #c8a84b;border-radius:6px;padding:4px 10px;cursor:pointer;margin-top:4px;" id="wg-rule-add">+ Add rule</button>';
-          el.innerHTML = h;
-          el.querySelectorAll('input').forEach(function(inp) { inp.onchange = function() { d.rules[parseInt(this.dataset.i)]=this.value; save(d); }; });
-          el.querySelectorAll('.wg-rules-del').forEach(function(btn) { btn.onclick = function() { d.rules.splice(parseInt(this.dataset.i),1); save(d); draw(); }; });
-          var ab = el.querySelector('#wg-rule-add');
-          if(ab) ab.onclick = function() { d.rules.push(''); save(d); draw(); };
-        }
-        draw();
       }
     },
     'firing-log': { name:'What Went Into the Kiln', desc:'Each firing is an experiment', emoji:'\u{1F525}', defaultSpan:4,
@@ -28211,41 +28174,12 @@ seedMemberLanguage();
         draw();
       }
     },
-    'research-notes': { name:'Research Notes', desc:'Scratch pad for ideas', emoji:'\u{1F52C}', defaultSpan:2,
+    'mood-today': { name:'How the Day Feels', desc:'One honest sentence before closing the laptop', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
-        var d = data || { text:'' }; var tm=null;
-        el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="Research notes...">'+_wEsc(d.text)+'</textarea>';
-        el.querySelector('textarea').oninput = function() { d.text=this.value; clearTimeout(tm); tm=setTimeout(function(){save(d);},800); };
-      }
-    },
-    'mood-today': { name:'How the Day Feels', desc:'One honest read before closing the laptop', emoji:'\u{1F60A}', defaultSpan:1,
-      render: function(el, data, save) {
-        var d = data || { mood:null, date:null }; var today = new Date().toISOString().slice(0,10);
-        if(d.date !== today) { d.mood=null; d.date=today; }
-        var moods = ['\u{1F60A}','\u{1F60C}','\u{1F525}','\u{1F624}','\u{1F622}','\u{1F914}','\u{1F634}'];
-        var h = '<div class="wg-mood-row">';
-        moods.forEach(function(m) { h+='<button class="wg-mood-btn'+(d.mood===m?' selected':'')+'" data-m="'+m+'">'+m+'</button>'; });
-        h+='</div>';
-        el.innerHTML = h;
-        el.querySelectorAll('.wg-mood-btn').forEach(function(b) { b.onclick=function() { d.mood=b.dataset.m; d.date=today; save(d); el.querySelectorAll('.wg-mood-btn').forEach(function(x){x.classList.remove('selected');}); b.classList.add('selected'); }; });
-      }
-    },
-    'now-playing': { name:'Now Playing', desc:'What you are listening to', emoji:'\u{1F3B5}', defaultSpan:2,
-      render: function(el, data, save) {
-        var d = data || { track:'', artist:'', active:false }; var tm=null;
-        el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'+(d.active?'<span class="wg-np-dot"></span>':'<span style="width:8px;height:8px;border-radius:50%;background:#dbdbdb;display:inline-block;margin-right:6px;"></span>')+'<button style="font-size:10px;border:1px solid #dbdbdb;border-radius:4px;padding:2px 8px;background:none;cursor:pointer;color:#8e8e8e;" id="wnp-toggle">'+(d.active?'Stop':'Live')+'</button></div><input placeholder="Track" value="'+_wEsc(d.track)+'" style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:13px;margin-bottom:4px;" id="wnp-track"><input placeholder="Artist" value="'+_wEsc(d.artist)+'" style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:12px;color:#8e8e8e;" id="wnp-artist">';
-        function wire() {
-          el.querySelector('#wnp-toggle').onclick=function(){d.active=!d.active;save(d);el.querySelector('.wg-np-dot,span[style*="dbdbdb"]').outerHTML=d.active?'<span class="wg-np-dot"></span>':'<span style="width:8px;height:8px;border-radius:50%;background:#dbdbdb;display:inline-block;margin-right:6px;"></span>';this.textContent=d.active?'Stop':'Live';};
-          ['wnp-track','wnp-artist'].forEach(function(id){var inp=el.querySelector('#'+id);if(inp)inp.oninput=function(){d[id==='wnp-track'?'track':'artist']=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},600);};});
-        }
-        wire();
-      }
-    },
-    'sticky-notes': { name:'Sticky Notes', desc:'Four quick notes', emoji:'\u{1F4CC}', defaultSpan:4,
-      render: function(el, data, save) {
-        var d = data || { n:['',' ','',''] }; if(!d.n||d.n.length<4)d.n=['','','',''];
-        el.innerHTML = '<div class="wg-sticky-grid"><textarea data-i="0">'+_wEsc(d.n[0])+'</textarea><textarea data-i="1">'+_wEsc(d.n[1])+'</textarea><textarea data-i="2">'+_wEsc(d.n[2])+'</textarea><textarea data-i="3">'+_wEsc(d.n[3])+'</textarea></div>';
-        el.querySelectorAll('textarea').forEach(function(ta){var tm2=null;ta.oninput=function(){d.n[parseInt(ta.dataset.i)]=ta.value;clearTimeout(tm2);tm2=setTimeout(function(){save(d);},600);};});
+        var d = data || { entries:[] }; var today=new Date().toISOString().slice(0,10);
+        var todayEntry = d.entries.find(function(e){return e.date===today;});
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">How did the day feel?</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:40px;color:#262626;outline:none;" placeholder="One sentence...">'+(todayEntry?_wEsc(todayEntry.text):'')+'</textarea>'+(d.entries.length>1?'<div style="font-size:10px;color:#8e8e8e;margin-top:4px;">'+d.entries.length+' days recorded</div>':'');
+        var tm=null;el.querySelector('textarea').oninput=function(){var v=this.value;clearTimeout(tm);tm=setTimeout(function(){if(todayEntry)todayEntry.text=v;else{d.entries.push({date:today,text:v});todayEntry=d.entries[d.entries.length-1];}save(d);},600);};
       }
     },
     'reflection-prompt': { name:'Reflection Prompt', desc:'Rotating questions to sit with', emoji:'\u{1FA9E}', defaultSpan:2,
@@ -28264,12 +28198,13 @@ seedMemberLanguage();
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     },
-    'what-i-noticed': { name:'What I Noticed Today', desc:'One observation from the world outside a screen', emoji:'\u{1F33F}', defaultSpan:2,
+    'what-i-noticed': { name:'What I Noticed Today', desc:'One observation from outside a screen', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { entries:[] }; var today=new Date().toISOString().slice(0,10);
         var todayEntry = d.entries.find(function(e){return e.date===today;});
-        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What did you notice today?</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:50px;color:#262626;outline:none;" placeholder="One small thing...">'+(todayEntry?_wEsc(todayEntry.text):'')+'</textarea>'+(d.entries.length>1?'<div style="font-size:11px;color:#8e8e8e;margin-top:6px;">'+d.entries.length+' observations so far</div>':'');
-        var tm=null;el.querySelector('textarea').oninput=function(){var v=this.value;clearTimeout(tm);tm=setTimeout(function(){if(todayEntry)todayEntry.text=v;else{d.entries.push({date:today,text:v});todayEntry=d.entries[d.entries.length-1];}save(d);},600);};
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What did you notice today?</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:50px;color:#262626;outline:none;" placeholder="One small thing..." id="wni-text">'+(todayEntry?_wEsc(todayEntry.text):'')+'</textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;"><span style="font-size:10px;color:#8e8e8e;">'+(d.entries.length>1?d.entries.length+' observations':'')+'</span><button style="font-size:10px;color:#c8a84b;background:none;border:1px solid #c8a84b;border-radius:4px;padding:2px 8px;cursor:pointer;font-family:inherit;" id="wni-share">Share at the bonfire</button></div>';
+        var tm=null;el.querySelector('#wni-text').oninput=function(){var v=this.value;clearTimeout(tm);tm=setTimeout(function(){if(todayEntry)todayEntry.text=v;else{d.entries.push({date:today,text:v});todayEntry=d.entries[d.entries.length-1];}save(d);},600);};
+        el.querySelector('#wni-share').onclick=function(){var text=el.querySelector('#wni-text').value.trim();if(!text)return;if(typeof sendBonfireMessage==='function'){var inp=document.getElementById('bonfire-chat-input');if(inp){inp.value='I noticed: '+text;sendBonfireMessage();}}this.textContent='Shared';this.disabled=true;};
       }
     },
     'unseen-work': { name:'What I Made That No One Will See', desc:'The inverse of performance', emoji:'\u{1F54A}', defaultSpan:2,
@@ -28279,26 +28214,29 @@ seedMemberLanguage();
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     },
-    'old-new-story': { name:'Old Story / New Story', desc:'What you used to believe, and how it is shifting', emoji:'\u{1F504}', defaultSpan:4,
+    'old-new-story': { name:'Old Story / New Story', desc:'What you used to believe, and when it shifted', emoji:'', defaultSpan:4,
       render: function(el, data, save) {
-        var d = data || { old:'', new_:'' }; var tm=null;
-        el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#8e8e8e;margin-bottom:6px;">Old story</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:60px;color:#262626;outline:none;" id="wons-old" placeholder="Something I used to believe...">'+_wEsc(d.old)+'</textarea></div><div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#c8a84b;margin-bottom:6px;">New story</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:60px;color:#262626;outline:none;" id="wons-new" placeholder="How that belief is shifting...">'+_wEsc(d.new_)+'</textarea></div></div>';
+        var d = data || { old:'', new_:'', shiftedOn:'' }; var tm=null;
+        el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#8e8e8e;margin-bottom:6px;">Old story</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:60px;color:#262626;outline:none;" id="wons-old" placeholder="Something I used to believe...">'+_wEsc(d.old)+'</textarea></div><div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#c8a84b;margin-bottom:6px;">New story</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:60px;color:#262626;outline:none;" id="wons-new" placeholder="How that belief is shifting...">'+_wEsc(d.new_)+'</textarea></div></div><div style="margin-top:8px;"><input style="border:none;border-bottom:1px solid #e8e8e8;padding:4px 0;font-size:11px;color:#8e8e8e;outline:none;width:160px;" id="wons-when" placeholder="When did this shift?" value="'+_wEsc(d.shiftedOn)+'"></div>';
         el.querySelector('#wons-old').oninput=function(){d.old=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
         el.querySelector('#wons-new').oninput=function(){d.new_=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+        el.querySelector('#wons-when').oninput=function(){d.shiftedOn=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     },
-    'offer-village': { name:'What I Want to Offer', desc:'Time, attention, knowledge, presence', emoji:'\u{1F91D}', defaultSpan:2,
+    'offer-village': { name:'What I Want to Offer', desc:'Time, attention, presence. Optionally visible.', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
-        var d = data || { text:'' }; var tm=null;
-        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">Not skills for trade. Something more open.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:80px;" placeholder="What you want to give...">'+_wEsc(d.text)+'</textarea>';
+        var d = data || { text:'', shared:false }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">Not skills for trade. Something more open.</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:50px;color:#262626;outline:none;" placeholder="What you want to give...">'+_wEsc(d.text)+'</textarea><label style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;color:#8e8e8e;cursor:pointer;"><input type="checkbox" id="wov-share" '+(d.shared?'checked':'')+' style="accent-color:#c8a84b;"> Visible at the Commons</label>';
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+        el.querySelector('#wov-share').onchange=function(){d.shared=this.checked;save(d);};
       }
     },
-    'what-i-need': { name:'What I Need Right Now', desc:'Naming a need without apologising', emoji:'\u{1F331}', defaultSpan:2,
+    'what-i-need': { name:'What I Need Right Now', desc:'Naming it is the first step', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
-        var d = data || { text:'' }; var tm=null;
-        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What do you need? Visible to no one.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="Just say it...">'+_wEsc(d.text)+'</textarea>';
+        var d = data || { text:'', shared:false }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What do you need?</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:50px;color:#262626;outline:none;" placeholder="Just say it...">'+_wEsc(d.text)+'</textarea><label style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;color:#8e8e8e;cursor:pointer;"><input type="checkbox" id="win-share" '+(d.shared?'checked':'')+' style="accent-color:#c8a84b;"> Share anonymously at the Commons</label>';
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
+        el.querySelector('#win-share').onchange=function(){d.shared=this.checked;save(d);};
       }
     },
     'unlearning': { name:'Something I\u2019m Unlearning', desc:'When a belief loosens, it goes here', emoji:'\u{1F9F9}', defaultSpan:2,
@@ -28322,18 +28260,53 @@ seedMemberLanguage();
         el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">The distinction the manifesto makes, made personal.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="What are you doing without an audience?">'+_wEsc(d.text)+'</textarea>';
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
+    },
+    'someone-to-thank': { name:'Someone I Want to Thank', desc:'A note of gratitude to another villager', emoji:'', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { to:'', note:'', sent:false }; var tm=null;
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">Who in the village?</div><input style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;color:#262626;outline:none;margin-bottom:6px;" id="wtt-to" placeholder="Their name..." value="'+_wEsc(d.to)+'"><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:40px;color:#262626;outline:none;" id="wtt-note" placeholder="What you want to say...">'+_wEsc(d.note)+'</textarea>'+(d.sent?'<div style="font-size:10px;color:#6b8f71;margin-top:4px;">Delivered as a knock on their studio door</div>':'<button style="font-size:10px;color:#c8a84b;background:none;border:1px solid #c8a84b;border-radius:4px;padding:3px 10px;cursor:pointer;font-family:inherit;margin-top:6px;" id="wtt-send">Knock on their door</button>');
+        el.querySelector('#wtt-to').oninput=function(){d.to=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},600);};
+        el.querySelector('#wtt-note').oninput=function(){d.note=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},600);};
+        var sendBtn=el.querySelector('#wtt-send');if(sendBtn)sendBtn.onclick=function(){if(!d.to.trim()||!d.note.trim())return;d.sent=true;save(d);this.outerHTML='<div style="font-size:10px;color:#6b8f71;margin-top:4px;">Delivered as a knock on their studio door</div>';};
+      }
+    },
+    'question-for-village': { name:'A Question for the Village', desc:'One question. Posted at the bonfire.', emoji:'', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { question:'', posted:false };
+        if(d.posted) {
+          el.innerHTML = '<div style="font-style:italic;font-size:14px;color:#262626;line-height:1.6;border-left:2px solid #c8a84b;padding-left:12px;">"'+_wEsc(d.question)+'"</div><div style="font-size:10px;color:#6b8f71;margin-top:8px;">Posted at the bonfire</div><button style="font-size:10px;color:#8e8e8e;background:none;border:none;cursor:pointer;margin-top:4px;" id="wqv-new">Ask another</button>';
+          el.querySelector('#wqv-new').onclick=function(){d.question='';d.posted=false;save(d);el.parentElement.parentElement.querySelector('.wc-body').__wRender();};
+          // Store re-render reference
+          el.__wRender = function() { WIDGETS['question-for-village'].render(el, d, save); };
+        } else {
+          el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">One question for the village.</div><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:8px;font-size:13px;font-family:inherit;resize:none;height:40px;color:#262626;outline:none;" id="wqv-text" placeholder="What do you want to ask?">'+_wEsc(d.question)+'</textarea><button style="font-size:10px;color:#c8a84b;background:none;border:1px solid #c8a84b;border-radius:4px;padding:3px 10px;cursor:pointer;font-family:inherit;margin-top:6px;" id="wqv-post">Post at the bonfire</button>';
+          var tm=null;el.querySelector('#wqv-text').oninput=function(){d.question=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},600);};
+          el.querySelector('#wqv-post').onclick=function(){var q=d.question.trim();if(!q)return;if(typeof sendBonfireMessage==='function'){var inp=document.getElementById('bonfire-chat-input');if(inp){inp.value=q;sendBonfireMessage();}}d.posted=true;save(d);WIDGETS['question-for-village'].render(el,d,save);};
+        }
+      }
+    },
+    'who-was-at-fire': { name:'Who Was at the Fire', desc:'Who you sat with, what you talked about', emoji:'', defaultSpan:2,
+      render: function(el, data, save) {
+        var d = data || { entries:[] }; var today=new Date().toISOString().slice(0,10);
+        var todayEntry = d.entries.find(function(e){return e.date===today;});
+        el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:6px;font-style:italic;">Who did you sit with today?</div><input style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;color:#262626;outline:none;margin-bottom:4px;" id="wwf-who" placeholder="Names..." value="'+(todayEntry?_wEsc(todayEntry.who):'')+'"><textarea style="width:100%;border:1px solid #e8e8e8;border-radius:6px;padding:6px 8px;font-size:12px;font-family:inherit;resize:none;height:36px;color:#262626;outline:none;" id="wwf-what" placeholder="What did you talk about?">'+(todayEntry?_wEsc(todayEntry.what):'')+'</textarea>'+(d.entries.length>1?'<div style="font-size:10px;color:#8e8e8e;margin-top:4px;">'+d.entries.length+' evenings remembered</div>':'');
+        var tm=null;function up(){var who=el.querySelector('#wwf-who').value,what=el.querySelector('#wwf-what').value;if(todayEntry){todayEntry.who=who;todayEntry.what=what;}else{d.entries.push({date:today,who:who,what:what});todayEntry=d.entries[d.entries.length-1];}save(d);}
+        el.querySelector('#wwf-who').oninput=function(){clearTimeout(tm);tm=setTimeout(up,600);};
+        el.querySelector('#wwf-what').oninput=function(){clearTimeout(tm);tm=setTimeout(up,600);};
+      }
     }
   };
 
   // Assign colour palette to each widget
   var _wColors = {
-    'work-timer':'amber', 'current-project':'clay', 'glaze-palette':'ochre', 'studio-rules':'slate', 'firing-log':'clay',
-    'reading-list':'indigo', 'pinned-quote':'rose', 'research-notes':'slate',
-    'mood-today':'sage', 'now-playing':'indigo', 'sticky-notes':'ochre',
+    'work-timer':'amber', 'current-project':'clay', 'firing-log':'clay',
+    'reading-list':'indigo', 'pinned-quote':'rose',
+    'mood-today':'sage',
     'reflection-prompt':'sage', 'horizon-notes':'slate',
     'what-i-noticed':'sage', 'unseen-work':'rose', 'old-new-story':'indigo',
     'offer-village':'amber', 'what-i-need':'rose', 'unlearning':'moss',
-    'unsent-letter':'indigo', 'practicing-not-performing':'moss'
+    'unsent-letter':'indigo', 'practicing-not-performing':'moss',
+    'someone-to-thank':'amber', 'question-for-village':'clay', 'who-was-at-fire':'ochre'
   };
   Object.keys(_wColors).forEach(function(k) { if(WIDGETS[k]) WIDGETS[k].color = _wColors[k]; });
 
