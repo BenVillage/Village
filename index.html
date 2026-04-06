@@ -3566,6 +3566,96 @@ window._isFounder = false;
   .vlt-loading { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #c8a84b; animation: vlt-pulse 1.2s ease-in-out infinite; }
   @keyframes vlt-pulse { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
 
+  /* ── Token Journey ──────────────────────────────────────── */
+  .vtj-section { max-width: 640px; margin: 0 auto; padding: 48px 32px; }
+  .vtj-heading { font-size: 22px; font-family: Georgia, serif; font-weight: 700; color: #f0d060; margin-bottom: 10px; }
+  .vtj-sub { font-size: 13px; color: #6a5030; line-height: 1.7; margin-bottom: 32px; }
+  .vtj-milestones { margin-bottom: 32px; }
+  .vtj-milestone {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 13px 0; border-bottom: 1px solid rgba(200,168,75,0.06);
+  }
+  .vtj-milestone-check {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid rgba(200,168,75,0.25); transition: all 0.3s;
+  }
+  .vtj-milestone.done .vtj-milestone-check {
+    background: #c8a84b; border-color: #c8a84b;
+    box-shadow: 0 0 10px rgba(200,168,75,0.4);
+  }
+  .vtj-milestone.done .vtj-milestone-check::after {
+    content: '✓'; font-size: 12px; color: #060401; font-weight: 700;
+  }
+  .vtj-milestone-info { flex: 1; }
+  .vtj-milestone-label { font-size: 13px; color: #6a5030; line-height: 1.4; }
+  .vtj-milestone.done .vtj-milestone-label { color: #c8a84b; }
+  .vtj-milestone-hint { font-size: 11px; color: #3a2008; margin-top: 2px; }
+  .vtj-progress-bar {
+    height: 3px; background: rgba(200,168,75,0.1); border-radius: 2px; margin-bottom: 32px;
+  }
+  .vtj-progress-fill {
+    height: 100%; background: linear-gradient(90deg, #8a6020, #c8a84b, #f0d060);
+    border-radius: 2px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .vtj-request-btn {
+    display: block; width: 100%; padding: 14px; border-radius: 8px;
+    background: rgba(200,168,75,0.12); border: 1px solid rgba(200,168,75,0.4);
+    color: #c8a84b; font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: inherit; letter-spacing: 0.04em; transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .vtj-request-btn:hover { background: rgba(200,168,75,0.2); border-color: #c8a84b; color: #f0d060; }
+  .vtj-request-btn:disabled { opacity: 0.4; cursor: default; }
+  .vtj-waiting { text-align: center; padding: 24px; }
+  .vtj-waiting-dot { width: 8px; height: 8px; border-radius: 50%; background: #c8a84b; display: inline-block; animation: vlt-pulse 2s ease-in-out infinite; }
+  .vtj-waiting-label { font-size: 12px; color: #6a5030; margin-top: 10px; letter-spacing: 0.06em; }
+  /* Granted token in vault */
+  .vtj-granted { display: grid; grid-template-columns: 200px 1fr; gap: 48px; max-width: 720px; margin: 0 auto; padding: 56px 32px; align-items: start; }
+  .vtj-granted-token { text-align: center; cursor: pointer; }
+  .vtj-granted-message {
+    margin-top: 20px; padding: 20px; border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 8px; background: rgba(200,168,75,0.04);
+  }
+  .vtj-granted-quote { font-size: 14px; color: #c8a84b; font-style: italic; line-height: 1.7; margin-bottom: 10px; }
+  .vtj-granted-by { font-size: 11px; color: #4a3008; letter-spacing: 0.04em; }
+  .vtj-travel-badge {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
+    padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(200,168,75,0.4);
+    background: rgba(200,168,75,0.08); color: #c8a84b; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* ── Token Celebration Overlay ──────────────────────────── */
+  #token-celebration {
+    position: fixed; inset: 0; z-index: 18000; display: none;
+    background: #060401;
+    align-items: center; justify-content: center; flex-direction: column;
+    text-align: center; padding: 48px 32px;
+  }
+  #token-celebration.open { display: flex; }
+  .tc-video-wrap {
+    position: relative; width: 220px; height: 220px; margin-bottom: 40px;
+  }
+  .tc-video-wrap video {
+    width: 220px; height: 220px; border-radius: 50%; object-fit: cover;
+    border: 2px solid #c8a84b;
+    box-shadow: 0 0 80px rgba(200,168,75,0.6), 0 0 160px rgba(200,168,75,0.2);
+    animation: tc-glow 3s ease-in-out infinite;
+  }
+  @keyframes tc-glow {
+    0%,100% { box-shadow: 0 0 60px rgba(200,168,75,0.5), 0 0 120px rgba(200,168,75,0.15); }
+    50%      { box-shadow: 0 0 100px rgba(200,168,75,0.8), 0 0 200px rgba(200,168,75,0.3); }
+  }
+  .tc-title { font-size: 13px; letter-spacing: 0.25em; text-transform: uppercase; color: #4a3008; margin-bottom: 12px; }
+  .tc-name { font-size: 48px; font-family: Georgia, serif; font-weight: 700; color: #c8a84b; margin-bottom: 16px; }
+  .tc-message { font-size: 16px; color: #8a6a30; font-style: italic; line-height: 1.7; max-width: 440px; margin: 0 auto 8px; }
+  .tc-from { font-size: 12px; color: #4a3008; letter-spacing: 0.06em; margin-bottom: 40px; }
+  .tc-kanji { font-size: 40px; font-family: 'Noto Sans JP', Georgia, serif; color: #f0d060; margin-bottom: 8px; }
+  .tc-kanji-sub { font-size: 12px; color: #4a3008; font-style: italic; letter-spacing: 0.04em; margin-bottom: 48px; }
+  .tc-close { background: none; border: 1px solid rgba(200,168,75,0.3); color: #c8a84b; padding: 12px 32px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.2s; border-radius: 4px; }
+  .tc-close:hover { border-color: #c8a84b; color: #f0d060; }
+
   /* ===== APPLICATION SYSTEM ===== */
   #apply-overlay {
     position: fixed; inset: 0; z-index: 10900; display: none;
@@ -6968,6 +7058,7 @@ function toggleVillageSound() {
         <button class="obs-tab" data-obs-tab="longview">Long View</button>
         <button class="obs-tab" data-obs-tab="log" id="obs-tab-log-btn">Founder's Log</button>
         <button class="obs-tab" data-obs-tab="applications" id="obs-tab-applications" style="display:none;">Applications</button>
+        <button class="obs-tab" data-obs-tab="tokens" id="obs-tab-tokens" style="display:none;">Token Requests</button>
         <button class="obs-tab" data-obs-tab="found">Found a Village ·</button>
       </div>
 
@@ -8062,6 +8153,23 @@ function toggleVillageSound() {
   <div class="vtm-terminal" id="vtm-terminal"></div>
   <div class="vtm-final" id="vtm-final">&#x4E00;&#x671F;&#x4E00;&#x4F1A; &#x2014; this moment is in the record.</div>
 </div>
+<!-- ── Token Celebration Overlay ──────────────────────── -->
+<div id="token-celebration">
+  <div class="tc-video-wrap">
+    <video autoplay loop muted playsinline preload="auto" id="tc-video">
+      <source src="Token.mp4" type="video/mp4">
+      <source src="Token.mov" type="video/quicktime">
+    </video>
+  </div>
+  <div class="tc-title">Your token has been granted</div>
+  <div class="tc-name" id="tc-name"></div>
+  <div class="tc-message" id="tc-message"></div>
+  <div class="tc-from" id="tc-from"></div>
+  <div class="tc-kanji">一期一会</div>
+  <div class="tc-kanji-sub">ichi-go ichi-e — this moment, only once</div>
+  <button class="tc-close" id="tc-close">Enter the village</button>
+</div>
+
 <!-- ── Application Overlay ─────────────────────────────── -->
 <div id="apply-overlay">
   <div class="apply-card" style="position:relative;">
@@ -15724,7 +15832,7 @@ function _startPositionBroadcast() {
     if (!d || !d.uid) return;
     var myUid = typeof _presenceProfileId === 'function' ? _presenceProfileId() : '';
     if (d.uid === myUid) return; // skip own echo
-    _otherPlayers[d.uid] = { x: d.x, y: d.y, photo: d.photo || '', name: d.name || '?', uid: d.uid, fromVillage: d.fromVillage || '', ts: Date.now() };
+    _otherPlayers[d.uid] = { x: d.x, y: d.y, photo: d.photo || '', name: d.name || '?', uid: d.uid, fromVillage: d.fromVillage || '', hasToken: !!d.hasToken, ts: Date.now() };
     // Render immediately when a position update arrives (no waiting for the interval)
     _renderOtherPlayers();
   }).subscribe(function(status) {
@@ -15744,7 +15852,7 @@ function _startPositionBroadcast() {
         _posBroadcastChannel.send({
           type: 'broadcast',
           event: 'pos',
-          payload: { uid: myUid, x: cx, y: cy, photo: me.photo || '', name: me.villageName || me.name || '', fromVillage: (window._travellingFrom ? window._travellingFrom.name : '') }
+          payload: { uid: myUid, x: cx, y: cy, photo: me.photo || '', name: me.villageName || me.name || '', fromVillage: (window._travellingFrom ? window._travellingFrom.name : ''), hasToken: !!(window._myTokenStatus === 'granted') }
         }).catch(function(){});
         _lastX = cx; _lastY = cy; _lastSentTs = Date.now();
       }
@@ -15898,30 +16006,56 @@ function _showPlayerPopup(data, e) {
     bioEl.style.display = bio ? '' : 'none';
   }
 
-  // Token video — front face; always plays
+  // Token is earned — show token video front face; flip to photo back
+  // If token not yet granted, show only the profile photo (no token)
   var vid = document.getElementById('pp-token-video');
-  if (vid) { vid.load(); vid.play().catch(function() {}); }
-
-  // Photo face — back of the coin
+  var coin = document.getElementById('pp-coin');
   var photoEl = document.getElementById('pp-coin-photo');
   var photoSrc = (profile && profile.photo) ? profile.photo : (data.photo || '');
-  var hasPhoto = false;
-  if (photoEl) {
-    if (photoSrc) {
-      photoEl.innerHTML = '';
-      photoEl.style.backgroundImage = 'url(' + JSON.stringify(photoSrc) + ')';
-      hasPhoto = true;
-    } else {
-      // Letter fallback — initial on dark background
-      var initial = (data.name || '?')[0].toUpperCase();
-      photoEl.style.backgroundImage = 'none';
-      photoEl.innerHTML = '<div class="pp-coin-letter">' + initial + '</div>';
-      hasPhoto = true; // still flip — letter face is charming
+  var initial = (data.name || '?')[0].toUpperCase();
+
+  if (data.hasToken) {
+    // Token granted — coin shows token video / photo alternating
+    if (vid) { vid.load(); vid.play().catch(function() {}); }
+    if (coin) coin.style.display = '';
+    if (photoEl) {
+      if (photoSrc) {
+        photoEl.innerHTML = '';
+        photoEl.style.backgroundImage = 'url(' + JSON.stringify(photoSrc) + ')';
+      } else {
+        photoEl.style.backgroundImage = 'none';
+        photoEl.innerHTML = '<div class="pp-coin-letter">' + initial + '</div>';
+      }
+    }
+    _ppStartFlip(true);
+  } else {
+    // No token yet — show only profile photo, no coin flip
+    _ppStopFlip();
+    if (coin) coin.style.display = 'none';
+    if (vid) vid.pause();
+    // Reuse the photo face directly, full size
+    var tokenWrap = document.getElementById('pp-token-wrap');
+    if (tokenWrap) {
+      if (photoSrc) {
+        tokenWrap.style.backgroundImage = 'url(' + JSON.stringify(photoSrc) + ')';
+        tokenWrap.style.backgroundSize = 'cover';
+        tokenWrap.style.backgroundPosition = 'center';
+      } else {
+        tokenWrap.style.backgroundImage = 'none';
+        // Show initial letter in the dark wrap
+        var existLetter = tokenWrap.querySelector('.pp-solo-letter');
+        if (!existLetter) {
+          var letterEl = document.createElement('div');
+          letterEl.className = 'pp-solo-letter';
+          letterEl.style.cssText = 'font-size:52px;font-weight:700;color:rgba(200,168,75,0.7);z-index:1;position:relative;';
+          letterEl.textContent = initial;
+          tokenWrap.appendChild(letterEl);
+        } else {
+          existLetter.textContent = initial;
+        }
+      }
     }
   }
-
-  // Start the coin flip cycle
-  _ppStartFlip(hasPhoto);
 
   // Message button — only citizens can DM
   var msgBtn = document.getElementById('pp-msg-btn');
@@ -15989,6 +16123,14 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchDMUnreadCount();
     _startPersistentDMSubscription();
     _startPositionBroadcast();
+    // Fetch own token status for position broadcast
+    if (window._supabase && window._sbAuthUid) {
+      var _btVid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+      window._supabase.from('village_tokens').select('status')
+        .eq('village_id', _btVid).eq('user_id', window._sbAuthUid).limit(1).single()
+        .then(function(r) { window._myTokenStatus = (r.data && r.data.status) || 'locked'; })
+        .catch(function() { window._myTokenStatus = 'locked'; });
+    }
   }, 2000); // wait for Supabase + profiles to init
 });
 
@@ -21806,6 +21948,38 @@ Mura facilitates. People decide.`;
           .catch(function() { data.messages = 0; })
       );
 
+      // Gallery pieces count (for token milestone)
+      promises.push(
+        window._supabase.from('gallery_pieces').select('id', { count: 'exact' })
+          .eq('village_id', vid).eq('user_id', uid)
+          .then(function(r) { data.galleryCount = r.count || (r.data ? r.data.length : 0); })
+          .catch(function() { data.galleryCount = 0; })
+      );
+
+      // Library journals count (for token milestone)
+      promises.push(
+        window._supabase.from('library_journals').select('id', { count: 'exact' })
+          .eq('village_id', vid).eq('user_id', uid)
+          .then(function(r) { data.journalCount = r.count || (r.data ? r.data.length : 0); })
+          .catch(function() { data.journalCount = 0; })
+      );
+
+      // Bonfire messages count (for token milestone)
+      promises.push(
+        window._supabase.from('bonfire_messages').select('id', { count: 'exact' })
+          .eq('village_id', vid).eq('user_id', uid)
+          .then(function(r) { data.bonfireCount = r.count || (r.data ? r.data.length : 0); })
+          .catch(function() { data.bonfireCount = 0; })
+      );
+
+      // Token status
+      promises.push(
+        window._supabase.from('village_tokens').select('*')
+          .eq('village_id', vid).eq('user_id', uid).limit(1).single()
+          .then(function(r) { data.token = r.error ? null : r.data; })
+          .catch(function() { data.token = null; })
+      );
+
       Promise.all(promises).then(function() { resolve(data); }).catch(function() { resolve(data); });
     });
   }
@@ -21851,21 +22025,34 @@ Mura facilitates. People decide.`;
     html += _statCell(friendCount, 'Connections');
     html += '</div>';
 
-    // Passport section with token canvas
-    html += '<div class="vlt-passport">';
-    html += '<div class="vlt-token-wrap" id="vault-token-trigger">';
-    html += '<video id="vault-token-video" autoplay loop muted playsinline preload="auto" width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video>';
-    html += '<div class="vlt-token-hint">tap to inspect</div>';
-    html += '</div>';
-    html += '<div>';
-    html += _pf('Village name', name, 'big');
-    html += _pf('Location', location || 'Undisclosed');
-    html += _pf('Practice', practice);
-    html += _pf('Level', level, 'active');
-    html += _pf('Member since', memberDate || 'Today');
-    html += _pf('Identity', p.identity);
-    html += '</div>';
-    html += '</div>';
+    // Token / Passport section — layout depends on token status
+    var tokenStatus = (data.token && data.token.status) || 'locked';
+    if (tokenStatus === 'granted') {
+      // Full passport view with active token
+      html += '<div class="vtj-granted">';
+      html += '<div class="vtj-granted-token" id="vault-token-trigger">';
+      html += '<video id="vault-token-video" autoplay loop muted playsinline preload="auto" width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video>';
+      html += '<div class="vlt-token-hint" style="margin-top:8px;">tap to inspect</div>';
+      html += '</div>';
+      html += '<div>';
+      html += _pf('Village name', name, 'big');
+      html += _pf('Location', location || 'Undisclosed');
+      html += _pf('Practice', practice);
+      html += _pf('Level', level, 'active');
+      html += _pf('Member since', memberDate || 'Today');
+      if (data.token.granted_message || data.token.granted_by_name) {
+        html += '<div class="vtj-granted-message">';
+        if (data.token.granted_message) html += '<div class="vtj-granted-quote">\u201C' + _escV(data.token.granted_message) + '\u201D</div>';
+        if (data.token.granted_by_name) html += '<div class="vtj-granted-by">Confirmed by ' + _escV(data.token.granted_by_name) + (data.token.granted_at ? ' \u00B7 ' + _fmtDate(data.token.granted_at) : '') + '</div>';
+        html += '</div>';
+      }
+      html += '<div class="vtj-travel-badge">\u25C6 Travel pass active</div>';
+      html += '</div>';
+      html += '</div>';
+    } else {
+      // Token journey — milestone checklist
+      html += _tokenJourneyHTML(data, tokenStatus);
+    }
 
     // Manifesto
     html += '<div class="vlt-manifesto">';
@@ -21924,13 +22111,17 @@ Mura facilitates. People decide.`;
 
     el.innerHTML = html;
 
-    // Start token video (autoplay may not fire on dynamically inserted elements)
+    // Start token video (only exists when token is granted)
     var tokenVid = document.getElementById('vault-token-video');
     if (tokenVid) tokenVid.play().catch(function() {});
 
-    // Wire token click
+    // Wire token click (only exists when token is granted)
     var trigger = document.getElementById('vault-token-trigger');
     if (trigger) trigger.addEventListener('click', function() { openTokenModal(data); });
+
+    // Wire request button (exists in journey view)
+    var reqBtn = document.getElementById('vtj-request-btn');
+    if (reqBtn) reqBtn.addEventListener('click', function() { _requestToken(data); });
 
     // Wire download
     var dlBtn = document.getElementById('vault-download-btn');
@@ -22144,6 +22335,120 @@ Mura facilitates. People decide.`;
     URL.revokeObjectURL(a.href);
   }
 
+  /* ---------- token journey helpers ---------- */
+
+  var _TOKEN_MILESTONES = [
+    { key: 'profile',  label: 'Complete your maker profile',   hint: 'Photo, bio, and main practice filled in' },
+    { key: 'log',      label: 'Write your first practice log', hint: 'Record a session in the studio' },
+    { key: 'process',  label: 'Post to the Process Board',     hint: 'Share what you are currently making' },
+    { key: 'piece',    label: 'Add a piece to the Gallery',    hint: 'Show your work to the village' },
+    { key: 'journal',  label: 'Write in the Library',          hint: 'Contribute a journal entry or process note' },
+    { key: 'bonfire',  label: 'Speak at the Bonfire',          hint: 'Post five messages in the communal fire' }
+  ];
+
+  function _checkAchievements(data) {
+    var p = data.profile || {};
+    return {
+      profile:  !!(p.photo && p.bio && p.mainPractice),
+      log:      (data.practiceCount  || 0) >= 1,
+      process:  (data.processBoardCount || 0) >= 1,
+      piece:    (data.galleryCount   || 0) >= 1,
+      journal:  (data.journalCount   || 0) >= 1,
+      bonfire:  (data.bonfireCount   || 0) >= 5
+    };
+  }
+
+  function _tokenJourneyHTML(data, status) {
+    var achievements = _checkAchievements(data);
+    var doneCount = Object.values(achievements).filter(Boolean).length;
+    var total = _TOKEN_MILESTONES.length;
+    var allDone = doneCount === total;
+    var html = '<div class="vtj-section">';
+
+    if (status === 'requested') {
+      html += '<div class="vtj-heading">Awaiting confirmation</div>';
+      html += '<div class="vtj-sub">You have completed all the milestones. The founders have been notified and are reviewing your work. This cannot be rushed — they need to know you are real.</div>';
+      html += '<div class="vtj-waiting"><div class="vtj-waiting-dot"></div><div class="vtj-waiting-label" style="margin-top:12px;">Confirmation pending</div></div>';
+    } else {
+      html += '<div class="vtj-heading">Earn your token</div>';
+      if (allDone) {
+        html += '<div class="vtj-sub">You have completed every milestone. Request confirmation from the founders. They will review your work and — when satisfied — grant your token.</div>';
+      } else {
+        html += '<div class="vtj-sub">The token is not given. It is earned. Complete these milestones, then the founders of Clay Village will confirm your work and grant your pass.</div>';
+      }
+    }
+
+    // Progress bar
+    html += '<div class="vtj-progress-bar"><div class="vtj-progress-fill" style="width:' + Math.round(doneCount / total * 100) + '%;"></div></div>';
+
+    // Milestone list
+    html += '<div class="vtj-milestones">';
+    _TOKEN_MILESTONES.forEach(function(m) {
+      var done = achievements[m.key];
+      html += '<div class="vtj-milestone' + (done ? ' done' : '') + '">';
+      html += '<div class="vtj-milestone-check"></div>';
+      html += '<div class="vtj-milestone-info">';
+      html += '<div class="vtj-milestone-label">' + m.label + '</div>';
+      if (!done) html += '<div class="vtj-milestone-hint">' + m.hint + '</div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+
+    if (status !== 'requested') {
+      if (allDone) {
+        html += '<button class="vtj-request-btn" id="vtj-request-btn">Request token confirmation \u2192</button>';
+      } else {
+        html += '<button class="vtj-request-btn" id="vtj-request-btn" disabled>' + doneCount + ' of ' + total + ' milestones complete</button>';
+      }
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  async function _requestToken(data) {
+    if (!window._supabase || !window._sbAuthUid) return;
+    var btn = document.getElementById('vtj-request-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Requesting\u2026'; }
+    var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+    var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
+    var name = sp.villageName || sp.name || 'A maker';
+    var achievements = _checkAchievements(data);
+    try {
+      await window._supabase.from('village_tokens').upsert({
+        village_id: vid, user_id: window._sbAuthUid,
+        display_name: name, status: 'requested',
+        achievements: achievements,
+        requested_at: new Date().toISOString()
+      }, { onConflict: 'village_id,user_id' });
+      // Re-render vault to show waiting state
+      fetchVaultData().then(function(d) { renderVault(d); });
+    } catch(err) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Request token confirmation \u2192'; }
+    }
+  }
+
+  /* ---------- celebration ---------- */
+  function _openTokenCelebration(tokenRow, memberName) {
+    var el = document.getElementById('token-celebration');
+    if (!el) return;
+    document.getElementById('tc-name').textContent = memberName || 'Maker';
+    var msg = tokenRow.granted_message || 'You have shown up, made things, and contributed to this village. That is real. Your token is real.';
+    document.getElementById('tc-message').textContent = '\u201C' + msg + '\u201D';
+    document.getElementById('tc-from').textContent = 'Confirmed by ' + (tokenRow.granted_by_name || 'the founders') + ' of Clay Village';
+    var vid = document.getElementById('tc-video');
+    if (vid) { vid.load(); vid.play().catch(function(){}); }
+    el.classList.add('open');
+    // Close handler
+    var closeBtn = document.getElementById('tc-close');
+    if (closeBtn) closeBtn.onclick = function() {
+      el.classList.remove('open');
+      // Refresh vault to show granted state
+      fetchVaultData().then(function(d) { renderVault(d); });
+    };
+  }
+  window._openTokenCelebration = _openTokenCelebration;
+
   /* ---------- open / close vault ---------- */
   window.openVault = function openVault() {
     var ov = document.getElementById('vault-overlay');
@@ -22153,7 +22458,11 @@ Mura facilitates. People decide.`;
     // Show loading, fetch data, render
     var content = document.getElementById('vault-content');
     if (content) content.innerHTML = '<div style="text-align:center;padding:200px 0;"><span class="vlt-loading"></span></div>';
-    fetchVaultData().then(function(data) { renderVault(data); });
+    fetchVaultData().then(function(data) {
+      // Cache token status for position broadcast
+      window._myTokenStatus = (data.token && data.token.status) || 'locked';
+      renderVault(data);
+    });
   }
 
   function closeVault() {
@@ -28147,6 +28456,11 @@ seedMemberLanguage();
     // Profiles flyout nav item (founder-only admin tool)
     var profilesNav = document.querySelector('.admin-nav-item[data-panel="profiles"]');
     if (profilesNav) profilesNav.style.display = isFounder ? 'flex' : 'none';
+    // Observatory: show applications + token tabs for founders
+    var appTab = document.getElementById('obs-tab-applications');
+    if (appTab) appTab.style.display = isFounder ? '' : 'none';
+    var tokTab = document.getElementById('obs-tab-tokens');
+    if (tokTab) tokTab.style.display = isFounder ? '' : 'none';
     // Dev toolbar
     var devHb = document.getElementById('dev-hamburger');
     if (devHb) {
@@ -28523,6 +28837,120 @@ seedMemberLanguage();
   // Wire applications tab to render on click
   document.getElementById('obs-tab-applications')?.addEventListener('click', function() {
     if (typeof window._renderApplications === 'function') window._renderApplications();
+  });
+
+  // ── Token Requests (founder view) ────────────────────────────────────
+  window._renderTokenRequests = async function() {
+    var panel = document.getElementById('obs-tokens-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'obs-tokens-panel';
+      panel.className = 'obs-panel';
+      panel.setAttribute('data-obs-panel', 'tokens');
+      var obsBody = document.querySelector('#observatory-overlay .bld-inner');
+      if (obsBody) obsBody.appendChild(panel);
+    }
+    if (!window._supabase) return;
+    panel.innerHTML = '<div style="text-align:center;padding:40px;"><span class="vlt-loading"></span></div>';
+    try {
+      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+      var { data: tokens } = await window._supabase
+        .from('village_tokens').select('*')
+        .eq('village_id', vid).eq('status', 'requested')
+        .order('requested_at', { ascending: true });
+
+      if (!tokens || tokens.length === 0) {
+        panel.innerHTML = '<div style="text-align:center;padding:40px;color:#8e8e8e;font-size:14px;">No token requests pending.</div>';
+        return;
+      }
+
+      var milestoneLabels = { profile: 'Profile complete', log: 'Practice log', process: 'Process board', piece: 'Gallery piece', journal: 'Library journal', bonfire: 'Bonfire (5 msgs)' };
+      var html = '<div style="padding:4px 0;">';
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#262626;margin-bottom:4px;">' + tokens.length + ' Token Request' + (tokens.length > 1 ? 's' : '') + '</div>';
+      html += '<div style="font-size:12px;color:#8e8e8e;margin-bottom:20px;line-height:1.5;">Review each member\'s milestones. When you are satisfied that their work and presence is real, grant the token. Add a personal message — it will appear in their vault and in the ceremony.</div>';
+
+      tokens.forEach(function(tok) {
+        var date = tok.requested_at ? new Date(tok.requested_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        var ach = tok.achievements || {};
+        var achHtml = Object.keys(milestoneLabels).map(function(k) {
+          return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:' + (ach[k] ? '#22c55e' : '#e88070') + ';margin-right:8px;margin-bottom:4px;">' + (ach[k] ? '✓' : '×') + ' ' + milestoneLabels[k] + '</span>';
+        }).join('');
+
+        html += '<div style="background:#fff;border:1px solid #dbdbdb;border-radius:12px;padding:18px;margin-bottom:14px;">';
+        html += '<div style="font-size:15px;font-weight:700;color:#262626;margin-bottom:4px;">' + _escApp(tok.display_name || 'Unnamed') + '</div>';
+        html += '<div style="font-size:11px;color:#8e8e8e;margin-bottom:12px;">Requested ' + date + '</div>';
+        html += '<div style="margin-bottom:14px;line-height:2;">' + achHtml + '</div>';
+        html += '<textarea id="tok-msg-' + tok.id + '" placeholder="Your message to them (optional — it will appear in their vault and the ceremony)" style="width:100%;box-sizing:border-box;border:1px solid #dbdbdb;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;resize:none;height:80px;color:#262626;"></textarea>';
+        html += '<div style="display:flex;gap:8px;margin-top:10px;">';
+        html += '<button onclick="window._grantToken(\'' + tok.id + '\',\'' + tok.user_id + '\',\'' + _escApp(tok.display_name || '') + '\')" style="flex:1;padding:9px;border-radius:8px;border:none;background:#c8a84b;color:#060401;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Grant token</button>';
+        html += '<button onclick="window._denyTokenRequest(\'' + tok.id + '\')" style="flex:1;padding:9px;border-radius:8px;border:1px solid #dbdbdb;background:#fff;color:#8e8e8e;font-size:12px;cursor:pointer;font-family:inherit;">Not yet</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      panel.innerHTML = html;
+    } catch(err) {
+      panel.innerHTML = '<div style="color:#e88070;padding:20px;">Error loading token requests.</div>';
+    }
+  };
+
+  window._grantToken = async function(tokenId, userId, memberName) {
+    if (!window._supabase) return;
+    var msgEl = document.getElementById('tok-msg-' + tokenId);
+    var msg = msgEl ? msgEl.value.trim() : '';
+    var me = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
+    var myName = me.villageName || me.name || 'The founders';
+    var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+    try {
+      await window._supabase.from('village_tokens').update({
+        status: 'granted',
+        granted_by: window._sbAuthUid,
+        granted_by_name: myName,
+        granted_at: new Date().toISOString(),
+        granted_message: msg || null
+      }).eq('id', tokenId);
+      // Broadcast the grant so the member sees it if they're online
+      if (window._supabase) {
+        window._supabase.channel('token-grants-' + vid).send({
+          type: 'broadcast', event: 'token-granted',
+          payload: { user_id: userId, granted_by_name: myName, granted_message: msg }
+        }).catch(function(){});
+      }
+      window._renderTokenRequests();
+    } catch(err) { console.warn('[grantToken]', err); }
+  };
+
+  window._denyTokenRequest = async function(tokenId) {
+    if (!window._supabase) return;
+    await window._supabase.from('village_tokens').update({ status: 'earned', requested_at: null }).eq('id', tokenId);
+    window._renderTokenRequests();
+  };
+
+  // Wire tokens tab
+  document.getElementById('obs-tab-tokens')?.addEventListener('click', function() {
+    if (typeof window._renderTokenRequests === 'function') window._renderTokenRequests();
+  });
+
+  // Show tokens tab for founders in Observatory
+  var _obsTokenBtn = document.getElementById('obs-tab-tokens');
+  if (_obsTokenBtn && (window._villageRole === 'founder')) _obsTokenBtn.style.display = '';
+
+  // Listen for token grant in realtime (member side)
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      if (!window._supabase || !window._sbAuthUid) return;
+      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+      window._supabase.channel('token-grants-' + vid)
+        .on('broadcast', { event: 'token-granted' }, function(msg) {
+          var d = msg.payload;
+          if (!d || d.user_id !== window._sbAuthUid) return;
+          // It's for me — show celebration
+          var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : {};
+          var name = sp.villageName || sp.name || 'Maker';
+          if (typeof window._openTokenCelebration === 'function') {
+            window._openTokenCelebration({ granted_message: d.granted_message, granted_by_name: d.granted_by_name }, name);
+          }
+        }).subscribe();
+    }, 3000);
   });
 
   // Shift+D — reset Dunbar (signs out of Supabase too so session doesn't re-bypass it)
