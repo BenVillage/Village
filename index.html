@@ -3610,9 +3610,16 @@ window._isFounder = false;
   .vtj-waiting { text-align: center; padding: 24px; }
   .vtj-waiting-dot { width: 8px; height: 8px; border-radius: 50%; background: #c8a84b; display: inline-block; animation: vlt-pulse 2s ease-in-out infinite; }
   .vtj-waiting-label { font-size: 12px; color: #6a5030; margin-top: 10px; letter-spacing: 0.06em; }
-  /* Granted token in vault */
+  /* Granted token in vault — coin flip */
   .vtj-granted { display: grid; grid-template-columns: 200px 1fr; gap: 48px; max-width: 720px; margin: 0 auto; padding: 56px 32px; align-items: start; }
-  .vtj-granted-token { text-align: center; cursor: pointer; }
+  .vtj-granted-token { text-align: center; cursor: pointer; perspective: 900px; }
+  .vtj-coin { width: 200px; height: 200px; position: relative; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.45, 0, 0.55, 1); margin: 0 auto; }
+  .vtj-coin.vtj-coin-flipped { transform: rotateY(180deg); }
+  .vtj-coin-face { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; border: 2px solid rgba(200,168,75,0.8); box-shadow: 0 0 40px rgba(200,168,75,0.5), 0 0 12px rgba(200,168,75,0.3); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .vtj-coin-front video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vtj-coin-back { transform: rotateY(180deg); background: #1a1008; }
+  .vtj-coin-back-photo { width: 100%; height: 100%; background-size: cover; background-position: center; background-color: #2a1c08; }
+  .vtj-coin-back-letter { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; font-weight: 700; color: rgba(200,168,75,0.9); background: #1a1008; }
   .vtj-granted-message {
     margin-top: 20px; padding: 20px; border: 1px solid rgba(200,168,75,0.2);
     border-radius: 8px; background: rgba(200,168,75,0.04);
@@ -3631,30 +3638,50 @@ window._isFounder = false;
     position: fixed; inset: 0; z-index: 18000; display: none;
     background: #060401;
     align-items: center; justify-content: center; flex-direction: column;
-    text-align: center; padding: 48px 32px;
+    text-align: center; padding: 48px 32px; overflow: hidden;
   }
   #token-celebration.open { display: flex; }
+  .tc-particles { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc-particle { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(200,168,75,0.9), transparent 70%); animation: tc-rise linear forwards; pointer-events: none; }
+  @keyframes tc-rise { 0% { opacity:0; transform:translateY(0) scale(0); } 15% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:translateY(-100vh) scale(0.3); } }
+  .tc-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
   .tc-video-wrap {
     position: relative; width: 220px; height: 220px; margin-bottom: 40px;
+    opacity: 0; transform: scale(0.3); transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
   }
+  #token-celebration.tc-stage-1 .tc-video-wrap { opacity: 1; transform: scale(1); }
   .tc-video-wrap video {
     width: 220px; height: 220px; border-radius: 50%; object-fit: cover;
     border: 2px solid #c8a84b;
     box-shadow: 0 0 80px rgba(200,168,75,0.6), 0 0 160px rgba(200,168,75,0.2);
     animation: tc-glow 3s ease-in-out infinite;
   }
+  .tc-ring { position: absolute; inset: -16px; border-radius: 50%; border: 1px solid rgba(200,168,75,0.3); animation: tc-ring-pulse 2.5s ease-in-out infinite; }
+  .tc-ring:nth-child(2) { inset: -32px; animation-delay: 0.4s; border-color: rgba(200,168,75,0.15); }
+  .tc-ring:nth-child(3) { inset: -52px; animation-delay: 0.8s; border-color: rgba(200,168,75,0.07); }
+  @keyframes tc-ring-pulse { 0%,100% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.06); opacity:1; } }
   @keyframes tc-glow {
     0%,100% { box-shadow: 0 0 60px rgba(200,168,75,0.5), 0 0 120px rgba(200,168,75,0.15); }
     50%      { box-shadow: 0 0 100px rgba(200,168,75,0.8), 0 0 200px rgba(200,168,75,0.3); }
   }
-  .tc-title { font-size: 13px; letter-spacing: 0.25em; text-transform: uppercase; color: #4a3008; margin-bottom: 12px; }
-  .tc-name { font-size: 48px; font-family: Georgia, serif; font-weight: 700; color: #c8a84b; margin-bottom: 16px; }
-  .tc-message { font-size: 16px; color: #8a6a30; font-style: italic; line-height: 1.7; max-width: 440px; margin: 0 auto 8px; }
-  .tc-from { font-size: 12px; color: #4a3008; letter-spacing: 0.06em; margin-bottom: 40px; }
-  .tc-kanji { font-size: 40px; font-family: 'Noto Sans JP', Georgia, serif; color: #f0d060; margin-bottom: 8px; }
-  .tc-kanji-sub { font-size: 12px; color: #4a3008; font-style: italic; letter-spacing: 0.04em; margin-bottom: 48px; }
-  .tc-close { background: none; border: 1px solid rgba(200,168,75,0.3); color: #c8a84b; padding: 12px 32px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.2s; border-radius: 4px; }
+  .tc-title { font-size: 13px; letter-spacing: 0.25em; text-transform: uppercase; color: #4a3008; margin-bottom: 12px; opacity:0; transition: opacity 0.6s 0.3s; }
+  .tc-name { font-size: 48px; font-family: Georgia, serif; font-weight: 700; color: #c8a84b; margin-bottom: 16px; opacity:0; transform:translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; transition-delay: 0.5s; }
+  .tc-message { font-size: 16px; color: #8a6a30; font-style: italic; line-height: 1.7; max-width: 440px; margin: 0 auto 8px; opacity:0; transition: opacity 0.8s; transition-delay: 1.2s; }
+  .tc-from { font-size: 12px; color: #4a3008; letter-spacing: 0.06em; margin-bottom: 40px; opacity:0; transition: opacity 0.6s; transition-delay: 1.6s; }
+  .tc-kanji { font-size: 40px; font-family: 'Noto Sans JP', Georgia, serif; color: #f0d060; margin-bottom: 8px; opacity:0; transform:scale(0.5); transition: opacity 0.8s, transform 0.8s cubic-bezier(0.34,1.56,0.64,1); transition-delay: 2.2s; }
+  .tc-kanji-sub { font-size: 12px; color: #4a3008; font-style: italic; letter-spacing: 0.04em; margin-bottom: 48px; opacity:0; transition: opacity 0.6s; transition-delay: 2.6s; }
+  .tc-close { background: none; border: 1px solid rgba(200,168,75,0.3); color: #c8a84b; padding: 12px 32px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.2s, opacity 0.6s; border-radius: 4px; opacity:0; transition-delay: 3.2s; }
   .tc-close:hover { border-color: #c8a84b; color: #f0d060; }
+  #token-celebration.tc-stage-1 .tc-title,
+  #token-celebration.tc-stage-1 .tc-name,
+  #token-celebration.tc-stage-1 .tc-message,
+  #token-celebration.tc-stage-1 .tc-from,
+  #token-celebration.tc-stage-1 .tc-kanji,
+  #token-celebration.tc-stage-1 .tc-kanji-sub,
+  #token-celebration.tc-stage-1 .tc-close { opacity: 1; transform: none; }
+  /* Observatory notification badge */
+  .obs-tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; border-radius: 8px; background: #c8a84b; color: #060401; font-size: 9px; font-weight: 700; margin-left: 6px; padding: 0 4px; vertical-align: middle; animation: obs-badge-pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes obs-badge-pop { 0% { transform:scale(0); } 100% { transform:scale(1); } }
 
   /* ===== APPLICATION SYSTEM ===== */
   #apply-overlay {
@@ -8155,19 +8182,23 @@ function toggleVillageSound() {
 </div>
 <!-- ── Token Celebration Overlay ──────────────────────── -->
 <div id="token-celebration">
-  <div class="tc-video-wrap">
-    <video autoplay loop muted playsinline preload="auto" id="tc-video">
-      <source src="Token.mp4" type="video/mp4">
-      <source src="Token.mov" type="video/quicktime">
-    </video>
+  <div class="tc-particles" id="tc-particles"></div>
+  <div class="tc-content">
+    <div class="tc-video-wrap">
+      <div class="tc-ring"></div><div class="tc-ring"></div><div class="tc-ring"></div>
+      <video autoplay loop muted playsinline preload="auto" id="tc-video">
+        <source src="Token.mp4" type="video/mp4">
+        <source src="Token.mov" type="video/quicktime">
+      </video>
+    </div>
+    <div class="tc-title">Your token has been granted</div>
+    <div class="tc-name" id="tc-name"></div>
+    <div class="tc-message" id="tc-message"></div>
+    <div class="tc-from" id="tc-from"></div>
+    <div class="tc-kanji">一期一会</div>
+    <div class="tc-kanji-sub">ichi-go ichi-e — this moment, only once</div>
+    <button class="tc-close" id="tc-close">Enter your vault</button>
   </div>
-  <div class="tc-title">Your token has been granted</div>
-  <div class="tc-name" id="tc-name"></div>
-  <div class="tc-message" id="tc-message"></div>
-  <div class="tc-from" id="tc-from"></div>
-  <div class="tc-kanji">一期一会</div>
-  <div class="tc-kanji-sub">ichi-go ichi-e — this moment, only once</div>
-  <button class="tc-close" id="tc-close">Enter the village</button>
 </div>
 
 <!-- ── Application Overlay ─────────────────────────────── -->
@@ -22034,11 +22065,21 @@ Mura facilitates. People decide.`;
     // Token / Passport section — layout depends on token status
     var tokenStatus = (data.token && data.token.status) || 'locked';
     if (tokenStatus === 'granted') {
-      // Full passport view with active token
+      // Full passport view — coin flip (token ↔ profile photo)
+      var _photoUrl = p.photo || p.avatar_url || p.imageUrl || '';
+      var _initial = (name || '?').charAt(0).toUpperCase();
       html += '<div class="vtj-granted">';
       html += '<div class="vtj-granted-token" id="vault-token-trigger">';
-      html += '<video id="vault-token-video" autoplay loop muted playsinline preload="auto" width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video>';
-      html += '<div class="vlt-token-hint" style="margin-top:8px;">tap to inspect</div>';
+      html += '<div class="vtj-coin" id="vtj-coin">';
+      html += '<div class="vtj-coin-face vtj-coin-front"><video id="vault-token-video" autoplay loop muted playsinline preload="auto"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video></div>';
+      html += '<div class="vtj-coin-face vtj-coin-back">';
+      if (_photoUrl) {
+        html += '<div class="vtj-coin-back-photo" style="background-image:url(\'' + _escV(_photoUrl) + '\')"></div>';
+      } else {
+        html += '<div class="vtj-coin-back-letter">' + _escV(_initial) + '</div>';
+      }
+      html += '</div></div>';
+      html += '<div class="vlt-token-hint" style="margin-top:10px;font-size:11px;color:#4a3008;letter-spacing:0.04em;">tap to flip</div>';
       html += '</div>';
       html += '<div>';
       html += _pf('Village name', name, 'big');
@@ -22121,13 +22162,16 @@ Mura facilitates. People decide.`;
 
     el.innerHTML = html;
 
-    // Start token video (only exists when token is granted)
+    // Start token video + wire coin flip click
     var tokenVid = document.getElementById('vault-token-video');
     if (tokenVid) tokenVid.play().catch(function() {});
-
-    // Wire token click (only exists when token is granted)
-    var trigger = document.getElementById('vault-token-trigger');
-    if (trigger) trigger.addEventListener('click', function() { openTokenModal(data); });
+    var vtjCoin = document.getElementById('vtj-coin');
+    if (vtjCoin) {
+      vtjCoin.addEventListener('click', function(e) {
+        e.stopPropagation();
+        vtjCoin.classList.toggle('vtj-coin-flipped');
+      });
+    }
 
     // Wire request button (exists in journey view)
     var reqBtn = document.getElementById('vtj-request-btn');
@@ -22449,6 +22493,21 @@ Mura facilitates. People decide.`;
         achievements: achievements,
         requested_at: new Date().toISOString()
       }, { onConflict: 'village_id,user_id' });
+      // DM the founder — someone is requesting their token
+      try {
+        var { data: founders } = await window._supabase
+          .from('village_members').select('auth_id')
+          .eq('village_id', vid).eq('role', 'founder');
+        if (founders && founders.length) {
+          founders.forEach(function(f) {
+            window._supabase.from('direct_messages').insert({
+              village_id: vid, sender_id: window._sbAuthUid,
+              recipient_id: f.auth_id,
+              message: name + ' has completed all milestones and is requesting their village token. Review in the Observatory \u2192 Token Requests.'
+            }).then(function(){}).catch(function(){});
+          });
+        }
+      } catch(_fe) {}
       // Re-render vault to show waiting state
       fetchVaultData().then(function(d) { renderVault(d); });
     } catch(err) {
@@ -22457,22 +22516,53 @@ Mura facilitates. People decide.`;
   }
 
   /* ---------- celebration ---------- */
+  var _tcParticleTimer = null;
+  function _spawnParticles(container) {
+    if (_tcParticleTimer) clearInterval(_tcParticleTimer);
+    container.innerHTML = '';
+    var count = 0;
+    _tcParticleTimer = setInterval(function() {
+      if (count > 40) { clearInterval(_tcParticleTimer); _tcParticleTimer = null; return; }
+      var p = document.createElement('div');
+      p.className = 'tc-particle';
+      var sz = 4 + Math.random() * 10;
+      p.style.width = sz + 'px'; p.style.height = sz + 'px';
+      p.style.left = (10 + Math.random() * 80) + '%';
+      p.style.bottom = '-20px';
+      p.style.animationDuration = (3 + Math.random() * 4) + 's';
+      container.appendChild(p);
+      setTimeout(function() { if (p.parentNode) p.remove(); }, 7000);
+      count++;
+    }, 150);
+  }
+
   function _openTokenCelebration(tokenRow, memberName) {
     var el = document.getElementById('token-celebration');
     if (!el) return;
+    // Reset staged classes
+    el.classList.remove('tc-stage-1');
     document.getElementById('tc-name').textContent = memberName || 'Maker';
     var msg = tokenRow.granted_message || 'You have shown up, made things, and contributed to this village. That is real. Your token is real.';
     document.getElementById('tc-message').textContent = '\u201C' + msg + '\u201D';
     document.getElementById('tc-from').textContent = 'Confirmed by ' + (tokenRow.granted_by_name || 'the founders') + ' of Clay Village';
     var vid = document.getElementById('tc-video');
     if (vid) { vid.load(); vid.play().catch(function(){}); }
+    // Spawn particles
+    var particles = document.getElementById('tc-particles');
+    if (particles) _spawnParticles(particles);
     el.classList.add('open');
-    // Close handler
+    // Staged entrance — token pops first, text cascades after
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { el.classList.add('tc-stage-1'); });
+    });
+    // Close handler — goes to vault
     var closeBtn = document.getElementById('tc-close');
     if (closeBtn) closeBtn.onclick = function() {
-      el.classList.remove('open');
-      // Refresh vault to show granted state
-      fetchVaultData().then(function(d) { renderVault(d); });
+      el.classList.remove('open', 'tc-stage-1');
+      if (_tcParticleTimer) { clearInterval(_tcParticleTimer); _tcParticleTimer = null; }
+      if (particles) particles.innerHTML = '';
+      // Open the vault to show the granted state
+      if (typeof window.openVault === 'function') window.openVault();
     };
   }
   window._openTokenCelebration = _openTokenCelebration;
@@ -28944,6 +29034,17 @@ seedMemberLanguage();
         granted_message: msg || null
       }).eq('id', tokenId);
       window._myTokenStatus = 'granted';
+      // Send DM to the receiver — something special is waiting
+      window._supabase.from('direct_messages').insert({
+        village_id: vid,
+        sender_id: window._sbAuthUid,
+        recipient_id: userId,
+        message: 'Something special is waiting for you in your vault. Go there now. \u2728'
+      }).then(function(){}).catch(function(){});
+      // Also persist in localStorage thread for the DM mailbox
+      if (typeof sendDM === 'function') {
+        sendDM(window._sbAuthUid, userId, 'Something special is waiting for you in your vault. Go there now. \u2728');
+      }
       // If granting to yourself (same browser) — fire celebration directly,
       // broadcast won't loop back to the sender in the same tab
       if (userId === window._sbAuthUid) {
@@ -28962,6 +29063,8 @@ seedMemberLanguage();
         }).catch(function(){});
       }
       window._renderTokenRequests();
+      // Update Observatory badge
+      _updateTokenBadge();
     } catch(err) { console.warn('[grantToken]', err); }
   };
 
@@ -28979,6 +29082,30 @@ seedMemberLanguage();
   // Show tokens tab for founders in Observatory
   var _obsTokenBtn = document.getElementById('obs-tab-tokens');
   if (_obsTokenBtn && (window._villageRole === 'founder')) _obsTokenBtn.style.display = '';
+
+  // Observatory badge — shows count of pending token requests
+  async function _updateTokenBadge() {
+    if (window._villageRole !== 'founder' || !window._supabase) return;
+    var tab = document.getElementById('obs-tab-tokens');
+    if (!tab) return;
+    // Remove old badge
+    var old = tab.querySelector('.obs-tab-badge');
+    if (old) old.remove();
+    try {
+      var { count } = await window._supabase
+        .from('village_tokens').select('id', { count: 'exact', head: true })
+        .eq('status', 'requested');
+      if (count && count > 0) {
+        var badge = document.createElement('span');
+        badge.className = 'obs-tab-badge';
+        badge.textContent = count;
+        tab.appendChild(badge);
+      }
+    } catch(_) {}
+  }
+  window._updateTokenBadge = _updateTokenBadge;
+  // Check on page load for founders
+  if (window._villageRole === 'founder') setTimeout(_updateTokenBadge, 3000);
 
   // Listen for token grant in realtime (member side)
   document.addEventListener('DOMContentLoaded', function() {
