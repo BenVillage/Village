@@ -27899,8 +27899,12 @@ seedMemberLanguage();
     if (_vnl) _vnl.style.display = '';
     const _topCtrlRev = document.getElementById('top-controls');
     if (_topCtrlRev) _topCtrlRev.style.display = '';
-    // Village name: authenticated (non-guest) → their village, guest → Dunbar
-    var _villageName = (role === 'guest' || !window._sbAuthUid) ? 'Dunbar' : (_selVillageName || 'Clay Village');
+    // Village name: travelling → visited village, authenticated → home village, guest → Dunbar
+    var _travelName = localStorage.getItem('cvCurrentVillageName');
+    var _isTravel   = !!localStorage.getItem('cvHomeVillageId');
+    var _villageName = (_isTravel && _travelName)
+      ? _travelName
+      : (role === 'guest' || !window._sbAuthUid) ? 'Dunbar' : (_selVillageName || 'Clay Village');
     if (_vnl) _vnl.textContent = _villageName;
     const w = document.getElementById('dunbar-welcome');
     if (w && !w.classList.contains('dunbar-gone')) dismissWelcome();
@@ -30012,15 +30016,28 @@ body.wm-browser-fs #admin-panel:hover {
     });
 
     villages.forEach(function(v) {
-      var isDunbar = (v.id === '00000000-0000-0000-0000-000000000000');
+      var isDunbar  = (v.id === '00000000-0000-0000-0000-000000000000');
       var isCurrent = (v.id === currentId);
+      var isHome    = _homeId && (v.id === _homeId); // this is the user's home village
+
       var card = document.createElement('div');
       card.className = 'travel-card' + (isCurrent ? ' travel-card-here' : '') + (isDunbar ? ' travel-card-dunbar' : '');
 
       var emoji = isDunbar ? '⛩️' : (_craftEmoji[v.craft_focus] || '🏡');
-      var name = isDunbar ? 'Dunbar' : v.name;
-      var line = isDunbar ? 'The arrival square. Where everyone begins.' : (v.founding_line || '');
-      var badge = isDunbar ? '<span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;background:#f0f0f0;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;">Arrival Square</span>' : '';
+      var name  = isDunbar ? 'Dunbar' : v.name;
+      var line  = isDunbar ? 'The arrival square. Where everyone begins.' : (v.founding_line || '');
+
+      // Right-side action
+      var actionHTML;
+      if (isCurrent) {
+        actionHTML = '<div class="travel-here-badge">You are here</div>';
+      } else if (isHome) {
+        actionHTML = '<button class="travel-visit-btn" style="background:#c8a84b;">← Return home</button>';
+      } else if (isDunbar) {
+        actionHTML = '<span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;background:#f0f0f0;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;margin-right:10px;">Arrival Square</span><button class="travel-visit-btn">Enter →</button>';
+      } else {
+        actionHTML = '<button class="travel-visit-btn">Visit →</button>';
+      }
 
       card.innerHTML =
         '<div class="travel-card-left">' +
@@ -30030,28 +30047,43 @@ body.wm-browser-fs #admin-panel:hover {
             '<div class="travel-card-line">' + line + '</div>' +
           '</div>' +
         '</div>' +
-        (isCurrent
-          ? '<div class="travel-here-badge">You are here</div>'
-          : (badge + '<button class="travel-visit-btn">Visit →</button>'));
+        actionHTML;
 
       if (!isCurrent) {
         card.querySelector('.travel-visit-btn').addEventListener('click', function() {
           var btn = card.querySelector('.travel-visit-btn');
-          btn.textContent = 'Travelling…'; btn.disabled = true;
+          btn.disabled = true;
 
-          // Save home village before switching
+          // Clicking home village = return home (same as banner button)
+          if (isHome) {
+            btn.textContent = 'Returning…';
+            localStorage.setItem('cvCurrentVillageId', _homeId);
+            var homeSlug = localStorage.getItem(_HOME_SLUG) || '';
+            if (homeSlug) localStorage.setItem('cvCurrentVillageSlug', homeSlug);
+            localStorage.removeItem(_HOME_ID);
+            localStorage.removeItem(_HOME_NAME);
+            localStorage.removeItem(_HOME_SLUG);
+            localStorage.removeItem('cvCurrentVillageName');
+            location.reload();
+            return;
+          }
+
+          btn.textContent = 'Travelling…';
+
+          // Save home village before switching (don't overwrite if already travelling)
           var curSlug = localStorage.getItem('cvCurrentVillageSlug') || '';
           var curName = document.getElementById('village-name-label')?.textContent
                         || localStorage.getItem(_HOME_NAME) || 'home';
-
-          // If already travelling, preserve original home (don't overwrite)
           if (!_homeId) {
             localStorage.setItem(_HOME_ID,   currentId);
             localStorage.setItem(_HOME_NAME, curName);
             localStorage.setItem(_HOME_SLUG, curSlug);
           }
 
-          // Switch to visited village and reload
+          // Save destination name so the map label updates on arrival
+          localStorage.setItem('cvCurrentVillageName', name);
+
+          // Switch and reload
           localStorage.setItem('cvCurrentVillageId',   v.id);
           localStorage.setItem('cvCurrentVillageSlug', v.slug || '');
           location.reload();
