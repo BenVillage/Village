@@ -28033,7 +28033,16 @@ seedMemberLanguage();
 .wg-sheet-section { padding:0 20px; }
 .wg-sheet-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#8e8e8e; margin:16px 0 10px; }
 .wg-lib-card { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid #f5f5f5; }
-.wg-lib-preview { width:64px; height:48px; background:#fafafa; border:1px solid #e8e8e8; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:20px; }
+.wg-lib-preview { width:64px; height:48px; background:#fafafa; border:1px solid #e8e8e8; border-radius:6px; flex-shrink:0; position:relative; overflow:hidden; }
+.wg-lib-preview::after { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
+.wg-lib-preview[data-wc="amber"]::after { background:#c8a84b; } .wg-lib-preview[data-wc="amber"] { background:#fdfbf6; border-color:#e8dfc8; }
+.wg-lib-preview[data-wc="clay"]::after { background:#b07848; } .wg-lib-preview[data-wc="clay"] { background:#fdf9f5; border-color:#e8d8c8; }
+.wg-lib-preview[data-wc="sage"]::after { background:#6b8f71; } .wg-lib-preview[data-wc="sage"] { background:#f7faf7; border-color:#d0e0d0; }
+.wg-lib-preview[data-wc="slate"]::after { background:#7a8a9a; } .wg-lib-preview[data-wc="slate"] { background:#f7f9fb; border-color:#d8e0e8; }
+.wg-lib-preview[data-wc="rose"]::after { background:#b07070; } .wg-lib-preview[data-wc="rose"] { background:#fdf7f7; border-color:#e8d0d0; }
+.wg-lib-preview[data-wc="indigo"]::after { background:#6a6a9a; } .wg-lib-preview[data-wc="indigo"] { background:#f8f8fb; border-color:#d8d8e8; }
+.wg-lib-preview[data-wc="ochre"]::after { background:#a08040; } .wg-lib-preview[data-wc="ochre"] { background:#fdfaf3; border-color:#e8dcc0; }
+.wg-lib-preview[data-wc="moss"]::after { background:#5a7a5a; } .wg-lib-preview[data-wc="moss"] { background:#f6faf6; border-color:#c8dcc8; }
 .wg-lib-info { flex:1; }
 .wg-lib-name { font-size:13px; font-weight:600; color:#262626; }
 .wg-lib-desc { font-size:11px; color:#8e8e8e; margin-top:2px; line-height:1.4; }
@@ -28363,7 +28372,7 @@ seedMemberLanguage();
 
       var head = document.createElement('div');
       head.className = 'wc-head';
-      head.innerHTML = '<span class="wc-title">'+(w.emoji||'')+' '+w.name+'</span><div class="wc-actions"><button class="wc-min" title="Minimise">\u2212</button><button class="wc-rem" title="Remove">\u00D7</button></div>';
+      head.innerHTML = '<span class="wc-title">'+w.name+'</span><div class="wc-actions"><button class="wc-min" title="Minimise">\u2212</button><button class="wc-rem" title="Remove">\u00D7</button></div>';
       card.appendChild(head);
 
       var body = document.createElement('div');
@@ -28442,7 +28451,7 @@ seedMemberLanguage();
       h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Built-in</div>';
       bldg.fixed.forEach(function(wid) {
         var w = WIDGETS[wid]; if(!w) return;
-        h += '<div class="wg-lib-card"><div class="wg-lib-preview">'+w.emoji+'</div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><span class="wg-lib-locked">Locked</span></div>';
+        h += '<div class="wg-lib-card"><div class="wg-lib-preview" data-wc="'+(w.color||'')+'"></div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><span class="wg-lib-locked">Locked</span></div>';
       });
       h += '</div>';
     }
@@ -28452,7 +28461,7 @@ seedMemberLanguage();
     bldg.available.forEach(function(wid) {
       var w = WIDGETS[wid]; if(!w) return;
       var placed = layout.placed.indexOf(wid) !== -1;
-      h += '<div class="wg-lib-card"><div class="wg-lib-preview">'+w.emoji+'</div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+wid+'"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
+      h += '<div class="wg-lib-card"><div class="wg-lib-preview" data-wc="'+(w.color||'')+'"></div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+wid+'"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
     });
     h += '</div>';
 
