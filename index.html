@@ -122,7 +122,7 @@ window._isFounder = false;
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #6a6a8a;
+    background: #060401;
     border: 2px solid #fff;
     overflow: hidden;
     perspective: 400px;
@@ -11115,18 +11115,17 @@ function updateAvatarDisplay() {
 
   const avatarEl = document.getElementById('avatar');
   if (avatarEl) {
-    // Avatar click → open vault
+    // Avatar click → start tour
     avatarEl.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (typeof window.openVault === 'function') window.openVault();
+      if (window.tourActive) { document.getElementById('tour-btn').click(); } else { window._startTour('quick'); }
     });
-    // Avatar hover → flip to token if granted, otherwise show "Vault" label
+    // Avatar hover → show "Tour" label + flip to token if granted
     const tourLabel = document.getElementById('avatar-tour-label');
-    if (tourLabel) tourLabel.textContent = 'Vault';
     // Inject coin flip structure when token is granted (checked after auth resolves)
     function _setupAvatarCoinFlip() {
       if (window._myTokenStatus !== 'granted') {
-        // No token — just show Vault label on hover
+        // No token — just show Tour label on hover
         avatarEl.addEventListener('mouseenter', function() { if (tourLabel) tourLabel.style.display = 'block'; });
         avatarEl.addEventListener('mouseleave', function() { if (tourLabel) tourLabel.style.display = 'none'; });
         return;
@@ -11159,8 +11158,8 @@ function updateAvatarDisplay() {
       avatarEl.appendChild(coin);
       avatarEl._mapCoin = coin;
       avatarEl._mapVid = vid;
-      avatarEl.addEventListener('mouseenter', function() { coin.classList.add('map-coin-flipped'); vid.play().catch(function(){}); });
-      avatarEl.addEventListener('mouseleave', function() { coin.classList.remove('map-coin-flipped'); });
+      avatarEl.addEventListener('mouseenter', function() { coin.classList.add('map-coin-flipped'); vid.play().catch(function(){}); if (tourLabel) tourLabel.style.display = 'block'; });
+      avatarEl.addEventListener('mouseleave', function() { coin.classList.remove('map-coin-flipped'); if (tourLabel) tourLabel.style.display = 'none'; });
     }
     // Defer setup until after auth + vault data resolves token status
     setTimeout(_setupAvatarCoinFlip, 4000);
