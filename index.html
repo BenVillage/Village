@@ -2158,7 +2158,7 @@ window._isFounder = false;
   }
   .bld-chat-toggle:hover { background: #f5f5f5; }
   .bld-chat-toggle.active { background: #262626; color: #fff; border-color: #262626; }
-  /* Building Chat — right sidebar panel */
+  /* Building Chat — right sidebar panel, slides in */
   .bld-chat-overlay {
     position: fixed;
     top: 0;
@@ -2172,6 +2172,11 @@ window._isFounder = false;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     border-left: 1px solid #dbdbdb;
     box-shadow: -4px 0 20px rgba(0,0,0,0.08);
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+  }
+  .bld-chat-overlay.sliding-in {
+    transform: translateX(0);
   }
   /* Building overlays always clear the nav bar on the right */
   #library-overlay, #gallery-overlay, #school-overlay,
@@ -2179,6 +2184,7 @@ window._isFounder = false;
   #exchange-overlay, #bonfire-manifesto-overlay, #roundtable-overlay,
   #cognitive-agency-overlay, #cafe-room-overlay {
     right: 56px !important;
+    transition: right 0.25s ease;
   }
   /* When building chat sidebar is open, shift further to make room */
   body.bldg-chat-open #library-overlay,
@@ -15349,7 +15355,15 @@ var _activeBldChat = null;
 var _activeBldChatSlug = null;
 
 function destroyActiveBldChat() {
-  if (_activeBldChat) { _activeBldChat.destroy(); _activeBldChat = null; _activeBldChatSlug = null; }
+  // Slide out the chat panel before removing
+  var panels = document.querySelectorAll('.bld-chat-overlay.sliding-in');
+  panels.forEach(function(p) { p.classList.remove('sliding-in'); });
+  // Wait for slide-out transition then clean up
+  setTimeout(function() {
+    if (_activeBldChat) { _activeBldChat.destroy(); _activeBldChat = null; _activeBldChatSlug = null; }
+    panels.forEach(function(p) { p.style.display = 'none'; });
+    document.querySelectorAll('.bld-chat-toggle.active').forEach(function(t) { t.classList.remove('active'); });
+  }, 250);
   document.body.classList.remove('bldg-chat-open');
   // Restore map-only UI when leaving building
   var _tcR = document.getElementById('top-controls');
@@ -15680,6 +15694,8 @@ function toggleBldChat(slug, buildingLabel, placeholder) {
   }
   destroyActiveBldChat();
   panelEl.style.display = 'flex';
+  // Trigger slide-in on next frame so the transition runs
+  requestAnimationFrame(function() { panelEl.classList.add('sliding-in'); });
   var toggle = document.querySelector('.bld-chat-toggle[data-slug="' + slug + '"]');
   if (toggle) toggle.classList.add('active');
   _activeBldChatSlug = slug;
