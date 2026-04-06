@@ -7913,7 +7913,7 @@ function toggleVillageSound() {
 </div>
 <div id="vault-token-modal">
   <button class="vtm-close" id="vtm-close">&times;</button>
-  <video id="vtm-token-sm" src="Token.mov" autoplay loop muted playsinline width="120" height="120" style="border-radius:50%;object-fit:cover;"></video>
+  <video id="vtm-token-sm" src="Token.mov" autoplay loop muted playsinline preload="auto" width="120" height="120" style="border-radius:50%;object-fit:cover;"></video>
   <div class="vtm-terminal" id="vtm-terminal"></div>
   <div class="vtm-final" id="vtm-final">&#x4E00;&#x671F;&#x4E00;&#x4F1A; &#x2014; this moment is in the record.</div>
 </div>
@@ -14667,6 +14667,9 @@ function _onAuthProfile(memberData) {
   if (!pd.country && memberData.country) pd.country = memberData.country;
   if (!pd.bio && memberData.bio) pd.bio = memberData.bio;
   window._cachedMemberProfile = pd;
+  // Persist to localStorage so identity survives travel to other villages
+  // (RLS may block cross-village Supabase queries, so we carry the profile ourselves)
+  try { localStorage.setItem('cvProfileCache', JSON.stringify({ uid: pd.id, profile: pd })); } catch(_e) {}
   // Add/update in profiles array so features that iterate profiles can find this user
   var idx = profiles.findIndex(function(p) { return p.id === window._sbAuthUid; });
   if (idx !== -1) profiles[idx] = pd;
@@ -14678,6 +14681,8 @@ function _onAuthProfile(memberData) {
 // Sync current user's profile to Supabase village_members table
 function _syncProfileToSupabase() {
   if (!window._supabase || !window._sbAuthUid) return;
+  // Never write profile into a visited village — only home village
+  if (localStorage.getItem('cvHomeVillageId')) return;
   const sp = getSessionProfile();
   if (!sp) return;
   window._supabase.from('village_members').upsert({
@@ -21544,7 +21549,7 @@ Mura facilitates. People decide.`;
     // Passport section with token canvas
     html += '<div class="vlt-passport">';
     html += '<div class="vlt-token-wrap" id="vault-token-trigger">';
-    html += '<video id="vault-token-video" src="Token.mov" autoplay loop muted playsinline width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"></video>';
+    html += '<video id="vault-token-video" src="Token.mov" autoplay loop muted playsinline preload="auto" width="200" height="200" style="border-radius:50%;object-fit:cover;pointer-events:none;"></video>';
     html += '<div class="vlt-token-hint">tap to inspect</div>';
     html += '</div>';
     html += '<div>';
@@ -21730,8 +21735,9 @@ Mura facilitates. People decide.`;
     if (!modal) return;
     modal.classList.add('open');
 
-    // Draw small token
-    // Modal token video plays automatically
+    // Force video play (autoplay may not fire after display:none toggle)
+    var vtmVid = document.getElementById('vtm-token-sm');
+    if (vtmVid) { vtmVid.load(); vtmVid.play().catch(function(){}); }
 
     // Terminal typing effect
     var terminal = document.getElementById('vtm-terminal');
@@ -28281,7 +28287,16 @@ seedMemberLanguage();
         window._sbAuthUid = session.user.id;
         window._sbAuthEmail = session.user.email;
         window._isFounder = session.user.email === FOUNDER_EMAIL;
-        // Load profile from Supabase — try current village first, then Dunbar
+        // ── Identity cache: load from localStorage immediately so identity works
+        // when visiting other villages (RLS may block cross-village Supabase reads)
+        try {
+          var _pc = JSON.parse(localStorage.getItem('cvProfileCache') || 'null');
+          if (_pc && _pc.uid === session.user.id && _pc.profile) {
+            window._cachedMemberProfile = _pc.profile;
+            if (typeof applySessionToAvatar === 'function') applySessionToAvatar();
+          }
+        } catch(_pe) {}
+        // Load profile from Supabase — try current village first, then home village, then Dunbar
         var member = null;
         try {
           const { data: m1 } = await window._supabase
