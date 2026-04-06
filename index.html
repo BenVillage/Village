@@ -29994,8 +29994,7 @@ body.wm-browser-fs #admin-panel:hover {
     var { data: villages, error } = await window._supabase
       .from('villages')
       .select('id, name, slug, craft_focus, founding_line')
-      .eq('status', 'active')
-      .order('created_at');
+      .eq('status', 'active');
 
     if (error || !villages || !villages.length) {
       container.innerHTML = '<div style="text-align:center;padding:48px 0;font-size:13px;color:#8e8e8e;">No villages found.</div>';
