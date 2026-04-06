@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Clay Village</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -931,7 +934,11 @@ window._isFounder = false;
     padding: 16px 14px 12px;
     gap: 12px;
     flex-shrink: 0;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s;
   }
+  #admin-header:hover { background: #f5f5f5; }
   #admin-panel.collapsed { display: flex; }
   #admin-panel.collapsed #admin-header { padding: 12px 11px; }
   #admin-panel.collapsed .admin-spacer,
@@ -1568,31 +1575,31 @@ window._isFounder = false;
 
   /* === Profile Editor Modal — Instagram-light style === */
   #profile-editor {
-    position: fixed; inset: 0; z-index: 1003;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    position: fixed; inset: 0; z-index: 10800;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     display: none; align-items: center; justify-content: center;
   }
   #profile-editor.open { display: flex; }
   .pe-box {
     background: #fff; border: 1px solid #efefef;
-    border-radius: 16px; width: 480px; max-height: 90vh;
+    border-radius: 16px; width: 520px; max-height: 92vh;
     overflow-y: auto; padding: 28px 24px; position: relative;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    color: #262626; box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    color: #262626; box-shadow: 0 8px 48px rgba(0,0,0,0.18);
   }
   .pe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
   .pe-title { font-size: 18px; font-weight: 700; color: #262626; }
   .pe-close { background: none; border: none; color: #8e8e8e; font-size: 22px; cursor: pointer; }
   .pe-close:hover { color: #262626; }
   .pe-photo-area {
-    width: 88px; height: 88px; border-radius: 50%;
-    border: 2px solid #dbdbdb;
-    margin: 0 auto 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    width: 110px; height: 110px; border-radius: 50%;
+    border: 2.5px solid #dbdbdb;
+    margin: 0 auto; cursor: pointer; display: flex; align-items: center; justify-content: center;
     overflow: hidden; background-size: cover; background-position: center;
-    color: #8e8e8e; font-size: 24px; transition: border-color 0.2s;
+    color: #8e8e8e; font-size: 28px; transition: border-color 0.2s;
   }
-  .pe-photo-area:hover { border-color: #0095f6; }
+  .pe-photo-area:hover { border-color: #c8a84b; }
   .pe-section { margin-bottom: 8px; border: 1px solid #efefef; border-radius: 10px; overflow: hidden; }
   .pe-section-header {
     padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between;
@@ -1621,6 +1628,25 @@ window._isFounder = false;
   .pe-checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .pe-checkbox-row input[type="checkbox"] { accent-color: #0095f6; width: 16px; height: 16px; }
   .pe-checkbox-row label { font-size: 13px; color: #262626; }
+  /* Work photo lightbox */
+  #wp-lightbox {
+    display: none; position: fixed; inset: 0; z-index: 20000;
+    background: rgba(0,0,0,0.88); align-items: center; justify-content: center;
+  }
+  #wp-lightbox.open { display: flex; }
+  #wp-lightbox img {
+    max-width: calc(100vw - 80px); max-height: calc(100vh - 80px);
+    border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    object-fit: contain;
+  }
+  #wp-lightbox-close {
+    position: fixed; top: 20px; right: 24px;
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    font-size: 24px; width: 40px; height: 40px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  #wp-lightbox-close:hover { background: rgba(255,255,255,0.3); }
   .pe-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #efefef; }
   .pe-btn {
     padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer;
@@ -1628,8 +1654,41 @@ window._isFounder = false;
   }
   .pe-btn-cancel { background: #efefef; color: #262626; }
   .pe-btn-cancel:hover { background: #dbdbdb; }
-  .pe-btn-save { background: #0095f6; color: #fff; }
-  .pe-btn-save:hover { background: #1877f2; }
+  .pe-btn-save { background: #c8a84b; color: #fff; }
+  .pe-btn-save:hover { background: #b8942e; }
+  .pe-btn-travel { background: #fff; color: #262626; border: 1.5px solid #dbdbdb; margin-right: auto; }
+  .pe-btn-travel:hover { border-color: #c8a84b; color: #c8a84b; }
+
+  /* Photo adjuster overlay */
+  #photo-adjuster {
+    position: fixed; inset: 0; z-index: 11000;
+    background: rgba(0,0,0,0.65);
+    display: none; align-items: center; justify-content: center;
+  }
+  #photo-adjuster.open { display: flex; }
+  .pa-box {
+    background: #fff; border-radius: 18px; padding: 28px 24px;
+    width: 300px; text-align: center;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.25);
+  }
+  .pa-title { font-size: 16px; font-weight: 700; color: #262626; margin-bottom: 18px; }
+  .pa-hint { font-size: 11px; color: #8e8e8e; margin-top: 6px; margin-bottom: 14px; }
+  #photo-adj-wrap {
+    width: 180px; height: 180px; border-radius: 50%;
+    overflow: hidden; border: 2px solid #dbdbdb;
+    margin: 0 auto 6px; cursor: grab; position: relative;
+    background: #f5f5f5;
+  }
+  #photo-adj-wrap:active { cursor: grabbing; }
+  #photo-adj-canvas { display: block; }
+  .pa-zoom-label { font-size: 11px; color: #8e8e8e; margin-bottom: 6px; }
+  #photo-adj-zoom { width: 100%; accent-color: #c8a84b; margin-bottom: 16px; }
+  .pa-footer { display: flex; gap: 10px; justify-content: center; }
+  .pa-btn { padding: 9px 22px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; }
+  .pa-btn-cancel { background: #efefef; color: #262626; }
+  .pa-btn-cancel:hover { background: #dbdbdb; }
+  .pa-btn-apply { background: #c8a84b; color: #fff; }
+  .pa-btn-apply:hover { background: #b8942e; }
 
   /* Small Profile Card */
   /* === Building Page Panel === */
@@ -2575,7 +2634,7 @@ window._isFounder = false;
   #mailbox-box { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
   #mailbox-body {
     display: flex; flex: 1; overflow: hidden;
-    height: calc(100vh - 62px);
+    height: calc(100vh - 104px);
   }
   #mailbox-thread-list {
     width: 220px; flex-shrink: 0;
@@ -2696,6 +2755,77 @@ window._isFounder = false;
     cursor: pointer; flex-shrink: 0; transition: background 0.15s;
   }
   #mailbox-reply-send:hover { background: #1877f2; }
+  /* Mailbox tab bar */
+  #mailbox-tabs {
+    display: flex; border-bottom: 1px solid #efefef;
+    flex-shrink: 0; padding: 0 4px;
+  }
+  .mbox-tab {
+    flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 500;
+    text-align: center; cursor: pointer; color: #8e8e8e;
+    border-bottom: 2px solid transparent; transition: all 0.15s;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: inherit;
+  }
+  .mbox-tab.active { color: #262626; border-bottom-color: #262626; }
+  .mbox-tab:hover:not(.active) { color: #555; }
+  /* Villagers panel */
+  #mailbox-villagers {
+    display: none; flex-direction: column; flex: 1; overflow: hidden;
+  }
+  #mailbox-villagers.active { display: flex; }
+  #mailbox-body.villagers-tab #mailbox-thread-list,
+  #mailbox-body.villagers-tab #mailbox-thread-view { display: none; }
+  #mailbox-body.villagers-tab #mailbox-villagers { display: flex; }
+  #mailbox-body.messages-tab #mailbox-villagers { display: none; }
+  #mv-search-wrap {
+    padding: 10px 14px; border-bottom: 1px solid #efefef; flex-shrink: 0;
+  }
+  #mv-search {
+    width: 100%; box-sizing: border-box;
+    background: #fafafa; border: 1px solid #dbdbdb; border-radius: 20px;
+    padding: 7px 14px; font-size: 13px; color: #262626;
+    outline: none; font-family: inherit; transition: border-color 0.15s;
+  }
+  #mv-search:focus { border-color: #a8a8a8; background: #fff; }
+  #mv-search::placeholder { color: #8e8e8e; }
+  #mv-list {
+    flex: 1; overflow-y: auto; padding: 4px 0;
+    scrollbar-width: thin; scrollbar-color: #dbdbdb transparent;
+  }
+  .mv-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; transition: background 0.12s;
+  }
+  .mv-row:hover { background: #fafafa; }
+  .mv-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #dbdbdb; flex-shrink: 0;
+    background-size: cover; background-position: center;
+    position: relative;
+  }
+  .mv-online-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #42b72a; border: 2px solid #fff;
+    position: absolute; bottom: 1px; right: 1px;
+  }
+  .mv-info { flex: 1; min-width: 0; }
+  .mv-name {
+    font-size: 13px; font-weight: 600; color: #262626;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mv-sub {
+    font-size: 11px; color: #8e8e8e; margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mv-msg-btn {
+    background: none; border: 1px solid #dbdbdb; border-radius: 6px;
+    font-size: 12px; font-weight: 600; color: #262626;
+    padding: 5px 12px; cursor: pointer; flex-shrink: 0;
+    transition: background 0.12s, border-color 0.12s;
+    font-family: inherit;
+  }
+  .mv-msg-btn:hover { background: #fafafa; border-color: #a8a8a8; }
   /* Session banner */
   #session-banner {
     padding: 6px 14px 2px;
@@ -6214,9 +6344,9 @@ function toggleVillageSound() {
 
 <!-- Admin Sidebar — Instagram Style -->
 <div id="admin-panel">
-  <div id="admin-header">
-    <div id="player-profile-ring" class="admin-profile-ring" title="Your Profile"></div>
-    <span class="admin-header-label">Clay Village</span>
+  <div id="admin-header" title="Your Profile">
+    <div id="player-profile-ring" class="admin-profile-ring"></div>
+    <span class="admin-header-label">Profile</span>
     <div class="admin-spacer"></div>
   </div>
   <div class="admin-nav">
@@ -6225,10 +6355,7 @@ function toggleVillageSound() {
       <span class="admin-nav-label">Map Tools</span>
     </div>
     <div class="admin-nav-divider"></div>
-    <div class="admin-nav-item" data-panel="settings" title="Settings">
-      <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
-      <span class="admin-nav-label">Settings</span>
-    </div>
+    <div class="admin-nav-item" data-panel="settings" title="Settings" style="display:none!important;">
     <div class="admin-nav-item" data-panel="bonfire" id="bonfire-nav-item" title="Bonfire Chat">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2C10.5 5.5 8 8.5 8.5 12.5C7 11 6.5 8.5 7 6.5C4.5 9 3.5 12 3.5 14.5C3.5 19 7.3 22.5 12 22.5C16.7 22.5 20.5 19 20.5 14.5C20.5 10.5 18.5 7.5 16 5.5C16.5 7.5 16 10 14.5 11.5C15 8 13.5 4.5 12.5 2Z"/><path d="M9.5 16C8.5 17.5 9 20 10.5 20C10 18.5 10 16.5 9.5 16Z"/></svg></span>
       <span class="admin-nav-label">Bonfire Chat</span>
@@ -6239,11 +6366,7 @@ function toggleVillageSound() {
       <span id="dm-unread-badge" style="display:none;position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#c8a84b;color:#fff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);pointer-events:none;"></span>
     </div>
     <div class="admin-nav-divider"></div>
-    <div class="admin-nav-item" id="admin-mode-toggle" title="Toggle Admin Mode">
-      <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-      <span class="admin-nav-label">Admin</span>
-      <span class="admin-mode-badge" id="admin-mode-badge">OFF</span>
-    </div>
+    <div class="admin-nav-item" id="admin-mode-toggle" title="Toggle Admin Mode" style="display:none!important;"></div>
     <div class="admin-vision-btn" id="open-roundtable" title="The Roundtable" style="color:#c89640;">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="3" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="21" y2="12"/></svg></span>
       <span class="admin-nav-label" style="font-size:12px;color:#c89640;">Roundtable</span>
@@ -6366,15 +6489,39 @@ function toggleVillageSound() {
   <div id="tab-settings" class="admin-tab-content"></div>
 </div>
 
+<!-- Photo Adjuster Overlay -->
+<div id="photo-adjuster">
+  <div class="pa-box">
+    <div class="pa-title">Adjust photo</div>
+    <div id="photo-adj-wrap">
+      <canvas id="photo-adj-canvas" width="180" height="180"></canvas>
+    </div>
+    <div class="pa-hint">Drag to reposition</div>
+    <div class="pa-zoom-label">Zoom</div>
+    <input type="range" id="photo-adj-zoom" min="0.5" max="4" step="0.01" value="1">
+    <div class="pa-footer">
+      <button class="pa-btn pa-btn-cancel" id="pa-cancel">Cancel</button>
+      <button class="pa-btn pa-btn-apply" id="pa-apply">Apply</button>
+    </div>
+  </div>
+</div>
+
 <!-- Profile Editor Modal -->
-<div id="profile-editor" style="display:none!important;">
+<div id="profile-editor">
   <div class="pe-box">
     <div class="pe-header">
-      <div class="pe-title">Edit Profile</div>
-      <button class="pe-close" id="pe-close">&times;</button>
+      <div class="wm-traffic" style="margin-right:10px;">
+        <button class="wm-tl wm-tl-close" id="pe-close" title="Close"></button>
+        <button class="wm-tl wm-tl-min" id="pe-min" title="Close"></button>
+        <button class="wm-tl wm-tl-max" id="pe-max" title="Full screen"></button>
+      </div>
+      <div class="pe-title">Your Profile</div>
     </div>
-    <div class="pe-photo-area" id="pe-photo-area">+</div>
-    <input type="file" id="pe-photo-input" accept="image/*" style="display:none;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div class="pe-photo-area" id="pe-photo-area">+</div>
+      <div style="font-size:11px;color:#8e8e8e;margin-top:6px;">Click to change &bull; JPG, PNG or GIF</div>
+    </div>
+    <input type="file" id="pe-photo-input" accept="image/*,.gif" style="display:none;">
 
     <div class="pe-section open">
       <div class="pe-section-header">Work Photos <span>&#9662;</span></div>
@@ -6497,7 +6644,7 @@ function toggleVillageSound() {
 
     <div class="pe-footer">
       <button class="pe-btn pe-btn-cancel" id="pe-cancel">Cancel</button>
-      <button class="pe-btn pe-btn-save" id="pe-save">Save Profile</button>
+      <button class="pe-btn pe-btn-save" id="pe-save">Save</button>
     </div>
   </div>
 </div>
@@ -9182,7 +9329,11 @@ document.getElementById('open-roundtable').addEventListener('click', openRoundta
       <span id="mailbox-owner-name">Messages</span>
       <button id="mailbox-close" class="flyout-close">×</button>
     </div>
-    <div id="mailbox-body">
+    <div id="mailbox-tabs">
+      <button class="mbox-tab active" data-tab="messages">Messages</button>
+      <button class="mbox-tab" data-tab="villagers">People</button>
+    </div>
+    <div id="mailbox-body" class="messages-tab">
       <div id="mailbox-thread-list"></div>
       <div id="mailbox-thread-view">
         <div id="mailbox-thread-header"></div>
@@ -9195,8 +9346,20 @@ document.getElementById('open-roundtable').addEventListener('click', openRoundta
           <button id="mailbox-reply-send">→</button>
         </div>
       </div>
+      <div id="mailbox-villagers">
+        <div id="mv-search-wrap">
+          <input id="mv-search" type="text" placeholder="Search villagers…">
+        </div>
+        <div id="mv-list"></div>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- Work Photo Lightbox -->
+<div id="wp-lightbox">
+  <button id="wp-lightbox-close">&times;</button>
+  <img id="wp-lightbox-img" src="" alt="Work photo">
 </div>
 
 <!-- Full Profile View -->
@@ -9399,7 +9562,25 @@ const _IS_LOCAL = location.hostname === 'localhost' || location.hostname === '12
       ['cvCafeLeft', 'cvCafeAccepted', 'cvCafeInvite', 'cvCafeDeclined'].forEach(k => localStorage.removeItem(k));
       console.log('📁 Synced from save server:', Object.keys(data).join(', ') || '(empty)');
     }
-  } catch(e) { console.log('ℹ️ Save server not reachable, using localStorage'); }
+  } catch(e) {
+    console.log('ℹ️ Save server not reachable, trying gamedata.json fallback');
+    try {
+      var xhr2 = new XMLHttpRequest();
+      xhr2.open('GET', '/gamedata.json', false);
+      xhr2.send();
+      if (xhr2.status === 200) {
+        var data2 = JSON.parse(xhr2.responseText);
+        Object.entries(data2).forEach(function(kv) {
+          var k = kv[0], v = kv[1];
+          // Only write if localStorage doesn't already have this key (don't overwrite live data)
+          if (localStorage.getItem(k) === null) {
+            localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+          }
+        });
+        console.log('📁 Loaded gamedata.json fallback:', Object.keys(data2).join(', ') || '(empty)');
+      }
+    } catch(e2) { console.log('ℹ️ gamedata.json not available, using localStorage only'); }
+  }
 })();
 
 // Clear building outlines that were recorded at a wrong camera state (contain .9504 artifact)
@@ -11422,11 +11603,14 @@ function updateTimeOfDay(forceUpdate) {
 
 // Gently dim the admin sidebar and bonfire chat at night so they don't glare
 // against the dark map. Brightness goes from 1.0 (day) → 0.75 (full night).
+// NOTE: filter must NOT be applied to #admin-panel itself — that creates a CSS
+// containing block which breaks position:fixed building overlays inside it.
+// Instead, apply filter only to the nav items and header.
 function applyNightUI(t) {
   t = Math.max(0, Math.min(1, t));
   const brightness = `brightness(${(1 - t * 0.25).toFixed(3)})`;
-  const adminPanel = document.getElementById('admin-panel');
-  if (adminPanel) adminPanel.style.filter = brightness;
+  // Only dim the bonfire flyout — applying filter to the nav/header creates
+  // CSS stacking contexts that break icon visibility and z-index layering.
   const flyoutBonfire = document.getElementById('flyout-bonfire');
   if (flyoutBonfire && !flyoutBonfire.classList.contains('bonfire-fs-flyout')) {
     flyoutBonfire.style.filter = brightness;
@@ -14401,9 +14585,7 @@ function _syncProfileToSupabase() {
 function updateSessionBanner() {
   const sp = getSessionProfile();
   const banner = document.getElementById('session-banner');
-  // Also update the nav header label to show current user's name
-  const headerLabel = document.querySelector('.admin-header-label');
-  if (headerLabel) headerLabel.textContent = (sp && sp.id !== 'admin') ? (sp.villageName || sp.name) : 'Clay Village';
+  // Header label always says Profile — clicking it opens the profile editor
   if (!banner) return;
   if (!sp || sp.isGuest || sp.id === 'admin') {
     banner.innerHTML = `<span style="color:#aaa;font-size:11px;">${_IS_LOCAL ? 'Admin mode' : 'Guest'}</span>`;
@@ -14798,6 +14980,136 @@ document.getElementById('mailbox-reply-input').addEventListener('keydown', e => 
 function openPrivateChat(profile) { openMailbox(profile.id); }
 function closePrivateChat() { closeMailbox(); }
 function getPrivateMsgs(profileId) { return getThread('admin', profileId); }
+
+// ── Mailbox tab switching + Villager directory ────────────────────────────
+(function() {
+  var tabBtns = document.querySelectorAll('.mbox-tab');
+
+  function switchMailboxTab(tab) {
+    tabBtns.forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+    document.getElementById('mailbox-body').className = tab + '-tab';
+    if (tab === 'villagers') renderVillagerList();
+  }
+
+  tabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() { switchMailboxTab(btn.dataset.tab); });
+  });
+
+  function renderVillagerList(query) {
+    var list = document.getElementById('mv-list');
+    if (!list) return;
+    query = (query || '').toLowerCase().trim();
+    var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+    var myId = sp ? sp.id : '';
+
+    var villagers = profiles.filter(function(p) {
+      if (NPC_PROFILE_IDS.has(p.id)) return false;
+      if (p.id === myId) return false;
+      if (p.id === 'admin') return false;
+      return true;
+    });
+
+    // Online first, then alphabetical
+    villagers.sort(function(a, b) {
+      var aOn = !!(_otherPlayers && _otherPlayers[a.id]);
+      var bOn = !!(_otherPlayers && _otherPlayers[b.id]);
+      if (aOn !== bOn) return aOn ? -1 : 1;
+      return (a.villageName || a.name || '').localeCompare(b.villageName || b.name || '');
+    });
+
+    if (query) {
+      villagers = villagers.filter(function(p) {
+        var name = (p.villageName || p.name || '').toLowerCase();
+        var loc = (p.city || p.country || '').toLowerCase();
+        var craft = (p.mainPractice || '').toLowerCase();
+        return name.includes(query) || loc.includes(query) || craft.includes(query);
+      });
+    }
+
+    list.innerHTML = '';
+
+    if (villagers.length === 0) {
+      var empty = document.createElement('div');
+      empty.style.cssText = 'padding:32px 20px;text-align:center;color:#aaa;font-size:13px;';
+      empty.textContent = query ? 'No villagers match your search.' : 'No other villagers yet.';
+      list.appendChild(empty);
+      return;
+    }
+
+    villagers.forEach(function(p) {
+      var isOnline = !!(_otherPlayers && _otherPlayers[p.id]);
+      var row = document.createElement('div');
+      row.className = 'mv-row';
+
+      // Avatar
+      var av = document.createElement('div');
+      av.className = 'mv-avatar';
+      if (p.photo) {
+        av.style.backgroundImage = 'url("' + p.photo + '")';
+      } else {
+        av.style.background = getProfileColor(p.id);
+        av.style.display = 'flex';
+        av.style.alignItems = 'center';
+        av.style.justifyContent = 'center';
+        av.style.color = '#fff';
+        av.style.fontSize = '17px';
+        av.style.fontWeight = '600';
+        av.textContent = (p.villageName || p.name || '?')[0].toUpperCase();
+      }
+      if (isOnline) {
+        var dot = document.createElement('div');
+        dot.className = 'mv-online-dot';
+        av.appendChild(dot);
+      }
+
+      // Info
+      var info = document.createElement('div');
+      info.className = 'mv-info';
+      var nameEl = document.createElement('div');
+      nameEl.className = 'mv-name';
+      nameEl.textContent = p.villageName || p.name || p.id;
+      var subParts = [];
+      if (isOnline) subParts.push('Online now');
+      if (p.city) subParts.push(p.city);
+      if (p.mainPractice) subParts.push(p.mainPractice);
+      var subEl = document.createElement('div');
+      subEl.className = 'mv-sub';
+      subEl.textContent = subParts.join(' · ');
+      info.appendChild(nameEl);
+      info.appendChild(subEl);
+
+      // Message button
+      var btn = document.createElement('button');
+      btn.className = 'mv-msg-btn';
+      btn.textContent = 'Message';
+      (function(partnerId) {
+        btn.onclick = function() {
+          switchMailboxTab('messages');
+          selectMailboxThread(partnerId);
+        };
+      })(p.id);
+
+      row.appendChild(av);
+      row.appendChild(info);
+      row.appendChild(btn);
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById('mv-search').addEventListener('input', function() {
+    renderVillagerList(this.value);
+  });
+
+  // Reset to messages tab when mailbox opens
+  var _origOpenMailbox = openMailbox;
+  openMailbox = function(profileId) {
+    switchMailboxTab('messages');
+    _origOpenMailbox(profileId);
+  };
+
+  window._renderVillagerList = renderVillagerList;
+  window._switchMailboxTab = switchMailboxTab;
+})();
 
 // ── Typing indicator (broadcast — no DB writes) ──
 var _typingChannel = null;
@@ -15732,7 +16044,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(panel);
 
     // MutationObserver — auto-open chat when building becomes visible, auto-close when hidden
+    // In wm-mode buildings are windowed panels — skip auto-open (chat would flash then close)
     var _bldChatObserver = new MutationObserver(function() {
+      if (document.body.classList.contains('wm-mode')) return;
       var isVisible = overlay.style.display !== 'none' && overlay.style.display !== '';
       if (isVisible && _activeBldChatSlug !== slug) {
         // Slight delay so building overlay finishes rendering first
@@ -22523,9 +22837,13 @@ function openProfileEditor(profile) {
   const photoArea = document.getElementById('pe-photo-area');
   if (profile.photo) {
     photoArea.style.backgroundImage = `url("${profile.photo}")`;
+    photoArea.style.backgroundSize = profile.photoBgSize || 'cover';
+    photoArea.style.backgroundPosition = profile.photoBgPos || 'center';
     photoArea.textContent = '';
   } else {
     photoArea.style.backgroundImage = '';
+    photoArea.style.backgroundSize = 'cover';
+    photoArea.style.backgroundPosition = 'center';
     photoArea.textContent = '+';
   }
 
@@ -22550,7 +22868,13 @@ function saveProfile() {
   let profile;
   if (editingProfileId) {
     profile = profiles.find(p => p.id === editingProfileId);
-  } else {
+    // If not in local profiles array (e.g. Supabase-only user), use cached profile directly
+    if (!profile && window._cachedMemberProfile && window._cachedMemberProfile.id === editingProfileId) {
+      profile = window._cachedMemberProfile;
+      profiles.push(profile);
+    }
+  }
+  if (!profile) {
     profile = createDefaultProfile();
     profiles.push(profile);
   }
@@ -22578,15 +22902,17 @@ function saveProfile() {
     if (el) profile[f] = el.checked;
   });
 
-  // Photo (already set via upload handler)
+  // Photo (already set via upload handler — incl. GIF background-size/position)
   const photoArea = document.getElementById('pe-photo-area');
   const bgImg = photoArea.style.backgroundImage;
   if (bgImg && bgImg !== 'none' && bgImg !== '') {
     profile.photo = bgImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+    profile.photoBgSize = photoArea.style.backgroundSize || 'cover';
+    profile.photoBgPos = photoArea.style.backgroundPosition || 'center';
   }
 
-  // Work photos
-  profile.workPhotos = _editingWorkPhotos.slice();
+  // Work photos — filter out nulls (deleted slots) before saving
+  profile.workPhotos = _editingWorkPhotos.filter(Boolean);
 
   persistData(PROFILE_DATA_KEY, profiles);
 
@@ -22610,11 +22936,13 @@ document.getElementById('pe-photo-area').addEventListener('click', () => {
 document.getElementById('pe-photo-input').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  _resizeImageFile(file, 200, 0.8, function(dataUrl) {
-    const photoArea = document.getElementById('pe-photo-area');
-    photoArea.style.backgroundImage = `url("${dataUrl}")`;
-    photoArea.textContent = '';
-  });
+  // All images (including GIFs) open the adjuster
+  // GIFs use <img> mode to preserve animation; static images use canvas
+  const isGif = file.type === 'image/gif';
+  const reader = new FileReader();
+  reader.onload = function(ev) { _openPhotoAdjuster(ev.target.result, isGif); };
+  reader.readAsDataURL(file);
+  e.target.value = '';
 });
 
 // ── Work Photos (profile editor) ──
@@ -22634,18 +22962,45 @@ function _renderWorkPhotosGrid() {
       slot.style.backgroundSize = 'cover';
       slot.style.backgroundPosition = 'center';
       slot.style.border = '1.5px solid #dbdbdb';
-      slot.title = 'Click to remove';
+      slot.style.position = 'relative';
+      slot.title = 'Click to enlarge';
       slot.setAttribute('data-idx', i);
-      slot.addEventListener('click', function() {
+      slot.setAttribute('data-photo', photo);
+      // Click to enlarge — read photo from attribute, not closure variable
+      slot.addEventListener('click', function(e) {
+        if (e.target.classList.contains('wp-remove-btn')) return;
+        _openWorkPhotoLightbox(this.getAttribute('data-photo'));
+      });
+      // Remove button overlay — read idx from own attribute
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'wp-remove-btn';
+      removeBtn.innerHTML = '&times;';
+      removeBtn.title = 'Remove photo';
+      removeBtn.style.cssText = 'position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.55);color:#fff;border:none;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;opacity:0;transition:opacity 0.15s;';
+      removeBtn.setAttribute('data-idx', i);
+      removeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         var idx = parseInt(this.getAttribute('data-idx'));
-        _editingWorkPhotos.splice(idx, 1);
+        _editingWorkPhotos[idx] = null; // null the slot — don't splice so other slots keep position
         _renderWorkPhotosGrid();
       });
+      // Hover — toggle this specific removeBtn, not a closure variable
+      slot.addEventListener('mouseenter', function() {
+        var btn = this.querySelector('.wp-remove-btn');
+        if (btn) btn.style.opacity = '1';
+      });
+      slot.addEventListener('mouseleave', function() {
+        var btn = this.querySelector('.wp-remove-btn');
+        if (btn) btn.style.opacity = '0';
+      });
+      slot.appendChild(removeBtn);
     } else {
       slot.textContent = '+';
       slot.title = 'Drop image or click to add';
-      // Click to open file picker
+      slot.dataset.slotIdx = i; // so drag-drop knows which slot to fill
+      // Click to open file picker — store which slot was clicked
       slot.addEventListener('click', function() {
+        document.getElementById('pe-work-photo-input').dataset.targetSlot = this.dataset.slotIdx;
         document.getElementById('pe-work-photo-input').click();
       });
       // Drag-and-drop on empty slots
@@ -22663,13 +23018,16 @@ function _renderWorkPhotosGrid() {
       slot.addEventListener('drop', function(e) {
         e.preventDefault();
         slot.style.borderColor = ''; slot.style.background = ''; slot.style.color = '';
-        if (_editingWorkPhotos.length >= 6) return;
         var file = e.dataTransfer.files[0];
         if (!file || !file.type.startsWith('image/')) return;
-        _resizeImageFile(file, 400, 0.75, function(dataUrl) {
-          _editingWorkPhotos.push(dataUrl);
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          // Fill the specific slot that was dropped on, or first empty
+          var targetIdx = parseInt(slot.dataset.slotIdx || '0');
+          _editingWorkPhotos[targetIdx] = ev.target.result;
           _renderWorkPhotosGrid();
-        });
+        };
+        reader.readAsDataURL(file);
       });
     }
     grid.appendChild(slot);
@@ -22678,12 +23036,26 @@ function _renderWorkPhotosGrid() {
 
 document.getElementById('pe-work-photo-input').addEventListener('change', function(e) {
   var file = e.target.files[0];
-  if (!file || _editingWorkPhotos.length >= 6) return;
-  _resizeImageFile(file, 400, 0.75, function(dataUrl) {
-    _editingWorkPhotos.push(dataUrl);
+  if (!file) return;
+  // Store original quality — no resize/compression
+  var reader = new FileReader();
+  var targetSlot = parseInt(this.dataset.targetSlot);
+  reader.onload = function(ev) {
+    if (!isNaN(targetSlot) && targetSlot >= 0 && targetSlot < 6) {
+      _editingWorkPhotos[targetSlot] = ev.target.result; // fill the specific slot clicked
+    } else {
+      // Find first empty slot
+      var placed = false;
+      for (var s = 0; s < 6; s++) {
+        if (!_editingWorkPhotos[s]) { _editingWorkPhotos[s] = ev.target.result; placed = true; break; }
+      }
+      if (!placed) _editingWorkPhotos[5] = ev.target.result; // overwrite last if all full
+    }
     _renderWorkPhotosGrid();
-  });
+  };
+  reader.readAsDataURL(file);
   e.target.value = '';
+  delete this.dataset.targetSlot;
 });
 
 // ── Shared image resize helper ──
@@ -22705,20 +23077,182 @@ function _resizeImageFile(file, size, quality, callback) {
   reader.readAsDataURL(file);
 }
 
+// ── Work photo lightbox ──
+function _openWorkPhotoLightbox(src) {
+  var lb = document.getElementById('wp-lightbox');
+  var img = document.getElementById('wp-lightbox-img');
+  if (!lb || !img) return;
+  img.src = src;
+  lb.classList.add('open');
+}
+(function() {
+  var lb = document.getElementById('wp-lightbox');
+  var closeBtn = document.getElementById('wp-lightbox-close');
+  if (!lb) return;
+  if (closeBtn) closeBtn.addEventListener('click', function() { lb.classList.remove('open'); lb.querySelector('img').src = ''; });
+  lb.addEventListener('click', function(e) { if (e.target === lb) { lb.classList.remove('open'); lb.querySelector('img').src = ''; } });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && lb.classList.contains('open')) { lb.classList.remove('open'); lb.querySelector('img').src = ''; } });
+})();
+
 // ── Drag-and-drop: profile photo area ──
 (function() {
   var area = document.getElementById('pe-photo-area');
-  area.addEventListener('dragover', function(e) { e.preventDefault(); area.style.borderColor = '#0095f6'; area.style.background = '#f0f7ff'; });
+  area.addEventListener('dragover', function(e) { e.preventDefault(); area.style.borderColor = '#c8a84b'; area.style.background = '#fdf8ec'; });
   area.addEventListener('dragleave', function() { area.style.borderColor = ''; area.style.background = ''; });
   area.addEventListener('drop', function(e) {
     e.preventDefault();
     area.style.borderColor = ''; area.style.background = '';
     var file = e.dataTransfer.files[0];
     if (!file || !file.type.startsWith('image/')) return;
-    _resizeImageFile(file, 200, 0.8, function(dataUrl) {
-      area.style.backgroundImage = 'url("' + dataUrl + '")';
-      area.textContent = '';
-    });
+    if (file.type === 'image/gif') {
+      var r = new FileReader();
+      r.onload = function(ev) { area.style.backgroundImage = 'url("' + ev.target.result + '")'; area.textContent = ''; };
+      r.readAsDataURL(file);
+    } else {
+      var r2 = new FileReader();
+      r2.onload = function(ev) { _openPhotoAdjuster(ev.target.result); };
+      r2.readAsDataURL(file);
+    }
+  });
+})();
+
+// ── Photo Adjuster Engine ──
+(function() {
+  var _padImg = null, _padScale = 1, _padOx = 0, _padOy = 0;
+  var _padDragging = false, _padLastX = 0, _padLastY = 0;
+  var _padIsGif = false, _padGifUrl = null;
+
+  window._openPhotoAdjuster = function(dataUrl, isGif) {
+    _padIsGif = !!isGif;
+    _padGifUrl = isGif ? dataUrl : null;
+    _padOx = 0; _padOy = 0;
+
+    var adj = document.getElementById('photo-adjuster');
+    var canvas = document.getElementById('photo-adj-canvas');
+    var wrap = document.getElementById('photo-adj-wrap');
+    var zoom = document.getElementById('photo-adj-zoom');
+
+    // Remove any old gif img
+    var old = wrap.querySelector('img.pa-gif');
+    if (old) old.remove();
+
+    if (_padIsGif) {
+      // GIF mode: hide canvas, show animated img
+      canvas.style.display = 'none';
+      var gifEl = document.createElement('img');
+      gifEl.className = 'pa-gif';
+      gifEl.src = dataUrl;
+      gifEl.style.cssText = 'position:absolute;pointer-events:none;';
+      wrap.appendChild(gifEl);
+    } else {
+      canvas.style.display = 'block';
+    }
+
+    adj.classList.add('open');
+
+    _padImg = new Image();
+    _padImg.onload = function() {
+      var initScale = Math.max(180 / _padImg.width, 180 / _padImg.height);
+      _padScale = initScale;
+      zoom.min = initScale * 0.5;
+      zoom.max = initScale * 4;
+      zoom.step = initScale * 0.01;
+      zoom.value = _padScale;
+      _renderAdj();
+    };
+    _padImg.src = dataUrl;
+  };
+
+  function _renderAdj() {
+    if (!_padImg) return;
+    var w = _padImg.width * _padScale;
+    var h = _padImg.height * _padScale;
+    var x = 90 - w/2 + _padOx;
+    var y = 90 - h/2 + _padOy;
+
+    if (_padIsGif) {
+      var gif = document.getElementById('photo-adj-wrap').querySelector('img.pa-gif');
+      if (gif) gif.style.cssText = 'position:absolute;pointer-events:none;width:' + w + 'px;height:' + h + 'px;left:' + x + 'px;top:' + y + 'px;';
+    } else {
+      var canvas = document.getElementById('photo-adj-canvas');
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 180, 180);
+      ctx.drawImage(_padImg, x, y, w, h);
+    }
+  }
+
+  // Zoom slider
+  document.getElementById('photo-adj-zoom').addEventListener('input', function() {
+    _padScale = parseFloat(this.value);
+    _renderAdj();
+  });
+
+  // Drag to reposition
+  var wrap = document.getElementById('photo-adj-wrap');
+  wrap.addEventListener('mousedown', function(e) {
+    _padDragging = true; _padLastX = e.clientX; _padLastY = e.clientY;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!_padDragging) return;
+    _padOx += e.clientX - _padLastX;
+    _padOy += e.clientY - _padLastY;
+    _padLastX = e.clientX; _padLastY = e.clientY;
+    _renderAdj();
+  });
+  window.addEventListener('mouseup', function() { _padDragging = false; });
+
+  // Touch drag
+  wrap.addEventListener('touchstart', function(e) {
+    _padDragging = true;
+    _padLastX = e.touches[0].clientX; _padLastY = e.touches[0].clientY;
+    e.preventDefault();
+  }, {passive:false});
+  window.addEventListener('touchmove', function(e) {
+    if (!_padDragging) return;
+    _padOx += e.touches[0].clientX - _padLastX;
+    _padOy += e.touches[0].clientY - _padLastY;
+    _padLastX = e.touches[0].clientX; _padLastY = e.touches[0].clientY;
+    _renderAdj();
+  });
+  window.addEventListener('touchend', function() { _padDragging = false; });
+
+  // Apply
+  document.getElementById('pa-apply').addEventListener('click', function() {
+    var photoArea = document.getElementById('pe-photo-area');
+    if (_padIsGif && _padGifUrl && _padImg) {
+      // GIF: preserve animation, apply crop via background-size + background-position
+      // Scale from 180px adjuster to 110px photo area
+      var sf = 110 / 180;
+      var w = _padImg.width * _padScale * sf;
+      var h = _padImg.height * _padScale * sf;
+      var bx = (90 - _padImg.width * _padScale / 2 + _padOx) * sf;
+      var by = (90 - _padImg.height * _padScale / 2 + _padOy) * sf;
+      photoArea.style.backgroundImage = 'url("' + _padGifUrl + '")';
+      photoArea.style.backgroundSize = w + 'px ' + h + 'px';
+      photoArea.style.backgroundPosition = bx + 'px ' + by + 'px';
+    } else {
+      // Static image: output from canvas
+      var canvas = document.getElementById('photo-adj-canvas');
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      photoArea.style.backgroundImage = 'url("' + dataUrl + '")';
+      photoArea.style.backgroundSize = 'cover';
+      photoArea.style.backgroundPosition = 'center';
+    }
+    photoArea.textContent = '';
+    document.getElementById('photo-adjuster').classList.remove('open');
+    // Restore canvas for next use
+    document.getElementById('photo-adj-canvas').style.display = 'block';
+    var old = document.getElementById('photo-adj-wrap').querySelector('img.pa-gif');
+    if (old) old.remove();
+  });
+
+  // Cancel
+  document.getElementById('pa-cancel').addEventListener('click', function() {
+    document.getElementById('photo-adjuster').classList.remove('open');
+    document.getElementById('photo-adj-canvas').style.display = 'block';
+    var old = document.getElementById('photo-adj-wrap').querySelector('img.pa-gif');
+    if (old) old.remove();
   });
 })();
 
@@ -22735,10 +23269,46 @@ document.querySelectorAll('.pe-section-header').forEach(header => {
   });
 });
 
-// Editor buttons
+// Editor buttons — traffic lights + cancel/save
 document.getElementById('pe-close').addEventListener('click', closeProfileEditor);
+document.getElementById('pe-min').addEventListener('click', closeProfileEditor);
+document.getElementById('pe-max').addEventListener('click', function() {
+  var box = document.querySelector('.pe-box');
+  if (!box) return;
+  if (box.dataset.full === '1') {
+    box.style.cssText = '';
+    box.dataset.full = '0';
+  } else {
+    box.style.cssText = 'width:calc(100vw - 80px);max-height:calc(100vh - 40px);border-radius:10px;margin:20px;';
+    box.dataset.full = '1';
+  }
+});
 document.getElementById('pe-cancel').addEventListener('click', closeProfileEditor);
 document.getElementById('pe-save').addEventListener('click', saveProfile);
+
+// Backdrop click closes profile editor
+document.getElementById('profile-editor').addEventListener('click', function(e) {
+  if (e.target === this) closeProfileEditor();
+});
+
+
+// Admin header click → open profile editor (or corner panel for guests)
+document.getElementById('admin-header').addEventListener('click', function(e) {
+  // If click was directly on the profile ring, let its own handler take over
+  if (e.target.closest('#player-profile-ring')) return;
+  e.stopPropagation(); // prevent document outside-click handler from closing corner panel
+  var role = window._villageRole || 'guest';
+  if (role === 'guest') {
+    var cap = document.getElementById('corner-avatar-panel');
+    if (cap) {
+      if (typeof updateCornerPanel === 'function') updateCornerPanel();
+      cap.classList.toggle('open');
+    }
+  } else {
+    var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+    if (sp && typeof openProfileEditor === 'function') openProfileEditor(sp);
+  }
+});
 
 // Admin panel event - open editor instead of prompt
 // === ADMIN PANEL SETUP (Instagram Sidebar) ===
@@ -23537,7 +24107,7 @@ function anyOverlayOpen() {
     'building-page-overlay',
   ].find(id => {
     const el = document.getElementById(id);
-    return el && (el.style.display === 'flex' || el.classList.contains('open'));
+    return el && (el.classList.contains('wm-open') || el.classList.contains('open') || el.style.display === 'flex');
   });
 }
 
@@ -27718,18 +28288,16 @@ seedMemberLanguage();
       }
     }
 
-    // Toggle corner panel on ring click
+    // Ring click → open profile editor (same as clicking the Profile header label)
     if (_capRing) _capRing.addEventListener('click', function(e) {
       e.stopPropagation();
-      if (window._dunbarMode) return; // not during welcome overlay animation
-      updateCornerPanel();
-      _capPanel.classList.toggle('open');
-    });
-
-    // Close panel on outside click
-    document.addEventListener('click', function(e) {
-      if (_capPanel && !_capPanel.contains(e.target) && _capRing && !_capRing.contains(e.target)) {
-        _capPanel.classList.remove('open');
+      if (window._dunbarMode) return;
+      var role = window._villageRole || 'guest';
+      if (role === 'guest') {
+        openSignup();
+      } else {
+        var sp = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+        if (sp && typeof openProfileEditor === 'function') openProfileEditor(sp);
       }
     });
 
@@ -28417,25 +28985,10 @@ seedMemberLanguage();
   }
 
   // Bottom sheet library
-  function openLibrary(bldg) {
-    var existing = document.getElementById('wg-sheet-'+bldg.slug);
-    if(existing) existing.remove();
-
-    var layout = _getLayout(bldg.slug) || { placed:[], sizes:{} };
+  function _buildLibraryCards(bldg, layout, container) {
     var usedSlots = layout.placed.length;
     var full = usedSlots >= bldg.slots;
-
-    var backdrop = document.createElement('div');
-    backdrop.className = 'wg-sheet-backdrop open';
-    backdrop.id = 'wg-sheet-'+bldg.slug;
-
-    var sheet = document.createElement('div');
-    sheet.className = 'wg-sheet';
-
-    var h = '<div class="wg-sheet-handle"></div>';
-    h += '<div class="wg-sheet-header"><div class="wg-sheet-title">'+bldg.name+' Widgets</div><div class="wg-sheet-slots">'+usedSlots+' / '+bldg.slots+' slots used</div><button class="wg-sheet-close" id="wgs-close-'+bldg.slug+'">&times;</button></div>';
-
-    // Fixed section
+    var h = '';
     if(bldg.fixed.length) {
       h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Built-in</div>';
       bldg.fixed.forEach(function(wid) {
@@ -28444,8 +28997,6 @@ seedMemberLanguage();
       });
       h += '</div>';
     }
-
-    // Available section
     h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Add Widgets</div>';
     bldg.available.forEach(function(wid) {
       var w = WIDGETS[wid]; if(!w) return;
@@ -28453,18 +29004,8 @@ seedMemberLanguage();
       h += '<div class="wg-lib-card"><div class="wg-lib-preview" data-wc="'+(w.color||'')+'"></div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+wid+'"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
     });
     h += '</div>';
-
-    sheet.innerHTML = h;
-    backdrop.appendChild(sheet);
-    document.body.appendChild(backdrop);
-
-    // Close handlers
-    backdrop.addEventListener('click', function(e) { if(e.target===backdrop) backdrop.remove(); });
-    var closeBtn = document.getElementById('wgs-close-'+bldg.slug);
-    if(closeBtn) closeBtn.onclick = function() { backdrop.remove(); };
-
-    // Add/Remove handlers
-    sheet.querySelectorAll('.wg-lib-add').forEach(function(btn) {
+    container.innerHTML = h;
+    container.querySelectorAll('.wg-lib-add').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var wid = btn.dataset.wid;
         var isPlaced = layout.placed.indexOf(wid) !== -1;
@@ -28478,10 +29019,118 @@ seedMemberLanguage();
         }
         _saveLayout(bldg.slug, layout);
         renderWidgetGrid(bldg);
-        backdrop.remove();
+        var root = container.closest('#wg-sheet-'+bldg.slug);
+        if(root) root.remove();
         openLibrary(bldg);
       });
     });
+  }
+
+  function openLibrary(bldg) {
+    var existing = document.getElementById('wg-sheet-'+bldg.slug);
+    if(existing) existing.remove();
+
+    var layout = _getLayout(bldg.slug) || { placed:[], sizes:{} };
+    var usedSlots = layout.placed.length;
+
+    var inWM = document.body.classList.contains('wm-mode');
+
+    if (inWM) {
+      // Floating draggable resizable window in window-manager mode
+      var win = document.createElement('div');
+      win.id = 'wg-sheet-'+bldg.slug;
+      win.style.cssText = 'position:fixed;z-index:10500;width:400px;height:520px;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22),0 0 0 0.5px rgba(0,0,0,0.08);top:80px;left:calc(50vw - 200px);overflow:hidden;';
+
+      // Title bar with Mac traffic lights
+      var titleBar = document.createElement('div');
+      titleBar.className = 'wm-traffic';
+      titleBar.style.cssText = 'display:flex;align-items:center;padding:10px 12px;border-bottom:1.5px solid #efefef;cursor:grab;user-select:none;flex-shrink:0;background:#fafafa;border-radius:10px 10px 0 0;gap:7px;';
+
+      var tlClose = document.createElement('button');
+      tlClose.className = 'wm-tl wm-tl-close'; tlClose.title='Close'; tlClose.textContent='×';
+      var tlMin = document.createElement('button');
+      tlMin.className = 'wm-tl wm-tl-min'; tlMin.title='–'; tlMin.textContent='–';
+      var tlMax = document.createElement('button');
+      tlMax.className = 'wm-tl wm-tl-max'; tlMax.title='+'; tlMax.textContent='+';
+
+      var titleText = document.createElement('div');
+      titleText.style.cssText = 'flex:1;font-weight:600;font-size:13px;color:#262626;padding-left:6px;';
+      titleText.innerHTML = bldg.name+' Widgets <span style="font-weight:400;color:#8e8e8e;font-size:11px;">'+usedSlots+' / '+bldg.slots+' slots</span>';
+
+      titleBar.appendChild(tlClose); titleBar.appendChild(tlMin); titleBar.appendChild(tlMax);
+      titleBar.appendChild(titleText);
+
+      var content = document.createElement('div');
+      content.style.cssText = 'overflow-y:auto;flex:1;padding:8px;';
+
+      // SE resize handle
+      var rzSE = document.createElement('div');
+      rzSE.style.cssText = 'position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;z-index:3;';
+
+      win.appendChild(titleBar);
+      win.appendChild(content);
+      win.appendChild(rzSE);
+      document.body.appendChild(win);
+
+      _buildLibraryCards(bldg, layout, content);
+
+      // Traffic light handlers
+      tlClose.onclick = function(e) { e.stopPropagation(); win.remove(); };
+      tlMin.onclick = function(e) { e.stopPropagation(); win.remove(); };
+      var _wgFull = false;
+      tlMax.onclick = function(e) {
+        e.stopPropagation();
+        if (_wgFull) {
+          win.style.cssText = 'position:fixed;z-index:10500;width:400px;height:520px;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22),0 0 0 0.5px rgba(0,0,0,0.08);top:80px;left:calc(50vw - 200px);overflow:hidden;';
+          _wgFull = false;
+        } else {
+          win.style.cssText = 'position:fixed;z-index:10500;width:600px;height:85vh;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22);top:7.5vh;left:calc(50vw - 300px);overflow:hidden;';
+          _wgFull = true;
+        }
+      };
+
+      // Drag title bar
+      titleBar.addEventListener('mousedown', function(e) {
+        if(e.target.closest('.wm-tl')) return;
+        e.preventDefault();
+        titleBar.style.cursor = 'grabbing';
+        var sx=e.clientX, sy=e.clientY, r=win.getBoundingClientRect(), ol=r.left, ot=r.top;
+        function mv(ev) { win.style.left=(ol+ev.clientX-sx)+'px'; win.style.top=(ot+ev.clientY-sy)+'px'; }
+        function up() { titleBar.style.cursor='grab'; document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
+        document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+      });
+
+      // Resize SE handle
+      rzSE.addEventListener('mousedown', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        var r=win.getBoundingClientRect(), sx=e.clientX, sy=e.clientY, sw=r.width, sh=r.height;
+        function mv(ev) {
+          win.style.width = Math.max(320, sw+ev.clientX-sx)+'px';
+          win.style.height = Math.max(280, sh+ev.clientY-sy)+'px';
+        }
+        function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
+        document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+      });
+      return;
+    }
+
+    // Bottom-sheet mode (non-WM)
+    var backdrop = document.createElement('div');
+    backdrop.className = 'wg-sheet-backdrop open';
+    backdrop.id = 'wg-sheet-'+bldg.slug;
+
+    var sheet = document.createElement('div');
+    sheet.className = 'wg-sheet';
+    sheet.innerHTML = '<div class="wg-sheet-handle"></div><div class="wg-sheet-header"><div class="wg-sheet-title">'+bldg.name+' Widgets</div><div class="wg-sheet-slots">'+usedSlots+' / '+bldg.slots+' slots used</div><button class="wg-sheet-close" id="wgs-close-'+bldg.slug+'">&times;</button></div><div id="wgs-cards-'+bldg.slug+'"></div>';
+
+    backdrop.appendChild(sheet);
+    document.body.appendChild(backdrop);
+
+    _buildLibraryCards(bldg, layout, sheet.querySelector('#wgs-cards-'+bldg.slug));
+
+    backdrop.addEventListener('click', function(e) { if(e.target===backdrop) backdrop.remove(); });
+    var closeBtn2 = document.getElementById('wgs-close-'+bldg.slug);
+    if(closeBtn2) closeBtn2.onclick = function() { backdrop.remove(); };
   }
 
   // Inject into buildings on DOMContentLoaded
@@ -28569,30 +29218,66 @@ seedMemberLanguage();
   body.wm-mode #school-overlay.wm-open, body.wm-mode #mentor-overlay.wm-open,
   body.wm-mode #exchange-overlay.wm-open, body.wm-mode #bonfire-manifesto-overlay.wm-open,
   body.wm-mode #cafe-room-overlay.wm-open { display:flex !important; }
-  body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; }
-  body.wm-mode .bld-inner { overflow-y:auto !important; min-height:0 !important; }
+  body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
+  body.wm-mode .bld-inner { overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
   body.wm-mode #cafe-room-body { flex:1; overflow-y:auto !important; min-height:0 !important; }
+  /* Contain workshop cards to window width — prevent horizontal overflow */
+  body.wm-mode .workshop-cards-grid, body.wm-mode .workshops-list { overflow-x:hidden !important; }
+  body.wm-mode .workshop-card { min-width:0 !important; }
+  /* External building chat panels are off in WM mode — chat lives inside windows */
+  body.wm-mode .bld-chat-overlay { display:none !important; }
+  /* Inline chat panel inside building window */
+  body.wm-mode .wm-inline-chat { position:absolute !important; inset:0 !important; z-index:5 !important; background:#fff !important; flex-direction:column !important; border-radius:inherit !important; }
 }
+/* Dev hamburger — hidden */
+#dev-hamburger { display:none !important; }
+/* Vault token — clickable cue on hover */
+.vlt-token-wrap { position:relative; }
+.vlt-token-wrap video { transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease; border-radius:50%; }
+.vlt-token-wrap:hover video { transform:scale(1.06); box-shadow:0 0 32px rgba(200,168,75,0.55); }
+.vlt-token-wrap::after { content:'tap to inspect'; position:absolute; bottom:-20px; left:50%; transform:translateX(-50%) translateY(4px); font-size:10px; color:#3a2008; letter-spacing:0.06em; opacity:0; transition:opacity 0.2s, transform 0.2s; pointer-events:none; white-space:nowrap; }
+.vlt-token-wrap:hover::after { opacity:1; transform:translateX(-50%) translateY(0); }
+/* Hide old hint text */
+.vlt-token-hint { display:none; }
+/* Public / private space badges in buildings */
+.space-badge { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; padding:3px 9px; border-radius:20px; margin-bottom:14px; }
+.space-badge.pub { background:#e8f5e9; color:#2e7d32; }
+.space-badge.priv { background:#f5f5f5; color:#8e8e8e; }
+/* Chat button in building header */
+.wm-chat-btn { background:none; border:1.5px solid #dbdbdb; border-radius:8px; cursor:pointer; padding:4px 10px; font-size:12px; font-weight:600; color:#262626; transition:background 0.15s, border-color 0.15s; flex-shrink:0; margin-left:auto; }
+.wm-chat-btn:hover, .wm-chat-btn.active { background:#262626; color:#fff; border-color:#262626; }
+/* WM traffic lights for widget library */
 .wm-traffic { display:flex; gap:7px; align-items:center; padding:0 8px; flex-shrink:0; }
 .wm-tl { width:14px; height:14px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:transparent; transition:color 0.1s; }
 .wm-tl:hover { color:rgba(0,0,0,0.5); }
 .wm-tl-close { background:#ff5f57; }
 .wm-tl-min { background:#febc2e; }
 .wm-tl-max { background:#28c840; }
+/* Wider resize handles */
 .wm-rz { position:absolute; z-index:3; }
-.wm-rz-n { top:-3px; left:10px; right:10px; height:6px; cursor:ns-resize; }
-.wm-rz-s { bottom:-3px; left:10px; right:10px; height:6px; cursor:ns-resize; }
-.wm-rz-e { right:-3px; top:10px; bottom:10px; width:6px; cursor:ew-resize; }
-.wm-rz-w { left:-3px; top:10px; bottom:10px; width:6px; cursor:ew-resize; }
-.wm-rz-ne { top:-3px; right:-3px; width:14px; height:14px; cursor:nesw-resize; }
-.wm-rz-nw { top:-3px; left:-3px; width:14px; height:14px; cursor:nwse-resize; }
-.wm-rz-se { bottom:-3px; right:-3px; width:14px; height:14px; cursor:nwse-resize; }
-.wm-rz-sw { bottom:-3px; left:-3px; width:14px; height:14px; cursor:nesw-resize; }
+.wm-rz-n  { top:-5px;    left:16px;  right:16px;  height:10px; cursor:ns-resize;   }
+.wm-rz-s  { bottom:-5px; left:16px;  right:16px;  height:10px; cursor:ns-resize;   }
+.wm-rz-e  { right:-5px;  top:16px;   bottom:16px; width:10px;  cursor:ew-resize;   }
+.wm-rz-w  { left:-5px;   top:16px;   bottom:16px; width:10px;  cursor:ew-resize;   }
+.wm-rz-ne { top:-5px;    right:-5px;  width:18px; height:18px; cursor:nesw-resize; }
+.wm-rz-nw { top:-5px;    left:-5px;   width:18px; height:18px; cursor:nwse-resize; }
+.wm-rz-se { bottom:-5px; right:-5px;  width:18px; height:18px; cursor:nwse-resize; }
+.wm-rz-sw { bottom:-5px; left:-5px;   width:18px; height:18px; cursor:nesw-resize; }
+/* Frame drag bands */
 .wm-frame { position:absolute; z-index:2; }
-.wm-fr-n { top:0; left:14px; right:14px; height:4px; cursor:grab; }
-.wm-fr-s { bottom:0; left:14px; right:14px; height:4px; cursor:grab; }
-.wm-fr-e { right:0; top:14px; bottom:14px; width:4px; cursor:grab; }
-.wm-fr-w { left:0; top:14px; bottom:14px; width:4px; cursor:grab; }
+.wm-fr-n { top:0;    left:18px; right:18px; height:8px;  cursor:grab; }
+.wm-fr-s { bottom:0; left:18px; right:18px; height:8px;  cursor:grab; }
+.wm-fr-e { right:0;  top:18px;  bottom:18px; width:8px;  cursor:grab; }
+.wm-fr-w { left:0;   top:18px;  bottom:18px; width:8px;  cursor:grab; }
+/* Fullscreen button matches admin-nav-item exactly */
+#wm-fullscreen-btn {
+  display:flex; align-items:center; gap:14px; padding:10px 8px;
+  border-radius:10px; cursor:pointer; transition:background 0.15s;
+  color:#262626; border:none; background:none; width:100%; margin-bottom:2px;
+  text-align:left; font-family:inherit; font-size:14px;
+}
+#wm-fullscreen-btn:hover { background:#f5f5f5; }
+#wm-fullscreen-btn .fs-icon { width:24px; height:24px; min-width:24px; display:flex; align-items:center; justify-content:center; }
 </style>
 <script>
 (function() {
@@ -28601,60 +29286,208 @@ seedMemberLanguage();
   var _topZ = 9100;
   var BLDG_IDS = ['studio-quarter-overlay','gallery-overlay','library-overlay','cafe-room-overlay','observatory-overlay','school-overlay','mentor-overlay','exchange-overlay','bonfire-manifesto-overlay'];
   var _savedPos = {};
+  var _preFullPos = {}; // pre-fullscreen positions — separate from _savedPos so _closeAll never clobbers them
+  var _preSnapPos = {}; // pre-snap positions so dragging a snapped window restores it
+  var _lastPos = null; // shared last position — new buildings open where the previous one was
   var _activeWin = null;
+
+  // Map overlay ID → building chat slug
+  var _OV_TO_SLUG = {
+    'library-overlay':'library','gallery-overlay':'gallery','school-overlay':'school',
+    'mentor-overlay':'mentor','studio-quarter-overlay':'studio',
+    'observatory-overlay':'observatory','exchange-overlay':'residency'
+  };
+
+  // CSS has inset:auto !important — must use setProperty('prop','val','important') to win
+  function _sp(el, prop, val) { el.style.setProperty(prop, val, 'important'); }
+  function _rp(el, prop) { el.style.removeProperty(prop); }
+
+  // Position building chat panel flush against the right edge of the window
+  function _positionChat(ovId) {
+    var slug = _OV_TO_SLUG[ovId];
+    if (!slug) return;
+    var chatEl = document.getElementById(slug + '-bld-chat');
+    if (!chatEl || chatEl.style.display === 'none') return;
+    var ov = document.getElementById(ovId);
+    if (!ov) return;
+    var r = ov.getBoundingClientRect();
+    var chatW = 280;
+    chatEl.style.setProperty('left', (r.right) + 'px', 'important');
+    chatEl.style.setProperty('top', r.top + 'px', 'important');
+    chatEl.style.setProperty('width', chatW + 'px', 'important');
+    chatEl.style.setProperty('height', r.height + 'px', 'important');
+  }
+
+  // Open building chat for this overlay (WM mode: manual trigger, no auto-open from observer)
+  function _openChatFor(ovId) {
+    var slug = _OV_TO_SLUG[ovId];
+    if (!slug) return;
+    var cfg = (typeof _BLDG_CHAT_CONFIG !== 'undefined') ? _BLDG_CHAT_CONFIG[slug] : null;
+    if (!cfg) return;
+    var chatEl = document.getElementById(slug + '-bld-chat');
+    if (!chatEl) return;
+    // _closeAll() already ran destroyActiveBldChat() before this timeout — no need to call again
+    // (calling it again would destroy the chat we're about to create)
+    chatEl.style.display = 'flex';
+    chatEl.classList.add('sliding-in');
+    if (typeof createBuildingChat === 'function') {
+      _activeBldChatSlug = slug;
+      _activeBldChat = createBuildingChat(slug, chatEl, cfg.label, cfg.placeholder);
+    }
+    document.body.classList.add('bldg-chat-open');
+    // Position flush against the right edge of the building window
+    _positionChat(ovId);
+  }
 
   function _closeAll() {
     BLDG_IDS.forEach(function(id) {
       var ov = document.getElementById(id);
-      if (ov && ov.classList.contains('wm-open')) {
-        _savedPos[id] = { left:ov.style.left, top:ov.style.top, width:ov.style.width, height:ov.style.height };
+      if (!ov) return;
+      if (ov.classList.contains('wm-open')) {
+        // Save windowed position — never save snapped/fullscreen dimensions
+        var posToSave;
+        if (ov.dataset.wmSnap) {
+          posToSave = _preSnapPos[id] || {left:'60px',top:'40px',width:'clamp(480px,50vw,720px)',height:'calc(100vh - 80px)'};
+        } else if (ov.dataset.wmFull === '1') {
+          posToSave = _preFullPos[id] || {left:'60px',top:'40px',width:'clamp(480px,50vw,720px)',height:'calc(100vh - 80px)'};
+        } else {
+          posToSave = {left:ov.style.left, top:ov.style.top, width:ov.style.width, height:ov.style.height};
+        }
+        _savedPos[id] = posToSave;
+        _lastPos = posToSave;
         ov.classList.remove('wm-open');
+        // Fire close event so inline chat self-destructs
+        ov.dispatchEvent(new CustomEvent('wm-close'));
+        ov.dataset.wmFull = '0';
+        ov.dataset.wmSnap = '';
       }
+      ov.classList.remove('open');
+      _rp(ov,'display'); _rp(ov,'left'); _rp(ov,'top'); _rp(ov,'width'); _rp(ov,'height'); _rp(ov,'z-index');
     });
+    // Close any open widget library windows
+    document.querySelectorAll('[id^="wg-sheet-"]').forEach(function(el) { el.remove(); });
+    // Properly close café state
+    if (typeof closeCafeRoom === 'function') {
+      try { closeCafeRoom(); } catch(e) {}
+    }
+    // Clean up external building chat (legacy)
+    if (typeof destroyActiveBldChat === 'function') {
+      try { destroyActiveBldChat(); } catch(e) {}
+    }
     _activeWin = null;
+  }
+
+  function _setPos(ov, left, top, width, height) {
+    _sp(ov,'left',left); _sp(ov,'top',top); _sp(ov,'width',width); _sp(ov,'height',height);
   }
 
   function _openWin(id) {
     var ov = document.getElementById(id);
     if (!ov) return;
     _closeAll();
+    // Per-building saved pos → shared last pos → default
     var saved = _savedPos[id];
-    if (saved && saved.left) { ov.style.left=saved.left; ov.style.top=saved.top; ov.style.width=saved.width; ov.style.height=saved.height; }
-    else { ov.style.left='60px'; ov.style.top='40px'; ov.style.width='clamp(480px,50vw,720px)'; ov.style.height='calc(100vh - 80px)'; }
+    // Reject fullscreen-sized saved positions — these indicate a prior-session bug
+    var savedIsFullscreen = saved && (saved.width === '100vw' || saved.left === '0px');
+    if (saved && saved.left && !savedIsFullscreen) {
+      _setPos(ov, saved.left, saved.top, saved.width, saved.height);
+    } else if (_lastPos && _lastPos.left && _lastPos.width !== '100vw') {
+      _setPos(ov, _lastPos.left, _lastPos.top, _lastPos.width, _lastPos.height);
+    } else {
+      _setPos(ov, '60px', '40px', 'clamp(480px,50vw,720px)', 'calc(100vh - 80px)');
+    }
     ov.classList.add('wm-open');
-    _topZ++; ov.style.zIndex = _topZ;
+    _topZ++; _sp(ov,'z-index',_topZ);
     _activeWin = id;
   }
 
   // Click on map closes active window
   var vp = document.getElementById('viewport');
   if (vp) vp.addEventListener('mousedown', function(e) {
-    if (_activeWin && !e.target.closest('[id$="-overlay"]')) _closeAll();
+    if (_activeWin && !e.target.closest('[id$="-overlay"]') && !e.target.closest('.bld-chat-overlay')) _closeAll();
   });
 
-  function _makeDrag(handle, ov) {
+  // Transparent cover blocks all underlying hover/interaction during drag+resize
+  var _cover = document.createElement('div');
+  _cover.style.cssText = 'display:none;position:fixed;inset:0;z-index:99999;cursor:inherit;';
+  document.body.appendChild(_cover);
+  function _startOp(cursor) { _cover.style.display='block'; _cover.style.cursor=cursor||'default'; }
+  function _endOp() { _cover.style.display='none'; }
+
+  // Snap-zone preview — single element, repositioned per zone
+  var _snapPrev = document.createElement('div');
+  _snapPrev.id = 'wm-snap-preview';
+  _snapPrev.style.cssText = 'display:none;position:fixed;z-index:9998;background:rgba(200,168,75,0.12);border:2px solid rgba(200,168,75,0.35);border-radius:12px;pointer-events:none;transition:top 0.12s ease,left 0.12s ease,width 0.12s ease,height 0.12s ease;box-sizing:border-box;';
+  document.body.appendChild(_snapPrev);
+  function _showSnap(zone) {
+    if (!zone) { _snapPrev.style.display='none'; return; }
+    var sp=_snapPrev.style; sp.display='block';
+    if(zone==='top')  {sp.top='0';sp.left='0';   sp.width='100vw';sp.height='100vh';}
+    if(zone==='left') {sp.top='0';sp.left='0';   sp.width='50vw'; sp.height='100vh';}
+    if(zone==='right'){sp.top='0';sp.left='50vw';sp.width='50vw'; sp.height='100vh';}
+  }
+
+  function _makeDrag(handle, ov, ovId) {
     handle.addEventListener('mousedown', function(e) {
       if (e.target.closest('.wm-traffic,.wm-tl,.wm-rz,button,input,select,textarea,.wg-seg,.wg-lib-btn')) return;
-      e.preventDefault(); handle.style.cursor='grabbing';
+      e.preventDefault(); handle.style.cursor='grabbing'; _startOp('grabbing');
+      // If currently snapped, restore windowed size before starting drag (macOS behaviour)
+      if (ov.dataset.wmSnap) {
+        var _ps = _preSnapPos[ovId];
+        if (_ps) {
+          _setPos(ov, _ps.left, _ps.top, _ps.width, _ps.height);
+          _sp(ov,'border-radius','10px');
+          if (ov.dataset.wmSnap==='top') { _sp(ov,'z-index',_topZ); ov.dataset.wmFull='0'; }
+        }
+        ov.dataset.wmSnap = '';
+      }
       var sx=e.clientX, sy=e.clientY, r=ov.getBoundingClientRect(), ol=r.left, ot=r.top;
-      function mv(ev){ov.style.left=(ol+ev.clientX-sx)+'px';ov.style.top=(ot+ev.clientY-sy)+'px';}
-      function up(){handle.style.cursor='grab';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+      // Capture position at drag-start so snap can restore it later
+      var _preDrag={left:ol+'px',top:ot+'px',width:ov.style.width||'clamp(480px,50vw,720px)',height:ov.style.height||'calc(100vh - 80px)'};
+      var _zone=null;
+      function mv(ev){
+        var nl=ol+ev.clientX-sx, nt=ot+ev.clientY-sy;
+        var z=nt<40?'top':nl<40?'left':nl>window.innerWidth-40?'right':null;
+        if(z!==_zone){_zone=z;_showSnap(z);}
+        // Only move the window when not hovering a snap zone
+        if(!z){_sp(ov,'left',nl+'px');_sp(ov,'top',nt+'px');if(ovId)_positionChat(ovId);}
+      }
+      function up(){
+        handle.style.cursor='grab';_endOp();_showSnap(null);
+        document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
+        if(_zone){
+          _preSnapPos[ovId]=_preDrag;
+          if(_zone==='top'){
+            _setPos(ov,'0px','0px','100vw','100vh');
+            _sp(ov,'z-index','9300');_sp(ov,'border-radius','0px');
+            ov.dataset.wmFull='1';ov.dataset.wmSnap='top';
+          }else if(_zone==='left'){
+            _setPos(ov,'0px','0px','50vw','100vh');
+            _sp(ov,'border-radius','0px');ov.dataset.wmSnap='left';
+          }else{
+            _setPos(ov,'50vw','0px','50vw','100vh');
+            _sp(ov,'border-radius','0px');ov.dataset.wmSnap='right';
+          }
+        }
+      }
       document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
     });
   }
 
-  function _makeResize(handle, dir, ov) {
+  function _makeResize(handle, dir, ov, ovId) {
     handle.addEventListener('mousedown', function(e) {
       e.preventDefault(); e.stopPropagation();
+      var cur = getComputedStyle(handle).cursor; _startOp(cur);
       var r=ov.getBoundingClientRect(), sx=e.clientX, sy=e.clientY, sw=r.width, sh=r.height, sl=r.left, st=r.top;
       function mv(ev) {
         var dx=ev.clientX-sx, dy=ev.clientY-sy;
-        if(dir.includes('e'))ov.style.width=Math.max(380,sw+dx)+'px';
-        if(dir.includes('w')){var nw=Math.max(380,sw-dx);ov.style.width=nw+'px';ov.style.left=(sl+sw-nw)+'px';}
-        if(dir.includes('s'))ov.style.height=Math.max(250,sh+dy)+'px';
-        if(dir.includes('n')){var nh=Math.max(250,sh-dy);ov.style.height=nh+'px';ov.style.top=(st+sh-nh)+'px';}
+        if(dir.includes('e'))_sp(ov,'width',Math.max(380,sw+dx)+'px');
+        if(dir.includes('w')){var nw=Math.max(380,sw-dx);_sp(ov,'width',nw+'px');_sp(ov,'left',(sl+sw-nw)+'px');}
+        if(dir.includes('s'))_sp(ov,'height',Math.max(250,sh+dy)+'px');
+        if(dir.includes('n')){var nh=Math.max(250,sh-dy);_sp(ov,'height',nh+'px');_sp(ov,'top',(st+sh-nh)+'px');}
+        if(ovId) _positionChat(ovId);
       }
-      function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+      function up(){_endOp();document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
       document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
     });
   }
@@ -28671,17 +29504,73 @@ seedMemberLanguage();
     traffic.querySelector('.wm-tl-min').addEventListener('click', function(e){e.stopPropagation();_closeAll();});
     traffic.querySelector('.wm-tl-max').addEventListener('click', function(e){
       e.stopPropagation();
-      if(ov.dataset.wmFull==='1'){var s=_savedPos[id]||{};ov.style.left=s.left||'60px';ov.style.top=s.top||'40px';ov.style.width=s.width||'';ov.style.height=s.height||'';ov.dataset.wmFull='0';}
-      else{_savedPos[id]={left:ov.style.left,top:ov.style.top,width:ov.style.width,height:ov.style.height};ov.style.left='8px';ov.style.top='8px';ov.style.width='calc(100vw - 72px)';ov.style.height='calc(100vh - 16px)';ov.dataset.wmFull='1';}
+      if(ov.dataset.wmFull==='1'){
+        // Restore pre-fullscreen position from dedicated store
+        var s=_preFullPos[id]||{left:'60px',top:'40px',width:'clamp(480px,50vw,720px)',height:'calc(100vh - 80px)'};
+        _setPos(ov, s.left, s.top, s.width, s.height);
+        _sp(ov,'z-index',_topZ);
+        _sp(ov,'border-radius','10px');
+        ov.dataset.wmFull='0';
+      } else {
+        // Save current (windowed) position before going fullscreen
+        _preFullPos[id]={left:ov.style.left||'60px',top:ov.style.top||'40px',width:ov.style.width||'clamp(480px,50vw,720px)',height:ov.style.height||'calc(100vh - 80px)'};
+        _setPos(ov,'0px','0px','100vw','100vh');
+        // z-index 9300 is above admin-panel (9200) — covers it completely
+        _sp(ov,'z-index','9300');
+        _sp(ov,'border-radius','0px');
+        ov.dataset.wmFull='1';
+      }
     });
     if(leaveBtn) header.replaceChild(traffic, leaveBtn); else header.insertBefore(traffic, header.firstChild);
+
+    // Chat button — opens/closes inline chat panel inside the building window
+    var slug = _OV_TO_SLUG[id];
+    if (slug) {
+      var chatBtn = document.createElement('button');
+      chatBtn.className = 'wm-chat-btn';
+      chatBtn.title = 'Chat & Meetings';
+      chatBtn.textContent = 'Chat';
+      header.appendChild(chatBtn);
+
+      // Inline chat panel fills the building window completely
+      var chatPanel = document.createElement('div');
+      chatPanel.className = 'wm-inline-chat';
+      chatPanel.style.display = 'none';
+      ov.appendChild(chatPanel);
+
+      var _chatInstance = null;
+      chatBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (chatPanel.style.display === 'none') {
+          chatPanel.style.display = 'flex';
+          chatBtn.classList.add('active');
+          var cfg = _BLDG_CHAT_CONFIG ? _BLDG_CHAT_CONFIG[slug] : null;
+          if (typeof createBuildingChat === 'function' && cfg) {
+            _chatInstance = createBuildingChat(slug, chatPanel, cfg.label, cfg.placeholder);
+          }
+        } else {
+          chatPanel.style.display = 'none';
+          chatBtn.classList.remove('active');
+          if (_chatInstance) { try { _chatInstance.destroy(); } catch(e2) {} _chatInstance = null; }
+          chatPanel.innerHTML = '';
+        }
+      });
+      // Clean up when window closes
+      ov.addEventListener('wm-close', function() {
+        if (_chatInstance) { try { _chatInstance.destroy(); } catch(e3) {} _chatInstance = null; }
+        chatPanel.style.display = 'none';
+        chatBtn.classList.remove('active');
+        chatPanel.innerHTML = '';
+      });
+    }
+
     header.style.cursor = 'grab';
-    _makeDrag(header, ov);
+    _makeDrag(header, ov, id);
     // Resize: all 8 directions
-    ['n','s','e','w','ne','nw','se','sw'].forEach(function(dir){var h=document.createElement('div');h.className='wm-rz wm-rz-'+dir;_makeResize(h,dir,ov);ov.appendChild(h);});
+    ['n','s','e','w','ne','nw','se','sw'].forEach(function(dir){var h=document.createElement('div');h.className='wm-rz wm-rz-'+dir;_makeResize(h,dir,ov,id);ov.appendChild(h);});
     // Frame drag: all 4 edges
-    ['n','s','e','w'].forEach(function(side){var f=document.createElement('div');f.className='wm-frame wm-fr-'+side;f.style.cursor='grab';_makeDrag(f,ov);ov.appendChild(f);});
-    ov.addEventListener('mousedown', function(){if(ov.classList.contains('wm-open')){_topZ++;ov.style.zIndex=_topZ;_activeWin=id;}});
+    ['n','s','e','w'].forEach(function(side){var f=document.createElement('div');f.className='wm-frame wm-fr-'+side;f.style.cursor='grab';_makeDrag(f,ov,id);ov.appendChild(f);});
+    ov.addEventListener('mousedown', function(){if(ov.classList.contains('wm-open')){_topZ++;_sp(ov,'z-index',_topZ);_activeWin=id;}});
   });
 
   var FN_MAP={'studio-quarter-overlay':'openStudioQuarter','school-overlay':'openSchoolPaths','observatory-overlay':'openObservatory','library-overlay':'openGlazeLibrary','gallery-overlay':'openGallery','mentor-overlay':'openMentorCluster','exchange-overlay':'openExchangeListings','bonfire-manifesto-overlay':'openBonfireManifesto'};
@@ -28693,6 +29582,65 @@ seedMemberLanguage();
   var cafeOv=document.getElementById('cafe-room-overlay');
   if(cafeOv)new MutationObserver(function(){if(cafeOv.classList.contains('open')&&!cafeOv.classList.contains('wm-open'))_openWin('cafe-room-overlay');}).observe(cafeOv,{attributes:true,attributeFilter:['class']});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){var m=document.getElementById('mondo-overlay');if(m&&m.classList.contains('open'))return;var v=document.getElementById('vault-overlay');if(v&&v.classList.contains('open'))return;if(_activeWin){_closeAll();e.stopPropagation();}}});
+
+  // Fullscreen toggle button — styled as a proper admin-nav-item
+  var fsBtn = document.createElement('button');
+  fsBtn.id = 'wm-fullscreen-btn';
+  fsBtn.title = 'Fullscreen';
+  var _fsIconExpand = '<span class="fs-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></span><span class="admin-nav-label">Fullscreen</span>';
+  var _fsIconShrink = '<span class="fs-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg></span><span class="admin-nav-label">Exit Full</span>';
+  fsBtn.innerHTML = _fsIconExpand;
+  fsBtn.addEventListener('click', function() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(function(){});
+      fsBtn.innerHTML = _fsIconShrink;
+    } else {
+      document.exitFullscreen();
+      fsBtn.innerHTML = _fsIconExpand;
+    }
+  });
+  document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement) fsBtn.innerHTML = _fsIconExpand;
+  });
+  // Insert inside admin-nav, just before the Sign Out group
+  var adminNav = document.querySelector('.admin-nav');
+  if (adminNav) {
+    var signout = adminNav.querySelector('#nav-signout');
+    if (signout) {
+      // Walk up to the direct child of admin-nav (signout may be nested)
+      var anchor = signout;
+      while (anchor.parentElement && anchor.parentElement !== adminNav) {
+        anchor = anchor.parentElement;
+      }
+      adminNav.insertBefore(fsBtn, anchor);
+    } else {
+      adminNav.appendChild(fsBtn);
+    }
+  }
+
+  // Public / private space badges injected into building taglines
+  var _SPACE_BADGES = {
+    'library-overlay':        { text:'Public space — visible to all members', cls:'pub' },
+    'gallery-overlay':        { text:'Public space — visible to all members', cls:'pub' },
+    'school-overlay':         { text:'Public space — visible to all members', cls:'pub' },
+    'mentor-overlay':         { text:'Public space — visible to all members', cls:'pub' },
+    'exchange-overlay':       { text:'Public space — visible to all members', cls:'pub' },
+    'cafe-room-overlay':      { text:'Public space — visible to all members', cls:'pub' },
+    'observatory-overlay':    { text:'Public space — visible to all members', cls:'pub' },
+    'bonfire-manifesto-overlay': { text:'Public space — visible to all members', cls:'pub' },
+    'studio-quarter-overlay': { text:'Mixed — your studio is yours; process board & failures are shared', cls:'pub' },
+  };
+  Object.keys(_SPACE_BADGES).forEach(function(ovId) {
+    var cfg = _SPACE_BADGES[ovId];
+    var ov = document.getElementById(ovId);
+    if (!ov) return;
+    var tag = ov.querySelector('.bld-tagline, .bld-desc, #cafe-tagline');
+    if (!tag) return;
+    var badge = document.createElement('div');
+    badge.className = 'space-badge ' + cfg.cls;
+    badge.innerHTML = (cfg.cls === 'pub' ? '&#x1F30D;' : '&#x1F512;') + ' ' + cfg.text;
+    tag.parentNode.insertBefore(badge, tag);
+  });
 })();
 </script>
 
