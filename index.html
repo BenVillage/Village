@@ -27651,6 +27651,33 @@ seedMemberLanguage();
     <span id="dunbar-welcome-body">This is not your village yet.<br>Look around. Take your time.</span>
   </div>
 </div>
+<script>
+// Pre-set welcome name immediately from localStorage to prevent Dunbar→Village flash
+(function() {
+  var isTravel  = !!localStorage.getItem('cvHomeVillageId');
+  var travelName = localStorage.getItem('cvCurrentVillageName') || '';
+  // Detect existing Supabase session without waiting for async auth
+  var hasSession = Object.keys(localStorage).some(function(k) {
+    return k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1;
+  });
+  if (hasSession) {
+    var titleEl = document.getElementById('dunbar-welcome-title');
+    var bodyEl  = document.getElementById('dunbar-welcome-body');
+    var jpEl    = document.getElementById('dunbar-welcome-jp');
+    var villEl  = document.getElementById('dunbar-welcome-village');
+    if (titleEl) titleEl.style.display = 'none';
+    if (bodyEl)  bodyEl.style.display  = 'none';
+    if (jpEl)    jpEl.style.display    = '';
+    if (villEl) {
+      villEl.textContent   = (isTravel && travelName) ? travelName : (villEl.textContent || 'Clay Village');
+      villEl.style.display = 'block';
+    }
+  } else if (isTravel && travelName) {
+    var v2 = document.getElementById('dunbar-welcome-village');
+    if (v2) v2.textContent = travelName;
+  }
+})();
+</script>
 
 <!-- ── Village name label — top center of map ─────────────────────── -->
 <div id="village-name-label">Clay Village</div>
@@ -27753,13 +27780,16 @@ seedMemberLanguage();
       if (_bodyEl) { _bodyEl.style.display = ''; _bodyEl.innerHTML = 'You are a Dunbar resident.<br>Find your village when you\'re ready.'; }
       if (_villEl) _villEl.style.display = 'none';
     } else {
-      // Citizen or Founder — village name welcome
+      // Citizen or Founder — show the village they are currently in
+      var _travelVillageName = localStorage.getItem('cvCurrentVillageName');
+      var _isTravel = !!localStorage.getItem('cvHomeVillageId');
+      var _displayVillageName = (_isTravel && _travelVillageName) ? _travelVillageName : (_selVillageName || 'Clay Village');
       if (_jpEl) _jpEl.style.display = '';
       if (_titleEl) _titleEl.style.display = 'none';
       if (_bodyEl)  _bodyEl.style.display = 'none';
       if (_villEl) {
         _villEl.style.display = 'block';
-        _villEl.textContent = _selVillageName || 'Clay Village';
+        _villEl.textContent = _displayVillageName;
       }
     }
     // Store role so click-to-enter uses the right one
@@ -29828,29 +29858,8 @@ body.wm-browser-fs #admin-panel:hover {
      Visit other villages. Your identity travels with you.
      ═══════════════════════════════════════════════════════════════════ -->
 <style>
-/* Travel banner — shown when visiting another village */
-#travel-banner {
-  position: fixed; top: 0; left: 0; right: 56px; z-index: 10750;
-  display: none; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 10px 20px;
-  background: rgba(20, 12, 4, 0.93);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(200,168,75,0.25);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-#travel-banner-from {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 12px; color: rgba(200,168,75,0.7); letter-spacing: 0.04em;
-  text-transform: uppercase; font-weight: 600; white-space: nowrap;
-}
-#travel-banner-name { font-size: 13px; color: #f0e8d8; font-weight: 500; font-style: italic; }
-#travel-return-btn {
-  background: none; border: 1px solid rgba(200,168,75,0.4); color: #c8a84b;
-  border-radius: 7px; padding: 5px 13px; font-size: 12px; font-weight: 600;
-  cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s;
-  white-space: nowrap; flex-shrink: 0;
-}
-#travel-return-btn:hover { background: rgba(200,168,75,0.15); border-color: #c8a84b; }
+/* Travel banner removed — village name label on map is the differentiator */
+#travel-banner { display: none !important; }
 
 /* Travel overlay */
 #travel-overlay {
@@ -29904,15 +29913,7 @@ body.wm-browser-fs #admin-panel:hover {
 .travel-visit-btn:disabled { opacity: 0.5; cursor: default; }
 </style>
 
-<!-- Travel banner (shown at top when visiting) -->
-<div id="travel-banner">
-  <div id="travel-banner-from">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-    Visiting · from
-    <span id="travel-banner-name">your village</span>
-  </div>
-  <button id="travel-return-btn">← Return home</button>
-</div>
+<!-- Travel banner removed — village name on map + travel overlay handle navigation -->
 
 <!-- Travel overlay -->
 <div id="travel-overlay">
@@ -29933,30 +29934,9 @@ body.wm-browser-fs #admin-panel:hover {
   var _homeId   = localStorage.getItem(_HOME_ID);
   var _homeName = localStorage.getItem(_HOME_NAME);
 
-  // ── Banner ────────────────────────────────────────────────────
+  // ── Set travel context (banner removed — village label on map handles it) ──
   if (_homeId) {
     window._travellingFrom = { id: _homeId, name: _homeName };
-    var banner = document.getElementById('travel-banner');
-    if (banner) {
-      banner.style.display = 'flex';
-      var nameEl = document.getElementById('travel-banner-name');
-      if (nameEl) nameEl.textContent = _homeName || 'home';
-    }
-  }
-
-  var returnBtn = document.getElementById('travel-return-btn');
-  if (returnBtn) {
-    returnBtn.addEventListener('click', function() {
-      if (!_homeId) return;
-      returnBtn.textContent = 'Returning…'; returnBtn.disabled = true;
-      localStorage.setItem('cvCurrentVillageId', _homeId);
-      var slug = localStorage.getItem(_HOME_SLUG) || '';
-      if (slug) localStorage.setItem('cvCurrentVillageSlug', slug);
-      localStorage.removeItem(_HOME_ID);
-      localStorage.removeItem(_HOME_NAME);
-      localStorage.removeItem(_HOME_SLUG);
-      location.reload();
-    });
   }
 
   // ── Open / close ──────────────────────────────────────────────
