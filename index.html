@@ -19721,8 +19721,12 @@ Mura facilitates. People decide.`;
   window.openObservatory = function() {
     var ov = document.getElementById('observatory-overlay'); if (!ov) return;
     ov.style.display = 'flex';
-    // Re-apply role gates in case auth resolved after page load
-    if (typeof _applyFounderGates === 'function') _applyFounderGates();
+    // Show founder-only tabs directly (can't call _applyFounderGates — it's in a different scope)
+    var _isF = window._isFounder || window._villageRole === 'founder';
+    var _appTab = document.getElementById('obs-tab-applications');
+    var _tokTab = document.getElementById('obs-tab-tokens');
+    if (_appTab) _appTab.style.display = _isF ? '' : 'none';
+    if (_tokTab) _tokTab.style.display = _isF ? '' : 'none';
     seedFoundersLog();
     seedLongViewEntry003();
     seedLongViewEntry004();
