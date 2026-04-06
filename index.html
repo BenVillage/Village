@@ -19721,6 +19721,8 @@ Mura facilitates. People decide.`;
   window.openObservatory = function() {
     var ov = document.getElementById('observatory-overlay'); if (!ov) return;
     ov.style.display = 'flex';
+    // Re-apply role gates in case auth resolved after page load
+    if (typeof _applyFounderGates === 'function') _applyFounderGates();
     seedFoundersLog();
     seedLongViewEntry003();
     seedLongViewEntry004();
@@ -22366,9 +22368,12 @@ Mura facilitates. People decide.`;
     var html = '<div class="vtj-section">';
 
     if (status === 'requested') {
-      html += '<div class="vtj-heading">Awaiting confirmation</div>';
-      html += '<div class="vtj-sub">You have completed all the milestones. The founders have been notified and are reviewing your work. This cannot be rushed — they need to know you are real.</div>';
-      html += '<div class="vtj-waiting"><div class="vtj-waiting-dot"></div><div class="vtj-waiting-label" style="margin-top:12px;">Confirmation pending</div></div>';
+      html += '<div style="text-align:center;margin-bottom:32px;">';
+      html += '<video autoplay loop muted playsinline preload="auto" width="140" height="140" style="border-radius:50%;object-fit:cover;opacity:0.45;border:2px solid rgba(200,168,75,0.3);box-shadow:0 0 40px rgba(200,168,75,0.15);"><source src="Token.mp4" type="video/mp4"><source src="Token.mov" type="video/quicktime"></video>';
+      html += '</div>';
+      html += '<div class="vtj-heading" style="text-align:center;">Awaiting confirmation</div>';
+      html += '<div class="vtj-sub" style="text-align:center;">All milestones complete. The founders have been notified and are reviewing your work. This cannot be rushed — they need to know you are real.</div>';
+      html += '<div class="vtj-waiting" style="text-align:center;margin-top:24px;"><div class="vtj-waiting-dot"></div><div class="vtj-waiting-label" style="margin-top:10px;">Confirmation pending</div></div>';
     } else {
       html += '<div class="vtj-heading">Earn your token</div>';
       if (allDone) {
@@ -28850,13 +28855,20 @@ seedMemberLanguage();
       var obsBody = document.querySelector('#observatory-overlay .bld-inner');
       if (obsBody) obsBody.appendChild(panel);
     }
+    // Activate this panel — deactivate all others (panel was created after tab switcher ran)
+    document.querySelectorAll('.obs-panel').forEach(function(p) { p.classList.remove('obs-panel-active'); });
+    panel.classList.add('obs-panel-active');
+    // Activate the tab button
+    document.querySelectorAll('#obs-tab-bar .obs-tab').forEach(function(t) {
+      t.classList.toggle('obs-tab-active', t.dataset.obsTab === 'tokens');
+    });
     if (!window._supabase) return;
     panel.innerHTML = '<div style="text-align:center;padding:40px;"><span class="vlt-loading"></span></div>';
     try {
-      var vid = typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : '';
+      var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined' && _ACTIVE_VILLAGE_ID) ? _ACTIVE_VILLAGE_ID : '02dc2b86-eb71-4fa8-bd11-5e0c397d25ae';
       var { data: tokens } = await window._supabase
         .from('village_tokens').select('*')
-        .eq('village_id', vid).eq('status', 'requested')
+        .eq('status', 'requested')
         .order('requested_at', { ascending: true });
 
       if (!tokens || tokens.length === 0) {
