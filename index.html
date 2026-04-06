@@ -27673,9 +27673,9 @@ seedMemberLanguage();
 
     // (founder-only toggle items removed from nav)
     // (settings and admin-mode-toggle items removed from nav HTML)
-    // Travel — visible for citizen and founder (future: visit other villages)
+    // Travel — visible for all logged-in users (resident can visit before applying)
     var travelNav = document.getElementById('nav-travel');
-    if (travelNav) travelNav.style.display = isCitizenPlus ? 'flex' : 'none';
+    if (travelNav) travelNav.style.display = (role !== 'guest') ? 'flex' : 'none';
     // Profiles flyout nav item (founder-only admin tool)
     var profilesNav = document.querySelector('.admin-nav-item[data-panel="profiles"]');
     if (profilesNav) profilesNav.style.display = isFounder ? 'flex' : 'none';
@@ -28088,15 +28088,11 @@ seedMemberLanguage();
       });
     }
 
-    // Wire Travel button (placeholder — Village Network Protocol, Phase 3+)
+    // Wire Travel button — opens Travel overlay (VNP Phase 3)
     var _travelBtn = document.getElementById('nav-travel');
     if (_travelBtn) {
       _travelBtn.addEventListener('click', function() {
-        var t = document.getElementById('cm-toast') || document.createElement('div');
-        t.textContent = 'Travel between villages — coming soon.';
-        t.className = 'cm-toast show';
-        document.body.appendChild(t);
-        setTimeout(function() { t.classList.remove('show'); }, 3000);
+        window.openTravel && window.openTravel();
       });
     }
 
@@ -28135,7 +28131,20 @@ seedMemberLanguage();
             .single();
           member = m1;
         } catch (_e) {}
-        // If no row for current village, try Dunbar (new signup)
+        // If no row for current village, try home village (travelling scenario)
+        var _travelHomeId = localStorage.getItem('cvHomeVillageId');
+        if (!member && _travelHomeId && _travelHomeId !== _ACTIVE_VILLAGE_ID) {
+          try {
+            const { data: m_home } = await window._supabase
+              .from('village_members')
+              .select('*')
+              .eq('auth_id', session.user.id)
+              .eq('village_id', _travelHomeId)
+              .single();
+            member = m_home;
+          } catch (_e) {}
+        }
+        // If still no row, try Dunbar (new signup)
         if (!member) {
           try {
             const { data: m2 } = await window._supabase
@@ -29680,6 +29689,242 @@ body.wm-browser-fs #admin-panel:hover {
     badge.innerHTML = (cfg.cls === 'pub' ? '&#x1F30D;' : '&#x1F512;') + ' ' + cfg.text;
     tag.parentNode.insertBefore(badge, tag);
   });
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     TRAVEL — Village Network Protocol Phase 3
+     Visit other villages. Your identity travels with you.
+     ═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* Travel banner — shown when visiting another village */
+#travel-banner {
+  position: fixed; top: 0; left: 0; right: 56px; z-index: 10750;
+  display: none; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 20px;
+  background: rgba(20, 12, 4, 0.93);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200,168,75,0.25);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+#travel-banner-from {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; color: rgba(200,168,75,0.7); letter-spacing: 0.04em;
+  text-transform: uppercase; font-weight: 600; white-space: nowrap;
+}
+#travel-banner-name { font-size: 13px; color: #f0e8d8; font-weight: 500; font-style: italic; }
+#travel-return-btn {
+  background: none; border: 1px solid rgba(200,168,75,0.4); color: #c8a84b;
+  border-radius: 7px; padding: 5px 13px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+#travel-return-btn:hover { background: rgba(200,168,75,0.15); border-color: #c8a84b; }
+
+/* Travel overlay */
+#travel-overlay {
+  position: fixed; inset: 0; z-index: 9500;
+  display: none; flex-direction: column;
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.travel-ov-head {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 28px; border-bottom: 1px solid #efefef; flex-shrink: 0;
+}
+#travel-ov-close {
+  background: none; border: none; color: #262626; cursor: pointer;
+  font-size: 22px; line-height: 1; padding: 2px 8px; border-radius: 8px;
+  transition: background 0.15s; font-family: inherit;
+}
+#travel-ov-close:hover { background: #f0f0f0; }
+.travel-ov-title { font-size: 18px; font-weight: 700; color: #262626; }
+.travel-ov-sub {
+  font-size: 13px; color: #8e8e8e; padding: 14px 28px 0;
+  margin: 0; line-height: 1.6; flex-shrink: 0;
+}
+#travel-villages {
+  flex: 1; overflow-y: auto; padding: 16px 28px 28px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.travel-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 20px; border: 1.5px solid #e8e8e8; border-radius: 14px;
+  background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.travel-card:hover { border-color: rgba(200,168,75,0.5); box-shadow: 0 2px 12px rgba(200,168,75,0.08); }
+.travel-card-here { border-color: #c8a84b; background: rgba(200,168,75,0.04); }
+.travel-card-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.travel-card-emoji { font-size: 30px; flex-shrink: 0; }
+.travel-card-name { font-size: 15px; font-weight: 700; color: #262626; margin-bottom: 3px; }
+.travel-card-line { font-size: 12px; color: #8e8e8e; line-height: 1.5; }
+.travel-here-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #c8a84b; background: rgba(200,168,75,0.12); border-radius: 20px;
+  padding: 4px 10px; white-space: nowrap; flex-shrink: 0;
+}
+.travel-visit-btn {
+  background: #262626; color: #fff; border: none; border-radius: 9px;
+  padding: 10px 18px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.travel-visit-btn:hover { background: #111; }
+.travel-visit-btn:disabled { opacity: 0.5; cursor: default; }
+</style>
+
+<!-- Travel banner (shown at top when visiting) -->
+<div id="travel-banner">
+  <div id="travel-banner-from">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+    Visiting · from
+    <span id="travel-banner-name">your village</span>
+  </div>
+  <button id="travel-return-btn">← Return home</button>
+</div>
+
+<!-- Travel overlay -->
+<div id="travel-overlay">
+  <div class="travel-ov-head">
+    <button id="travel-ov-close">×</button>
+    <div class="travel-ov-title">Where do you want to go?</div>
+  </div>
+  <p class="travel-ov-sub">Visit another village as a traveller. Your identity and your name travel with you.</p>
+  <div id="travel-villages"></div>
+</div>
+
+<script>
+(function initTravel() {
+  var _HOME_ID   = 'cvHomeVillageId';
+  var _HOME_NAME = 'cvHomeVillageName';
+  var _HOME_SLUG = 'cvHomeVillageSlug';
+
+  var _homeId   = localStorage.getItem(_HOME_ID);
+  var _homeName = localStorage.getItem(_HOME_NAME);
+
+  // ── Banner ────────────────────────────────────────────────────
+  if (_homeId) {
+    window._travellingFrom = { id: _homeId, name: _homeName };
+    var banner = document.getElementById('travel-banner');
+    if (banner) {
+      banner.style.display = 'flex';
+      var nameEl = document.getElementById('travel-banner-name');
+      if (nameEl) nameEl.textContent = _homeName || 'home';
+    }
+  }
+
+  var returnBtn = document.getElementById('travel-return-btn');
+  if (returnBtn) {
+    returnBtn.addEventListener('click', function() {
+      if (!_homeId) return;
+      returnBtn.textContent = 'Returning…'; returnBtn.disabled = true;
+      localStorage.setItem('cvCurrentVillageId', _homeId);
+      var slug = localStorage.getItem(_HOME_SLUG) || '';
+      if (slug) localStorage.setItem('cvCurrentVillageSlug', slug);
+      localStorage.removeItem(_HOME_ID);
+      localStorage.removeItem(_HOME_NAME);
+      localStorage.removeItem(_HOME_SLUG);
+      location.reload();
+    });
+  }
+
+  // ── Open / close ──────────────────────────────────────────────
+  window.openTravel = function() {
+    var ov = document.getElementById('travel-overlay');
+    if (ov) { ov.style.display = 'flex'; _loadVillages(); }
+  };
+
+  var closeBtn = document.getElementById('travel-ov-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      var ov = document.getElementById('travel-overlay');
+      if (ov) ov.style.display = 'none';
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var ov = document.getElementById('travel-overlay');
+      if (ov && ov.style.display !== 'none') { ov.style.display = 'none'; e.stopPropagation(); }
+    }
+  });
+
+  // ── Village list ──────────────────────────────────────────────
+  var _craftEmoji = {
+    pottery:'🏺', woodwork:'🪵', glass:'🫧', textile:'🧵', music:'🎵',
+    photography:'📷', print:'🖨️', sculpture:'🗿', leather:'🧤', founders:'🔥'
+  };
+
+  async function _loadVillages() {
+    var container = document.getElementById('travel-villages');
+    if (!container) return;
+    container.innerHTML = '<div style="text-align:center;padding:48px 0;font-size:13px;color:#8e8e8e;">Loading…</div>';
+
+    if (!window._supabase) {
+      container.innerHTML = '<div style="text-align:center;padding:48px 0;font-size:13px;color:#8e8e8e;">Not connected.</div>';
+      return;
+    }
+
+    var { data: villages, error } = await window._supabase
+      .from('villages')
+      .select('id, name, slug, craft_focus, founding_line')
+      .eq('status', 'active')
+      .order('created_at');
+
+    if (error || !villages || !villages.length) {
+      container.innerHTML = '<div style="text-align:center;padding:48px 0;font-size:13px;color:#8e8e8e;">No villages found.</div>';
+      return;
+    }
+
+    var currentId = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : '';
+    container.innerHTML = '';
+
+    villages.forEach(function(v) {
+      if (v.id === '00000000-0000-0000-0000-000000000000') return; // skip Dunbar
+
+      var isCurrent = (v.id === currentId);
+      var card = document.createElement('div');
+      card.className = 'travel-card' + (isCurrent ? ' travel-card-here' : '');
+
+      var emoji = _craftEmoji[v.craft_focus] || '🏡';
+      card.innerHTML =
+        '<div class="travel-card-left">' +
+          '<div class="travel-card-emoji">' + emoji + '</div>' +
+          '<div style="min-width:0;">' +
+            '<div class="travel-card-name">' + v.name + '</div>' +
+            '<div class="travel-card-line">' + (v.founding_line || '') + '</div>' +
+          '</div>' +
+        '</div>' +
+        (isCurrent
+          ? '<div class="travel-here-badge">You are here</div>'
+          : '<button class="travel-visit-btn">Visit →</button>');
+
+      if (!isCurrent) {
+        card.querySelector('.travel-visit-btn').addEventListener('click', function() {
+          var btn = card.querySelector('.travel-visit-btn');
+          btn.textContent = 'Travelling…'; btn.disabled = true;
+
+          // Save home village before switching
+          var curSlug = localStorage.getItem('cvCurrentVillageSlug') || '';
+          var curName = document.getElementById('village-name-label')?.textContent
+                        || localStorage.getItem(_HOME_NAME) || 'home';
+
+          // If already travelling, preserve original home (don't overwrite)
+          if (!_homeId) {
+            localStorage.setItem(_HOME_ID,   currentId);
+            localStorage.setItem(_HOME_NAME, curName);
+            localStorage.setItem(_HOME_SLUG, curSlug);
+          }
+
+          // Switch to visited village and reload
+          localStorage.setItem('cvCurrentVillageId',   v.id);
+          localStorage.setItem('cvCurrentVillageSlug', v.slug || '');
+          location.reload();
+        });
+      }
+
+      container.appendChild(card);
+    });
+  }
 })();
 </script>
 
