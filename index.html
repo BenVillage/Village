@@ -27999,10 +27999,19 @@ seedMemberLanguage();
 
 .widget-grid { display:none; grid-template-columns:repeat(4,1fr); gap:12px; padding:20px 0; }
 .widget-grid.active { display:grid; }
-.widget-card { background:#fff; border:1.5px solid #dbdbdb; border-radius:10px; overflow:hidden; position:relative; min-height:180px; }
+.widget-card { background:#fff; border:1.5px solid #dbdbdb; border-radius:10px; overflow:hidden; position:relative; min-height:180px; border-left:3px solid #dbdbdb; }
 .widget-card.minimised { min-height:auto; }
 .widget-card.minimised .wc-body { display:none; }
-.wc-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #f0f0f0; background:#fafafa; }
+.wc-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #f0f0f0; }
+/* Widget colour palette — warm earth tones */
+.widget-card[data-wc="amber"]   { border-left-color:#c8a84b; background:#fdfbf6; } .widget-card[data-wc="amber"]   .wc-head { background:#faf6ec; }
+.widget-card[data-wc="clay"]    { border-left-color:#b07848; background:#fdf9f5; } .widget-card[data-wc="clay"]    .wc-head { background:#faf4ee; }
+.widget-card[data-wc="sage"]    { border-left-color:#6b8f71; background:#f7faf7; } .widget-card[data-wc="sage"]    .wc-head { background:#f0f6f0; }
+.widget-card[data-wc="slate"]   { border-left-color:#7a8a9a; background:#f7f9fb; } .widget-card[data-wc="slate"]   .wc-head { background:#f0f3f6; }
+.widget-card[data-wc="rose"]    { border-left-color:#b07070; background:#fdf7f7; } .widget-card[data-wc="rose"]    .wc-head { background:#faf0f0; }
+.widget-card[data-wc="indigo"]  { border-left-color:#6a6a9a; background:#f8f8fb; } .widget-card[data-wc="indigo"]  .wc-head { background:#f2f2f8; }
+.widget-card[data-wc="ochre"]   { border-left-color:#a08040; background:#fdfaf3; } .widget-card[data-wc="ochre"]   .wc-head { background:#f8f3e8; }
+.widget-card[data-wc="moss"]    { border-left-color:#5a7a5a; background:#f6faf6; } .widget-card[data-wc="moss"]    .wc-head { background:#eef5ee; }
 .wc-title { font-size:11px; font-weight:600; color:#262626; text-transform:uppercase; letter-spacing:0.06em; }
 .wc-actions { display:flex; gap:4px; }
 .wc-actions button { background:none; border:none; cursor:pointer; font-size:13px; color:#8e8e8e; padding:2px 4px; }
@@ -28076,10 +28085,10 @@ seedMemberLanguage();
   ];
 
   var WIDGETS = {
-    'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'\u{1F4DD}', defaultSpan:4 },
-    'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'\u{1F4D6}', defaultSpan:4 },
-    'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'\u2615', defaultSpan:4 },
-    'work-timer': { name:'Time at the Wheel', desc:'25 minutes of presence', emoji:'\u23F1', defaultSpan:1,
+    'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'\u{1F4DD}', defaultSpan:4, color:'amber' },
+    'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'\u{1F4D6}', defaultSpan:4, color:'slate' },
+    'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'\u2615', defaultSpan:4, color:'clay' },
+    'work-timer': { name:'Time at the Wheel', desc:'25 minutes of presence', emoji:'\u23F1', defaultSpan:1, color:'amber',
       render: function(el, data, save) {
         var d = data || { remaining:1500, running:false };
         var iv = null;
@@ -28094,7 +28103,7 @@ seedMemberLanguage();
         draw(); if(d.running) tick();
       }
     },
-    'current-project': { name:'What I\u2019m Making', desc:'What has your hands right now', emoji:'\u{1F3AF}', defaultSpan:2,
+    'current-project': { name:'What I\u2019m Making', desc:'What has your hands right now', emoji:'\u{1F3AF}', defaultSpan:2, color:'clay',
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What are you working on?">'+_wEsc(d.text)+'</textarea>';
@@ -28291,6 +28300,18 @@ seedMemberLanguage();
     }
   };
 
+  // Assign colour palette to each widget
+  var _wColors = {
+    'work-timer':'amber', 'current-project':'clay', 'glaze-palette':'ochre', 'studio-rules':'slate', 'firing-log':'clay',
+    'reading-list':'indigo', 'pinned-quote':'rose', 'research-notes':'slate',
+    'mood-today':'sage', 'now-playing':'indigo', 'sticky-notes':'ochre',
+    'reflection-prompt':'sage', 'horizon-notes':'slate',
+    'what-i-noticed':'sage', 'unseen-work':'rose', 'old-new-story':'indigo',
+    'offer-village':'amber', 'what-i-need':'rose', 'unlearning':'moss',
+    'unsent-letter':'indigo', 'practicing-not-performing':'moss'
+  };
+  Object.keys(_wColors).forEach(function(k) { if(WIDGETS[k]) WIDGETS[k].color = _wColors[k]; });
+
   function _wEsc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
   function _getLayout(slug) {
@@ -28337,6 +28358,7 @@ seedMemberLanguage();
       var span = layout.sizes[wid] || w.defaultSpan || 2;
       var card = document.createElement('div');
       card.className = 'widget-card';
+      if (w.color) card.setAttribute('data-wc', w.color);
       card.style.gridColumn = 'span '+span;
 
       var head = document.createElement('div');
