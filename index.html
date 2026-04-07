@@ -15,8 +15,8 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3VqendncXRpZnBibW1oZG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzM0OTIsImV4cCI6MjA5MDcwOTQ5Mn0.Tk8Y4lH0T4EUA7U4Lb22xeFyJAt4ha2CEHG_Idibux8';
   const FOUNDER_EMAIL = 'helloanotherclay@gmail.com';
   const _DUNBAR_VILLAGE_ID = '00000000-0000-0000-0000-000000000000';
-window._isFounder = false;
-  window._villageRole = 'guest'; // guest | resident | citizen | founder
+window._isFounder = (location.hostname === 'localhost');
+  window._villageRole = (location.hostname === 'localhost') ? 'founder' : 'guest'; // guest | resident | citizen | founder
   function _initSupabase() {
     if (window.supabase && !window._supabase) {
       window._supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -24,6 +24,26 @@ window._isFounder = false;
   }
   _initSupabase();
   document.addEventListener('DOMContentLoaded', _initSupabase);
+
+  // ── Dev auto-login (localhost only) ──────────────────────────────
+  // Reads saved session from saveserver and signs in automatically.
+  // One-time setup: sign in manually, click "🔑 Save session" in dev toolbar.
+  if (location.hostname === 'localhost') {
+    (async function _devAutoLogin() {
+      try {
+        await new Promise(r => setTimeout(r, 400)); // wait for Supabase init
+        if (!window._supabase) return;
+        const { data: { session } } = await window._supabase.auth.getSession();
+        if (session) return; // already signed in
+        const r = await fetch('http://localhost:3001/dev-auth');
+        if (!r.ok) return;
+        const saved = await r.json();
+        if (saved.access_token && saved.refresh_token) {
+          await window._supabase.auth.setSession({ access_token: saved.access_token, refresh_token: saved.refresh_token });
+        }
+      } catch(e) { /* saveserver not running — skip */ }
+    })();
+  }
 
   // ── Realtime channel manager ──
   var _realtimeChannels = {};
@@ -1729,7 +1749,7 @@ window._isFounder = false;
     color: #555; line-height: 1;
   }
   #building-page-close:hover { background: rgba(0,0,0,0.13); }
-  #bp-emoji { font-size: 48px; margin-bottom: 10px; }
+  #bp-emoji { display: none; }
   #bp-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   #bp-role { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #8e8e8e; margin-bottom: 14px; }
   #bp-desc { font-size: 14px; line-height: 1.65; color: #444; margin-bottom: 20px; }
@@ -1852,14 +1872,14 @@ window._isFounder = false;
     left: 50%;
     transform: translateX(-50%);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.1em;
-    color: rgba(255,255,255,0.72);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1.3em;
+    color: rgba(255,255,255,0.82);
     text-transform: uppercase;
     pointer-events: none;
-    z-index: 10500;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    z-index: 80;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.3);
     white-space: nowrap;
   }
 
@@ -2224,11 +2244,12 @@ window._isFounder = false;
 
   /* === Building Overlays — Shared Immersive Chrome === */
   .bld-top {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 20px;
     background: #fff;
     border-bottom: 1px solid #dbdbdb;
     flex-shrink: 0;
+    position: relative;
   }
   .bld-leave {
     background: #fff;
@@ -2236,13 +2257,20 @@ window._isFounder = false;
     border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 600;
     cursor: pointer; font-family: inherit;
     transition: all 0.15s;
-    order: 3; /* always rightmost in bld-top flex row */
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
   }
   .bld-leave:hover { background: #f5f5f5; }
   .bld-title-bar {
     color: #262626; font-size: 15px; font-weight: 600; letter-spacing: 0.03em;
-    order: 2;
+    text-align: center;
   }
+  /* Hide spacer divs in centered headers */
+  .bld-top > div[style*="width:80px"] { display: none; }
+  /* Hide internal tab bars — content is widgetized */
+  .sq-tab-bar, #school-tabs, #lib-tabs, #commons-scroll-nav, #exchange-filters, #obs-tab-bar { display: none !important; }
+  /* Hide widget header chips + lib button — clean header */
+  .wg-header-chips { display: none !important; }
+  .wg-lib-btn { position: absolute !important; right: 16px !important; top: 50% !important; transform: translateY(-50%) !important; }
   .bld-body {
     flex: 1; overflow-y: auto;
     background: #fafafa;
@@ -3321,7 +3349,7 @@ window._isFounder = false;
 
   /* ===== MONDO ROOM — gear noir / tech cinema ===== */
   #mondo-overlay {
-    position: fixed; inset: 0; z-index: 9500;
+    position: fixed; z-index: 9500; inset: 0;
     background: #0a0a0a; display: none; flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: #e0e0e0;
@@ -3402,19 +3430,6 @@ window._isFounder = false;
   @keyframes mondo-tip-fade { from { opacity: 0; } to { opacity: 1; } }
   .mondo-tip .tip-jp { color: #c8a84b; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; }
   .mondo-tip .tip-title { color: #c8a84b; font-weight: 600; display: block; margin-bottom: 6px; }
-  /* Mura firefly tooltip */
-  .mura-tip {
-    display: none; position: absolute; bottom: calc(100% + 10px); left: 20px;
-    width: max-content; max-width: 260px;
-    background: rgba(10,8,4,0.95); border: 1px solid rgba(200,168,75,0.15);
-    padding: 14px 16px; font-family: Georgia, serif; font-size: 12px;
-    font-style: normal; color: rgba(255,255,255,0.7); line-height: 1.7;
-    z-index: 9999; pointer-events: none;
-  }
-  #mura-firefly:hover .mura-tip { display: block; animation: mondo-tip-fade 0.2s ease !important; }
-  .mura-tip { animation: none !important; }
-  .mura-tip .tip-jp { color: #c8a84b; font-family: 'Noto Sans JP', sans-serif; font-weight: 700; }
-  .mura-tip .tip-title { color: #c8a84b; font-weight: 600; display: block; margin-bottom: 6px; }
   .mondo-convo {
     flex: 1; overflow-y: auto; padding: 32px 32px;
     max-width: 600px; margin: 0 auto; width: 100%;
@@ -4464,37 +4479,7 @@ window._isFounder = false;
   #ofv-speak-btn:hover { background: #b89438; }
   #ofv-speak-btn:active { transform: scale(0.98); }
 
-  /* ===== MURA FIREFLY ===== */
-  #mura-firefly {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    z-index: 10000;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-  #mura-firefly-dot {
-    width: 12px; height: 12px;
-    background: #c8a84b;
-    border-radius: 50%;
-    opacity: 0.35;
-    box-shadow: 0 0 12px 6px rgba(200,168,75,0.2);
-    animation: mura-float 5s ease-in-out infinite, mura-glow 3.5s ease-in-out infinite;
-  }
-  #mura-firefly.mura-active #mura-firefly-dot {
-    animation: mura-float 3s ease-in-out infinite, mura-glow-active 2s ease-in-out infinite;
-  }
-  @keyframes mura-float {
-    0%   { transform: translate(0, 0); }
-    20%  { transform: translate(2px, -5px); }
-    45%  { transform: translate(-2px, -3px); }
-    70%  { transform: translate(-3px, -7px); }
-    100% { transform: translate(0, 0); }
-  }
+  /* ===== MURA v2 ===== */
   @keyframes mura-glow {
     0%, 100% { opacity: 0.3; box-shadow: 0 0 10px 5px rgba(200,168,75,0.18); }
     50%       { opacity: 0.45; box-shadow: 0 0 16px 7px rgba(200,168,75,0.32); }
@@ -4551,44 +4536,51 @@ window._isFounder = false;
     font-size: 16px;
     color: #262626;
     line-height: 1.8;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
     max-width: 380px;
     white-space: pre-wrap;
   }
   #mura-message .mura-jp {
+    display: block;
     font-style: normal;
-    font-weight: 700;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 1.2em;
-    letter-spacing: 0.08em;
+    font-weight: 400;
+    font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    font-size: 1.3em;
+    letter-spacing: 0.18em;
     color: #c8a84b;
     cursor: pointer;
+    margin-bottom: 2px;
+    line-height: 1.4;
   }
-  #mura-message .mura-jp:hover {
-    text-decoration: underline;
-    text-decoration-color: rgba(200,168,75,0.5);
-    text-underline-offset: 3px;
-  }
-  #mura-response-area {
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 80px;
-    background: #fafafa;
-    border: 1px solid #dbdbdb;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 14px;
-    font-family: inherit;
-    color: #262626;
-    outline: none;
-    resize: none;
-    line-height: 1.6;
-    transition: opacity 2s ease;
-  }
-  #mura-response-area::placeholder { color: #b0b0b0; }
-  #mura-response-area.mura-text-vanish { opacity: 0; }
+  #mura-message .mura-jp:hover { opacity: 0.75; }
   #mura-dialog { transition: opacity 2s ease; }
   #mura-dialog.mura-dialog-fade { opacity: 0; }
+
+  /* Mura ambient glow dot — appears inside building when observation is waiting */
+  .mura-building-glow {
+    position: fixed; bottom: 20px; left: 20px; z-index: 9500;
+    width: 14px; height: 14px; pointer-events: auto;
+    display: none; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .mura-building-glow.active { display: flex; }
+  .mura-building-glow-dot {
+    width: 10px; height: 10px; background: #c8a84b; border-radius: 50%;
+    opacity: 0; box-shadow: 0 0 0 0 rgba(200,168,75,0); animation: none;
+  }
+  .mura-building-glow.active .mura-building-glow-dot {
+    animation: mura-ambient-pulse 4s ease-in-out infinite;
+  }
+  @keyframes mura-ambient-pulse {
+    0%   { opacity: 0.18; box-shadow: 0 0 8px 3px rgba(200,168,75,0.12); }
+    45%  { opacity: 0.38; box-shadow: 0 0 16px 6px rgba(200,168,75,0.22); }
+    100% { opacity: 0.18; box-shadow: 0 0 8px 3px rgba(200,168,75,0.12); }
+  }
+  /* Ambient edge warmth — the building overlay itself glows softly */
+  .mura-edge-glow::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9499;
+    box-shadow: inset 0 0 60px 0px rgba(200,168,75,0); transition: box-shadow 3s ease;
+  }
+  .mura-edge-glow.active::after { box-shadow: inset 0 0 60px 4px rgba(200,168,75,0.07); }
 
   /* ===== BONFIRE DRONE ===== */
   #bonfire-drone-zone {
@@ -4621,16 +4613,38 @@ window._isFounder = false;
     left: 16px;
     z-index: 500;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
     gap: 6px;
   }
-  #top-row {
+  #top-controls > * { display: contents; }
+  #top-row, #bottom-row {
+    display: contents;
+  }
+  #top-controls button, #top-controls #night-slider-wrap {
+    background: rgba(20, 16, 10, 0.72);
+    color: rgba(234, 229, 222, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    font-family: inherit;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
-    width: 100%;
+    justify-content: center;
+    white-space: nowrap;
   }
+  #top-controls button:hover { background: rgba(20, 16, 10, 0.88); }
+  #top-controls button.tc-active {
+    background: rgba(200, 168, 75, 0.18);
+    border-color: rgba(200, 168, 75, 0.5);
+    color: #c8a84b;
+  }
+  #top-controls button.tc-active:hover { background: rgba(200, 168, 75, 0.28); }
   #top-row #tour-btn {
     border-radius: 50px;
     justify-content: center;
@@ -4971,101 +4985,6 @@ window._isFounder = false;
   #admin-panel, #flyout-bonfire:not(.bonfire-fs-flyout) {
     transition: filter 0.5s ease;
   }
-
-  /* ── Mura Firefly ─────────────────────────────────────────── */
-  #mura-firefly {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    z-index: 10500;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-  #mura-firefly #mura-firefly-dot {
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: #c8a84b;
-    animation: mura-breathe 3.5s ease-in-out infinite;
-  }
-  #mura-firefly.mura-active #mura-firefly-dot {
-    animation: mura-glow 2.5s ease-in-out infinite;
-  }
-  @keyframes mura-breathe {
-    0%, 100% { opacity: 0.35; box-shadow: 0 0 5px rgba(200,168,75,0.25); transform: scale(1); }
-    50%       { opacity: 0.55; box-shadow: 0 0 10px rgba(200,168,75,0.4); transform: scale(1.15); }
-  }
-  @keyframes mura-glow {
-    0%, 100% { opacity: 0.8;  box-shadow: 0 0 8px rgba(200,168,75,0.6), 0 0 18px rgba(200,168,75,0.25); transform: scale(1); }
-    50%       { opacity: 1;   box-shadow: 0 0 14px rgba(200,168,75,0.85), 0 0 28px rgba(200,168,75,0.4); transform: scale(1.25); }
-  }
-
-  /* ── Mura Panel ───────────────────────────────────────────── */
-  #mura-panel {
-    position: fixed !important;
-    bottom: 56px !important;
-    left: 24px !important;
-    z-index: 10600 !important;
-    width: 380px !important;
-    max-width: calc(100vw - 48px) !important;
-    background: #ffffff !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.13) !important;
-    padding: 28px 28px 24px !important;
-    box-sizing: border-box !important;
-    display: none;
-  }
-  #mura-panel.mura-open { display: block !important; transition: opacity 2s ease !important; }
-  #mura-panel.mura-fade-out { opacity: 0 !important; }
-  .mura-panel-inner {
-    position: static !important;
-  }
-  .mura-msg {
-    font-size: 14px;
-    line-height: 1.85;
-    color: #262626;
-    white-space: pre-line;
-    margin-bottom: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: 0.01em;
-    display: block;
-  }
-  .mura-reply {
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    font-size: 14px !important;
-    line-height: 1.65 !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-    border: 1px solid #e8e8e8 !important;
-    border-radius: 8px !important;
-    outline: none !important;
-    resize: none !important;
-    color: #262626 !important;
-    background: #fafafa !important;
-    padding: 10px 12px !important;
-    min-height: 80px !important;
-    transition: opacity 2s ease !important;
-  }
-  .mura-reply::placeholder { color: #bbb !important; }
-  .mura-reply.mura-vanish { opacity: 0 !important; }
-  .mura-clearfix { clear: both !important; }
-  .mura-x {
-    position: absolute !important;
-    top: 14px !important;
-    right: 16px !important;
-    background: none !important;
-    border: none !important;
-    font-size: 18px !important;
-    color: #ccc !important;
-    cursor: pointer !important;
-    line-height: 1 !important;
-    padding: 4px !important;
-  }
-  .mura-x:hover { color: #888 !important; }
 
   /* ── Dunbar Mode ─────────────────────────────────────────────── */
 
@@ -5568,126 +5487,6 @@ document.addEventListener('DOMContentLoaded', () => { logPresence('map'); fetchB
 setInterval(() => { logPresence(_presenceLocation); fetchBuildingPresence(); }, 30000);
 </script>
 
-<script>
-// ═══════════════════════════════════════════════════════════════
-// MURA — LAYER 4: FIREFLY UI COMPONENT
-// ═══════════════════════════════════════════════════════════════
-
-// Seed moment — visible immediately for testing
-window._muraMoment = {
-  message: 'ようこそ。\nWelcome.\n\nYou found your way here. That already means something.\n\nTake your time.'
-};
-
-// Every building overlay Mura inhabits
-const _MURA_OVERLAYS = [
-  'building-page-overlay', 'cafe-room-overlay', 'observatory-overlay',
-  'mentor-overlay', 'studio-quarter-overlay', 'library-overlay',
-  'gallery-overlay', 'bonfire-manifesto-overlay', 'exchange-overlay',
-  'school-overlay',  'roundtable-overlay',
-  'cognitive-agency-overlay'
-];
-
-function _anyBuildingOpen() {
-  return _MURA_OVERLAYS.some(id => {
-    const el = document.getElementById(id);
-    if (!el) return false;
-    return el.classList.contains('open') || el.style.display === 'flex';
-  });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-
-  // ── Create firefly dot ───────────────────────────────────────
-  const fly = document.createElement('div');
-  fly.id = 'mura-firefly';
-  document.body.appendChild(fly);
-
-  // ── Create panel ─────────────────────────────────────────────
-  const panel = document.createElement('div');
-  panel.id = 'mura-panel';
-  panel.style.position = 'fixed'; // ensure relative for × positioning
-  panel.innerHTML = `
-    <button class="mura-x">×</button>
-    <div class="mura-msg"></div>
-    <textarea class="mura-reply" placeholder="You don't have to respond." rows="3"></textarea>`;
-  document.body.appendChild(panel);
-
-  // ── Keep firefly in sync with overlay state ──────────────────
-  function syncFirefly() {
-    const open = _anyBuildingOpen();
-    fly.style.display = open ? 'block' : 'none';
-    fly.classList.toggle('mura-active', open && !!window._muraMoment);
-  }
-  // Watch for class/style changes on any overlay
-  new MutationObserver(syncFirefly).observe(document.body, {
-    attributes: true, attributeFilter: ['class', 'style'], subtree: true
-  });
-  setInterval(syncFirefly, 800); // safety poll for _muraMoment changes
-
-  // ── Firefly click → open panel ───────────────────────────────
-  fly.addEventListener('click', function() {
-    if (!window._muraMoment) return;
-    panel.querySelector('.mura-msg').textContent = window._muraMoment.message;
-    const ta = panel.querySelector('.mura-reply');
-    ta.value = '';
-    ta.classList.remove('mura-vanish');
-    ta.style.transition = 'none';
-    ta.style.opacity = '1';
-    panel.classList.remove('mura-fade-out');
-    panel.style.opacity = '1';
-    setTimeout(() => { ta.style.transition = ''; panel.style.opacity = ''; }, 50);
-    panel.classList.add('mura-open');
-    setTimeout(() => ta.focus(), 60);
-  });
-
-  // ── Close (× only) — preserves moment so firefly stays active ─
-  function closePanel() { panel.classList.remove('mura-open'); }
-  panel.querySelector('.mura-x').addEventListener('click', closePanel);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && panel.classList.contains('mura-open')) closePanel();
-  });
-
-  // ── Prevent building overlay close from triggering when inside panel ─
-  panel.addEventListener('keydown', e => e.stopPropagation());
-
-  // ── Enter to send — text fades over 2s, window stays open ────
-  panel.querySelector('.mura-reply').addEventListener('keydown', function(e) {
-    if (e.key !== 'Enter' || e.shiftKey) return; // Shift+Enter = newline
-    e.preventDefault();
-    const text = this.value.trim();
-    if (!text) return;
-    if (window._muraMoment && typeof logToMura === 'function') {
-      logToMura({
-        building: 'mura',
-        entry_type: 'response_to_mura',
-        content: text,
-        mura_triggered: true,
-        member_responded: true,
-        member_response: text,
-      });
-    }
-    window._muraMoment = null;
-    // Step 1: fade text over 2s
-    this.classList.add('mura-vanish');
-    const ta = this;
-    setTimeout(() => {
-      // Step 2: fade the whole panel over 2s
-      panel.classList.add('mura-fade-out');
-      setTimeout(() => {
-        // Step 3: close and reset everything silently
-        panel.classList.remove('mura-open', 'mura-fade-out');
-        panel.style.opacity = '';
-        ta.value = '';
-        ta.classList.remove('mura-vanish');
-        ta.style.transition = 'none';
-        ta.style.opacity = '1';
-        setTimeout(() => { ta.style.transition = ''; }, 50);
-      }, 2100);
-    }, 2100);
-  });
-
-});
-</script>
 </head>
 <body>
 
@@ -5836,18 +5635,16 @@ function updateAmbientSound() {
 </script>
 
 <div id="top-controls">
-  <div id="top-row">
-    <button id="tour-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
-    <div id="night-slider-wrap">
-      <span class="ns-icon" id="ns-sun-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
-      <input type="range" id="night-slider" min="0" max="100" value="0" title="Day / Night">
-      <span class="ns-icon" id="ns-moon-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
-    </div>
+  <button id="tour-btn" title="Village Tour"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
+  <div id="night-slider-wrap">
+    <span class="ns-icon" id="ns-sun-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
+    <input type="range" id="night-slider" min="0" max="100" value="0" title="Day / Night">
+    <span class="ns-icon" id="ns-moon-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
   </div>
-  <div id="bottom-row">
-    <button id="sound-toggle" title="Toggle all sounds" onclick="toggleVillageSound()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
-    <button id="rehearsal-btn" title="Choir rehearsal">♪</button>
-  </div>
+  <button id="sound-toggle" title="Sound" onclick="toggleVillageSound()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+  <button id="rehearsal-btn" title="Choir">Choir</button>
+  <button id="my-studio-btn" title="My Studio" onclick="if(typeof openStudioQuarter==='function')openStudioQuarter();">My Studio</button>
+  <button id="map-pan-btn" title="Drag map to pan"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M6 14a4 4 0 0 0 .44 1.82l1.68 3.36A4 4 0 0 0 11.69 21h4a4 4 0 0 0 4-4v-5a2 2 0 0 0-2-2h-2"/></svg></button>
 </div>
 
 <!-- Walkable Area Paint Panel -->
@@ -5933,7 +5730,7 @@ function endChoir() {
   npcs.forEach(npc => {
     npc._choirTarget = null;
     npc._choirWalkSpeed = 0;
-    npc.wanderRadius = npc._origWanderRadius || ({ fox: 220, owl: 85, crane: 130, cat: 100, deer: 175, dog: 240 })[npc.id] || 130;
+    npc.wanderRadius = 9999;
     npc.speed = npc._origSpeed || ({ fox: 0.9, owl: 0.2, crane: 0.35, cat: 0.3, deer: 0.5, dog: 0.8 })[npc.id] || 0.55;
   });
   // Restart auto-choir timer
@@ -6272,7 +6069,7 @@ function _endAutoChoir() {
       npc._choirTarget = null;
       npc._choirWalkSpeed = 0;
       npc._preChoirPos = null;
-      npc.wanderRadius = npc._origWanderRadius || ({ fox: 220, owl: 85, crane: 130, cat: 100, deer: 175, dog: 240 })[npc.id] || 130;
+      npc.wanderRadius = 9999;
       npc.speed = npc._origSpeed || ({ fox: 0.9, owl: 0.2, crane: 0.35, cat: 0.3, deer: 0.5, dog: 0.8 })[npc.id] || 0.55;
     });
   }
@@ -6575,6 +6372,14 @@ function toggleVillageSound() {
     <canvas id="grayscale-canvas"></canvas>
     <canvas id="foreground-canvas"></canvas>
     <canvas id="roof-canvas"></canvas>
+    <!-- Gate compass — anchored in world space at the village gate -->
+    <div id="gate-compass" title="Travel between villages">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8a84b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="rgba(200,168,75,0.35)" stroke="none"/>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+      </svg>
+    </div>
   </div>
   <canvas id="outline-canvas"></canvas>
 </div>
@@ -6690,7 +6495,15 @@ function toggleVillageSound() {
     <div class="admin-nav-item" data-panel="messages" id="messages-nav-item" title="Messages" style="position:relative;display:none;">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
       <span class="admin-nav-label">Messages</span>
-      <span id="dm-unread-badge" style="display:none;position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#c8a84b;color:#fff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);pointer-events:none;"></span>
+      <span id="dm-unread-badge" style="display:none;position:absolute;top:4px;left:30px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#c8a84b;color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);pointer-events:none;"></span>
+    </div>
+    <div class="admin-nav-item" id="nav-mondo" title="Mondo — 問答" style="display:none;">
+      <span class="admin-nav-icon" style="font-family:'Noto Sans JP','Hiragino Sans',serif;font-size:20px;line-height:1;color:rgba(204,80,80,0.9);">問</span>
+      <span class="admin-nav-label">Mondo</span>
+    </div>
+    <div class="admin-nav-item" id="nav-mura" title="Mura — 村" style="display:none;">
+      <span class="admin-nav-icon" style="font-family:'Noto Sans JP','Hiragino Sans',serif;font-size:18px;line-height:1;color:rgba(200,168,75,0.85);">村</span>
+      <span class="admin-nav-label">Mura</span>
     </div>
     <div class="admin-nav-item" id="nav-travel" title="Travel">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
@@ -6990,7 +6803,7 @@ function toggleVillageSound() {
 <div id="cafe-room-overlay">
   <div id="cafe-room-top">
     <button id="cafe-room-leave" class="bld-leave">Leave →</button>
-    <div id="cafe-room-title">The Commons</div>
+    <div id="cafe-room-title">Commons / Café</div>
     <div style="width:80px;"></div>
   </div>
   <div class="presence-strip" id="commons-presence-strip"></div>
@@ -7651,7 +7464,7 @@ function toggleVillageSound() {
 <div id="studio-quarter-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:#fff;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div class="bld-top">
     <button id="sq-close" class="bld-leave">Leave →</button>
-    <div class="bld-title-bar">🏺 Studio Quarter</div>
+    <div class="bld-title-bar">Studio Quarter</div>
     <div style="width:80px;"></div>
   </div>
   <div class="presence-strip" id="studio-presence-strip"></div>
@@ -7678,12 +7491,12 @@ function toggleVillageSound() {
           <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;">
             <select id="sq-mood" style="background:#fff;border:1.5px solid #dbdbdb;border-radius:6px;padding:6px 10px;font-size:12px;color:#262626;font-family:inherit;outline:none;">
               <option value="">Session feeling...</option>
-              <option value="🔥 In flow">🔥 In flow</option>
-              <option value="🧱 Struggling">🧱 Struggling</option>
-              <option value="🌱 Learning">🌱 Learning</option>
-              <option value="😤 Frustrated">😤 Frustrated</option>
-              <option value="✨ Breakthrough">✨ Breakthrough</option>
-              <option value="🤔 Experimenting">🤔 Experimenting</option>
+              <option value="In flow">In flow</option>
+              <option value="Struggling">Struggling</option>
+              <option value="Learning">Learning</option>
+              <option value="Frustrated">Frustrated</option>
+              <option value="Breakthrough">Breakthrough</option>
+              <option value="Experimenting">Experimenting</option>
             </select>
             <input id="sq-pieces" type="number" min="0" placeholder="Pieces made" style="width:110px;background:#fff;border:1.5px solid #dbdbdb;border-radius:6px;padding:6px 10px;font-size:12px;color:#262626;font-family:inherit;outline:none;"/>
             <button id="sq-log-btn" class="v-btn v-btn-primary" style="margin-left:auto;">Log session →</button>
@@ -7992,7 +7805,7 @@ function toggleVillageSound() {
 <div id="exchange-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:#fff;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div class="bld-top">
     <button id="exchange-close" class="bld-leave">Leave →</button>
-    <div class="bld-title-bar">🌿 Residency & Exchange</div>
+    <div class="bld-title-bar">Residency & Exchange</div>
     <div style="width:80px;"></div>
   </div>
   <div class="presence-strip" id="exchange-presence-strip"></div>
@@ -8063,24 +7876,17 @@ function toggleVillageSound() {
       <div id="school-tabs" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;margin-bottom:24px;">
         <button class="school-tab active" id="stab-workshops" onclick="schoolTab('workshops')">Workshops</button>
         <button class="school-tab" id="stab-mastery" onclick="schoolTab('mastery')">Mastery Paths</button>
-        <button class="school-tab mondo-tip-wrap" id="stab-mondo" onclick="schoolTab('mondo')" style="font-family:'Noto Sans JP',serif;font-size:16px;font-weight:700;letter-spacing:0;">問<span class="mondo-tip" style="font-weight:400;text-transform:none;"><span class="tip-title">mond&#x14D; &#x2014; <span class="tip-jp">&#x554F;&#x7B54;</span></span>Question and answer. A practice of breaking through assumption. You have 20 minutes.</span></button>
+        <button class="school-tab mondo-tip-wrap" id="stab-mondo" onclick="schoolTab('mondo')" style="font-family:'Noto Sans JP',serif;font-size:28px;font-weight:700;letter-spacing:0;line-height:1;">問<span class="mondo-tip" style="font-weight:400;text-transform:none;"><span class="tip-title">mond&#x14D; &#x2014; <span class="tip-jp">&#x554F;&#x7B54;</span></span>Question and answer. A practice of breaking through assumption. You have 20 minutes.</span></button>
         <button class="school-tab" id="stab-cog-agency" onclick="schoolTab('cog-agency')">Cognitive Agency</button>
       </div>
 
       <!-- Workshops panel -->
-      <div id="school-workshops" style="display:block;">
-      <div class="bld-split">
-      <div class="bld-split-main">
-
-        <!-- This week notice -->
+      <div id="school-workshops-listings" style="display:block;">
         <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,0.08);border:1px solid rgba(200,168,75,0.15);border-radius:8px;padding:8px 14px;margin-bottom:20px;font-size:12px;color:#c8a84b;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Dates not yet confirmed — leave your email to be notified when they open
         </div>
-
-        <!-- AnotherClay workshops -->
         <div style="margin-bottom:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#c8a84b;">Now accepting bookings</div>
-
         <div class="ws-grid">
         <div class="school-ws-card">
           <div class="school-ws-left">
@@ -8095,11 +7901,10 @@ function toggleVillageSound() {
             </div>
           </div>
           <div class="school-ws-right">
-            <div class="school-ws-price">€ 85</div>
-            <a href="maker.html#workshops" target="_blank" class="school-ws-btn">Notify me →</a>
+            <div class="school-ws-price">&#8364; 85</div>
+            <a href="maker.html#workshops" target="_blank" class="school-ws-btn">Notify me</a>
           </div>
         </div>
-
         <div class="school-ws-card">
           <div class="school-ws-left">
             <div class="school-ws-teacher">AnotherClay (Ben) · 3 years · Location open</div>
@@ -8113,11 +7918,10 @@ function toggleVillageSound() {
             </div>
           </div>
           <div class="school-ws-right">
-            <div class="school-ws-price">€ 220</div>
-            <a href="maker.html#workshops" target="_blank" class="school-ws-btn">Notify me →</a>
+            <div class="school-ws-price">&#8364; 220</div>
+            <a href="maker.html#workshops" target="_blank" class="school-ws-btn">Notify me</a>
           </div>
         </div>
-
         <div class="school-ws-card">
           <div class="school-ws-left">
             <div class="school-ws-teacher">AnotherClay (Ben) · 3 years · Online</div>
@@ -8131,46 +7935,38 @@ function toggleVillageSound() {
             </div>
           </div>
           <div class="school-ws-right">
-            <div class="school-ws-price">€ 45</div>
-            <a href="maker.html#workshops" target="_blank" class="school-ws-btn">Notify me →</a>
+            <div class="school-ws-price">&#8364; 45</div>
+            <a href="maker.html#workshops" target="_blank" class="school-ws-btn">Notify me</a>
           </div>
         </div>
+        </div>
+      </div>
 
-        </div><!-- /ws-grid -->
-      </div><!-- /bld-split-main -->
-
-      <!-- Right sidebar: teach CTA + learning paths -->
-      <div class="bld-split-side">
-        <!-- Host a workshop -->
-        <div style="background:rgba(200,168,75,0.06);border:1px dashed rgba(200,168,75,0.25);border-radius:12px;padding:20px;margin-bottom:16px;">
+      <div id="school-teach-here" style="display:none;">
+        <div style="background:rgba(200,168,75,0.06);border:1px dashed rgba(200,168,75,0.25);border-radius:12px;padding:20px;">
           <div style="font-size:14px;font-weight:600;color:#262626;margin-bottom:6px;">Want to teach here?</div>
           <p style="font-size:13px;color:#8e8e8e;line-height:1.6;margin:0 0 14px;">The School is for real makers who teach what they know. If you have a skill and want to run a workshop — in person or online — you can list it here.</p>
-          <a href="maker.html#workshops" target="_blank" style="display:block;text-align:center;background:rgba(200,168,75,0.12);color:#c8a84b;border:1px solid rgba(200,168,75,0.25);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;text-decoration:none;">List a workshop →</a>
+          <a href="maker.html#workshops" target="_blank" style="display:block;text-align:center;background:rgba(200,168,75,0.12);color:#c8a84b;border:1px solid rgba(200,168,75,0.25);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;text-decoration:none;">List a workshop</a>
         </div>
+      </div>
 
-        <!-- Learning paths teaser -->
-        <div style="border-top:1px solid #dbdbdb;padding-top:16px;">
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#c8a84b;margin-bottom:12px;">Learning paths</div>
-          <p style="font-size:13px;color:#8e8e8e;line-height:1.6;margin-bottom:14px;">Curated sequences of workshops — built by experienced makers, not algorithms.</p>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div style="background:#f8f8f8;border:1px solid #dbdbdb;border-radius:10px;padding:14px;">
-              <div style="font-size:13px;font-weight:600;color:#262626;margin-bottom:4px;">The First Month</div>
-              <div style="font-size:11px;color:#8e8e8e;">Centering · Opening · First cylinder · First bowl · Trimming basics</div>
-            </div>
-            <div style="background:#f8f8f8;border:1px solid #dbdbdb;border-radius:10px;padding:14px;">
-              <div style="font-size:13px;font-weight:600;color:#262626;margin-bottom:4px;">Tall Forms</div>
-              <div style="font-size:11px;color:#8e8e8e;">Pulling walls · Proportion · Collar · Neck · Flared lip</div>
-            </div>
-            <div style="background:#f8f8f8;border:1px solid #dbdbdb;border-radius:10px;padding:14px;">
-              <div style="font-size:13px;font-weight:600;color:#262626;margin-bottom:4px;">Glaze & Firing</div>
-              <div style="font-size:11px;color:#8e8e8e;">Surface chemistry · Application · Test tiles · Reading results</div>
-            </div>
+      <div id="school-learning-paths" style="display:none;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#c8a84b;margin-bottom:12px;">Learning paths</div>
+        <p style="font-size:13px;color:#8e8e8e;line-height:1.6;margin-bottom:14px;">Curated sequences of workshops — built by experienced makers, not algorithms.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#f8f8f8;border:1px solid #dbdbdb;border-radius:10px;padding:14px;">
+            <div style="font-size:13px;font-weight:600;color:#262626;margin-bottom:4px;">The First Month</div>
+            <div style="font-size:11px;color:#8e8e8e;">Centering · Opening · First cylinder · First bowl · Trimming basics</div>
           </div>
-          <button onclick="schoolTab('mastery')" style="margin-top:14px;background:none;border:none;color:#c8a84b;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:0;">Track your skill progress → Mastery Paths</button>
+          <div style="background:#f8f8f8;border:1px solid #dbdbdb;border-radius:10px;padding:14px;">
+            <div style="font-size:13px;font-weight:600;color:#262626;margin-bottom:4px;">Tall Forms</div>
+            <div style="font-size:11px;color:#8e8e8e;">Pulling walls · Proportion · Collar · Neck · Flared lip</div>
+          </div>
+          <div style="background:#f8f8f8;border:1px solid #dbdbdb;border-radius:10px;padding:14px;">
+            <div style="font-size:13px;font-weight:600;color:#262626;margin-bottom:4px;">Glaze & Firing</div>
+            <div style="font-size:11px;color:#8e8e8e;">Surface chemistry · Application · Test tiles · Reading results</div>
+          </div>
         </div>
-      </div><!-- /bld-split-side -->
-      </div><!-- /bld-split -->
-
       </div>
 
       <!-- Mastery panel (existing content) -->
@@ -8181,6 +7977,19 @@ function toggleVillageSound() {
       </div>
 
       <!-- Cognitive Agency panel -->
+      <div id="school-mondo-widget" style="display:none;">
+        <div style="text-align:center;padding:20px 0;">
+          <div class="mondo-tip-wrap" style="display:inline-block;cursor:pointer;" onclick="if(window._villageRole==='guest')return; openMondo();">
+            <div style="font-family:'Noto Sans JP',serif;font-size:64px;font-weight:700;line-height:1;color:#c8a84b;margin-bottom:12px;">問</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#8e8e8e;margin-bottom:4px;">mond&#x14D;</div>
+            <div style="font-size:12px;color:#8e8e8e;line-height:1.6;max-width:260px;margin:0 auto;">Question and answer. A practice of breaking through assumption. You have 20 minutes.</div>
+          </div>
+          <div style="margin-top:20px;">
+            <button onclick="if(window._villageRole==='guest'){alert('Mondo is for village members');return;} openMondo();" style="background:rgba(200,168,75,0.1);border:1px solid rgba(200,168,75,0.3);color:#c8a84b;border-radius:8px;padding:10px 28px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Enter Mondo</button>
+          </div>
+        </div>
+      </div>
+
       <div id="school-cog-agency" style="display:none;">
         <p class="bld-tagline">Examine the stories you tell yourself.<br>The most expensive thing you own is an unexamined assumption.</p>
         <div style="margin-top:32px;text-align:center;padding:24px 0;">
@@ -10574,7 +10383,7 @@ function _deriveRole() {
   return window._villageRole || 'guest';
 }
 function _resolveVillageRole() {
-  if (!window._sbAuthUid) { window._villageRole = 'guest'; return; }
+  if (!window._sbAuthUid) { window._villageRole = (location.hostname === 'localhost') ? 'founder' : 'guest'; return; }
   if (window._sbAuthEmail === FOUNDER_EMAIL) { window._villageRole = 'founder'; return; }
   if (window._cachedMemberProfile) {
     // Dunbar-only members are residents, not citizens
@@ -11267,7 +11076,7 @@ const npcs = npcDefs.map(def => {
     dirX: 0, dirY: 0,
     // Each animal roams a different territory size — fox and dog wide, owl and cat small
     homeX, homeY,
-    wanderRadius: ({ fox: 220, owl: 85, crane: 130, cat: 100, deer: 175, dog: 240 })[def.id] || 130,
+    wanderRadius: 9999,
     // Base home (never changes — patrol returns here)
     baseHomeX: homeX, baseHomeY: homeY,
     // Patrol state
@@ -11711,18 +11520,15 @@ function updateAllNpcs() {
         npc.patrolTimer--;
         if (npc.patrolTimer <= 0) {
           npc.patrolTimer = 1200 + Math.floor(Math.random() * 2400); // reset (20–60s)
-          if (Math.random() < 0.3) {
-            const neighbors = BUILDING_NEIGHBORS[npc.homeBuilding];
-            if (neighbors && neighbors.length > 0) {
-              const dest = neighbors[Math.floor(Math.random() * neighbors.length)];
-              const destB = buildings.find(b => b.name === dest);
-              if (destB) {
-                npc.patrolTarget = dest;
-                npc.homeX = destB.x * mw;
-                npc.homeY = destB.y * mh;
-                npc.wanderRadius = 80;
-                npc.patrolWaitTimer = 600 + Math.floor(Math.random() * 600);
-              }
+          if (Math.random() < 0.35 && buildings.length > 0) {
+            // Pick any building on the map (not just neighbors) — animals roam freely
+            const destB = buildings[Math.floor(Math.random() * buildings.length)];
+            if (destB) {
+              npc.patrolTarget = destB.name;
+              npc.homeX = destB.x * mw;
+              npc.homeY = destB.y * mh;
+              npc.wanderRadius = 200;
+              npc.patrolWaitTimer = 400 + Math.floor(Math.random() * 600);
             }
           }
         }
@@ -11736,7 +11542,7 @@ function updateAllNpcs() {
             npc.patrolTarget = null;
             npc.homeX = npc.baseHomeX;
             npc.homeY = npc.baseHomeY;
-            npc.wanderRadius = npc._origWanderRadius || ({ fox: 220, owl: 85, crane: 130, cat: 100, deer: 175, dog: 240 })[npc.id] || 130;
+            npc.wanderRadius = 9999;
             npc.patrolTimer = 1800 + Math.floor(Math.random() * 2400);
           }
         }
@@ -11822,16 +11628,7 @@ function updateAllNpcs() {
         if (pointInPolygon(newX, newY, polygon)) colliding = true;
       });
 
-      // Walkable zone check
-      if (_walkableBrushData.length > 0) {
-        // If NPC is stuck outside green, teleport to nearest green point
-        if (!npc._choirTarget && !_isInWalkablePaint(npc.x, npc.y)) {
-          const p = _nearestWalkablePoint(npc.x, npc.y);
-          npc.x = p.x; npc.y = p.y;
-        }
-        // Painted walkable area is active — NPCs must stay inside it
-        if (!npc._choirTarget && !_isInWalkablePaint(newX, newY)) colliding = true;
-      }
+      // Animals roam freely — not constrained to painted walkable areas
 
       if (!colliding) {
         npc.x = Math.max(16, Math.min(mw - 16, newX));
@@ -11953,6 +11750,7 @@ function pointInPolygon(x, y, polygon) {
 let _savedZoomLevel = null; // stored when entering lantern edit mode
 
 function updateCamera() {
+  if (window._mapPanMode) return;
   const vw = viewport.clientWidth;
   const vh = viewport.clientHeight;
   const mw = mapImg.naturalWidth || mapImg.width;
@@ -12006,6 +11804,21 @@ function updateCamera() {
       gEl.style.top  = (713 * zoomLevel + cy) + 'px';
     }
   }
+  // Tour gate step — force gate text visible above the avatar
+  if (window._tourAtGate && window._tourAtGate()) {
+    const gEl = document.getElementById('dunbar-gate-text');
+    if (gEl) {
+      gEl.classList.add('visible');
+      gEl.style.left = (718 * zoomLevel + cx) + 'px';
+      gEl.style.top  = (713 * zoomLevel + cy - 90) + 'px';
+    }
+  } else if (window.tourActive && !window._dunbarMode) {
+    const gEl = document.getElementById('dunbar-gate-text');
+    if (gEl) gEl.classList.remove('visible');
+  }
+
+  // Gate compass is anchored inside #world at position left:718px top:661px — no JS positioning needed
+
 }
 
 function updateLabels() {
@@ -13089,6 +12902,11 @@ function saveCurrentOutline() {
 
 // === EDIT MODE — drag points ===
 function getCameraOffset() {
+  // Always read from the actual rendered world transform so particles/glows
+  // stay in sync even when pan mode overrides the avatar-centered camera.
+  const m = world && world.style.transform.match(/translate\(([^,]+)px,\s*([^p]+)px\)/);
+  if (m) return { cx: parseFloat(m[1]), cy: parseFloat(m[2]) };
+  // Fallback before first updateCamera() sets the transform
   const mw = mapImg.naturalWidth || mapImg.width || 1400;
   const mh = mapImg.naturalHeight || mapImg.height || 800;
   const vw = viewport.clientWidth;
@@ -16252,7 +16070,15 @@ document.addEventListener('click', function(e) {
 
 // Check unread count on page load, start persistent subscription
 document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
+  setTimeout(async function() {
+    // One-time: mark all DMs as read to clear ghost notifications
+    try {
+      var sess = typeof getSessionProfile === 'function' ? getSessionProfile() : null;
+      if (sess && sess.id && window._supabase) {
+        await window._supabase.from('direct_messages').update({ read: true })
+          .eq('village_id', _ACTIVE_VILLAGE_ID).eq('recipient_id', sess.id).eq('read', false);
+      }
+    } catch(_) {}
     fetchDMUnreadCount();
     _startPersistentDMSubscription();
     _startPositionBroadcast();
@@ -16269,15 +16095,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // === BUILDING PAGES ===
 const BUILDING_INFO = {
-  'School': { emoji: '🏫', role: 'Learning hub', desc: 'Where beginners take their first steps at the wheel and experienced potters teach what they know. Every skill level welcome.' },
-  'Library / Archive': { emoji: '📚', role: 'Knowledge repository', desc: 'Every glaze recipe, every firing technique, every historical reference — the owl keeps it all here. The deepest resource in the village.' },
-  'Commons / Café': { emoji: '☕', role: 'Community heart', desc: 'The warm center of village social life. Come for tea, stay for conversations about clay. The fox is always here to welcome you.', image: 'common fafe blur.jpg' },
-  'Mentor Cluster': { emoji: '🏛️', role: 'Mentorship center', desc: 'Where master potters work with apprentices. The crane coordinates pairings between experience levels. Patient, unhurried learning.' },
-  'Bonfire Plaza': { emoji: '🔥', role: 'Gathering place', desc: 'The heart of community firings and celebrations. The dog organizes weekly bonfire pits. Open chat space for everyone.' },
-  'Studio Quarter': { emoji: '🏺', role: 'Working studios', desc: 'Dedicated studio space for serious work. The cat maintains order and keeps the space peaceful. Wheel and hand-building stations.' },
-  'Observatory / World': { emoji: '🌍', role: 'Global connections', desc: 'Where the village connects to the wider world of ceramics. Track global ceramic traditions and exchange programs.' },
-  'Gallery / Market': { emoji: '🖼️', role: 'Exhibition & sales', desc: 'Finished work is shown and sold here. The gallery hosts rotating exhibitions and the market connects makers with collectors.' },
-  'Residency / Exchange': { emoji: '🌿', role: 'Artist residency', desc: 'Visiting potters from around the world stay here. The deer coordinates exchanges, bringing international perspectives to the village.' }
+  'School': { emoji: '', role: 'Learning hub', desc: 'Where beginners take their first steps at the wheel and experienced potters teach what they know. Every skill level welcome.' },
+  'Library / Archive': { emoji: '', role: 'Knowledge repository', desc: 'Every glaze recipe, every firing technique, every historical reference — the owl keeps it all here. The deepest resource in the village.' },
+  'Commons / Café': { emoji: '', role: 'Community heart', desc: 'The warm center of village social life. Come for tea, stay for conversations about clay. The fox is always here to welcome you.', image: 'common fafe blur.jpg' },
+  'Mentor Cluster': { emoji: '', role: 'Mentorship center', desc: 'Where master potters work with apprentices. The crane coordinates pairings between experience levels. Patient, unhurried learning.' },
+  'Bonfire Plaza': { emoji: '', role: 'Gathering place', desc: 'The heart of community firings and celebrations. The dog organizes weekly bonfire pits. Open chat space for everyone.' },
+  'Studio Quarter': { emoji: '', role: 'Working studios', desc: 'Dedicated studio space for serious work. The cat maintains order and keeps the space peaceful. Wheel and hand-building stations.' },
+  'Observatory / World': { emoji: '', role: 'Global connections', desc: 'Where the village connects to the wider world of ceramics. Track global ceramic traditions and exchange programs.' },
+  'Gallery / Market': { emoji: '', role: 'Exhibition & sales', desc: 'Finished work is shown and sold here. The gallery hosts rotating exhibitions and the market connects makers with collectors.' },
+  'Residency / Exchange': { emoji: '', role: 'Artist residency', desc: 'Visiting potters from around the world stay here. The deer coordinates exchanges, bringing international perspectives to the village.' }
 };
 
 let _currentBuildingPage = null;
@@ -18090,26 +17916,25 @@ function voteHorizonLocation(choice) {
   };
 
   window.schoolTab = function(tab) {
-    const ws  = document.getElementById('school-workshops');
+    const ws  = document.getElementById('school-workshops-listings');
     const mst = document.getElementById('school-mastery');
     const cog = document.getElementById('school-cog-agency');
     const twsBtn  = document.getElementById('stab-workshops');
     const tmstBtn = document.getElementById('stab-mastery');
     const tmoBtn  = document.getElementById('stab-mondo');
     const tcogBtn = document.getElementById('stab-cog-agency');
-    if (!ws || !mst) return;
 
     // Deactivate all tabs and panels
     twsBtn?.classList.remove('active');
     tmstBtn?.classList.remove('active');
     tmoBtn?.classList.remove('active');
     tcogBtn?.classList.remove('active');
-    ws.style.display  = 'none';
-    mst.style.display = 'none';
+    if (ws) ws.style.display  = 'none';
+    if (mst) mst.style.display = 'none';
     if (cog) cog.style.display = 'none';
 
     if (tab === 'workshops') {
-      ws.style.display  = 'block';
+      if (ws) ws.style.display  = 'block';
       twsBtn?.classList.add('active');
     } else if (tab === 'mondo') {
       // mondo opens its own full-screen overlay, not a panel
@@ -18333,10 +18158,20 @@ function voteHorizonLocation(choice) {
     try {
       var resp = await fetch(_mondoUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+        },
         body: JSON.stringify({ messages: _mondoHistory })
       });
       var data = await resp.json();
+      if (!resp.ok || (data && data.error)) {
+        var loadEl2 = document.getElementById('mondo-loading');
+        if (loadEl2) loadEl2.remove();
+        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo" style="color:#c88;">Something went wrong. Try again.</div>';
+        console.warn('[mondo error]', data && data.error);
+        return;
+      }
       var reply = (data && data.text) || 'I have nothing to ask right now.';
       _mondoHistory.push({ role: 'assistant', content: reply });
 
@@ -18347,10 +18182,26 @@ function voteHorizonLocation(choice) {
       // Check if this is the 間 response (breakthrough)
       if (reply.indexOf('\u300C\u9593\u300D') !== -1 || reply.trim().startsWith('\u300C\u9593\u300D') || reply.trim() === '\u9593') {
         convo.innerHTML += '<div class="mondo-ma"><div class="mondo-ma-kanji">\u300C\u9593\u300D</div><div class="mondo-ma-sub">(ma \u2014 the pause that means something)</div></div>';
+        convo.scrollTop = convo.scrollHeight;
       } else {
-        convo.innerHTML += '<div class="mondo-msg mondo-msg-mondo">' + _styledMondoReply(reply) + '</div>';
+        // Typewriter effect — letters appear one by one
+        var msgEl = document.createElement('div');
+        msgEl.className = 'mondo-msg mondo-msg-mondo';
+        convo.appendChild(msgEl);
+        var chars = reply.split('');
+        var ci = 0;
+        var twInterval = setInterval(function() {
+          if (ci < chars.length) {
+            msgEl.textContent += chars[ci];
+            ci++;
+            convo.scrollTop = convo.scrollHeight;
+          } else {
+            clearInterval(twInterval);
+            // Apply styled formatting after typing completes
+            msgEl.innerHTML = _styledMondoReply(reply);
+          }
+        }, 18);
       }
-      convo.scrollTop = convo.scrollHeight;
     } catch (err) {
       var loadEl = document.getElementById('mondo-loading');
       if (loadEl) loadEl.remove();
@@ -18399,6 +18250,8 @@ function voteHorizonLocation(choice) {
     });
   }
   _rewireMondoInput();
+
+  window.openMondo = openMondo; // expose globally for map icon + nav
 
   var _mondoClose = document.getElementById('mondo-close');
   if (_mondoClose) _mondoClose.addEventListener('click', closeMondo);
@@ -25067,7 +24920,7 @@ renderProfileList();
 // Tooltip element
 const buildingHoverTip = document.createElement('div');
 buildingHoverTip.id = 'building-hover-tip';
-buildingHoverTip.style.cssText = 'position:fixed;z-index:8000;pointer-events:none;display:none;background:rgba(16,12,8,0.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#f0e8d8;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid rgba(200,168,75,0.3);white-space:nowrap;letter-spacing:0.04em;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:opacity 0.1s;';
+buildingHoverTip.style.cssText = 'position:fixed;z-index:8000;pointer-events:none;display:none;background:rgba(16,12,8,0.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#f0e8d8;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid rgba(200,168,75,0.3);white-space:nowrap;letter-spacing:0.04em;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:opacity 0.1s;transform:translateX(-50%);';
 document.body.appendChild(buildingHoverTip);
 
 // Helper: place avatar in front of a building when leaving
@@ -25138,17 +24991,24 @@ function anyOverlayOpen() {
 
 // Hover: show tooltip
 viewport.addEventListener('mousemove', e => {
-  if (anyOverlayOpen() || outlineMode || lightBrushMode) { buildingHoverTip.style.display = 'none'; return; }
+  const _wmHover = document.body.classList.contains('wm-mode');
+  const _blockHover = _wmHover ? (outlineMode || lightBrushMode || _mapPanDragging) : (anyOverlayOpen() || outlineMode || lightBrushMode || _mapPanDragging);
+  if (_blockHover) { buildingHoverTip.style.display = 'none'; return; }
   const name = buildingAtScreenPos(e.clientX, e.clientY);
   if (name) {
-    const slug = _BLDG_SLUG[name];
-    const myId = typeof _presenceProfileId === 'function' ? _presenceProfileId() : '';
-    const pCount = slug ? _buildingPresence.filter(p => p.location === slug && p.profile_id !== myId).length : 0;
-    buildingHoverTip.textContent = name + (pCount > 0 ? '  · ' + pCount + (pCount === 1 ? ' person here' : ' people here') : '');
-    buildingHoverTip.style.display = 'block';
-    buildingHoverTip.style.left = (e.clientX + 14) + 'px';
-    buildingHoverTip.style.top  = (e.clientY - 36) + 'px';
     viewport.style.cursor = 'pointer';
+    // Only show name banner if this building has been clicked (selected)
+    if (_selectedBuilding === name) {
+      const slug = _BLDG_SLUG[name];
+      const myId = typeof _presenceProfileId === 'function' ? _presenceProfileId() : '';
+      const pCount = slug ? _buildingPresence.filter(p => p.location === slug && p.profile_id !== myId).length : 0;
+      buildingHoverTip.textContent = name + (pCount > 0 ? '  · ' + pCount + (pCount === 1 ? ' person here' : ' people here') : '');
+      buildingHoverTip.style.display = 'block';
+      buildingHoverTip.style.left = e.clientX + 'px';
+      buildingHoverTip.style.top  = (e.clientY - 44) + 'px';
+    } else {
+      buildingHoverTip.style.display = 'none';
+    }
   } else {
     buildingHoverTip.style.display = 'none';
     viewport.style.cursor = '';
@@ -25159,19 +25019,207 @@ viewport.addEventListener('mouseleave', () => {
   viewport.style.cursor = '';
 });
 
-// Click: enter building
+// Building interaction: single-click highlights outline, double-click opens
+var _selectedBuilding = null;
+var _buildingClickTimer = null;
+// Canvas overlay for golden glow highlight
+var _highlightCanvas = document.createElement('canvas');
+_highlightCanvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:5;';
+viewport.appendChild(_highlightCanvas);
+function _drawBuildingHighlight(name) {
+  var c = _highlightCanvas, ctx = c.getContext('2d');
+  c.width = viewport.offsetWidth; c.height = viewport.offsetHeight;
+  ctx.clearRect(0, 0, c.width, c.height);
+  if (!name) return;
+  var poly = (typeof hoverOutlines !== 'undefined' && hoverOutlines[name]) ? hoverOutlines[name] : null;
+  if (!poly || poly.length < 3) return;
+  // Convert world coords → screen coords using the same system as buildingAtScreenPos
+  ctx.beginPath();
+  for (var i = 0; i < poly.length; i++) {
+    var sp = worldToScreen(poly[i].x, poly[i].y);
+    if (i === 0) ctx.moveTo(sp.x, sp.y); else ctx.lineTo(sp.x, sp.y);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = 'rgba(200,168,75,0.8)';
+  ctx.lineWidth = 3;
+  ctx.shadowColor = 'rgba(200,168,75,0.6)';
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(200,168,75,0.08)';
+  ctx.fill();
+}
 viewport.addEventListener('click', e => {
-  if (anyOverlayOpen()) return;
-  if (outlineMode || lightBrushMode || _walkablePaintMode) return; // don't enter buildings while drawing
+  const _wmActive = document.body.classList.contains('wm-mode');
+  if (!_wmActive && anyOverlayOpen()) return;
+  if (_wmActive && e.target.closest('[id$="-overlay"],.bld-chat-overlay')) return;
+  if (outlineMode || lightBrushMode || _walkablePaintMode) return;
+  if (_panSuppressClick) { _panSuppressClick = false; return; }
+  const name = buildingAtScreenPos(e.clientX, e.clientY);
+  if (!name) { _selectedBuilding = null; buildingHoverTip.style.display = 'none'; return; }
+  _selectedBuilding = name;
+  buildingHoverTip.textContent = name;
+  buildingHoverTip.style.display = 'block';
+  buildingHoverTip.style.left = e.clientX + 'px';
+  buildingHoverTip.style.top = (e.clientY - 44) + 'px';
+  e.stopPropagation();
+});
+viewport.addEventListener('dblclick', e => {
+  const _wmActive2 = document.body.classList.contains('wm-mode');
+  if (!_wmActive2 && anyOverlayOpen()) return;
+  if (_wmActive2 && e.target.closest('[id$="-overlay"],.bld-chat-overlay')) return;
+  if (outlineMode || lightBrushMode || _walkablePaintMode) return;
   const name = buildingAtScreenPos(e.clientX, e.clientY);
   if (name) {
+    if (_buildingClickTimer) { clearTimeout(_buildingClickTimer); _buildingClickTimer = null; }
     buildingHoverTip.style.display = 'none';
+    _selectedBuilding = null;
+    _drawBuildingHighlight(null);
     openBuildingPage(name);
     e.stopPropagation();
   }
 });
+// Right-click (two-finger): context menu
+viewport.addEventListener('contextmenu', e => {
+  const name = buildingAtScreenPos(e.clientX, e.clientY);
+  if (!name) return;
+  e.preventDefault();
+  var existing = document.getElementById('bldg-ctx-menu');
+  if (existing) existing.remove();
+  var menu = document.createElement('div');
+  menu.id = 'bldg-ctx-menu';
+  menu.style.cssText = 'position:fixed;z-index:10600;background:rgba(16,12,8,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#f0e8d8;border-radius:10px;border:1px solid rgba(200,168,75,0.3);padding:6px 0;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-size:13px;font-family:inherit;';
+  menu.style.left = e.clientX + 'px'; menu.style.top = e.clientY + 'px';
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'padding:8px 14px;font-weight:700;font-size:12px;letter-spacing:0.04em;color:#c8a84b;border-bottom:1px solid rgba(255,255,255,0.08);';
+  hdr.textContent = name; menu.appendChild(hdr);
+  var bldgConf = null;
+  if (typeof BUILDINGS !== 'undefined') {
+    var _BLDG_OV = {'Commons / Caf\u00e9':'cafe-room-overlay','School':'school-overlay','Library / Archive':'library-overlay','Studio Quarter':'studio-quarter-overlay','Mentor Cluster':'mentor-overlay','Observatory / World':'observatory-overlay','Gallery / Market':'gallery-overlay','Residency / Exchange':'exchange-overlay','Bonfire Plaza':'bonfire-manifesto-overlay'};
+    var ovId = _BLDG_OV[name];
+    for (var bi = 0; bi < BUILDINGS.length; bi++) { if (BUILDINGS[bi].id === ovId) { bldgConf = BUILDINGS[bi]; break; } }
+  }
+  if (bldgConf) {
+    (bldgConf.native || []).forEach(function(n) {
+      var item = document.createElement('div');
+      item.style.cssText = 'padding:6px 14px;cursor:pointer;transition:background 0.1s;';
+      item.textContent = n.name;
+      item.onmouseenter = function() { this.style.background = 'rgba(200,168,75,0.15)'; };
+      item.onmouseleave = function() { this.style.background = ''; };
+      item.onclick = function() { menu.remove(); openBuildingPage(name); };
+      menu.appendChild(item);
+    });
+  }
+  var openItem = document.createElement('div');
+  openItem.style.cssText = 'padding:6px 14px;cursor:pointer;transition:background 0.1s;border-top:1px solid rgba(255,255,255,0.08);font-weight:600;color:#c8a84b;';
+  openItem.textContent = 'Open';
+  openItem.onmouseenter = function() { this.style.background = 'rgba(200,168,75,0.15)'; };
+  openItem.onmouseleave = function() { this.style.background = ''; };
+  openItem.onclick = function() { menu.remove(); openBuildingPage(name); };
+  menu.appendChild(openItem);
+  document.body.appendChild(menu);
+  setTimeout(function() { document.addEventListener('click', function _cc() { menu.remove(); document.removeEventListener('click', _cc); }, { once: true }); }, 50);
+});
 
 // ── End building interaction ───────────────────────────────────────────────
+
+// ── Map Pan Tool ──────────────────────────────────────────────────────────────
+window._mapPanMode = false;
+var _mapPanDragging = false;
+var _panDragStartX = 0, _panDragStartY = 0;
+var _panDragCamX = 0, _panDragCamY = 0;
+var _panSuppressClick = false;
+
+function _getPanWorldXY() {
+  var m = world.style.transform.match(/translate\(([^,]+)px,\s*([^p]+)px\)/);
+  return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : { x: 0, y: 0 };
+}
+function _applyPanCamera(nx, ny) {
+  var vw = viewport.clientWidth, vh = viewport.clientHeight;
+  var mw = mapImg.naturalWidth || mapImg.width;
+  var mh = mapImg.naturalHeight || mapImg.height;
+  nx = Math.min(0, Math.max(vw - mw * zoomLevel, nx));
+  ny = Math.min(0, Math.max(vh - mh * zoomLevel, ny));
+  world.style.transform = 'translate(' + nx + 'px,' + ny + 'px) scale(' + zoomLevel + ')';
+  var dz = document.getElementById('bonfire-drone-zone');
+  if (dz) { dz.style.left = (717 * zoomLevel + nx) + 'px'; dz.style.top = (352 * zoomLevel + ny) + 'px'; }
+}
+
+var _panBtn = document.getElementById('map-pan-btn');
+if (_panBtn) {
+  _panBtn.addEventListener('click', function() {
+    window._mapPanMode = !window._mapPanMode;
+    _panBtn.classList.toggle('tc-active', window._mapPanMode);
+    if (window._mapPanMode) {
+      viewport.style.cursor = 'grab';
+    } else {
+      viewport.style.cursor = '';
+      _mapPanDragging = false;
+      updateCamera();
+    }
+  });
+}
+
+viewport.addEventListener('mousedown', function(e) {
+  if (!window._mapPanMode || e.button !== 0 || anyOverlayOpen()) return;
+  _mapPanDragging = true;
+  _panSuppressClick = false;
+  _panDragStartX = e.clientX;
+  _panDragStartY = e.clientY;
+  var pos = _getPanWorldXY();
+  _panDragCamX = pos.x; _panDragCamY = pos.y;
+  viewport.style.cursor = 'grabbing';
+  e.preventDefault();
+  e.stopPropagation();
+}, true);
+
+window.addEventListener('mousemove', function(e) {
+  if (!_mapPanDragging) return;
+  var dx = e.clientX - _panDragStartX;
+  var dy = e.clientY - _panDragStartY;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) _panSuppressClick = true;
+  _applyPanCamera(_panDragCamX + dx, _panDragCamY + dy);
+});
+
+window.addEventListener('mouseup', function() {
+  if (!_mapPanDragging) return;
+  _mapPanDragging = false;
+  if (window._mapPanMode) viewport.style.cursor = 'grab';
+});
+
+viewport.addEventListener('touchstart', function(e) {
+  if (!window._mapPanMode || anyOverlayOpen() || e.touches.length !== 1) return;
+  _mapPanDragging = true;
+  _panDragStartX = e.touches[0].clientX;
+  _panDragStartY = e.touches[0].clientY;
+  var pos = _getPanWorldXY();
+  _panDragCamX = pos.x; _panDragCamY = pos.y;
+  e.preventDefault();
+  e.stopPropagation();
+}, { passive: false });
+
+window.addEventListener('touchmove', function(e) {
+  if (!_mapPanDragging || e.touches.length !== 1) return;
+  _applyPanCamera(_panDragCamX + (e.touches[0].clientX - _panDragStartX), _panDragCamY + (e.touches[0].clientY - _panDragStartY));
+  e.preventDefault();
+}, { passive: false });
+
+window.addEventListener('touchend', function() { _mapPanDragging = false; });
+
+// Re-clamp camera when window resizes while pan mode is active
+window.addEventListener('resize', function() {
+  if (!window._mapPanMode) return;
+  // Also enforce minimum zoom so map still covers the full (possibly larger) viewport
+  var vw = viewport.clientWidth, vh = viewport.clientHeight;
+  var mw = mapImg.naturalWidth || mapImg.width;
+  var mh = mapImg.naturalHeight || mapImg.height;
+  if (mw > 0 && mh > 0) {
+    var minZ = Math.max(vw / mw, vh / mh);
+    if (zoomLevel < minZ) zoomLevel = minZ;
+  }
+  var pos = _getPanWorldXY();
+  _applyPanCamera(pos.x, pos.y);
+});
+// ── End map pan tool ──────────────────────────────────────────────────────────
 
 // Set player avatar to admin profile photo
 if (playerProfile && playerProfile.photo) {
@@ -26228,6 +26276,15 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
       target: 'Gallery / Market',
       npc: 'Deer'
     },
+    {
+      label: 'The Gate',
+      title: 'Village Gate',
+      body: `<p>Where every journey begins and ends. The gate is not a checkpoint — it is a reminder that you chose to be here.</p>
+<p>From here you can travel to other villages, return home, or simply stand at the threshold and look back at everything you have built inside these walls.</p>
+<p>The compass at the gate opens the travel map. Villages are human-scale by design — 150 people, no more. When one fills, another begins.</p>`,
+      target: 'Village Gate',
+      npc: null
+    },
   ];
 
   // NPC associated with each building
@@ -26388,7 +26445,10 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
   // Smooth camera pan — moves avatar INSIDE the building so roof occludes it
   function panCameraToBuilding(buildingName) {
     if (typeof playWoosh === 'function') playWoosh();
-    const b = buildings.find(b => b.name === buildingName);
+    // Village Gate: hard-coded world position (718, 713)
+    const b = buildingName === 'Village Gate'
+      ? { x: 718 / (mapImg.naturalWidth || 1400), y: 713 / (mapImg.naturalHeight || 800) }
+      : buildings.find(b => b.name === buildingName);
     if (!b) return;
     const mw = mapImg.naturalWidth || mapImg.width || 1400;
     const mh = mapImg.naturalHeight || mapImg.height || 800;
@@ -26452,14 +26512,17 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     }
     _tourOriginX = avatar.x;
     _tourOriginY = avatar.y;
-    // Start at the building closest to avatar — but if near the gate (bottom of map), always start at building 1 (Commons/Café)
+    // Start at the tour stop closest to the avatar (including Village Gate)
     const mw = mapImg.naturalWidth || mapImg.width || 1400;
     const mh = mapImg.naturalHeight || mapImg.height || 800;
-    const nearGate = avatar.y > mh * 0.75;
     let closest = 0, closestDist = Infinity;
-    if (nearGate) { closest = 0; closestDist = 0; } // Force Commons/Café (step 0)
+    // Check gate distance first (gate isn't in buildings array — use hard-coded world position)
+    const gateIdx = TOUR_STEPS.findIndex(s => s.target === 'Village Gate');
+    if (gateIdx !== -1) {
+      const gateDist = Math.hypot(avatar.x - 718, avatar.y - 713);
+      if (gateDist < closestDist) { closestDist = gateDist; closest = gateIdx; }
+    }
     TOUR_STEPS.forEach((step, i) => {
-      if (nearGate) return; // skip search — already set to step 0
       if (!step.target) return;
       if (step.target === 'Bonfire Plaza' || step.target === 'Village Gate') return;
       const b = buildings.find(b => b.name === step.target);
@@ -26473,11 +26536,19 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     renderStep();
   }
   window._startTour = startTour;
+  window._tourAtGate = function() {
+    return tourActive && TOUR_STEPS[tourStep] && TOUR_STEPS[tourStep].target === 'Village Gate';
+  };
 
   function endTour() {
     const currentBuilding = TOUR_STEPS[tourStep] ? TOUR_STEPS[tourStep].target : null;
     tourActive = false; window.tourActive = false;
     overlay.classList.remove('open');
+    // If gate text was force-shown for gate tour step, clean it up
+    if (!window._dunbarMode) {
+      const _gEl = document.getElementById('dunbar-gate-text');
+      if (_gEl) _gEl.classList.remove('visible');
+    }
     if (_tourCameraTween) {
       cancelAnimationFrame(_tourCameraTween);
       _tourCameraTween = null;
@@ -26578,7 +26649,7 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
 
   // Spatial navigation map — based on physical layout of the village
   const TOUR_NAV = {
-    'Commons / Café':       { left: 'Library / Archive', up: 'Library / Archive', right: 'Gallery / Market' },
+    'Commons / Café':       { left: 'Library / Archive', up: 'Library / Archive', right: 'Village Gate' },
     'Library / Archive':    { right: 'School', up: 'School', down: 'Commons / Café' },
     'School':               { right: 'Mentor Cluster', down: 'Library / Archive', left: 'Library / Archive' },
     'Mentor Cluster':       { right: 'Studio Quarter', left: 'School', down: 'Bonfire Plaza' },
@@ -26586,7 +26657,8 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     'Studio Quarter':       { up: 'Residency / Exchange', right: 'Observatory / World', down: 'Gallery / Market', left: 'Mentor Cluster' },
     'Residency / Exchange': { down: 'Observatory / World', left: 'Studio Quarter' },
     'Observatory / World':  { down: 'Gallery / Market', left: 'Studio Quarter', up: 'Residency / Exchange' },
-    'Gallery / Market':     { left: 'Commons / Café', right: 'Observatory / World', up: 'Observatory / World' },
+    'Gallery / Market':     { left: 'Village Gate', right: 'Observatory / World', up: 'Observatory / World' },
+    'Village Gate':         { up: 'Bonfire Plaza', left: 'Commons / Café', right: 'Gallery / Market' },
   };
 
   function navToBuilding(name) {
@@ -26594,8 +26666,81 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     if (idx !== -1) { tourStep = idx; renderStep(); }
   }
 
+  // ── WM building-switcher helpers ─────────────────────────────────
+  const _WM_IDS = ['studio-quarter-overlay','gallery-overlay','library-overlay','cafe-room-overlay',
+                   'observatory-overlay','school-overlay','mentor-overlay','exchange-overlay','bonfire-manifesto-overlay'];
+  const _WM_NAME = {
+    'studio-quarter-overlay':    'Studio Quarter',
+    'gallery-overlay':           'Gallery / Market',
+    'library-overlay':           'Library / Archive',
+    'cafe-room-overlay':         'Commons / Café',
+    'observatory-overlay':       'Observatory / World',
+    'school-overlay':            'School',
+    'mentor-overlay':            'Mentor Cluster',
+    'exchange-overlay':          'Residency / Exchange',
+    'bonfire-manifesto-overlay': 'Bonfire Plaza',
+  };
+  const _WM_OPEN = {
+    'Commons / Café':       () => typeof openCafeRoom !== 'undefined' && openCafeRoom(),
+    'Library / Archive':    () => window.openGlazeLibrary && openGlazeLibrary(),
+    'School':               () => window.openSchoolPaths && openSchoolPaths(),
+    'Mentor Cluster':       () => window.openMentorCluster && openMentorCluster(),
+    'Bonfire Plaza':        () => window.openBonfireManifesto && openBonfireManifesto(),
+    'Studio Quarter':       () => window.openStudioQuarter && openStudioQuarter(),
+    'Residency / Exchange': () => window.openExchangeListings && openExchangeListings(),
+    'Observatory / World':  () => window.openObservatory && openObservatory(),
+    'Gallery / Market':     () => window.openGallery && openGallery(),
+  };
+
+  function _wmOpenBuilding() {
+    if (!document.body.classList.contains('wm-mode')) return null;
+    for (const id of _WM_IDS) {
+      const el = document.getElementById(id);
+      if (el && el.classList.contains('wm-open')) return _WM_NAME[id];
+    }
+    return null;
+  }
+
+  function _wmSwitchTo(name) {
+    _WM_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.classList.contains('wm-open') && window._wmClose) window._wmClose(id);
+    });
+    if (_WM_OPEN[name]) _WM_OPEN[name]();
+    panCameraToBuilding(name);
+  }
+
+  function _updateWmArrows() {
+    if (tourActive) return;
+    const open = _wmOpenBuilding();
+    if (!open) return;
+    const nav = TOUR_NAV[open] || {};
+    arrowUp.classList.toggle('disabled', !nav.up);
+    arrowDown.classList.toggle('disabled', !nav.down);
+    arrowLeft.classList.toggle('disabled', !nav.left);
+    arrowRight.classList.toggle('disabled', !nav.right);
+  }
+
+  // Watch for WM windows opening/closing to refresh arrow states
+  _WM_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('wm-close', _updateWmArrows);
+    new MutationObserver(_updateWmArrows).observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
+
   // Arrow button click handlers
   function handleArrowClick(dir) {
+    // WM mode: flip between buildings
+    if (!tourActive && document.body.classList.contains('wm-mode')) {
+      const open = _wmOpenBuilding();
+      if (open) {
+        const nav = TOUR_NAV[open] || {};
+        const target = { up: nav.up, down: nav.down, left: nav.left, right: nav.right }[dir];
+        if (target) _wmSwitchTo(target);
+      }
+      return;
+    }
     if (!tourActive) return;
     const currentTarget = TOUR_STEPS[tourStep].target;
     const nav = currentTarget ? TOUR_NAV[currentTarget] : null;
@@ -26611,8 +26756,22 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
 
   // Keyboard nav — spatial arrow keys + Enter to enter building
   document.addEventListener('keydown', (e) => {
-    if (!tourActive) return;
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    // WM mode: arrow keys flip between buildings
+    if (!tourActive && document.body.classList.contains('wm-mode')) {
+      const open = _wmOpenBuilding();
+      if (open && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+        const nav = TOUR_NAV[open] || {};
+        const dirMap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+        const target = nav[dirMap[e.key]];
+        if (target) _wmSwitchTo(target);
+      }
+      return;
+    }
+
+    if (!tourActive) return;
     if (e.key === 'Escape') { e.preventDefault(); endTour(); return; }
 
     const currentTarget = TOUR_STEPS[tourStep].target;
@@ -26640,20 +26799,7 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
       e.preventDefault();
       const step = TOUR_STEPS[tourStep];
       endTour();
-      if (step && step.target) {
-        const openers = {
-          'Commons / Café':       () => typeof openCafeRoom !== 'undefined' && openCafeRoom(),
-          'Library / Archive':    () => window.openGlazeLibrary && openGlazeLibrary(),
-          'School':               () => window.openSchoolPaths && openSchoolPaths(),
-          'Mentor Cluster':       () => window.openMentorCluster && openMentorCluster(),
-          'Bonfire Plaza':        () => window.openBonfireManifesto && openBonfireManifesto(),
-          'Studio Quarter':       () => window.openStudioQuarter && openStudioQuarter(),
-          'Residency / Exchange': () => window.openExchangeListings && openExchangeListings(),
-          'Observatory / World':  () => window.openObservatory && openObservatory(),
-          'Gallery / Market':     () => window.openGallery && openGallery(),
-        };
-        if (openers[step.target]) openers[step.target]();
-      }
+      if (step && step.target && _WM_OPEN[step.target]) _WM_OPEN[step.target]();
     }
   });
 })();
@@ -28131,76 +28277,54 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
 
 </script>
 
-<!-- ===== MURA FIREFLY ===== -->
-<div id="mura-firefly">
-  <div id="mura-firefly-dot"></div>
-  <div class="mura-tip"><span class="tip-title">Mura <span class="tip-jp">&#x6751;</span></span>The village paying attention.<br><br>Mura has been watching since you arrived. Not intrusively, quietly. It reads what you write, notices when you go silent, marks the thresholds you cross.<br><br>It speaks rarely. Three times a year at most. When it does, it asks one question from your own record, something only it could have noticed.<br><br>It will not speak twice without being answered. It will not motivate you or comfort you or fix anything. It will only ask the thing you have been avoiding.<br><br><em style="color:rgba(200,168,75,0.5);">The firefly pulses differently when something is waiting.</em></div>
-</div>
-
+<!-- ===== MURA v2 ===== -->
 <div id="mura-dialog">
   <div id="mura-dialog-panel">
     <button id="mura-close-btn">×</button>
     <div id="mura-panel-firefly"></div>
     <div id="mura-message"></div>
-    <textarea id="mura-response-area" placeholder="Write here, or just sit with it."></textarea>
+  </div>
+</div>
+
+<!-- Mura lore modal — explains Mura's nature, no interaction -->
+<div id="mura-lore-modal" style="display:none;position:fixed;inset:0;z-index:10200;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;padding:24px;">
+  <div style="position:relative;width:400px;max-width:92vw;background:#fff;border-radius:16px;padding:40px;box-shadow:0 24px 80px rgba(0,0,0,0.22);">
+    <button id="mura-lore-close" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#8e8e8e;font-size:20px;cursor:pointer;line-height:1;padding:4px 6px;">×</button>
+    <div style="font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;font-size:1.5em;color:#c8a84b;letter-spacing:0.15em;margin-bottom:20px;">村</div>
+    <p style="font-size:15px;line-height:1.85;color:#262626;margin:0;">Mura does not come when called. She appears when she has something true to say. You cannot ask. You can only write, and return, and wait.</p>
   </div>
 </div>
 
 <script>
-// ===== MURA =====
+// ===== MURA v2 — The Presence That Cannot Be Summoned =====
 (function() {
-  const BUILDING_OVERLAYS = [
+
+  const _MURA_BUILDING_OVERLAYS = [
     'cafe-room-overlay','observatory-overlay','mentor-overlay',
     'studio-quarter-overlay','library-overlay','gallery-overlay',
     'bonfire-manifesto-overlay','exchange-overlay','school-overlay',
     'roundtable-overlay','cognitive-agency-overlay'
   ];
 
-  // Development placeholder — shows Mura's voice and format while logic is built
-  const PLACEHOLDER_TEXT = '余白。\nThe space that holds everything else.\n\nSix weeks without 言葉 — words. The longest silence since you arrived.\n\nWhat has the studio been like?';
-
-  const firefly = document.getElementById('mura-firefly');
-  const dialog  = document.getElementById('mura-dialog');
-  const panel   = document.getElementById('mura-dialog-panel');
-  const msg     = document.getElementById('mura-message');
-  const closeBtn= document.getElementById('mura-close-btn');
-  const input   = document.getElementById('mura-response-area');
-
-  // Active state: true if randomly selected for dev, OR if a pending Mura message exists
-  let isActive = Math.random() < 0.5;
-  let _showingPending = false; // track whether current dialog showed a pending message
-
   const JP_RE = /[\u3000-\u9fff\uff00-\uffef]+/g;
+  const msg = document.getElementById('mura-message');
 
-  function getPending() { return JSON.parse(localStorage.getItem('mura_pending') || '[]'); }
-  function hasPending() { return getPending().length > 0; }
+  // ── Create ambient glow dot ───────────────────────────────────
+  const _glowDot = document.createElement('div');
+  _glowDot.id = 'mura-glow-dot';
+  _glowDot.className = 'mura-building-glow';
+  _glowDot.innerHTML = '<div class="mura-building-glow-dot"></div>';
+  document.body.appendChild(_glowDot);
 
-  function getCurrentBuilding() {
-    return BUILDING_OVERLAYS.find(id => {
-      const el = document.getElementById(id);
-      return el && el.style.display !== 'none';
-    }) || null;
-  }
-
-  function updateFireflyVisibility() {
-    const open = getCurrentBuilding();
-    firefly.style.display = open ? 'flex' : 'none';
-    const active = open && (isActive || hasPending());
-    if (active) firefly.classList.add('mura-active');
-    else firefly.classList.remove('mura-active');
-  }
-
-  // Render Mura text: wraps Japanese runs in styled, speakable spans
+  // ── renderMessage — wraps Japanese in speakable spans ─────────
   function renderMessage(text) {
-    // 1. Escape HTML special chars
     const safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    // 2. Wrap Japanese character runs in mura-jp spans
     const withSpans = safe.replace(JP_RE, match =>
       `<span class="mura-jp" data-jp="${match}">${match}</span>`
     );
-    // 3. Newlines → <br>
-    msg.innerHTML = withSpans.replace(/\n/g, '<br>');
-    // 4. ElevenLabs TTS on mouseenter for each Japanese span
+    msg.innerHTML = withSpans
+      .replace(/(<\/span>)\n+/g, '$1\n')
+      .replace(/\n/g, '<br>');
     msg.querySelectorAll('.mura-jp').forEach(span => {
       let _ttsPlaying = false;
       span.addEventListener('mouseenter', async () => {
@@ -28228,133 +28352,269 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
     });
   }
 
-  // Show loading dots while API call is in flight
-  function showLoading() {
-    msg.innerHTML = '<span style="opacity:0.35;letter-spacing:4px;font-size:16px;">· · ·</span>';
+  // ── shouldMuraSpeak — trigger logic ──────────────────────────
+  function shouldMuraSpeak(entries) {
+    if (!entries || entries.length === 0) return { should: false, reason: null };
+
+    function tokenize(text) {
+      return (text || '').toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(w => w.length > 3);
+    }
+
+    // Trigger 1: Milestone
+    if ([10, 25, 50].includes(entries.length)) {
+      return { should: true, reason: 'milestone' };
+    }
+
+    // Trigger 2: First entry in a new building
+    const buildingCounts = {};
+    entries.forEach(e => { buildingCounts[e.building] = (buildingCounts[e.building] || 0) + 1; });
+    if (Object.values(buildingCounts).some(c => c === 1)) {
+      return { should: true, reason: 'first_entry' };
+    }
+
+    // Trigger 3: Return after 5+ day absence
+    const sorted = [...entries].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    if (sorted.length >= 2) {
+      const daysBetween = (new Date(sorted[0].timestamp) - new Date(sorted[1].timestamp)) / (1000 * 60 * 60 * 24);
+      if (daysBetween >= 5) return { should: true, reason: 'return_after_absence' };
+    }
+
+    // Trigger 4: Pattern — same word in 3+ entries
+    const wordMap = {};
+    entries.forEach(e => {
+      [...new Set(tokenize(e.content))].forEach(w => { wordMap[w] = (wordMap[w] || 0) + 1; });
+    });
+    if (Object.values(wordMap).some(c => c >= 3)) {
+      return { should: true, reason: 'pattern_detection' };
+    }
+
+    // Trigger 5: Cross-building resonance — library + studio share vocabulary
+    const libWords  = new Set(entries.filter(e => e.building === 'library').flatMap(e => tokenize(e.content)));
+    const studWords = new Set(entries.filter(e => e.building === 'studio').flatMap(e => tokenize(e.content)));
+    if (libWords.size > 0 && studWords.size > 0) {
+      const overlap = [...libWords].filter(w => studWords.has(w));
+      if (overlap.length >= 3) return { should: true, reason: 'cross_building' };
+    }
+
+    // Trigger 6: Silence — a building has entries but none in last 30 days
+    const cutoff = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    const recentBuildings = new Set(entries.filter(e => new Date(e.timestamp).getTime() > cutoff).map(e => e.building));
+    const allBuildings    = new Set(entries.map(e => e.building));
+    if ([...allBuildings].some(b => !recentBuildings.has(b))) {
+      return { should: true, reason: 'silence' };
+    }
+
+    return { should: false, reason: null };
   }
 
-  async function openDialog() {
-    _showingPending = false;
+  // ── Glow show / hide ──────────────────────────────────────────
+  function _muraShowGlow() {
+    _glowDot.classList.add('active');
+    _MURA_BUILDING_OVERLAYS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && (el.classList.contains('open') || el.style.display === 'flex')) {
+        el.classList.add('mura-edge-glow', 'active');
+      }
+    });
+  }
+
+  function _muraHideGlow() {
+    _glowDot.classList.remove('active');
+    _MURA_BUILDING_OVERLAYS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('mura-edge-glow', 'active');
+    });
+  }
+
+  // ── Reveal — show the observation when glow is clicked ───────
+  async function _muraReveal() {
+    try {
+      const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-unknown';
+      const now = new Date().toISOString();
+      const { data: obs } = await _sb
+        .from('mura_observations')
+        .select('id, text')
+        .eq('member_id', memberId)
+        .is('seen_at', null)
+        .gt('expires_at', now)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!obs) { _muraHideGlow(); return; }
+
+      renderMessage(obs.text);
+      const dialog = document.getElementById('mura-dialog');
+      dialog.style.display = 'flex';
+      dialog.style.opacity = '';
+      dialog.classList.remove('mura-dialog-fade');
+
+      // Mark seen
+      _sb.from('mura_observations')
+        .update({ seen_at: new Date().toISOString() })
+        .eq('id', obs.id)
+        .then(({ error }) => { if (error) console.warn('[Mura]', error.message); });
+
+      _muraHideGlow();
+    } catch (err) {
+      console.warn('[Mura reveal]', err.message);
+    }
+  }
+
+  // ── Close dialog ──────────────────────────────────────────────
+  function _muraCloseDialog() {
+    const dialog = document.getElementById('mura-dialog');
+    dialog.style.display = 'none';
     dialog.classList.remove('mura-dialog-fade');
     dialog.style.opacity = '';
-    input.classList.remove('mura-text-vanish');
-    input.style.opacity = '';
-    // Priority 1 — seeded/pending Mura moment
-    const pending = getPending();
-    if (pending.length > 0) {
-      _showingPending = true;
-      renderMessage(pending[0].message);
-      dialog.style.display = 'flex';
-      input.value = '';
-      input.focus();
-      return;
-    }
-    // Priority 2 — live API call with member's last 10 entries
-    showLoading();
-    input.value = '';
-    dialog.style.display = 'flex';
+  }
+
+  // ── Check for existing pending observation ───────────────────
+  async function _checkMuraPending() {
     try {
-      const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-ben';
+      const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-unknown';
+      const now = new Date().toISOString();
+      const { data } = await _sb
+        .from('mura_observations')
+        .select('id')
+        .eq('member_id', memberId)
+        .is('seen_at', null)
+        .gt('expires_at', now)
+        .limit(1)
+        .maybeSingle();
+      if (data) _muraShowGlow();
+    } catch (_) {}
+  }
+
+  // ── Check if Mura should speak (triggered on building open) ──
+  async function _checkMuraForBuilding(buildingName) {
+    try {
+      const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-unknown';
+      const villageId = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : '';
+
+      // 1. Check 48h cooldown
+      const { data: lastObs } = await _sb
+        .from('mura_observations')
+        .select('created_at')
+        .eq('member_id', memberId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (lastObs) {
+        const hoursSince = (Date.now() - new Date(lastObs.created_at).getTime()) / (1000 * 60 * 60);
+        if (hoursSince < 48) return;
+      }
+
+      // 2. Fetch last 50 entries
       const { data: entries, error: sbErr } = await _sb
         .from('member_language')
         .select('building, entry_type, content, timestamp')
         .eq('member_id', memberId)
+        .neq('entry_type', 'response_to_mura')
         .order('timestamp', { ascending: false })
-        .limit(10);
-      if (sbErr) throw new Error(sbErr.message);
-      if (!entries || entries.length === 0) { renderMessage(PLACEHOLDER_TEXT); input.focus(); return; }
-      const _muraUrl = _IS_LOCAL ? 'http://localhost:3001/mura' : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mura';
+        .limit(50);
+
+      if (sbErr || !entries || entries.length === 0) return;
+
+      // 3. Trigger logic
+      const { should, reason } = shouldMuraSpeak(entries);
+      if (!should) return;
+
+      // 4. Call Mura API
+      const _muraUrl = _IS_LOCAL
+        ? 'http://localhost:3001/mura'
+        : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mura';
+
       const resp = await fetch(_muraUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entries: entries.reverse() })
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+        body: JSON.stringify({ entries: [...entries].reverse(), last_messages: [], triggered_by: reason })
       });
-      if (!resp.ok) throw new Error('proxy ' + resp.status);
+      if (!resp.ok) return;
       const { text, error: apiErr } = await resp.json();
-      if (apiErr) throw new Error(apiErr);
-      renderMessage(text);
+      if (apiErr || !text) return;
+
+      // 5. Store observation with 24h expiry
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const { error: insertErr } = await _sb.from('mura_observations').insert({
+        member_id:    memberId,
+        village_id:   villageId,
+        text:         text,
+        triggered_by: reason,
+        expires_at:   expiresAt,
+      });
+      if (insertErr) { console.warn('[Mura]', insertErr.message); return; }
+
+      // 6. Show glow
+      _muraShowGlow();
+
     } catch (err) {
-      console.warn('[Mura]', err.message);
-      renderMessage(PLACEHOLDER_TEXT);
+      console.warn('[Mura check]', err.message);
     }
-    input.focus();
   }
 
-  function closeDialog() {
-    const text = input.value.trim();
-    const building = getCurrentBuilding();
-    if (text) {
-      const responses = JSON.parse(localStorage.getItem('mura_responses') || '[]');
-      responses.push({ ts: Date.now(), building, response: text });
-      localStorage.setItem('mura_responses', JSON.stringify(responses));
-      logToMura({ building: building || 'unknown', entry_type:'response_to_mura', content: text });
-    }
-    // Consume pending message only if that's what was shown
-    if (_showingPending) {
-      const pending = getPending();
-      if (pending.length > 0) {
-        pending.shift();
-        localStorage.setItem('mura_pending', JSON.stringify(pending));
-      }
-      _showingPending = false;
-    }
-    dialog.style.display = 'none';
-    input.value = '';
-    isActive = false;
-    firefly.classList.remove('mura-active');
-  }
+  // ── Expose hook for openBuildingPage ─────────────────────────
+  window._muraOnBuildingOpen = function(buildingName) {
+    _checkMuraPending();
+    _checkMuraForBuilding(buildingName);
+  };
 
-  // × closes immediately
-  closeBtn.addEventListener('click', closeDialog);
-  firefly.addEventListener('click', openDialog);
+  // ── Event wiring ──────────────────────────────────────────────
+  _glowDot.addEventListener('click', _muraReveal);
 
-  // Enter to send — text fades 2s, then window fades 2s
-  input.addEventListener('keydown', function(e) {
-    if (e.key !== 'Enter' || e.shiftKey) return;
-    e.preventDefault();
-    const text = this.value.trim();
-    if (!text) return;
-    // Save the response
-    const building = getCurrentBuilding();
-    const responses = JSON.parse(localStorage.getItem('mura_responses') || '[]');
-    responses.push({ ts: Date.now(), building, response: text });
-    localStorage.setItem('mura_responses', JSON.stringify(responses));
-    logToMura({ building: building || 'unknown', entry_type: 'response_to_mura', content: text });
-    if (_showingPending) {
-      const pending = getPending();
-      if (pending.length > 0) { pending.shift(); localStorage.setItem('mura_pending', JSON.stringify(pending)); }
-      _showingPending = false;
-    }
-    isActive = false;
-    firefly.classList.remove('mura-active');
-    // Step 1: fade text over 2s
-    this.classList.add('mura-text-vanish');
-    setTimeout(() => {
-      // Step 2: fade whole dialog over 2s
-      dialog.classList.add('mura-dialog-fade');
-      setTimeout(() => {
-        // Step 3: close silently, reset
-        dialog.style.display = 'none';
-        dialog.classList.remove('mura-dialog-fade');
-        dialog.style.opacity = '';
-        input.value = '';
-        input.classList.remove('mura-text-vanish');
-        input.style.opacity = '';
-      }, 2100);
-    }, 2100);
+  var _closeBtn = document.getElementById('mura-close-btn');
+  if (_closeBtn) _closeBtn.addEventListener('click', _muraCloseDialog);
+
+  var _muraNavBtn = document.getElementById('nav-mura');
+  if (_muraNavBtn) _muraNavBtn.addEventListener('click', function() {
+    var modal = document.getElementById('mura-lore-modal');
+    if (modal) modal.style.display = 'flex';
   });
 
-  // Observe display changes on all building overlays
-  BUILDING_OVERLAYS.forEach(id => {
+  var _loreClose = document.getElementById('mura-lore-close');
+  if (_loreClose) _loreClose.addEventListener('click', function() {
+    document.getElementById('mura-lore-modal').style.display = 'none';
+  });
+
+  // ── Hide glow when leaving a building ────────────────────────
+  _MURA_BUILDING_OVERLAYS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    new MutationObserver(updateFireflyVisibility)
-      .observe(el, { attributes: true, attributeFilter: ['style'] });
+    new MutationObserver(() => {
+      const open = el.classList.contains('open') || el.style.display === 'flex';
+      if (!open) {
+        _glowDot.classList.remove('active');
+        el.classList.remove('mura-edge-glow', 'active');
+      }
+    }).observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
   });
 
-  updateFireflyVisibility();
 })();
-// ===== END MURA =====
+// ===== END MURA v2 =====
+</script>
+
+<script>
+// ===== MURA v2 — openBuildingPage hook =====
+(function() {
+  var _origOpen = openBuildingPage;
+  window.openBuildingPage = function(buildingName) {
+    _origOpen(buildingName);
+    if (typeof window._muraOnBuildingOpen === 'function') {
+      window._muraOnBuildingOpen(buildingName);
+    }
+  };
+  // Also hook direct bonfire open
+  var _origBF = window.openBonfireManifesto;
+  if (_origBF) {
+    window.openBonfireManifesto = function() {
+      _origBF();
+      if (typeof window._muraOnBuildingOpen === 'function') {
+        window._muraOnBuildingOpen('Bonfire Plaza');
+      }
+    };
+  }
+})();
 </script>
 
 <script>
@@ -28482,6 +28742,7 @@ seedMemberLanguage();
 <!-- ── Dev Panel — right-side hamburger, founder / localhost only ─ -->
 <div id="dev-hamburger">≡</div>
 <div id="dev-panel">
+  <button class="dev-tb-btn" id="dev-save-session" title="Save your login session so localhost auto-signs-in">🔑 Save session</button>
   <button class="dev-tb-btn" id="dev-reset-dunbar">↺ Reset Dunbar</button>
   <button class="dev-tb-btn" id="dev-clear-profile">⊘ Clear Profile</button>
   <button class="dev-tb-btn" id="dev-center-map">⊕ Center Map</button>
@@ -28577,6 +28838,7 @@ seedMemberLanguage();
 <div id="dunbar-gate-text">
   <span class="gate-label">Find your village</span>
 </div>
+<div id="mondo-map-icon" title="Mondo — Question and answer">問</div>
 
 <!-- ── Find Your Village — Auth Modal ─────────────────────────── -->
 <div id="dunbar-auth-modal">
@@ -28721,6 +28983,12 @@ seedMemberLanguage();
     var signoutNav = document.getElementById('nav-signout');
     if (signoutNav) signoutNav.style.display = (role !== 'guest') ? 'flex' : 'none';
     // (settings and admin-mode-toggle items removed from nav HTML)
+    // Mondo — visible for resident, citizen, founder
+    var mondoNav = document.getElementById('nav-mondo');
+    if (mondoNav) mondoNav.style.display = (role !== 'guest') ? 'flex' : 'none';
+    // Mura — visible for resident, citizen, founder (same as Mondo)
+    var muraNav = document.getElementById('nav-mura');
+    if (muraNav) muraNav.style.display = (role !== 'guest') ? 'flex' : 'none';
     // Travel — visible for all logged-in users (resident can visit before applying)
     var travelNav = document.getElementById('nav-travel');
     if (travelNav) travelNav.style.display = (role !== 'guest') ? 'flex' : 'none';
@@ -29323,6 +29591,14 @@ seedMemberLanguage();
       });
     }
 
+    // Wire Mondo nav button
+    var _mondoBtn = document.getElementById('nav-mondo');
+    if (_mondoBtn) {
+      _mondoBtn.addEventListener('click', function() {
+        if (typeof openMondo === 'function') openMondo();
+      });
+    }
+
     // Wire Travel button — opens Travel overlay (VNP Phase 3)
     var _travelBtn = document.getElementById('nav-travel');
     if (_travelBtn) {
@@ -29455,7 +29731,7 @@ seedMemberLanguage();
         } else {
           window._sbAuthUid = null;
           window._sbAuthEmail = null;
-          window._isFounder = false;
+          window._isFounder = (location.hostname === 'localhost');
         }
         _resolveVillageRole();
         _applyFounderGates();
@@ -29731,6 +30007,25 @@ seedMemberLanguage();
       });
     }
 
+    // 🔑 Save session → saveserver (makes localhost auto-login work)
+    const _saveSessionBtn = document.getElementById('dev-save-session');
+    if (_saveSessionBtn) {
+      _saveSessionBtn.addEventListener('click', async function() {
+        try {
+          const { data: { session } } = await window._supabase.auth.getSession();
+          if (!session) { _saveSessionBtn.textContent = '⚠ Not signed in'; return; }
+          const payload = { access_token: session.access_token, refresh_token: session.refresh_token };
+          const r = await fetch('http://localhost:3001/dev-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          _saveSessionBtn.textContent = r.ok ? '✓ Saved' : '⚠ Saveserver error';
+          setTimeout(() => { _saveSessionBtn.textContent = '🔑 Save session'; }, 2500);
+        } catch(e) { _saveSessionBtn.textContent = '⚠ Saveserver not running'; setTimeout(() => { _saveSessionBtn.textContent = '🔑 Save session'; }, 2500); }
+      });
+    }
+
     // Dunbar entrance spawn — place avatar at gate arch on load (no animation yet)
     if (window._dunbarMode) {
       try {
@@ -29867,7 +30162,7 @@ seedMemberLanguage();
 .widget-card { background:#fff; border:1.5px solid #dbdbdb; border-radius:10px; overflow:hidden; position:relative; min-height:180px; border-left:3px solid #dbdbdb; }
 .widget-card.minimised { min-height:auto; }
 .widget-card.minimised .wc-body { display:none; }
-.wc-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #f0f0f0; }
+.wc-head { display:flex; align-items:center; justify-content:space-between; padding:0 14px; min-height:44px; border-bottom:1.5px solid #efefef; }
 /* Widget colour palette — warm earth tones */
 .widget-card[data-wc="amber"]   { border-left-color:#c8a84b; background:#fdfbf6; } .widget-card[data-wc="amber"]   .wc-head { background:#faf6ec; }
 .widget-card[data-wc="clay"]    { border-left-color:#b07848; background:#fdf9f5; } .widget-card[data-wc="clay"]    .wc-head { background:#faf4ee; }
@@ -29931,6 +30226,29 @@ seedMemberLanguage();
 .wg-fire-table { width:100%; font-size:11px; border-collapse:collapse; }
 .wg-fire-table th { text-align:left; padding:4px 6px; color:#8e8e8e; font-weight:600; border-bottom:1px solid #e8e8e8; }
 .wg-fire-table td { padding:4px 6px; border-bottom:1px solid #f5f5f5; }
+/* Widget header chips — placed widgets shown in building header */
+.wg-header-chips { display:flex; flex-wrap:wrap; gap:3px; align-items:center; margin:0 6px; overflow:hidden; max-height:28px; }
+.wg-header-chip { font-size:10px; font-weight:600; color:#8e8e8e; background:#f5f5f5; border:1px solid #e8e8e8; border-radius:4px; padding:2px 7px; cursor:pointer; white-space:nowrap; transition:all 0.12s; }
+.wg-header-chip:hover { color:#c8a84b; border-color:#c8a84b; background:#faf6ed; }
+/* Widget drag-and-drop */
+.widget-grid.wg-drop-active { outline:2px dashed rgba(200,168,75,0.5); outline-offset:-4px; background:rgba(200,168,75,0.04); }
+.widget-slot-empty { border:2px dashed rgba(200,168,75,0.2); border-radius:10px; min-height:80px; display:flex; align-items:center; justify-content:center; transition:border-color 0.15s,background 0.15s; }
+.widget-slot-empty:hover { border-color:rgba(200,168,75,0.4); background:rgba(200,168,75,0.03); }
+.widget-slot-empty .wse-label { font-size:11px; color:#c8a84b; opacity:0.4; font-weight:500; }
+.widget-slot-empty.wg-drop-active { border-color:rgba(200,168,75,0.6); background:rgba(200,168,75,0.06); }
+.widget-card-native { overflow:visible; }
+.widget-card-native .cv-widget-head { display:none; }
+.widget-card-native .cv-widget { border:none; background:none; box-shadow:none; margin:0; }
+.widget-card-native .wc-body { max-height:none; overflow:visible; padding:0; }
+.widget-card.wg-dragging { opacity:0.3; transform:scale(0.97); transition:opacity 0.15s,transform 0.15s; }
+.wc-head[draggable="true"] { cursor:grab; }
+.wc-head[draggable="true"]::before { content:'\u2800\u28FF'; font-size:11px; color:#c8a84b; opacity:0.35; margin-right:8px; letter-spacing:-2px; }
+.wc-head[draggable="true"]:hover::before { opacity:0.7; }
+.wg-lib-card[draggable="true"] { cursor:grab; transition:opacity 0.15s; }
+.wg-lib-card[draggable="true"]::after { content:'drag'; font-size:9px; text-transform:uppercase; letter-spacing:0.08em; color:#c8a84b; opacity:0.5; padding:3px 8px; border:1px solid rgba(200,168,75,0.3); border-radius:4px; flex-shrink:0; margin-left:4px; }
+.wg-lib-card.wg-lib-dragging { opacity:0.3; }
+#wg-remove-zone { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); padding:12px 28px; background:rgba(232,128,112,0.12); color:#e88070; border:2px dashed #e88070; border-radius:10px; font-size:12px; font-weight:600; z-index:10600; display:none; transition:background 0.15s; }
+#wg-remove-zone.wg-rz-hover { background:rgba(232,128,112,0.3); }
 @media(max-width:600px) {
   .widget-grid { grid-template-columns:1fr; }
   .wc-resize { display:none; }
@@ -29941,16 +30259,74 @@ seedMemberLanguage();
 (function() {
   // ===== WIDGET SYSTEM =====
   var BUILDINGS = [
-    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:4, fixed:['practice-log'], available:['work-timer','current-project','firing-log','what-i-noticed','unseen-work','practicing-not-performing','someone-to-thank'], defaultMode:'conservative' },
-    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:['community-journals'], available:['reading-list','pinned-quote','old-new-story','unsent-letter','reflection-prompt'], defaultMode:'conservative' },
-    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:3, fixed:['commons-chat'], available:['mood-today','what-i-need','offer-village','what-i-noticed','question-for-village','who-was-at-fire'], defaultMode:'widgets' },
-    { id:'observatory-overlay', slug:'obs', name:'The Observatory', headerSel:'.bld-top', bodySel:'.bld-inner', slots:3, fixed:[], available:['reflection-prompt','horizon-notes','old-new-story','unlearning','practicing-not-performing'], defaultMode:'conservative' }
+    { id:'studio-quarter-overlay', slug:'studio', name:'Studio Quarter', headerSel:'.bld-top', bodySel:'.bld-inner', slots:16, fixed:[],
+      native:[
+        {wid:'n-sq-log',domId:'sq-tab-mystudio',name:'Practice Log',span:4},
+        {wid:'n-sq-pieces',domId:'ms-tab-pieces',name:'Pieces',span:2},
+        {wid:'n-sq-invoices',domId:'ms-tab-invoices',name:'Invoices',span:2},
+        {wid:'n-sq-workshops',domId:'ms-tab-workshops',name:'Workshops',span:4},
+        {wid:'n-sq-collectors',domId:'ms-tab-collectors',name:'Collectors',span:2},
+        {wid:'n-sq-visits',domId:'sq-tab-visits',name:'Visits',span:2},
+        {wid:'n-sq-process',domId:'sq-tab-process',name:'Process Board',span:2},
+        {wid:'n-sq-failures',domId:'sq-tab-failure',name:'Failure Wall',span:2}
+      ], hideOnWidgets:['sq-tab-bar'],
+      available:['work-timer','current-project','firing-log','what-i-noticed','unseen-work','practicing-not-performing','someone-to-thank','building-chat','vault'], defaultMode:'widgets' },
+    { id:'library-overlay', slug:'library', name:'The Library', headerSel:'.bld-top', bodySel:'.bld-inner', slots:10, fixed:[],
+      native:[
+        {wid:'n-lib-journals',domId:'lib-journals',name:'Journals',span:4},
+        {wid:'n-lib-process',domId:'lib-process',name:'Process Notes',span:4},
+        {wid:'n-lib-glazes',domId:'lib-glazes',name:'Glaze Recipes',span:4}
+      ], hideOnWidgets:['lib-tabs'],
+      available:['reading-list','pinned-quote','old-new-story','unsent-letter','reflection-prompt','building-chat'], defaultMode:'widgets' },
+    { id:'cafe-room-overlay', slug:'cafe', name:'The Commons', headerSel:'#cafe-room-top', bodySel:'#cafe-main', slots:16, fixed:[],
+      native:[
+        {wid:'n-notice',domId:'cw-notice',name:'Notice Board',span:4},
+        {wid:'n-tables',domId:'cw-tables',name:'Tables',span:2},
+        {wid:'n-wall',domId:'cw-wall',name:"Maker's Wall",span:2},
+        {wid:'n-council',domId:'cw-council',name:'The Council',span:4},
+        {wid:'n-roundtable',domId:'cw-roundtable',name:'Roundtable Corner',span:2},
+        {wid:'n-invite',domId:'cw-invite',name:'Invite for Tea',span:2}
+      ], hideOnWidgets:['commons-scroll-nav','commons-canvas'],
+      available:['mood-today','what-i-need','offer-village','what-i-noticed','question-for-village','who-was-at-fire','building-chat'], defaultMode:'widgets' },
+    { id:'observatory-overlay', slug:'obs', name:'The Observatory', headerSel:'.bld-top', bodySel:'.bld-inner', slots:12, fixed:[],
+      native:[], hideOnWidgets:['obs-tab-bar'],
+      available:['reflection-prompt','horizon-notes','old-new-story','unlearning','practicing-not-performing','building-chat'], defaultMode:'widgets' },
+    { id:'mentor-overlay', slug:'mentor', name:'Mentor Cluster', headerSel:'.bld-top', bodySel:'.bld-inner', slots:10, fixed:[],
+      native:[
+        {wid:'n-mentor-learn',domId:'mentor-tab-learn',name:'Looking to Learn',span:4},
+        {wid:'n-mentor-mentors',domId:'mentor-tab-mentors',name:'Mentors',span:2},
+        {wid:'n-mentor-wall',domId:'mentor-tab-wall',name:'The Wall',span:2}
+      ], hideOnWidgets:[],
+      available:['reflection-prompt','what-i-noticed','someone-to-thank','practicing-not-performing','question-for-village','building-chat'], defaultMode:'widgets' },
+    { id:'gallery-overlay', slug:'gallery', name:'The Gallery', headerSel:'.bld-top', bodySel:'.bld-inner', slots:10, fixed:[],
+      native:[], hideOnWidgets:[],
+      available:['pinned-quote','what-i-noticed','unseen-work','old-new-story','horizon-notes','building-chat'], defaultMode:'widgets' },
+    { id:'school-overlay', slug:'school', name:'The School', headerSel:'.bld-top', bodySel:'.bld-inner', slots:12, fixed:[],
+      native:[
+        {wid:'n-school-workshops',domId:'school-workshops-listings',name:'Workshops',span:4},
+        {wid:'n-school-teach',domId:'school-teach-here',name:'Want to Teach Here',span:2},
+        {wid:'n-school-paths',domId:'school-learning-paths',name:'Learning Paths',span:2},
+        {wid:'n-school-mastery',domId:'school-mastery',name:'Mastery Paths',span:4},
+        {wid:'n-school-mondo',domId:'school-mondo-widget',name:'Mondo',span:2}
+      ], hideOnWidgets:['school-tabs'],
+      available:['reflection-prompt','unlearning','practicing-not-performing','horizon-notes','what-i-noticed','building-chat'], defaultMode:'widgets' },
+    { id:'exchange-overlay', slug:'exchange', name:'Residency & Exchange', headerSel:'.bld-top', bodySel:'.bld-inner', slots:10, fixed:[],
+      native:[
+        {wid:'n-exchange-listings',domId:'exchange-listings',name:'Listings',span:2},
+        {wid:'n-exchange-wishes',domId:'exchange-wishes',name:'Wishes',span:2}
+      ], hideOnWidgets:['exchange-filters'],
+      available:['offer-village','what-i-need','question-for-village','mood-today','horizon-notes','building-chat'], defaultMode:'widgets' },
+    { id:'bonfire-manifesto-overlay', slug:'bonfire', name:'The Bonfire', headerSel:'.bld-top', bodySel:'.bonfire-scroll-container', slots:6, fixed:[],
+      native:[
+        {wid:'n-bonfire-manifesto',domId:'bonfire-manifesto-text',name:'The Manifesto',span:4}
+      ], hideOnWidgets:[],
+      available:['who-was-at-fire','mood-today','reflection-prompt','what-i-noticed','building-chat'], defaultMode:'widgets' }
   ];
 
   var WIDGETS = {
-    'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'\u{1F4DD}', defaultSpan:4, color:'amber' },
-    'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'\u{1F4D6}', defaultSpan:4, color:'slate' },
-    'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'\u2615', defaultSpan:4, color:'clay' },
+    'practice-log': { name:'Practice Log', desc:'Your private session log', emoji:'', defaultSpan:4, color:'amber' },
+    'community-journals': { name:'Community Journals', desc:'Shared village journal entries', emoji:'', defaultSpan:4, color:'slate' },
+    'commons-chat': { name:'Commons Chat', desc:'The cafe conversation', emoji:'', defaultSpan:4, color:'clay' },
     'work-timer': { name:'Time at the Wheel', desc:'Press when you begin. Press when you stop.', emoji:'', defaultSpan:1, color:'amber',
       render: function(el, data, save) {
         var d = data || { sessions:[], running:false, startedAt:null };
@@ -29972,14 +30348,14 @@ seedMemberLanguage();
         draw();
       }
     },
-    'current-project': { name:'What I\u2019m Making', desc:'What has your hands right now', emoji:'\u{1F3AF}', defaultSpan:2, color:'clay',
+    'current-project': { name:'What I\u2019m Making', desc:'What has your hands right now', emoji:'', defaultSpan:2, color:'clay',
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What are you working on?">'+_wEsc(d.text)+'</textarea>';
         el.querySelector('textarea').oninput = function() { d.text=this.value; clearTimeout(tm); tm=setTimeout(function(){save(d);},800); };
       }
     },
-    'firing-log': { name:'What Went Into the Kiln', desc:'Each firing is an experiment', emoji:'\u{1F525}', defaultSpan:4,
+    'firing-log': { name:'What Went Into the Kiln', desc:'Each firing is an experiment', emoji:'', defaultSpan:4,
       render: function(el, data, save) {
         var d = data || { entries:[] };
         function draw() {
@@ -29993,7 +30369,7 @@ seedMemberLanguage();
         draw();
       }
     },
-    'reading-list': { name:'Reading List', desc:'Books you are reading', emoji:'\u{1F4DA}', defaultSpan:2,
+    'reading-list': { name:'Reading List', desc:'Books you are reading', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { books:[] }; var states=['reading','done','want']; var colors={reading:'#c8a84b',done:'#22c55e',want:'#8e8e8e'};
         function draw() {
@@ -30008,7 +30384,7 @@ seedMemberLanguage();
         draw();
       }
     },
-    'pinned-quote': { name:'Pinned Quote', desc:'A quote that matters', emoji:'\u{1F4AC}', defaultSpan:2,
+    'pinned-quote': { name:'Pinned Quote', desc:'A quote that matters', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { quote:'', author:'' };
         function draw() {
@@ -30031,7 +30407,7 @@ seedMemberLanguage();
         var tm=null;el.querySelector('textarea').oninput=function(){var v=this.value;clearTimeout(tm);tm=setTimeout(function(){if(todayEntry)todayEntry.text=v;else{d.entries.push({date:today,text:v});todayEntry=d.entries[d.entries.length-1];}save(d);},600);};
       }
     },
-    'reflection-prompt': { name:'Reflection Prompt', desc:'Rotating questions to sit with', emoji:'\u{1FA9E}', defaultSpan:2,
+    'reflection-prompt': { name:'Reflection Prompt', desc:'Rotating questions to sit with', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { idx:0, notes:'' }; var tm=null;
         var qs = ['What surprised you this week?','What are you avoiding?','What would you make if no one was watching?','What broke recently that taught you something?','What do you know now that you did not know a month ago?','What is the gap between what you say and what you do?','What would Mura notice about your silence?'];
@@ -30040,7 +30416,7 @@ seedMemberLanguage();
         el.querySelector('textarea').oninput=function(){d.notes=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     },
-    'horizon-notes': { name:'Horizon Notes', desc:'Long-view observations', emoji:'\u{1F52D}', defaultSpan:2,
+    'horizon-notes': { name:'Horizon Notes', desc:'Long-view observations', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<textarea style="width:100%;height:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;" placeholder="What do you see from here?">'+_wEsc(d.text)+'</textarea>';
@@ -30056,7 +30432,7 @@ seedMemberLanguage();
         el.querySelector('#wni-share').onclick=function(){var text=el.querySelector('#wni-text').value.trim();if(!text)return;if(typeof sendBonfireMessage==='function'){var inp=document.getElementById('bonfire-chat-input');if(inp){inp.value='I noticed: '+text;sendBonfireMessage();}}this.textContent='Shared';this.disabled=true;};
       }
     },
-    'unseen-work': { name:'What I Made That No One Will See', desc:'The inverse of performance', emoji:'\u{1F54A}', defaultSpan:2,
+    'unseen-work': { name:'What I Made That No One Will See', desc:'The inverse of performance', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">What did you make that was never for an audience?</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:80px;" placeholder="Something made without caring how it looks...">'+_wEsc(d.text)+'</textarea>';
@@ -30088,14 +30464,14 @@ seedMemberLanguage();
         el.querySelector('#win-share').onchange=function(){d.shared=this.checked;save(d);};
       }
     },
-    'unlearning': { name:'Something I\u2019m Unlearning', desc:'When a belief loosens, it goes here', emoji:'\u{1F9F9}', defaultSpan:2,
+    'unlearning': { name:'Something I\u2019m Unlearning', desc:'When a belief loosens, it goes here', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">Not updated daily. When something loosens.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="A belief about productivity, worth, what counts...">'+_wEsc(d.text)+'</textarea>';
         el.querySelector('textarea').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     },
-    'unsent-letter': { name:'A Letter I Haven\u2019t Sent', desc:'Write to a specific person. It stays private.', emoji:'\u{2709}', defaultSpan:4,
+    'unsent-letter': { name:'A Letter I Haven\u2019t Sent', desc:'Write to a specific person. It stays private.', emoji:'', defaultSpan:4,
       render: function(el, data, save) {
         var d = data || { to:'', text:'' }; var tm=null;
         el.innerHTML = '<div style="margin-bottom:8px;"><input style="border:none;border-bottom:1px solid #e8e8e8;padding:4px 0;font-size:13px;font-family:inherit;color:#262626;outline:none;width:200px;" id="wul-to" placeholder="Dear..." value="'+_wEsc(d.to)+'"></div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:80px;" id="wul-body" placeholder="What you want to say...">'+_wEsc(d.text)+'</textarea>';
@@ -30103,7 +30479,7 @@ seedMemberLanguage();
         el.querySelector('#wul-body').oninput=function(){d.text=this.value;clearTimeout(tm);tm=setTimeout(function(){save(d);},800);};
       }
     },
-    'practicing-not-performing': { name:'Practicing, Not Performing', desc:'Something you do without caring how it looks', emoji:'\u{1F3AF}', defaultSpan:2,
+    'practicing-not-performing': { name:'Practicing, Not Performing', desc:'Something you do without caring how it looks', emoji:'', defaultSpan:2,
       render: function(el, data, save) {
         var d = data || { text:'' }; var tm=null;
         el.innerHTML = '<div style="font-size:12px;color:#8e8e8e;margin-bottom:8px;font-style:italic;">The distinction the manifesto makes, made personal.</div><textarea style="width:100%;border:none;resize:none;font-family:inherit;font-size:13px;color:#262626;outline:none;padding:0;height:60px;" placeholder="What are you doing without an audience?">'+_wEsc(d.text)+'</textarea>';
@@ -30143,6 +30519,33 @@ seedMemberLanguage();
         el.querySelector('#wwf-who').oninput=function(){clearTimeout(tm);tm=setTimeout(up,600);};
         el.querySelector('#wwf-what').oninput=function(){clearTimeout(tm);tm=setTimeout(up,600);};
       }
+    },
+    'building-chat': { name:'Building Chat', desc:'Real-time chat for this building', emoji:'', defaultSpan:4, color:'clay',
+      render: function(el, data, save) {
+        // Find which building this widget is in
+        var gridEl = el.closest('.widget-grid');
+        var slug = gridEl ? gridEl.id.replace('wg-','') : '';
+        if (!slug) { el.innerHTML = '<div style="color:#8e8e8e;font-size:12px;">Chat unavailable</div>'; return; }
+        // Create a container and init the building chat system into it
+        var chatWrap = document.createElement('div');
+        chatWrap.style.cssText = 'display:flex;flex-direction:column;height:300px;overflow:hidden;';
+        el.appendChild(chatWrap);
+        if (typeof _initBldChat === 'function') {
+          var _SLUG_LABEL = {studio:'Studio Quarter',library:'Library',cafe:'Commons',obs:'Observatory',mentor:'Mentor Cluster',gallery:'Gallery',school:'School',exchange:'Exchange',bonfire:'Bonfire'};
+          _initBldChat(chatWrap, slug, _SLUG_LABEL[slug] || slug);
+        } else {
+          chatWrap.innerHTML = '<div style="color:#8e8e8e;font-size:12px;padding:12px;">Chat loading...</div>';
+        }
+      }
+    },
+    'vault': { name:'Your Vault', desc:'Personal record of everything you have made', emoji:'', defaultSpan:4, color:'amber',
+      render: function(el, data, save) {
+        el.innerHTML = '<div style="text-align:center;padding:20px 0;"><div style="font-size:24px;color:#c8a84b;margin-bottom:8px;">Your Vault</div><div style="font-size:12px;color:#8e8e8e;margin-bottom:12px;">Your permanent record in the village. Everything you have made, every day you showed up.</div><button style="padding:8px 20px;border-radius:8px;border:1.5px solid #c8a84b;background:none;color:#c8a84b;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" id="wv-open">Open Vault</button></div>';
+        el.querySelector('#wv-open').onclick = function() {
+          if (typeof openVaultRoom === 'function') openVaultRoom();
+          else if (document.getElementById('vault-overlay')) document.getElementById('vault-overlay').style.display = 'flex';
+        };
+      }
     }
   };
 
@@ -30176,17 +30579,147 @@ seedMemberLanguage();
   }
 
   function _getMode(bldg) {
-    var firstKey = vKey('wFirst_'+bldg.slug);
-    var modeKey = vKey('wMode_'+bldg.slug);
-    if(!localStorage.getItem(firstKey)) {
-      localStorage.setItem(firstKey, '1');
-      localStorage.setItem(modeKey, bldg.defaultMode);
-      return bldg.defaultMode;
-    }
-    return localStorage.getItem(modeKey) || bldg.defaultMode;
+    return 'widgets'; // widget-only mode — no toggle
   }
   function _setMode(bldg, mode) {
-    localStorage.setItem(vKey('wMode_'+bldg.slug), mode);
+    // no-op — widget-only mode
+  }
+
+  // Update header chips showing placed widget names
+  function _updateHeaderChips(bldg) {
+    var overlay = document.getElementById(bldg.id);
+    if (!overlay) return;
+    var header = overlay.querySelector(bldg.headerSel);
+    if (!header) return;
+    // Remove old chips
+    var old = header.querySelector('.wg-header-chips');
+    if (old) old.remove();
+    // Build new chips from layout
+    var layout = _getLayout(bldg.slug) || _defaultLayout(bldg);
+    var placed = layout.placed.filter(function(w) { return w !== null; });
+    if (!placed.length) return;
+    var chips = document.createElement('div');
+    chips.className = 'wg-header-chips';
+    placed.forEach(function(wid) {
+      var nw = _findNative(bldg, wid);
+      var name = nw ? nw.name : (WIDGETS[wid] ? WIDGETS[wid].name : wid);
+      var chip = document.createElement('span');
+      chip.className = 'wg-header-chip';
+      chip.textContent = name;
+      chip.onclick = function() {
+        // Scroll to the widget in the grid
+        var grid = document.getElementById('wg-' + bldg.slug);
+        if (!grid) return;
+        var cards = grid.querySelectorAll('.widget-card');
+        for (var i = 0; i < cards.length; i++) {
+          var title = cards[i].querySelector('.wc-title');
+          if (title && title.textContent === name) { cards[i].scrollIntoView({ behavior:'smooth', block:'nearest' }); break; }
+        }
+      };
+      chips.appendChild(chip);
+    });
+    // Insert before the Widgets library button
+    var libBtn = header.querySelector('.wg-lib-btn');
+    if (libBtn) header.insertBefore(chips, libBtn);
+    else header.appendChild(chips);
+  }
+
+  // Drag-and-drop state
+  var _dragWidget = null;
+  var _removeZone = null;
+  function _showRemoveZone() {
+    if (!_removeZone) {
+      _removeZone = document.createElement('div');
+      _removeZone.id = 'wg-remove-zone';
+      _removeZone.textContent = 'Drop here to remove';
+      document.body.appendChild(_removeZone);
+      _removeZone.addEventListener('dragover', function(e) {
+        if (_dragWidget && _dragWidget.action === 'remove') { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; _removeZone.classList.add('wg-rz-hover'); }
+      });
+      _removeZone.addEventListener('dragleave', function() { _removeZone.classList.remove('wg-rz-hover'); });
+      _removeZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        if (_dragWidget && _dragWidget.action === 'remove') {
+          var wid = _dragWidget.wid, b = _dragWidget.bldg;
+          var ly = _getLayout(b.slug) || { placed:[], sizes:{} };
+          var idx = ly.placed.indexOf(wid);
+          if (idx !== -1) { ly.sizes['_e'+idx] = ly.sizes[wid] || 2; ly.placed[idx] = null; }
+          delete ly.sizes[wid];
+          _saveLayout(b.slug, ly);
+          renderWidgetGrid(b);
+          var lib = document.getElementById('wg-sheet-' + b.slug);
+          if (lib) { lib.remove(); openLibrary(b); }
+        }
+      });
+    }
+    _removeZone.style.display = 'block';
+    _removeZone.classList.remove('wg-rz-hover');
+  }
+  function _hideRemoveZone() {
+    if (_removeZone) { _removeZone.style.display = 'none'; _removeZone.classList.remove('wg-rz-hover'); }
+  }
+
+  // Find native widget config by wid
+  function _findNative(bldg, wid) {
+    if (!bldg.native) return null;
+    for (var i = 0; i < bldg.native.length; i++) { if (bldg.native[i].wid === wid) return bldg.native[i]; }
+    return null;
+  }
+
+  // Rescue native elements back to placeholders before grid clear
+  function _rescueNatives(bldg, grid) {
+    if (!bldg.native) return;
+    bldg.native.forEach(function(n) {
+      var orig = document.getElementById(n.domId);
+      var ph = document.getElementById('wg-ph-' + n.domId);
+      if (orig && ph && grid.contains(orig)) {
+        ph.parentElement.insertBefore(orig, ph);
+        orig.style.display = 'none';
+        orig.style.gridColumn = '';
+      }
+    });
+  }
+
+  // Restore all native elements and show original containers
+  function _restoreNatives(bldg) {
+    if (bldg.native) {
+      bldg.native.forEach(function(n) {
+        var orig = document.getElementById(n.domId);
+        var ph = document.getElementById('wg-ph-' + n.domId);
+        if (orig && ph) {
+          ph.parentElement.insertBefore(orig, ph);
+          ph.remove();
+          orig.style.display = '';
+          orig.style.gridColumn = '';
+          delete orig.dataset.wgPlaced;
+        }
+      });
+    }
+    if (bldg.hideOnWidgets) {
+      bldg.hideOnWidgets.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = '';
+      });
+    }
+  }
+
+  // Build default layout with native widgets pre-placed
+  function _defaultLayout(bldg) {
+    var layout = { placed:[], sizes:{} };
+    if (bldg.native) {
+      bldg.native.forEach(function(n) {
+        layout.placed.push(n.wid);
+        layout.sizes[n.wid] = n.span || 2;
+      });
+    }
+    return layout;
+  }
+
+  // Check if a wid is a valid addable widget for a building
+  function _isAddable(bldg, wid) {
+    if (bldg.available.indexOf(wid) !== -1) return true;
+    if (_findNative(bldg, wid)) return true;
+    return false;
   }
 
   // Render placed widgets
@@ -30195,12 +30728,157 @@ seedMemberLanguage();
     if(!grid) return;
     var mode = _getMode(bldg);
     grid.classList.toggle('active', mode==='widgets');
-    if(mode!=='widgets') return;
+    if(mode!=='widgets') {
+      _restoreNatives(bldg);
+      return;
+    }
 
-    var layout = _getLayout(bldg.slug) || { placed:[], sizes:{} };
+    // Rescue native elements before clearing grid
+    _rescueNatives(bldg, grid);
+
+    var layout = _getLayout(bldg.slug) || _defaultLayout(bldg);
     grid.innerHTML = '';
 
-    layout.placed.forEach(function(wid) {
+    // Hide original content containers in widget mode
+    if (bldg.hideOnWidgets) {
+      bldg.hideOnWidgets.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    // Accept drops from library
+    grid.ondragover = function(e) {
+      if (_dragWidget && _dragWidget.action === 'add') { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; grid.classList.add('wg-drop-active'); }
+    };
+    grid.ondragleave = function(e) { if (!grid.contains(e.relatedTarget)) grid.classList.remove('wg-drop-active'); };
+    grid.ondrop = function(e) {
+      e.preventDefault(); grid.classList.remove('wg-drop-active');
+      if (_dragWidget && _dragWidget.action === 'add') {
+        var wid = _dragWidget.wid;
+        // Find first null slot or append
+        var slotIdx = -1;
+        for (var i = 0; i < layout.placed.length; i++) { if (layout.placed[i] === null) { slotIdx = i; break; } }
+        if (wid && _isAddable(bldg, wid) && layout.placed.indexOf(wid) === -1) {
+          var nw = _findNative(bldg, wid);
+          var defSpan = nw ? (nw.span || 2) : (WIDGETS[wid] ? WIDGETS[wid].defaultSpan || 2 : 2);
+          if (slotIdx !== -1) { layout.placed[slotIdx] = wid; delete layout.sizes['_e'+slotIdx]; }
+          else layout.placed.push(wid);
+          layout.sizes[wid] = defSpan;
+          _saveLayout(bldg.slug, layout); renderWidgetGrid(bldg);
+          var lib = document.getElementById('wg-sheet-' + bldg.slug);
+          if (lib) { lib.remove(); openLibrary(bldg); }
+        }
+      }
+    };
+
+    layout.placed.forEach(function(wid, idx) {
+      // Empty slot — render placeholder
+      if (!wid) {
+        var emptySpan = layout.sizes['_e'+idx] || 2;
+        var slot = document.createElement('div');
+        slot.className = 'widget-slot-empty';
+        slot.style.gridColumn = 'span ' + emptySpan;
+        slot.innerHTML = '<span class="wse-label">empty</span>';
+        // Drop target for filling empty slots
+        slot.addEventListener('dragover', function(e) {
+          if (_dragWidget && _dragWidget.action === 'add') { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; slot.classList.add('wg-drop-active'); }
+        });
+        slot.addEventListener('dragleave', function() { slot.classList.remove('wg-drop-active'); });
+        slot.addEventListener('drop', function(e) {
+          e.preventDefault(); slot.classList.remove('wg-drop-active');
+          if (_dragWidget && _dragWidget.action === 'add') {
+            var dwid = _dragWidget.wid;
+            if (dwid && _isAddable(bldg, dwid) && layout.placed.indexOf(dwid) === -1) {
+              var nw = _findNative(bldg, dwid);
+              var ds = nw ? (nw.span || 2) : (WIDGETS[dwid] ? WIDGETS[dwid].defaultSpan || 2 : 2);
+              layout.placed[idx] = dwid; layout.sizes[dwid] = ds; delete layout.sizes['_e'+idx];
+              _saveLayout(bldg.slug, layout); renderWidgetGrid(bldg);
+              var lib = document.getElementById('wg-sheet-' + bldg.slug);
+              if (lib) { lib.remove(); openLibrary(bldg); }
+            }
+          }
+        });
+        grid.appendChild(slot);
+        return;
+      }
+
+      // Native widget — adopt existing DOM element
+      var nw = _findNative(bldg, wid);
+      if (nw) {
+        var orig = document.getElementById(nw.domId);
+        if (!orig) return;
+        // Create placeholder in original position (once)
+        if (!document.getElementById('wg-ph-' + nw.domId)) {
+          var ph = document.createElement('div');
+          ph.id = 'wg-ph-' + nw.domId;
+          ph.style.display = 'none';
+          orig.parentElement.insertBefore(ph, orig);
+        }
+        // Wrap in a widget card shell
+        var nSpan = layout.sizes[wid] || nw.span || 2;
+        var nCard = document.createElement('div');
+        nCard.className = 'widget-card widget-card-native';
+        nCard.style.gridColumn = 'span ' + nSpan;
+        var nHead = document.createElement('div');
+        nHead.className = 'wc-head';
+        nHead.setAttribute('draggable', 'true');
+        nHead.innerHTML = '<span class="wc-title">' + nw.name + '</span><div class="wc-actions"><button class="wc-min" title="Minimise">\u2212</button><button class="wc-rem" title="Remove">\u00D7</button></div>';
+        nCard.appendChild(nHead);
+        var nBody = document.createElement('div');
+        nBody.className = 'wc-body';
+        orig.style.display = '';
+        nBody.appendChild(orig);
+        nCard.appendChild(nBody);
+        // Resize handle
+        var nHandle = document.createElement('div');
+        nHandle.className = 'wc-resize';
+        nCard.appendChild(nHandle);
+        grid.appendChild(nCard);
+        // Drag handlers
+        nHead.addEventListener('dragstart', function(e) {
+          e.stopPropagation();
+          _dragWidget = { action:'remove', wid:wid, bldg:bldg };
+          e.dataTransfer.effectAllowed = 'move';
+          try { e.dataTransfer.setData('text/plain', wid); } catch(_) {}
+          try { e.dataTransfer.setDragImage(nCard, 0, 0); } catch(_) {}
+          setTimeout(function() { nCard.classList.add('wg-dragging'); }, 0);
+          _showRemoveZone();
+        });
+        nHead.addEventListener('dragend', function() { nCard.classList.remove('wg-dragging'); _hideRemoveZone(); _dragWidget = null; });
+        // Minimise
+        nHead.querySelector('.wc-min').onclick = function() {
+          nCard.classList.toggle('minimised');
+          this.textContent = nCard.classList.contains('minimised') ? '+' : '\u2212';
+        };
+        // Remove — null the slot, rescue element back
+        nHead.querySelector('.wc-rem').onclick = function() {
+          var ri = layout.placed.indexOf(wid);
+          if (ri !== -1) { layout.sizes['_e'+ri] = layout.sizes[wid] || nw.span || 2; layout.placed[ri] = null; }
+          delete layout.sizes[wid];
+          _saveLayout(bldg.slug, layout);
+          renderWidgetGrid(bldg);
+        };
+        // Resize
+        (function(card, handle, span) {
+          var startX=0, startSpan=span;
+          handle.addEventListener('mousedown', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            startX=e.clientX; startSpan=parseInt(card.style.gridColumn.replace('span ',''))||span;
+            function onMove(ev) {
+              var dx = ev.clientX - startX, colW = grid.offsetWidth / 4;
+              var ns = Math.max(1, Math.min(4, Math.round((startSpan*colW+dx)/colW)));
+              if(ns!==1&&ns!==2&&ns!==4) ns=ns<2?1:ns<4?2:4;
+              card.style.gridColumn = 'span '+ns;
+            }
+            function onUp() { document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp); var f=parseInt(card.style.gridColumn.replace('span ',''))||span; layout.sizes[wid]=f; _saveLayout(bldg.slug,layout); }
+            document.addEventListener('mousemove',onMove); document.addEventListener('mouseup',onUp);
+          });
+        })(nCard, nHandle, nSpan);
+        return;
+      }
+
+      // Custom widget — programmatic card
       var w = WIDGETS[wid]; if(!w || !w.render) return;
       var span = layout.sizes[wid] || w.defaultSpan || 2;
       var card = document.createElement('div');
@@ -30210,21 +30888,32 @@ seedMemberLanguage();
 
       var head = document.createElement('div');
       head.className = 'wc-head';
+      head.setAttribute('draggable', 'true');
       head.innerHTML = '<span class="wc-title">'+w.name+'</span><div class="wc-actions"><button class="wc-min" title="Minimise">\u2212</button><button class="wc-rem" title="Remove">\u00D7</button></div>';
       card.appendChild(head);
+      head.addEventListener('dragstart', function(e) {
+        e.stopPropagation();
+        _dragWidget = { action:'remove', wid:wid, bldg:bldg };
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', wid); } catch(_) {}
+        try { e.dataTransfer.setDragImage(card, 0, 0); } catch(_) {}
+        setTimeout(function() { card.classList.add('wg-dragging'); }, 0);
+        _showRemoveZone();
+      });
+      head.addEventListener('dragend', function() {
+        card.classList.remove('wg-dragging'); _hideRemoveZone(); _dragWidget = null;
+      });
 
       var body = document.createElement('div');
       body.className = 'wc-body';
       card.appendChild(body);
 
-      // Resize handle
       var handle = document.createElement('div');
       handle.className = 'wc-resize';
       card.appendChild(handle);
 
       grid.appendChild(card);
 
-      // Render widget content
       w.render(body, _getWData(bldg.slug, wid), function(d){ _saveWData(bldg.slug, wid, d); });
 
       // Minimise
@@ -30233,9 +30922,10 @@ seedMemberLanguage();
         this.textContent = card.classList.contains('minimised') ? '+' : '\u2212';
       };
 
-      // Remove
+      // Remove — null the slot
       head.querySelector('.wc-rem').onclick = function() {
-        layout.placed = layout.placed.filter(function(x){return x!==wid;});
+        var ri = layout.placed.indexOf(wid);
+        if (ri !== -1) { layout.sizes['_e'+ri] = layout.sizes[wid] || w.defaultSpan || 2; layout.placed[ri] = null; }
         delete layout.sizes[wid];
         _saveLayout(bldg.slug, layout);
         renderWidgetGrid(bldg);
@@ -30244,6 +30934,7 @@ seedMemberLanguage();
       // Resize drag
       var startX=0, startSpan=span;
       handle.addEventListener('mousedown', function(e) {
+        e.preventDefault(); e.stopPropagation();
         startX=e.clientX; startSpan=parseInt(card.style.gridColumn.replace('span ',''))||span;
         function onMove(ev) {
           var dx = ev.clientX - startX;
@@ -30263,40 +30954,60 @@ seedMemberLanguage();
         document.addEventListener('mouseup',onUp);
       });
     });
+
+    // Update header chips after rendering grid
+    _updateHeaderChips(bldg);
   }
 
   // Bottom sheet library
   function _buildLibraryCards(bldg, layout, container) {
-    var usedSlots = layout.placed.length;
-    var full = usedSlots >= bldg.slots;
+    // Count real (non-null) placed widgets
+    var realPlaced = layout.placed.filter(function(x) { return x !== null; }).length;
+    var full = realPlaced >= bldg.slots;
     var h = '';
-    if(bldg.fixed.length) {
-      h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Built-in</div>';
-      bldg.fixed.forEach(function(wid) {
-        var w = WIDGETS[wid]; if(!w) return;
-        h += '<div class="wg-lib-card"><div class="wg-lib-preview" data-wc="'+(w.color||'')+'"></div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><span class="wg-lib-locked">Locked</span></div>';
+
+    // Native widgets section
+    if (bldg.native && bldg.native.length) {
+      h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Building Content</div>';
+      bldg.native.forEach(function(n) {
+        var placed = layout.placed.indexOf(n.wid) !== -1;
+        var canDrag = !placed && !full;
+        h += '<div class="wg-lib-card"'+(canDrag?' draggable="true"':'')+' data-lib-wid="'+n.wid+'"><div class="wg-lib-preview" data-wc="amber"></div><div class="wg-lib-info"><div class="wg-lib-name">'+n.name+'</div><div class="wg-lib-desc">Building content</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+n.wid+'" data-native="1"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
       });
       h += '</div>';
     }
+
+    // Custom widgets section
     h += '<div class="wg-sheet-section"><div class="wg-sheet-label">Add Widgets</div>';
     bldg.available.forEach(function(wid) {
       var w = WIDGETS[wid]; if(!w) return;
       var placed = layout.placed.indexOf(wid) !== -1;
-      h += '<div class="wg-lib-card"><div class="wg-lib-preview" data-wc="'+(w.color||'')+'"></div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+wid+'"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
+      var canDrag = !placed && !full;
+      h += '<div class="wg-lib-card"'+(canDrag?' draggable="true"':'')+' data-lib-wid="'+wid+'"><div class="wg-lib-preview" data-wc="'+(w.color||'')+'"></div><div class="wg-lib-info"><div class="wg-lib-name">'+w.name+'</div><div class="wg-lib-desc">'+w.desc+'</div></div><button class="wg-lib-add'+(placed?' remove':'')+'" data-wid="'+wid+'"'+(full&&!placed?' disabled':'')+'>'+( placed?'Remove':'Add')+'</button></div>';
     });
     h += '</div>';
     container.innerHTML = h;
+
+    // Click handlers for add/remove buttons
     container.querySelectorAll('.wg-lib-add').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var wid = btn.dataset.wid;
+        var isNative = btn.dataset.native === '1';
         var isPlaced = layout.placed.indexOf(wid) !== -1;
         if(isPlaced) {
-          layout.placed = layout.placed.filter(function(x){return x!==wid;});
+          // Null the slot instead of filtering
+          var idx = layout.placed.indexOf(wid);
+          if (idx !== -1) { layout.sizes['_e'+idx] = layout.sizes[wid] || 2; layout.placed[idx] = null; }
           delete layout.sizes[wid];
         } else {
-          if(layout.placed.length >= bldg.slots) return;
-          layout.placed.push(wid);
-          layout.sizes[wid] = WIDGETS[wid].defaultSpan || 2;
+          // Find first null slot or append
+          var slotIdx = -1;
+          for (var i = 0; i < layout.placed.length; i++) { if (layout.placed[i] === null) { slotIdx = i; break; } }
+          var nw = _findNative(bldg, wid);
+          var defSpan = nw ? (nw.span || 2) : (WIDGETS[wid] ? WIDGETS[wid].defaultSpan || 2 : 2);
+          if (slotIdx !== -1) { layout.placed[slotIdx] = wid; delete layout.sizes['_e'+slotIdx]; }
+          else layout.placed.push(wid);
+          layout.sizes[wid] = defSpan;
         }
         _saveLayout(bldg.slug, layout);
         renderWidgetGrid(bldg);
@@ -30305,22 +31016,41 @@ seedMemberLanguage();
         openLibrary(bldg);
       });
     });
+
+    // Drag from library to building grid
+    container.querySelectorAll('.wg-lib-card[draggable="true"]').forEach(function(card) {
+      card.addEventListener('dragstart', function(e) {
+        var wid = card.getAttribute('data-lib-wid');
+        _dragWidget = { action:'add', wid:wid, bldg:bldg };
+        e.dataTransfer.effectAllowed = 'copy';
+        try { e.dataTransfer.setData('text/plain', wid); } catch(_) {}
+        setTimeout(function() { card.classList.add('wg-lib-dragging'); }, 0);
+        var g = document.getElementById('wg-' + bldg.slug);
+        if (g && !g.classList.contains('active')) {
+          _setMode(bldg, 'widgets'); g.classList.add('active'); renderWidgetGrid(bldg);
+          var ol = document.getElementById(bldg.id);
+          if (ol) ol.querySelectorAll('.wg-seg button').forEach(function(b) { b.classList.toggle('active', b.dataset.m === 'widgets'); });
+        }
+      });
+      card.addEventListener('dragend', function() { card.classList.remove('wg-lib-dragging'); _dragWidget = null; });
+    });
   }
 
   function openLibrary(bldg) {
     var existing = document.getElementById('wg-sheet-'+bldg.slug);
     if(existing) existing.remove();
 
-    var layout = _getLayout(bldg.slug) || { placed:[], sizes:{} };
-    var usedSlots = layout.placed.length;
+    var layout = _getLayout(bldg.slug) || _defaultLayout(bldg);
+    var usedSlots = layout.placed.filter(function(x) { return x !== null; }).length;
 
     var inWM = document.body.classList.contains('wm-mode');
 
     if (inWM) {
-      // Floating draggable resizable window in window-manager mode
+      // Floating draggable resizable window — matches WM window style
+      var _defaultCSS = 'position:fixed;z-index:10500;width:400px;height:520px;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22),0 0 0 0.5px rgba(0,0,0,0.08);top:80px;left:calc(50vw - 200px);overflow:hidden;';
       var win = document.createElement('div');
       win.id = 'wg-sheet-'+bldg.slug;
-      win.style.cssText = 'position:fixed;z-index:10500;width:400px;height:520px;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22),0 0 0 0.5px rgba(0,0,0,0.08);top:80px;left:calc(50vw - 200px);overflow:hidden;';
+      win.style.cssText = _defaultCSS;
 
       // Title bar with Mac traffic lights
       var titleBar = document.createElement('div');
@@ -30328,9 +31058,9 @@ seedMemberLanguage();
       titleBar.style.cssText = 'display:flex;align-items:center;padding:10px 12px;border-bottom:1.5px solid #efefef;cursor:grab;user-select:none;flex-shrink:0;background:#fafafa;border-radius:10px 10px 0 0;gap:7px;';
 
       var tlClose = document.createElement('button');
-      tlClose.className = 'wm-tl wm-tl-close'; tlClose.title='Close'; tlClose.textContent='×';
+      tlClose.className = 'wm-tl wm-tl-close'; tlClose.title='Close'; tlClose.textContent='\u00D7';
       var tlMin = document.createElement('button');
-      tlMin.className = 'wm-tl wm-tl-min'; tlMin.title='–'; tlMin.textContent='–';
+      tlMin.className = 'wm-tl wm-tl-min'; tlMin.title='\u2013'; tlMin.textContent='\u2013';
       var tlMax = document.createElement('button');
       tlMax.className = 'wm-tl wm-tl-max'; tlMax.title='+'; tlMax.textContent='+';
 
@@ -30344,13 +31074,35 @@ seedMemberLanguage();
       var content = document.createElement('div');
       content.style.cssText = 'overflow-y:auto;flex:1;padding:8px;';
 
-      // SE resize handle
-      var rzSE = document.createElement('div');
-      rzSE.style.cssText = 'position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:nwse-resize;z-index:3;';
+      // Resize handles (all 4 corners + edges)
+      var dirs = ['se','sw','ne','nw','n','s','e','w'];
+      var dirCursors = {se:'nwse',sw:'nesw',ne:'nesw',nw:'nwse',n:'ns',s:'ns',e:'ew',w:'ew'};
 
       win.appendChild(titleBar);
       win.appendChild(content);
-      win.appendChild(rzSE);
+      dirs.forEach(function(d) {
+        var rz = document.createElement('div');
+        var isCorner = d.length === 2;
+        rz.style.cssText = 'position:absolute;z-index:3;cursor:'+dirCursors[d]+'-resize;' +
+          (d.includes('n') ? 'top:0;' : '') + (d.includes('s') ? 'bottom:0;' : '') +
+          (d.includes('e') ? 'right:0;' : '') + (d.includes('w') ? 'left:0;' : '') +
+          (isCorner ? 'width:14px;height:14px;' :
+            (d==='n'||d==='s' ? 'left:14px;right:14px;height:6px;' : 'top:14px;bottom:14px;width:6px;'));
+        rz.addEventListener('mousedown', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          var r=win.getBoundingClientRect(), sx=e.clientX, sy=e.clientY;
+          function mv(ev) {
+            var dx=ev.clientX-sx, dy=ev.clientY-sy;
+            if(d.includes('e')) win.style.width = Math.max(320, r.width+dx)+'px';
+            if(d.includes('w')) { win.style.width = Math.max(320, r.width-dx)+'px'; win.style.left = Math.min(r.left+dx, r.right-320)+'px'; }
+            if(d.includes('s')) win.style.height = Math.max(280, r.height+dy)+'px';
+            if(d.includes('n')) { win.style.height = Math.max(280, r.height-dy)+'px'; win.style.top = Math.min(r.top+dy, r.bottom-280)+'px'; }
+          }
+          function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
+          document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+        });
+        win.appendChild(rz);
+      });
       document.body.appendChild(win);
 
       _buildLibraryCards(bldg, layout, content);
@@ -30358,38 +31110,59 @@ seedMemberLanguage();
       // Traffic light handlers
       tlClose.onclick = function(e) { e.stopPropagation(); win.remove(); };
       tlMin.onclick = function(e) { e.stopPropagation(); win.remove(); };
-      var _wgFull = false;
+      var _preSnap = null;
       tlMax.onclick = function(e) {
         e.stopPropagation();
-        if (_wgFull) {
-          win.style.cssText = 'position:fixed;z-index:10500;width:400px;height:520px;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22),0 0 0 0.5px rgba(0,0,0,0.08);top:80px;left:calc(50vw - 200px);overflow:hidden;';
-          _wgFull = false;
+        if (_preSnap) {
+          win.style.cssText = _defaultCSS + 'left:'+_preSnap.l+'px;top:'+_preSnap.t+'px;width:'+_preSnap.w+'px;height:'+_preSnap.h+'px;';
+          _preSnap = null;
         } else {
-          win.style.cssText = 'position:fixed;z-index:10500;width:600px;height:85vh;display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.22);top:7.5vh;left:calc(50vw - 300px);overflow:hidden;';
-          _wgFull = true;
+          var r = win.getBoundingClientRect();
+          _preSnap = { l:r.left, t:r.top, w:r.width, h:r.height };
+          win.style.cssText = _defaultCSS + 'left:0;top:0;width:100vw;height:100vh;border-radius:0;';
         }
       };
 
-      // Drag title bar
+      // Drag with snap zones (top=full, left=left half, right=right half)
+      var _snapPreview = document.getElementById('wm-snap-preview');
       titleBar.addEventListener('mousedown', function(e) {
         if(e.target.closest('.wm-tl')) return;
         e.preventDefault();
         titleBar.style.cursor = 'grabbing';
-        var sx=e.clientX, sy=e.clientY, r=win.getBoundingClientRect(), ol=r.left, ot=r.top;
-        function mv(ev) { win.style.left=(ol+ev.clientX-sx)+'px'; win.style.top=(ot+ev.clientY-sy)+'px'; }
-        function up() { titleBar.style.cursor='grab'; document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
-        document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
-      });
-
-      // Resize SE handle
-      rzSE.addEventListener('mousedown', function(e) {
-        e.preventDefault(); e.stopPropagation();
-        var r=win.getBoundingClientRect(), sx=e.clientX, sy=e.clientY, sw=r.width, sh=r.height;
-        function mv(ev) {
-          win.style.width = Math.max(320, sw+ev.clientX-sx)+'px';
-          win.style.height = Math.max(280, sh+ev.clientY-sy)+'px';
+        // If snapped, unsnap first
+        if (_preSnap) {
+          var old = _preSnap; _preSnap = null;
+          win.style.cssText = _defaultCSS + 'left:'+(e.clientX - old.w/2)+'px;top:'+e.clientY+'px;width:'+old.w+'px;height:'+old.h+'px;';
         }
-        function up() { document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); }
+        var sx=e.clientX, sy=e.clientY, r=win.getBoundingClientRect(), ol=r.left, ot=r.top;
+        var snapZone = null;
+        function mv(ev) {
+          win.style.left=(ol+ev.clientX-sx)+'px'; win.style.top=(ot+ev.clientY-sy)+'px';
+          // Detect snap zones
+          var zone = null;
+          if (ev.clientY < 30) zone = 'top';
+          else if (ev.clientX < 30) zone = 'left';
+          else if (ev.clientX > window.innerWidth - 62) zone = 'right';
+          snapZone = zone;
+          if (_snapPreview) {
+            if (zone === 'top') { _snapPreview.style.cssText = 'display:block;position:fixed;inset:0;background:rgba(200,168,75,0.08);border:2px solid rgba(200,168,75,0.3);z-index:10499;border-radius:8px;pointer-events:none;'; }
+            else if (zone === 'left') { _snapPreview.style.cssText = 'display:block;position:fixed;top:0;left:0;width:50vw;height:100vh;background:rgba(200,168,75,0.08);border:2px solid rgba(200,168,75,0.3);z-index:10499;border-radius:8px;pointer-events:none;'; }
+            else if (zone === 'right') { _snapPreview.style.cssText = 'display:block;position:fixed;top:0;right:56px;width:calc(50vw - 56px);height:100vh;background:rgba(200,168,75,0.08);border:2px solid rgba(200,168,75,0.3);z-index:10499;border-radius:8px;pointer-events:none;'; }
+            else { _snapPreview.style.display = 'none'; }
+          }
+        }
+        function up() {
+          titleBar.style.cursor='grab';
+          if (_snapPreview) _snapPreview.style.display = 'none';
+          if (snapZone) {
+            var r2 = win.getBoundingClientRect();
+            _preSnap = { l:r2.left, t:r2.top, w:r2.width, h:r2.height };
+            if (snapZone === 'top') win.style.cssText = _defaultCSS + 'left:0;top:0;width:100vw;height:100vh;border-radius:0;';
+            else if (snapZone === 'left') win.style.cssText = _defaultCSS + 'left:0;top:0;width:50vw;height:100vh;border-radius:0;';
+            else if (snapZone === 'right') win.style.cssText = _defaultCSS + 'left:50vw;top:0;width:calc(50vw - 56px);height:100vh;border-radius:0;';
+          }
+          document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
+        }
         document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
       });
       return;
@@ -30427,12 +31200,8 @@ seedMemberLanguage();
       // Find body (for grid injection)
       var body = overlay.querySelector(bldg.bodySel);
 
-      // Inject segmented control into header
+      // Widget-only mode — no segmented control
       var spacer = header.querySelector('div[style*="width:80px"]') || header.lastElementChild;
-      var seg = document.createElement('div');
-      seg.className = 'wg-seg';
-      seg.innerHTML = '<button data-m="conservative">Content</button><button data-m="widgets">Widgets</button>';
-      header.insertBefore(seg, spacer);
 
       // Inject Widgets library button
       var libBtn = document.createElement('button');
@@ -30451,21 +31220,8 @@ seedMemberLanguage();
         else body.appendChild(grid);
       }
 
-      // Set initial mode
-      var mode = _getMode(bldg);
-      seg.querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.m===mode); });
-      grid.classList.toggle('active', mode==='widgets');
-
-      // Mode toggle
-      seg.querySelectorAll('button').forEach(function(b) {
-        b.addEventListener('click', function() {
-          seg.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});
-          b.classList.add('active');
-          _setMode(bldg, b.dataset.m);
-          grid.classList.toggle('active', b.dataset.m==='widgets');
-          if(b.dataset.m==='widgets') renderWidgetGrid(bldg);
-        });
-      });
+      // Widget-only mode — always active
+      grid.classList.add('active');
 
       // MutationObserver: re-render when building opens
       new MutationObserver(function() {
@@ -30505,13 +31261,104 @@ seedMemberLanguage();
   /* Contain workshop cards to window width — prevent horizontal overflow */
   body.wm-mode .workshop-cards-grid, body.wm-mode .workshops-list { overflow-x:hidden !important; }
   body.wm-mode .workshop-card { min-width:0 !important; }
+  /* Fix header layout: traffic lights left, title centered, chat btn right */
+  body.wm-mode .bld-top,
+  body.wm-mode #cafe-room-top {
+    cursor: grab !important;
+    user-select: none !important;
+    position: relative !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+  }
+  body.wm-mode .bld-top .wm-traffic,
+  body.wm-mode #cafe-room-top .wm-traffic {
+    position: absolute !important;
+    left: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    padding: 0 !important;
+  }
+  body.wm-mode .bld-top .wm-chat-btn,
+  body.wm-mode #cafe-room-top .wm-chat-btn {
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-left: 0 !important;
+  }
+  /* Commons title: center it absolutely (cafe-room-top uses space-between unlike bld-top) */
+  body.wm-mode #cafe-room-top #cafe-room-title {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    white-space: nowrap !important;
+  }
+  body.wm-mode #cafe-room-top > div[style*="width:80px"] { display: none !important; }
+  /* Widgets lib button moves left to avoid overlapping chat button */
+  body.wm-mode .bld-top .wg-lib-btn,
+  body.wm-mode #cafe-room-top .wg-lib-btn {
+    position: absolute !important;
+    right: 86px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
   /* External building chat panels are off in WM mode — chat lives inside windows */
   body.wm-mode .bld-chat-overlay { display:none !important; }
-  /* Inline chat panel inside building window */
-  body.wm-mode .wm-inline-chat { position:absolute !important; inset:0 !important; z-index:5 !important; background:#fff !important; flex-direction:column !important; border-radius:inherit !important; }
+  /* Inline chat panel — right-side drawer, not full cover */
+  body.wm-mode .wm-inline-chat {
+    position: absolute !important;
+    top: 0 !important; right: 0 !important; bottom: 0 !important; left: auto !important;
+    width: min(320px, 100%) !important;
+    z-index: 5 !important;
+    background: #fff !important;
+    flex-direction: column !important;
+    border-radius: 0 inherit inherit 0 !important;
+    border-left: 1.5px solid #efefef !important;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.07) !important;
+  }
+  /* Chat header matches building window header height */
+  body.wm-mode .wm-inline-chat .bld-chat-hdr {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 16px !important;
+    min-height: 44px !important;
+    border-bottom: 1.5px solid #efefef !important;
+    cursor: grab !important;
+    user-select: none !important;
+  }
+  body.wm-mode .wm-inline-chat .bld-chat-hdr:active { cursor: grabbing !important; }
+  /* When chat is open: create 320px of horizontal scroll space without changing content layout.
+     A 1px absolute spacer at right:-320px forces the scroll width without widening any content. */
+  body.wm-mode .wm-chat-open .bld-body,
+  body.wm-mode .wm-chat-open #cafe-room-body {
+    overflow-x: auto !important;
+    position: relative !important;
+  }
+  body.wm-mode .wm-chat-open .bld-body::after,
+  body.wm-mode .wm-chat-open #cafe-room-body::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: -320px !important;
+    width: 1px !important;
+    height: 1px !important;
+  }
+  body.wm-mode .wm-chat-close-btn {
+    background: none !important;
+    border: none !important;
+    font-size: 20px !important;
+    color: #8e8e8e !important;
+    cursor: pointer !important;
+    padding: 0 4px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+    margin-left: 8px !important;
+  }
+  body.wm-mode .wm-chat-close-btn:hover { color: #262626 !important; }
 }
-/* Dev hamburger — hidden */
-#dev-hamburger { display:none !important; }
+/* Dev hamburger — visible for founders via .visible class */
 /* Nav slides off-screen in browser fullscreen — hover near right edge to reveal */
 body.wm-browser-fs #admin-panel {
   transform: translateX(50px);
@@ -30545,6 +31392,8 @@ body.wm-browser-fs #admin-panel:hover {
 .wm-tl-max { background:#28c840; }
 /* Wider resize handles */
 .wm-rz { position:absolute; z-index:3; }
+/* Right-edge resize handles above the inline chat panel (z-index:5) */
+.wm-rz-e, .wm-rz-ne, .wm-rz-se { z-index:8; }
 .wm-rz-n  { top:-5px;    left:16px;  right:16px;  height:10px; cursor:ns-resize;   }
 .wm-rz-s  { bottom:-5px; left:16px;  right:16px;  height:10px; cursor:ns-resize;   }
 .wm-rz-e  { right:-5px;  top:16px;   bottom:16px; width:10px;  cursor:ew-resize;   }
@@ -30671,30 +31520,98 @@ body.wm-browser-fs #admin-panel:hover {
     _sp(ov,'left',left); _sp(ov,'top',top); _sp(ov,'width',width); _sp(ov,'height',height);
   }
 
+  // Expose close for tour building-switcher
+  window._wmClose = function(id) { _closeWin(id); };
+
+  // Close a single window (saves position, fires wm-close event)
+  function _closeWin(id) {
+    var ov = document.getElementById(id);
+    if (!ov || !ov.classList.contains('wm-open')) return;
+    var posToSave;
+    if (ov.dataset.wmSnap) {
+      posToSave = _preSnapPos[id] || {left:'60px',top:'40px',width:'clamp(480px,50vw,720px)',height:'calc(100vh - 80px)'};
+    } else if (ov.dataset.wmFull === '1') {
+      posToSave = _preFullPos[id] || {left:'60px',top:'40px',width:'clamp(480px,50vw,720px)',height:'calc(100vh - 80px)'};
+    } else {
+      posToSave = {left:ov.style.left, top:ov.style.top, width:ov.style.width, height:ov.style.height};
+    }
+    _savedPos[id] = posToSave;
+    _lastPos = posToSave;
+    ov.classList.remove('wm-open');
+    ov.classList.remove('open'); // prevent MutationObserver from re-opening (e.g. cafe)
+    ov.dispatchEvent(new CustomEvent('wm-close'));
+    ov.dataset.wmFull = '0'; ov.dataset.wmSnap = ''; ov.dataset.wmMinimized = '';
+    _rp(ov,'display'); _rp(ov,'left'); _rp(ov,'top'); _rp(ov,'width'); _rp(ov,'height'); _rp(ov,'z-index');
+    if (_activeWin === id) _activeWin = null;
+  }
+
   function _openWin(id) {
     var ov = document.getElementById(id);
     if (!ov) return;
-    _closeAll();
-    // Per-building saved pos → shared last pos → default
+    // If already open, just bring to front
+    if (ov.classList.contains('wm-open')) {
+      _topZ++; _sp(ov,'z-index',_topZ); _activeWin = id; return;
+    }
+    // Per-building saved pos — restore if available and not fullscreen
     var saved = _savedPos[id];
-    // Reject fullscreen-sized saved positions — these indicate a prior-session bug
     var savedIsFullscreen = saved && (saved.width === '100vw' || saved.left === '0px');
     if (saved && saved.left && !savedIsFullscreen) {
       _setPos(ov, saved.left, saved.top, saved.width, saved.height);
-    } else if (_lastPos && _lastPos.left && _lastPos.width !== '100vw') {
-      _setPos(ov, _lastPos.left, _lastPos.top, _lastPos.width, _lastPos.height);
     } else {
-      _setPos(ov, '60px', '40px', 'clamp(480px,50vw,720px)', 'calc(100vh - 80px)');
+      // Cascade: offset by 30px per open window so they don't stack perfectly
+      var _openCount = 0;
+      BLDG_IDS.forEach(function(xid) {
+        if (xid === id) return;
+        var xo = document.getElementById(xid);
+        if (xo && xo.classList.contains('wm-open')) _openCount++;
+      });
+      var _off = Math.min(_openCount * 30, 90);
+      _setPos(ov, (60 + _off) + 'px', (40 + _off) + 'px', 'clamp(480px,50vw,720px)', 'calc(100vh - 80px)');
     }
     ov.classList.add('wm-open');
     _topZ++; _sp(ov,'z-index',_topZ);
     _activeWin = id;
   }
 
-  // Click on map closes active window
+  // Click on map — slide all open windows to left, click again restores
+  function _minimizeAll() {
+    BLDG_IDS.forEach(function(id) {
+      var ov = document.getElementById(id);
+      if (!ov || !ov.classList.contains('wm-open')) return;
+      if (!ov.dataset.wmSnap && ov.dataset.wmFull !== '1') {
+        _savedPos[id] = {left:ov.style.left, top:ov.style.top, width:ov.style.width, height:ov.style.height};
+      }
+      var curW = ov.getBoundingClientRect().width || 500;
+      _sp(ov,'transition','left 0.3s cubic-bezier(0.4,0,0.2,1)');
+      _sp(ov,'left', (-curW + 4) + 'px');
+      ov.dataset.wmMinimized = '1';
+      setTimeout(function() { _sp(ov,'transition',''); }, 350);
+    });
+    _activeWin = null;
+  }
+  function _restoreMinimized() {
+    BLDG_IDS.forEach(function(id) {
+      var ov = document.getElementById(id);
+      if (!ov || ov.dataset.wmMinimized !== '1') return;
+      var saved = _savedPos[id];
+      if (saved && saved.left) {
+        _sp(ov,'transition','left 0.3s cubic-bezier(0.4,0,0.2,1)');
+        _sp(ov,'left', saved.left);
+        setTimeout(function() { _sp(ov,'transition',''); ov.dataset.wmMinimized = ''; }, 350);
+      } else {
+        ov.dataset.wmMinimized = '';
+      }
+    });
+  }
   var vp = document.getElementById('viewport');
   if (vp) vp.addEventListener('mousedown', function(e) {
-    if (_activeWin && !e.target.closest('[id$="-overlay"]') && !e.target.closest('.bld-chat-overlay')) _closeAll();
+    if (window._mapPanMode) return;
+    if (e.target.closest('[id$="-overlay"]') || e.target.closest('.bld-chat-overlay')) return;
+    var anyMinimized = BLDG_IDS.some(function(id) { var o = document.getElementById(id); return o && o.dataset.wmMinimized === '1'; });
+    if (anyMinimized) { _restoreMinimized(); return; }
+    if (typeof buildingAtScreenPos === 'function' && buildingAtScreenPos(e.clientX, e.clientY)) return;
+    var anyOpen = BLDG_IDS.some(function(id) { var o = document.getElementById(id); return o && o.classList.contains('wm-open'); });
+    if (anyOpen) _minimizeAll();
   });
 
   // Transparent cover blocks all underlying hover/interaction during drag+resize
@@ -30718,12 +31635,28 @@ body.wm-browser-fs #admin-panel:hover {
   }
 
   function _makeDrag(handle, ov, ovId) {
+    // Double-click header = toggle fullscreen
+    handle.addEventListener('dblclick', function(e) {
+      if (e.target.closest('.wm-traffic,.wm-tl,button,input,select,textarea')) return;
+      e.preventDefault(); e.stopPropagation();
+      if (ov.dataset.wmFull === '1') {
+        var s = _preFullPos[ovId] || {left:'60px',top:'40px',width:'clamp(480px,50vw,720px)',height:'calc(100vh - 80px)'};
+        _setPos(ov, s.left, s.top, s.width, s.height);
+        _sp(ov,'z-index',_topZ); _sp(ov,'border-radius','10px');
+        ov.dataset.wmFull = '0';
+      } else {
+        _preFullPos[ovId] = {left:ov.style.left||'60px',top:ov.style.top||'40px',width:ov.style.width||'clamp(480px,50vw,720px)',height:ov.style.height||'calc(100vh - 80px)'};
+        _setPos(ov,'0px','0px','100vw','100vh');
+        _sp(ov,'z-index','9300'); _sp(ov,'border-radius','0px');
+        ov.dataset.wmFull = '1';
+      }
+    });
     handle.addEventListener('mousedown', function(e) {
       if (e.target.closest('.wm-traffic,.wm-tl,.wm-rz,button,input,select,textarea,.wg-seg,.wg-lib-btn')) return;
-      e.preventDefault(); handle.style.cursor='grabbing'; _startOp('grabbing');
-      // If currently snapped, restore windowed size before starting drag (macOS behaviour)
+      e.preventDefault();
+      // If currently snapped, restore windowed size immediately on mousedown (macOS behaviour)
       if (ov.dataset.wmSnap) {
-        var _snapR = ov.getBoundingClientRect(); // capture snapped rect BEFORE restoring
+        var _snapR = ov.getBoundingClientRect();
         var _ps = _preSnapPos[ovId];
         if (_ps) {
           _setPos(ov, _ps.left, _ps.top, _ps.width, _ps.height);
@@ -30731,7 +31664,6 @@ body.wm-browser-fs #admin-panel:hover {
           if (ov.dataset.wmSnap==='top') { _sp(ov,'z-index',_topZ); ov.dataset.wmFull='0'; }
         }
         ov.dataset.wmSnap = '';
-        // Reposition so cursor lands at the same horizontal fraction in the title bar
         var _newR = ov.getBoundingClientRect();
         var _fracX = _snapR.width > 0 ? (e.clientX - _snapR.left) / _snapR.width : 0.5;
         var _newLeft = Math.max(0, e.clientX - Math.round(_fracX * _newR.width));
@@ -30739,18 +31671,22 @@ body.wm-browser-fs #admin-panel:hover {
         _setPos(ov, _newLeft+'px', _newTop+'px', _ps ? _ps.width : _newR.width+'px', _ps ? _ps.height : _newR.height+'px');
       }
       var sx=e.clientX, sy=e.clientY, r=ov.getBoundingClientRect(), ol=r.left, ot=r.top;
-      // Capture position at drag-start so snap can restore it later
       var _preDrag={left:ol+'px',top:ot+'px',width:ov.style.width||'clamp(480px,50vw,720px)',height:ov.style.height||'calc(100vh - 80px)'};
       var _zone=null;
+      var _dragging=false;
       function mv(ev){
-        var nl=ol+ev.clientX-sx, nt=ot+ev.clientY-sy;
+        // Only start cover + cursor on actual movement — preserves dblclick detection
+        if(!_dragging && (Math.abs(ev.clientX-sx)>3||Math.abs(ev.clientY-sy)>3)){
+          _dragging=true; handle.style.cursor='grabbing'; _startOp('grabbing');
+        }
+        if(!_dragging) return;
+        var nl=ol+ev.clientX-sx, nt=Math.max(0, ot+ev.clientY-sy);
         var z=ev.clientY<6?'top':ev.clientX<6?'left':ev.clientX>window.innerWidth-62?'right':null;
         if(z!==_zone){_zone=z;_showSnap(z);}
-        // Only move the window when not hovering a snap zone
         if(!z){_sp(ov,'left',nl+'px');_sp(ov,'top',nt+'px');if(ovId)_positionChat(ovId);}
       }
       function up(){
-        handle.style.cursor='grab';_endOp();_showSnap(null);
+        handle.style.cursor='grab'; if(_dragging)_endOp(); _showSnap(null);
         document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
         if(_zone){
           _preSnapPos[ovId]=_preDrag;
@@ -30759,10 +31695,17 @@ body.wm-browser-fs #admin-panel:hover {
             _sp(ov,'z-index','9300');_sp(ov,'border-radius','0px');
             ov.dataset.wmFull='1';ov.dataset.wmSnap='top';
           }else if(_zone==='left'){
-            _setPos(ov,'0px','0px','50vw','100vh');
+            // If a right-snapped window exists, fill up to its left edge
+            var _rEdge = window.innerWidth / 2;
+            BLDG_IDS.forEach(function(xid){ if(xid===ovId)return; var xo=document.getElementById(xid); if(!xo||!xo.classList.contains('wm-open'))return; var xr=xo.getBoundingClientRect(); if(xr.right>=window.innerWidth-62){_rEdge=xr.left;} });
+            _setPos(ov,'0px','0px',Math.round(_rEdge)+'px','100vh');
             _sp(ov,'border-radius','0px');ov.dataset.wmSnap='left';
           }else{
-            _setPos(ov,'50vw','0px','calc(50vw - 56px)','100vh');
+            // If a left-snapped window exists, start from its right edge
+            var _lEdge = window.innerWidth / 2;
+            BLDG_IDS.forEach(function(xid){ if(xid===ovId)return; var xo=document.getElementById(xid); if(!xo||!xo.classList.contains('wm-open'))return; var xr=xo.getBoundingClientRect(); if(xr.left<=4){_lEdge=xr.right;} });
+            var _rW = Math.max(300, window.innerWidth - Math.round(_lEdge) - 56);
+            _setPos(ov,Math.round(_lEdge)+'px','0px',_rW+'px','100vh');
             _sp(ov,'border-radius','0px');ov.dataset.wmSnap='right';
           }
         }
@@ -30797,8 +31740,8 @@ body.wm-browser-fs #admin-panel:hover {
     var traffic = document.createElement('div');
     traffic.className = 'wm-traffic';
     traffic.innerHTML = '<button class="wm-tl wm-tl-close" title="Close">&times;</button><button class="wm-tl wm-tl-min" title="Close">&minus;</button><button class="wm-tl wm-tl-max" title="Full screen">+</button>';
-    traffic.querySelector('.wm-tl-close').addEventListener('click', function(e){e.stopPropagation();_closeAll();});
-    traffic.querySelector('.wm-tl-min').addEventListener('click', function(e){e.stopPropagation();_closeAll();});
+    traffic.querySelector('.wm-tl-close').addEventListener('click', function(e){e.stopPropagation();_closeWin(id);});
+    traffic.querySelector('.wm-tl-min').addEventListener('click', function(e){e.stopPropagation();var _curW=ov.getBoundingClientRect().width||500;_sp(ov,'transition','left 0.3s cubic-bezier(0.4,0,0.2,1)');_sp(ov,'left',(-_curW+4)+'px');ov.dataset.wmMinimized='1';setTimeout(function(){_sp(ov,'transition','');},350);_activeWin=null;});
     traffic.querySelector('.wm-tl-max').addEventListener('click', function(e){
       e.stopPropagation();
       if(ov.dataset.wmFull==='1'){
@@ -30836,20 +31779,35 @@ body.wm-browser-fs #admin-panel:hover {
       ov.appendChild(chatPanel);
 
       var _chatInstance = null;
+      function _closeChat() {
+        chatPanel.style.display = 'none';
+        chatBtn.classList.remove('active');
+        ov.classList.remove('wm-chat-open');
+        if (_chatInstance) { try { _chatInstance.destroy(); } catch(e2) {} _chatInstance = null; }
+        chatPanel.innerHTML = '';
+      }
       chatBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         if (chatPanel.style.display === 'none') {
           chatPanel.style.display = 'flex';
           chatBtn.classList.add('active');
+          ov.classList.add('wm-chat-open');
           var cfg = _BLDG_CHAT_CONFIG ? _BLDG_CHAT_CONFIG[slug] : null;
           if (typeof createBuildingChat === 'function' && cfg) {
             _chatInstance = createBuildingChat(slug, chatPanel, cfg.label, cfg.placeholder);
+            // Inject × into the chat's own header (after innerHTML is set)
+            var chatHdr = chatPanel.querySelector('.bld-chat-hdr');
+            if (chatHdr) {
+              var closeX = document.createElement('button');
+              closeX.className = 'wm-chat-close-btn';
+              closeX.title = 'Close chat';
+              closeX.textContent = '\u00D7';
+              closeX.addEventListener('click', function(ev) { ev.stopPropagation(); _closeChat(); });
+              chatHdr.appendChild(closeX);
+            }
           }
         } else {
-          chatPanel.style.display = 'none';
-          chatBtn.classList.remove('active');
-          if (_chatInstance) { try { _chatInstance.destroy(); } catch(e2) {} _chatInstance = null; }
-          chatPanel.innerHTML = '';
+          _closeChat();
         }
       });
       // Clean up when window closes
@@ -30857,6 +31815,7 @@ body.wm-browser-fs #admin-panel:hover {
         if (_chatInstance) { try { _chatInstance.destroy(); } catch(e3) {} _chatInstance = null; }
         chatPanel.style.display = 'none';
         chatBtn.classList.remove('active');
+        ov.classList.remove('wm-chat-open');
         chatPanel.innerHTML = '';
       });
     }
@@ -30878,7 +31837,7 @@ body.wm-browser-fs #admin-panel:hover {
   });
   var cafeOv=document.getElementById('cafe-room-overlay');
   if(cafeOv)new MutationObserver(function(){if(cafeOv.classList.contains('open')&&!cafeOv.classList.contains('wm-open'))_openWin('cafe-room-overlay');}).observe(cafeOv,{attributes:true,attributeFilter:['class']});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'){var m=document.getElementById('mondo-overlay');if(m&&m.classList.contains('open'))return;var v=document.getElementById('vault-overlay');if(v&&v.classList.contains('open'))return;if(_activeWin){_closeAll();e.stopPropagation();}}});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){var m=document.getElementById('mondo-overlay');if(m&&m.classList.contains('open'))return;var v=document.getElementById('vault-overlay');if(v&&v.classList.contains('open'))return;if(_activeWin){_closeWin(_activeWin);e.stopPropagation();}}});
 
   // Fullscreen toggle button — styled as a proper admin-nav-item
   var fsBtn = document.createElement('button');
@@ -30967,33 +31926,102 @@ body.wm-browser-fs #admin-panel:hover {
   margin: 0; line-height: 1.6; flex-shrink: 0;
 }
 #travel-villages {
-  flex: 1; overflow-y: auto; padding: 16px 28px 28px;
-  display: flex; flex-direction: column; gap: 10px;
+  flex: 1; overflow-y: auto; padding: 16px 20px 28px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  align-content: start;
 }
 .travel-card {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 18px 20px; border: 1.5px solid #e8e8e8; border-radius: 14px;
-  background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative; overflow: hidden; border-radius: 10px;
+  border: 1.5px solid #e8e8e8; background: #111;
+  cursor: grab; user-select: none; min-width: 0;
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.12s;
 }
-.travel-card:hover { border-color: rgba(200,168,75,0.5); box-shadow: 0 2px 12px rgba(200,168,75,0.08); }
-.travel-card-here { border-color: #c8a84b; background: rgba(200,168,75,0.04); }
-.travel-card-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
-.travel-card-emoji { font-size: 30px; flex-shrink: 0; }
-.travel-card-name { font-size: 15px; font-weight: 700; color: #262626; margin-bottom: 3px; }
-.travel-card-line { font-size: 12px; color: #8e8e8e; line-height: 1.5; }
+/* Add-village slot */
+.travel-card-add {
+  border-radius: 10px; min-width: 0;
+  border: 1.5px dashed rgba(0,0,0,0.15) !important;
+  background: #f7f7f5 !important; cursor: pointer;
+  display: flex; flex-direction: column;
+  transition: border-color 0.15s, background 0.15s;
+}
+.travel-card-add:hover { border-color: rgba(200,168,75,0.6) !important; background: rgba(200,168,75,0.04) !important; }
+.travel-card-add-body {
+  flex: 1; aspect-ratio: 1380/752; display: flex; align-items: center; justify-content: center;
+}
+.travel-card-add-icon {
+  font-size: 26px; line-height: 1; color: rgba(0,0,0,0.18);
+  transition: color 0.15s; pointer-events: none;
+}
+.travel-card-add:hover .travel-card-add-icon { color: rgba(200,168,75,0.8); }
+.travel-card-add-label {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 26px; border-top: 1px solid rgba(0,0,0,0.06);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: rgba(0,0,0,0.25); transition: color 0.15s;
+}
+.travel-card-add:hover .travel-card-add-label { color: rgba(200,168,75,0.9); }
+.travel-card-empty { pointer-events: none; opacity: 0.45; }
+.travel-card:active { cursor: grabbing; }
+.travel-card:hover { border-color: rgba(200,168,75,0.55); box-shadow: 0 4px 20px rgba(200,168,75,0.12); }
+.travel-card-here { border-color: #c8a84b !important; }
+.travel-card.tc-dragging { opacity: 0 !important; pointer-events: none; }
+.travel-card-map-img { width: 100%; aspect-ratio: 1380/752; object-fit: cover; object-position: center; display: block; flex-shrink: 0; }
+.travel-card-map-wrap { position: relative; line-height: 0; }
+.travel-card-stamp {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Noto Serif JP', 'Garamond', 'Book Antiqua', Georgia, serif;
+  font-size: 10px; font-weight: 300;
+  color: #fff; letter-spacing: 0.55em; text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.98), 0 0 24px rgba(0,0,0,0.85);
+  white-space: nowrap; pointer-events: none; user-select: none; line-height: 1;
+}
+.travel-card-footer {
+  background: rgba(10,8,5,0.97); border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 5px 10px; display: flex; justify-content: flex-end; align-items: center; min-height: 26px;
+}
+
+/* Gate compass — anchored inside #world at gate world position */
+#gate-compass {
+  position: absolute;
+  left: 718px; top: 661px;
+  z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  background: rgba(16,12,8,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(200,168,75,0.45); border-radius: 50%;
+  cursor: pointer; transform: translateX(-50%);
+  transition: background 0.15s, border-color 0.15s, border-width 0.15s;
+}
+#gate-compass:hover { background: rgba(200,168,75,0.22); border-color: rgba(200,168,75,0.8); border-width: 1.5px; }
+/* Mondo map icon — anchored to School building in world space */
+#mondo-map-icon {
+  position: fixed; z-index: 10760;
+  display: none; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  background: rgba(8,4,4,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(204,34,34,0.5); border-radius: 50%;
+  cursor: pointer; transform: translateX(-50%);
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif; font-size: 16px; color: rgba(255,255,255,0.88);
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  user-select: none;
+}
+#mondo-map-icon.visible { display: flex; }
+#mondo-map-icon:hover { background: rgba(204,34,34,0.28); border-color: rgba(204,34,34,0.9); transform: translateX(-50%) scale(1.12); }
 .travel-here-badge {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  color: #c8a84b; background: rgba(200,168,75,0.12); border-radius: 20px;
-  padding: 4px 10px; white-space: nowrap; flex-shrink: 0;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: #c8a84b; white-space: nowrap;
 }
 .travel-visit-btn {
-  background: #262626; color: #fff; border: none; border-radius: 9px;
-  padding: 10px 18px; font-size: 13px; font-weight: 600;
-  cursor: pointer; font-family: inherit; transition: background 0.15s;
+  background: transparent; color: rgba(255,255,255,0.65); border: none;
+  padding: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  cursor: pointer; font-family: inherit; transition: color 0.12s;
   white-space: nowrap; flex-shrink: 0;
 }
-.travel-visit-btn:hover { background: #111; }
-.travel-visit-btn:disabled { opacity: 0.5; cursor: default; }
+.travel-visit-btn:hover { color: #fff; }
+.travel-visit-btn:disabled { opacity: 0.35; cursor: default; }
 </style>
 
 <!-- Travel banner removed — village name on map + travel overlay handle navigation -->
@@ -31035,6 +32063,14 @@ body.wm-browser-fs #admin-panel:hover {
       if (ov) ov.style.display = 'none';
     });
   }
+
+  // Mondo map icon click → open Mondo
+  var mondoMapIcon = document.getElementById('mondo-map-icon');
+  if (mondoMapIcon) mondoMapIcon.addEventListener('click', function(e) { e.stopPropagation(); if (typeof openMondo === 'function') openMondo(); });
+
+  // Gate compass click → open travel menu
+  var compassEl = document.getElementById('gate-compass');
+  if (compassEl) compassEl.addEventListener('click', function(e) { e.stopPropagation(); window.openTravel(); });
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       var ov = document.getElementById('travel-overlay');
@@ -31071,12 +32107,22 @@ body.wm-browser-fs #admin-panel:hover {
     var currentId = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : '';
     container.innerHTML = '';
 
-    // Sort: Dunbar first, then others
-    villages.sort(function(a, b) {
-      if (a.id === '00000000-0000-0000-0000-000000000000') return -1;
-      if (b.id === '00000000-0000-0000-0000-000000000000') return 1;
-      return 0;
-    });
+    // Sort: apply saved order first, then Dunbar first as fallback
+    var _savedOrder = [];
+    try { _savedOrder = JSON.parse(localStorage.getItem('cvTravelOrder') || '[]'); } catch(e) {}
+    if (_savedOrder.length) {
+      villages.sort(function(a, b) {
+        var ai = _savedOrder.indexOf(a.id); if (ai === -1) ai = 9999;
+        var bi = _savedOrder.indexOf(b.id); if (bi === -1) bi = 9999;
+        return ai - bi;
+      });
+    } else {
+      villages.sort(function(a, b) {
+        if (a.id === '00000000-0000-0000-0000-000000000000') return -1;
+        if (b.id === '00000000-0000-0000-0000-000000000000') return 1;
+        return 0;
+      });
+    }
 
     villages.forEach(function(v) {
       var isDunbar  = (v.id === '00000000-0000-0000-0000-000000000000');
@@ -31085,32 +32131,30 @@ body.wm-browser-fs #admin-panel:hover {
 
       var card = document.createElement('div');
       card.className = 'travel-card' + (isCurrent ? ' travel-card-here' : '') + (isDunbar ? ' travel-card-dunbar' : '');
+      card.dataset.villageId = v.id;
 
       var emoji = isDunbar ? '⛩️' : (_craftEmoji[v.craft_focus] || '🏡');
       var name  = isDunbar ? 'Dunbar' : v.name;
       var line  = isDunbar ? 'The arrival square. Where everyone begins.' : (v.founding_line || '');
 
-      // Right-side action
+      // Footer action
       var actionHTML;
       if (isCurrent) {
         actionHTML = '<div class="travel-here-badge">You are here</div>';
       } else if (isHome) {
-        actionHTML = '<button class="travel-visit-btn" style="background:#c8a84b;">← Return home</button>';
+        actionHTML = '<button class="travel-visit-btn" style="color:#c8a84b;">← Return home</button>';
       } else if (isDunbar) {
-        actionHTML = '<span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;background:#f0f0f0;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;margin-right:10px;">Arrival Square</span><button class="travel-visit-btn">Enter →</button>';
+        actionHTML = '<button class="travel-visit-btn">Enter</button>';
       } else {
-        actionHTML = '<button class="travel-visit-btn">Visit →</button>';
+        actionHTML = '<button class="travel-visit-btn">Visit</button>';
       }
 
       card.innerHTML =
-        '<div class="travel-card-left">' +
-          '<div class="travel-card-emoji">' + emoji + '</div>' +
-          '<div style="min-width:0;">' +
-            '<div class="travel-card-name">' + name + '</div>' +
-            '<div class="travel-card-line">' + line + '</div>' +
-          '</div>' +
+        '<div class="travel-card-map-wrap">' +
+          '<img class="travel-card-map-img" src="map.png" alt="' + name + '">' +
+          '<div class="travel-card-stamp">' + name + '</div>' +
         '</div>' +
-        actionHTML;
+        '<div class="travel-card-footer">' + actionHTML + '</div>';
 
       if (!isCurrent) {
         card.querySelector('.travel-visit-btn').addEventListener('click', function() {
@@ -31155,6 +32199,85 @@ body.wm-browser-fs #admin-panel:hover {
 
       container.appendChild(card);
     });
+
+    // Fill empty slots so grid always shows 60 total
+    var targetTotal = 60;
+    var emptyCount = Math.max(0, targetTotal - villages.length - 1); // -1 for the + add slot
+    for (var ei = 0; ei < emptyCount; ei++) {
+      var emptySlot = document.createElement('div');
+      emptySlot.className = 'travel-card-add travel-card-empty';
+      emptySlot.innerHTML = '<div class="travel-card-add-body"></div><div class="travel-card-add-label"></div>';
+      container.appendChild(emptySlot);
+    }
+    // The + slot is always last
+    var addSlot = document.createElement('div');
+    addSlot.className = 'travel-card-add';
+    addSlot.innerHTML = '<div class="travel-card-add-body"><div class="travel-card-add-icon">+</div></div>' +
+                        '<div class="travel-card-add-label">Village Maker</div>';
+    addSlot.addEventListener('click', function() {
+      window.open('https://villagemaker.clay.community', '_blank');
+    });
+    container.appendChild(addSlot);
+
+    _initDrag(container);
+  }
+
+  // ── Drag-to-reorder ───────────────────────────────────────────
+  function _initDrag(container) {
+    var _d = null;
+
+    container.addEventListener('pointerdown', function(e) {
+      var card = e.target.closest('.travel-card');
+      if (!card || card.classList.contains('tc-ghost')) return;
+      if (e.target.closest('.travel-visit-btn, .travel-here-badge')) return;
+      e.preventDefault();
+
+      var rect = card.getBoundingClientRect();
+      var ghost = card.cloneNode(true);
+      ghost.classList.add('tc-ghost');
+      ghost.style.cssText = 'position:fixed;z-index:20000;pointer-events:none;' +
+        'width:' + rect.width + 'px;height:' + rect.height + 'px;' +
+        'left:' + rect.left + 'px;top:' + rect.top + 'px;' +
+        'border-radius:12px;box-shadow:0 20px 56px rgba(0,0,0,0.55);' +
+        'transform:scale(1.03);opacity:0.96;transition:none;';
+      document.body.appendChild(ghost);
+      card.classList.add('tc-dragging');
+
+      _d = { card: card, ghost: ghost, offX: e.clientX - rect.left, offY: e.clientY - rect.top };
+      container.setPointerCapture(e.pointerId);
+    });
+
+    container.addEventListener('pointermove', function(e) {
+      if (!_d) return;
+      _d.ghost.style.left = (e.clientX - _d.offX) + 'px';
+      _d.ghost.style.top  = (e.clientY - _d.offY) + 'px';
+
+      // Find card under cursor (hide ghost so elementFromPoint sees through it)
+      _d.ghost.style.visibility = 'hidden';
+      var el = document.elementFromPoint(e.clientX, e.clientY);
+      _d.ghost.style.visibility = '';
+
+      var target = el && el.closest('.travel-card:not(.tc-dragging):not(.tc-ghost)');
+      if (!target || !container.contains(target)) return;
+
+      var cards = Array.from(container.querySelectorAll('.travel-card:not(.tc-ghost)'));
+      var di = cards.indexOf(_d.card), ti = cards.indexOf(target);
+      if (di !== ti) {
+        container.insertBefore(_d.card, di < ti ? target.nextSibling : target);
+      }
+    });
+
+    function _end() {
+      if (!_d) return;
+      _d.card.classList.remove('tc-dragging');
+      _d.ghost.remove();
+      var order = Array.from(container.querySelectorAll('.travel-card:not(.tc-ghost)'))
+        .map(function(c) { return c.dataset.villageId; }).filter(Boolean);
+      if (order.length) localStorage.setItem('cvTravelOrder', JSON.stringify(order));
+      _d = null;
+    }
+    container.addEventListener('pointerup', _end);
+    container.addEventListener('pointercancel', _end);
   }
 })();
 </script>
