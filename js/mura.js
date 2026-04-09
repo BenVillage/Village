@@ -170,6 +170,7 @@ setInterval(() => { logPresence(_presenceLocation); fetchBuildingPresence(); }, 
 // ───────────────────────────────────────────────────────────
 
 // ===== MURA v2 — The Presence That Cannot Be Summoned =====
+document.addEventListener('DOMContentLoaded', function() {
 (function() {
 
   const _MURA_BUILDING_OVERLAYS = [
@@ -464,13 +465,15 @@ setInterval(() => { logPresence(_presenceLocation); fetchBuildingPresence(); }, 
   });
 
 })();
+}); // end DOMContentLoaded — Mura v2
 // ===== END MURA v2 =====
 
 // ───────────────────────────────────────────────────────────
 
 // ===== MURA v2 — openBuildingPage hook =====
+document.addEventListener('DOMContentLoaded', function() {
 (function() {
-  var _origOpen = openBuildingPage;
+  var _origOpen = window.openBuildingPage || function() {};
   window.openBuildingPage = function(buildingName) {
     _origOpen(buildingName);
     if (typeof window._muraOnBuildingOpen === 'function') {
@@ -488,6 +491,7 @@ setInterval(() => { logPresence(_presenceLocation); fetchBuildingPresence(); }, 
     };
   }
 })();
+}); // end DOMContentLoaded — openBuildingPage hook
 
 // ───────────────────────────────────────────────────────────
 
