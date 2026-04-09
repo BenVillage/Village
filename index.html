@@ -6012,12 +6012,16 @@ function _setWalkablePaintColor(color) {
 }
 document.getElementById('wb-color-green').addEventListener('click', () => _setWalkablePaintColor('green'));
 document.getElementById('wb-color-red').addEventListener('click', () => _setWalkablePaintColor('red'));
-document.getElementById('walkable-paint-btn').addEventListener('click', () => {
-  _walkablePaintMode = !_walkablePaintMode;
-  document.getElementById('walkable-paint-panel').style.display = _walkablePaintMode ? 'block' : 'none';
-  document.getElementById('walkable-paint-btn').classList.toggle('active', _walkablePaintMode);
-  document.body.style.cursor = _walkablePaintMode ? 'crosshair' : '';
-  _updateWalkableCount();
+document.addEventListener('DOMContentLoaded', () => {
+  var _wpBtn = document.getElementById('walkable-paint-btn');
+  if (_wpBtn) _wpBtn.addEventListener('click', () => {
+    _walkablePaintMode = !_walkablePaintMode;
+    document.getElementById('walkable-paint-panel').style.display = _walkablePaintMode ? 'block' : 'none';
+    var btn2 = document.getElementById('walkable-paint-btn');
+    if (btn2) btn2.classList.toggle('active', _walkablePaintMode);
+    document.body.style.cursor = _walkablePaintMode ? 'crosshair' : '';
+    _updateWalkableCount();
+  });
 });
 document.getElementById('walkable-clear-btn').addEventListener('click', () => {
   _walkableBrushData.length = 0;
