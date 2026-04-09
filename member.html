@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Village Identity Card</title>
+<meta name="description" content="A verified member of Clay Village.">
+<meta property="og:title" content="Village Identity Card">
+<meta property="og:description" content="Verified by the village. Earned in real life.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ─────────────────────────────────────────
+   TOKEN THEMES  — the colour IS the role
+   ───────────────────────────────────────── */
+
+/* Resident — warm clay, unglazed terracotta */
+:root {
+  --page-bg:   #dfd0bc;
+  --card-bg:   #f5ede0;
+  --tc:        #a85c2e;
+  --tc-soft:   #c17a4a;
+  --tc-glow:   rgba(168,92,46,0.18);
+  --tc-border: rgba(168,92,46,0.22);
+  --tc-arc:    rgba(168,92,46,0.85);
+  --tc-arc-bg: rgba(168,92,46,0.10);
+  --text:      #2a1808;
+  --text-mid:  rgba(42,24,8,0.55);
+  --text-dim:  rgba(42,24,8,0.32);
+  --sep:       rgba(42,24,8,0.08);
+  --header-bg: rgba(42,24,8,0.06);
+  --grain:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.042'/%3E%3C/svg%3E");
+}
+
+[data-role="citizen"] {
+  --page-bg:   #d8c4a0;
+  --card-bg:   #f4e8d0;
+  --tc:        #9a6010;
+  --tc-soft:   #b87828;
+  --tc-glow:   rgba(154,96,16,0.18);
+  --tc-border: rgba(154,96,16,0.24);
+  --tc-arc:    rgba(154,96,16,0.88);
+  --tc-arc-bg: rgba(154,96,16,0.10);
+  --text:      #1e1208;
+  --text-mid:  rgba(30,18,8,0.55);
+  --text-dim:  rgba(30,18,8,0.32);
+  --sep:       rgba(30,18,8,0.08);
+  --header-bg: rgba(30,18,8,0.06);
+}
+
+[data-role="elder"] {
+  --page-bg:   #090c14;
+  --card-bg:   #10131e;
+  --tc:        #4a5878;
+  --tc-soft:   #6070a0;
+  --tc-glow:   rgba(74,88,120,0.25);
+  --tc-border: rgba(74,88,120,0.28);
+  --tc-arc:    rgba(96,112,160,0.9);
+  --tc-arc-bg: rgba(74,88,120,0.12);
+  --text:      #c0c6d8;
+  --text-mid:  rgba(192,198,216,0.55);
+  --text-dim:  rgba(192,198,216,0.30);
+  --sep:       rgba(192,198,216,0.08);
+  --header-bg: rgba(0,0,0,0.25);
+}
+
+[data-role="founder"] {
+  --page-bg:   #e0d8c8;
+  --card-bg:   #faf5ec;
+  --tc:        #9a7a18;
+  --tc-soft:   #c8a840;
+  --tc-glow:   rgba(154,122,24,0.20);
+  --tc-border: rgba(200,168,64,0.35);
+  --tc-arc:    rgba(154,122,24,0.9);
+  --tc-arc-bg: rgba(154,122,24,0.10);
+  --text:      #18120a;
+  --text-mid:  rgba(24,18,10,0.55);
+  --text-dim:  rgba(24,18,10,0.30);
+  --sep:       rgba(24,18,10,0.08);
+  --header-bg: rgba(24,18,10,0.05);
+}
+
+/* ─────────────────────────────────────────
+   PAGE + CARD SHELL
+   ───────────────────────────────────────── */
+
+html, body {
+  min-height: 100vh;
+  background: var(--page-bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 16px 48px;
+  transition: background 0.6s ease;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.card {
+  width: 100%; max-width: 390px;
+  background: var(--card-bg);
+  background-image: var(--grain);
+  border-radius: 18px;
+  border: 1px solid var(--tc-border);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.5) inset,
+    0 2px 8px rgba(0,0,0,0.06),
+    0 16px 48px rgba(0,0,0,0.10),
+    0 0 60px var(--tc-glow);
+  overflow: hidden;
+  position: relative;
+  animation: card-breathe 6s ease-in-out infinite;
+}
+@keyframes card-breathe {
+  0%,100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.5) inset, 0 2px 8px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.10), 0 0 60px var(--tc-glow); }
+  50%      { box-shadow: 0 0 0 1px rgba(255,255,255,0.5) inset, 0 2px 8px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.12), 0 0 90px var(--tc-glow); }
+}
+
+/* ─────────────────────────────────────────
+   HEADER STRIP
+   ───────────────────────────────────────── */
+
+.card-header {
+  padding: 13px 18px;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--sep);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hdr-village {
+  font-size: 9px; letter-spacing: 0.20em; text-transform: uppercase;
+  color: var(--text-mid); font-weight: 500;
+}
+.hdr-role {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--tc); font-weight: 600;
+}
+.role-ember {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--tc);
+  box-shadow: 0 0 6px var(--tc-glow);
+  animation: ember 3s ease-in-out infinite;
+}
+@keyframes ember {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.8); }
+}
+
+/* ─────────────────────────────────────────
+   AVATAR ZONE — constellation + photo
+   ───────────────────────────────────────── */
+
+.avatar-zone {
+  padding: 28px 0 0;
+  display: flex; flex-direction: column; align-items: center;
+  position: relative;
+}
+.constellation {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 240px;
+  pointer-events: none;
+  animation: constellation-breathe 8s ease-in-out infinite;
+}
+@keyframes constellation-breathe {
+  0%,100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 0.9; transform: scale(1.015); }
+}
+
+.avatar-ring {
+  width: 104px; height: 104px; border-radius: 50%;
+  border: 2px solid var(--tc);
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.7), 0 0 24px var(--tc-glow);
+  overflow: hidden;
+  background: var(--card-bg);
+  position: relative; z-index: 2;
+  animation: avatar-glow 5s ease-in-out infinite;
+}
+@keyframes avatar-glow {
+  0%,100% { box-shadow: 0 0 0 4px rgba(255,255,255,0.7), 0 0 20px var(--tc-glow); }
+  50%      { box-shadow: 0 0 0 4px rgba(255,255,255,0.85), 0 0 36px var(--tc-glow); }
+}
+.avatar-ring img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-initial {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lora', serif; font-style: italic;
+  font-size: 40px; color: var(--tc); background: transparent;
+}
+
+/* ─────────────────────────────────────────
+   IDENTITY
+   ───────────────────────────────────────── */
+
+.identity {
+  text-align: center; padding: 16px 28px 0;
+  position: relative; z-index: 2;
+}
+.identity-name {
+  font-family: 'Lora', serif; font-style: italic;
+  font-size: 30px; font-weight: 400;
+  color: var(--text); letter-spacing: -0.01em; line-height: 1.1;
+}
+.identity-line {
+  margin-top: 8px; font-size: 13px; color: var(--text-mid);
+  line-height: 1.65; max-width: 300px; margin-left: auto; margin-right: auto;
+}
+.identity-location {
+  margin-top: 6px; font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+
+/* ─────────────────────────────────────────
+   BRAVING ARC
+   ───────────────────────────────────────── */
+
+.braving-wrap {
+  padding: 22px 0 4px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.braving-arc-svg { width: 250px; height: 132px; overflow: visible; }
+.braving-letters {
+  display: flex; gap: 22px; margin-top: 4px; justify-content: center;
+}
+.braving-l {
+  font-size: 8px; letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--text-dim); text-align: center; width: 22px;
+  transition: color 0.4s;
+}
+.braving-l.lit { color: var(--tc); font-weight: 600; }
+
+/* ─────────────────────────────────────────
+   TOKEN PATH
+   ───────────────────────────────────────── */
+
+.token-path-wrap {
+  padding: 22px 20px 6px;
+}
+.token-path-label {
+  font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-dim); text-align: center; margin-bottom: 14px;
+}
+.token-path-track {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0;
+}
+.tp-node {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; cursor: pointer; position: relative;
+  transition: transform 0.15s;
+  flex: 1; max-width: 64px;
+}
+.tp-node:hover { transform: translateY(-2px); }
+.tp-node.active-tp { transform: translateY(-3px); }
+
+.tp-circle {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  transition: box-shadow 0.3s, border-color 0.3s;
+  position: relative; z-index: 1;
+}
+/* States */
+.tp-node.past   .tp-circle { opacity: 0.5; }
+.tp-node.future .tp-circle { opacity: 0.28; }
+
+/* Per-token colours */
+.tp-node[data-token="visitor"] .tp-circle  { border-color: rgba(42,24,8,0.22); background: transparent; color: var(--text-dim); }
+.tp-node[data-token="resident"] .tp-circle { border-color: #a85c2e; background: rgba(168,92,46,0.12); color: #a85c2e; }
+.tp-node[data-token="citizen"] .tp-circle  { border-color: #9a6010; background: rgba(154,96,16,0.12); color: #9a6010; }
+.tp-node[data-token="elder"] .tp-circle    { border-color: #3a4460; background: rgba(58,68,96,0.14); color: #4a5878; }
+.tp-node[data-token="founder"] .tp-circle  { border-color: #9a7a18; background: rgba(154,122,24,0.12); color: #9a7a18; }
+
+/* Current node: glow + larger */
+.tp-node.current .tp-circle {
+  width: 40px; height: 40px; font-size: 14px;
+}
+.tp-node[data-token="visitor"].current  .tp-circle { box-shadow: 0 0 14px rgba(42,24,8,0.15); }
+.tp-node[data-token="resident"].current .tp-circle { box-shadow: 0 0 16px rgba(168,92,46,0.35); border-width: 2.5px; }
+.tp-node[data-token="citizen"].current  .tp-circle { box-shadow: 0 0 16px rgba(154,96,16,0.40); border-width: 2.5px; }
+.tp-node[data-token="elder"].current    .tp-circle { box-shadow: 0 0 16px rgba(74,88,120,0.45); border-width: 2.5px; }
+.tp-node[data-token="founder"].current  .tp-circle { box-shadow: 0 0 18px rgba(154,122,24,0.50); border-width: 2.5px; }
+
+.tp-name {
+  font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dim); text-align: center; line-height: 1.3;
+}
+.tp-node.current .tp-name { color: var(--text-mid); font-weight: 600; }
+.tp-node.future  .tp-name { opacity: 0.4; }
+
+/* Connector line between nodes */
+.tp-line {
+  flex: 1; height: 1px; background: var(--sep); max-width: 18px;
+  position: relative; top: -7px; /* align with circle center */
+}
+
+/* Token drawer */
+.token-drawer {
+  margin: 10px 0 0;
+  border-radius: 10px;
+  border: 1px solid var(--tc-border);
+  background: var(--header-bg);
+  overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+  max-height: 0; opacity: 0;
+}
+.token-drawer.open { max-height: 320px; opacity: 1; }
+.token-drawer-inner { padding: 16px 18px 18px; }
+.td-name {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.td-role { font-size: 16px; font-family: 'Lora', serif; font-style: italic; color: var(--text); margin-bottom: 8px; }
+.td-desc { font-size: 12px; line-height: 1.7; color: var(--text-mid); margin-bottom: 10px; }
+.td-earn-label {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 5px;
+}
+.td-earn { font-size: 11px; line-height: 1.6; color: var(--text-mid); }
+.td-current-badge {
+  display: inline-block; margin-bottom: 10px;
+  font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 12px; border: 1px solid var(--tc-border);
+  color: var(--tc); background: transparent;
+}
+
+/* ─────────────────────────────────────────
+   SPEC CAPSULES
+   ───────────────────────────────────────── */
+
+.spec-row {
+  padding: 4px 20px 0;
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+}
+.spec {
+  padding: 4px 11px; border-radius: 20px; border: 1px solid;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.05em;
+}
+.spec-teaching  { color: #7a5500; border-color: rgba(122,85,0,0.3);  background: rgba(212,168,60,0.12); }
+.spec-making    { color: #7a2c10; border-color: rgba(122,44,16,0.3); background: rgba(192,80,40,0.10); }
+.spec-organising{ color: #285c28; border-color: rgba(40,92,40,0.3);  background: rgba(80,144,80,0.10); }
+.spec-exchanging{ color: #7a4010; border-color: rgba(122,64,16,0.3); background: rgba(184,112,48,0.10); }
+.spec-witnessing{ color: #1a4870; border-color: rgba(26,72,112,0.3); background: rgba(80,128,184,0.10); }
+.spec-governing { color: #4a2870; border-color: rgba(74,40,112,0.3); background: rgba(128,80,184,0.10); }
+
+/* ─────────────────────────────────────────
+   INFO BUTTONS + PANEL
+   ───────────────────────────────────────── */
+
+.info-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1px solid var(--tc-border);
+  background: transparent; cursor: pointer;
+  font-size: 8px; font-weight: 700; color: var(--text-dim);
+  font-family: serif; line-height: 1;
+  transition: all 0.18s; padding: 0; vertical-align: middle; margin-left: 4px;
+  flex-shrink: 0;
+}
+.info-btn:hover { background: var(--tc); color: #fff; border-color: var(--tc); }
+.info-btn.active { background: var(--tc); color: #fff; border-color: var(--tc); }
+
+.info-panel {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+  width: min(390px, 100vw);
+  background: var(--card-bg);
+  background-image: var(--grain);
+  border: 1px solid var(--tc-border);
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 22px 32px;
+  z-index: 100;
+  transition: transform 0.38s cubic-bezier(0.32,0.72,0,1);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+}
+.info-panel.open { transform: translateX(-50%) translateY(0); }
+.info-panel-drag {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--sep); margin: 0 auto 18px;
+}
+.info-panel-title {
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--tc); font-weight: 600; margin-bottom: 10px;
+}
+.info-panel-body {
+  font-size: 13px; line-height: 1.75; color: var(--text-mid);
+}
+.info-panel-body p { margin-bottom: 10px; }
+.info-panel-body p:last-child { margin-bottom: 0; }
+.info-panel-body strong { color: var(--text); font-weight: 600; }
+.info-panel-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; color: var(--text-dim); line-height: 1;
+}
+.info-overlay {
+  position: fixed; inset: 0; z-index: 99;
+  background: rgba(0,0,0,0.2); display: none;
+}
+.info-overlay.show { display: block; }
+
+/* ─────────────────────────────────────────
+   QUEST BOARD
+   ───────────────────────────────────────── */
+
+.quest-wrap {
+  padding: 16px 20px 4px;
+}
+.quest-header {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
+}
+.quest-heading {
+  font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-dim); flex: 1;
+}
+.quest-pct {
+  font-size: 10px; font-weight: 600; color: var(--tc);
+}
+.quest-bar-track {
+  height: 4px; background: var(--tc-arc-bg); border-radius: 2px; margin-bottom: 12px; overflow: hidden;
+}
+.quest-bar-fill {
+  height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--tc-arc-bg), var(--tc-arc));
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+.quest-tasks { display: flex; flex-direction: column; gap: 6px; }
+.quest-task {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 11px; color: var(--text-mid); line-height: 1.45;
+}
+.quest-task-icon {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; margin-top: 0px;
+}
+.quest-task.done .quest-task-icon { background: var(--tc); color: #fff; }
+.quest-task.done { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--tc-arc-bg); }
+.quest-task.next .quest-task-icon { border: 1.5px solid var(--tc); color: var(--tc); background: transparent; }
+.quest-task.next { color: var(--text); }
+.quest-task.locked .quest-task-icon { border: 1.5px solid var(--sep); color: var(--text-dim); background: transparent; }
+.quest-task.locked { color: var(--text-dim); }
+.quest-task-text { flex: 1; }
+.quest-task-hint { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
+
+.quest-tier-locked {
+  margin-top: 12px; padding: 10px 14px; border-radius: 8px;
+  border: 1px dashed var(--sep); font-size: 11px; color: var(--text-dim);
+  line-height: 1.5; text-align: center;
+}
+
+/* ─────────────────────────────────────────
+   SEPARATOR + STATS
+   ───────────────────────────────────────── */
+
+.card-sep { height: 1px; background: var(--sep); margin: 18px 20px 0; }
+
+.stats-row {
+  padding: 16px 24px; display: flex; align-items: center;
+  justify-content: center; gap: 28px;
+}
+.stat { text-align: center; }
+.stat-num {
+  font-family: 'Lora', serif; font-size: 28px; font-weight: 400;
+  color: var(--text); line-height: 1;
+}
+.stat-label {
+  margin-top: 4px; font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.stat-divider { width: 1px; height: 32px; background: var(--sep); }
+
+/* ─────────────────────────────────────────
+   RECENT RECORD
+   ───────────────────────────────────────── */
+
+.recent { padding: 0 20px 4px; }
+.recent-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid var(--sep);
+}
+.recent-row:last-child { border-bottom: none; }
+.recent-type {
+  font-size: 11px; color: var(--text-mid);
+}
+.recent-type::before {
+  content: '·'; color: var(--tc); margin-right: 8px;
+  font-size: 15px; line-height: 0; vertical-align: -2px;
+}
+.recent-age {
+  font-size: 10px; color: var(--text-dim);
+  white-space: nowrap; margin-left: 12px; flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────
+   VERIFICATION FOOTER
+   ───────────────────────────────────────── */
+
+.card-footer {
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--sep);
+  background: var(--header-bg);
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.verify-flame {
+  font-size: 11px;
+  animation: flame-flicker 2.8s ease-in-out infinite;
+}
+@keyframes flame-flicker {
+  0%,100% { opacity: 0.7; }
+  35%      { opacity: 0.45; }
+  65%      { opacity: 0.9; }
+}
+.verify-text {
+  font-size: 9px; letter-spacing: 0.07em; color: var(--text-dim);
+}
+
+/* ─────────────────────────────────────────
+   BACK BUTTON
+   ───────────────────────────────────────── */
+
+.back-btn {
+  display: block; width: fit-content;
+  margin: 0 auto 14px;
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(0,0,0,0.28); text-decoration: none;
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(255,255,255,0.35);
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.back-btn:hover { color: rgba(0,0,0,0.55); background: rgba(255,255,255,0.6); border-color: rgba(0,0,0,0.2); }
+
+/* ─────────────────────────────────────────
+   CTA ROW — share + visit
+   ───────────────────────────────────────── */
+
+.cta-row {
+  padding: 12px 20px 0;
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+.cta-btn {
+  padding: 9px 18px; border-radius: 20px; border: 1px solid;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+  cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+  font-family: inherit;
+}
+.cta-btn.primary {
+  background: var(--tc); color: #fff; border-color: var(--tc);
+}
+.cta-btn.primary:hover { opacity: 0.88; }
+.cta-btn.secondary {
+  background: transparent; color: var(--text-mid); border-color: var(--tc-border);
+}
+.cta-btn.secondary:hover { background: var(--header-bg); color: var(--text); }
+.cta-btn.copied { background: #2d6a2d !important; border-color: #2d6a2d !important; }
+
+/* ─────────────────────────────────────────
+   BRAVING LEGEND DRAWER
+   ───────────────────────────────────────── */
+
+.braving-l {
+  cursor: pointer;
+  transition: color 0.4s, transform 0.15s;
+}
+.braving-l:hover { transform: scale(1.25); }
+.braving-l.active-label { color: var(--tc) !important; font-weight: 700; }
+
+.braving-drawer {
+  margin: 8px 20px 0;
+  border-radius: 10px;
+  border: 1px solid var(--tc-border);
+  background: var(--header-bg);
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+  max-height: 0; opacity: 0;
+}
+.braving-drawer.open {
+  max-height: 140px; opacity: 1;
+}
+.braving-drawer-inner {
+  padding: 13px 16px 14px;
+}
+.bd-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--tc); margin-bottom: 4px;
+}
+.bd-desc {
+  font-size: 12px; line-height: 1.6; color: var(--text-mid);
+}
+.bd-earn {
+  font-size: 10px; letter-spacing: 0.05em; color: var(--text-dim);
+  margin-top: 5px;
+}
+.bd-earn.earned { color: var(--tc); }
+
+/* ─────────────────────────────────────────
+   SPEC TOOLTIP
+   ───────────────────────────────────────── */
+
+.spec { position: relative; cursor: default; }
+.spec-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--text);
+  color: var(--card-bg);
+  font-size: 10px; line-height: 1.4;
+  padding: 7px 11px; border-radius: 7px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+.spec-tip::after {
+  content: '';
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--text);
+}
+.spec:hover .spec-tip { display: block; }
+
+/* ─────────────────────────────────────────
+   SHARE HINT + LOADING
+   ───────────────────────────────────────── */
+
+.share-hint {
+  margin-top: 14px; text-align: center;
+  font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase;
+  color: rgba(0,0,0,0.2);
+}
+.loading-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+}
+.loading-ring {
+  width: 32px; height: 32px;
+  border: 2px solid rgba(0,0,0,0.08);
+  border-top-color: rgba(168,92,46,0.5);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 11px; letter-spacing: 0.10em; color: rgba(0,0,0,0.3); }
+
+</style>
+</head>
+<body>
+<div id="root"><div class="loading-wrap"><div class="loading-ring"></div><div class="loading-text">Loading</div></div></div>
+
+<script>
+const SUPABASE_URL  = 'https://fokujzwgqtifpbmmhdot.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3VqendncXRpZnBibW1oZG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzM0OTIsImV4cCI6MjA5MDcwOTQ5Mn0.Tk8Y4lH0T4EUA7U4Lb22xeFyJAt4ha2CEHG_Idibux8';
+const VILLAGE_ID    = '00000000-0000-0000-0000-000000000000';
+const VILLAGE_NAME  = 'Clay Village';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── Demo profile shown when no real member is found ──
+const DEMO = {
+  member: {
+    display_name: 'maya', avatar_url: '', role: 'resident',
+    created_at: new Date(Date.now() - 86400000 * 62).toISOString(),
+    profile_data: {
+      name: 'maya', villageName: 'maya',
+      identity: 'Wheel throwing. Even when nobody watches. Especially when nobody watches.',
+      city: 'Seattle', country: 'US',
+      mainPractice: 'wheel', level: 'intermediate', yearsPracticing: 5,
+      offersTeaching: true, openToExchange: true, openToMeetups: true,
+      whatClayMeans: 'The one thing that asks nothing back.'
+    }
+  },
+  data: {
+    tokenStatus: 'granted', friendCount: 12, bonfireCount: 18,
+    practiceCount: 24, processCount: 6, galleryCount: 3, journalCount: 4,
+    practiceLog:   [{ created_at: new Date(Date.now()-86400000*3).toISOString() }],
+    processBoard:  [{ created_at: new Date(Date.now()-86400000*7).toISOString() }],
+    galleryPieces: [{ created_at: new Date(Date.now()-86400000*14).toISOString() }],
+    journals:      [{ created_at: new Date(Date.now()-86400000*21).toISOString() }],
+    memberSince: new Date(Date.now()-86400000*62).toISOString(),
+    memberCount: 47, villagesVisited: 2, role: 'resident'
+  }
+};
+
+// ── Helpers ──
+const esc = s => { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; };
+
+function relTime(ts) {
+  if (!ts) return '';
+  const d = Math.floor((Date.now() - new Date(ts)) / 86400000);
+  if (d < 1) return 'today';
+  if (d === 1) return '1 day ago';
+  if (d < 7) return d + ' days ago';
+  const w = Math.floor(d / 7);
+  if (w === 1) return '1 week ago';
+  if (w < 5) return w + ' weeks ago';
+  return Math.floor(w / 4) + ' months ago';
+}
+
+function cardRole(role, token) {
+  if (role === 'founder') return 'founder';
+  if (role === 'elder')   return 'elder';
+  if (token === 'granted' || token === 'earned') return 'citizen';
+  return 'resident';
+}
+function roleLabel(cr) {
+  return { resident:'Resident', citizen:'Citizen', elder:'Elder', founder:'Founder' }[cr] || 'Resident';
+}
+
+// ── Token Path ──────────────────────────────────────────────────────────────
+const TOKEN_NODES = [
+  { id: 'visitor',  symbol: '○', label: 'Visitor' },
+  { id: 'resident', symbol: '◉', label: 'Resident' },
+  { id: 'citizen',  symbol: '◈', label: 'Citizen' },
+  { id: 'elder',    symbol: '◆', label: 'Elder' },
+  { id: 'founder',  symbol: '✦', label: 'Founder' }
+];
+
+const TOKEN_ORDER = { visitor:0, resident:1, citizen:2, elder:3, founder:4 };
+
+const TOKEN_INFO = {
+  visitor: {
+    role: 'The Visitor',
+    colour: 'rgba(42,24,8,0.5)',
+    desc: 'You arrived. You can see the fire. You can sit in the commons. You cannot speak in the bonfire. You cannot enter buildings. You are a ghost with eyes. The village sees you. You see the village. Nothing more until a member vouches for you.',
+    earnLabel: 'How to move forward',
+    earn: 'Wait to be vouched for by a current member. Show up. Be present. The village will notice.'
+  },
+  resident: {
+    role: 'The Resident',
+    colour: '#a85c2e',
+    desc: 'A founding member vouched for you. You signed your name. You are real. You can now speak at the bonfire, enter all public buildings, and be seen in the directory. Your Vault opens. Your record begins. You cannot vote. You cannot invite others. You are known but not yet trusted with the village itself.',
+    earnLabel: 'How you earn it',
+    earn: 'One founder vouch + seven days presence + three genuine contributions — a piece posted, a bonfire message that started a conversation, a workshop attended.'
+  },
+  citizen: {
+    role: 'The Citizen',
+    colour: '#9a6010',
+    desc: 'You have been here long enough to matter. The village knows your rhythm. You can now vote on governance proposals, invite guests, vouch for new residents, and travel to other villages as a recognised member — not a stranger. Your Passport is active. Your record is portable.',
+    earnLabel: 'How you earn it',
+    earn: 'Three months as resident + ten logged contributions + two member vouches + founder approval.'
+  },
+  elder: {
+    role: 'The Elder',
+    colour: '#4a5878',
+    desc: 'You have given more than you have taken. The village has shaped you and you have shaped it. You can now propose governance changes, mentor residents, and your vouch carries double weight. You can negotiate with other villages on behalf of your own. You are the memory of the village.',
+    earnLabel: 'How you earn it',
+    earn: 'One year as citizen + demonstrated mentorship + village vote — not founder decision. Community decision.'
+  },
+  founder: {
+    role: 'The Founder',
+    colour: '#9a7a18',
+    desc: 'You are leaving to start a new fire. This token is not a promotion. It is a severance and a beginning. You carry your full record, your Elder status, your reputation — and you go found a new village. Your origin village is your lineage. The new village knows where you came from.',
+    earnLabel: 'How you earn it',
+    earn: 'Elder status + village blessing + demonstrated readiness + the decision to go.'
+  }
+};
+
+function buildTokenPath(currentRole) {
+  const currentIndex = TOKEN_ORDER[currentRole] ?? 1;
+  const nodes = TOKEN_NODES.map((node, i) => {
+    let state = i < currentIndex ? 'past' : i === currentIndex ? 'current' : 'future';
+    return `<div class="tp-node ${state}" data-token="${node.id}" onclick="toggleToken('${node.id}')">
+      <div class="tp-circle">${node.symbol}</div>
+      <div class="tp-name">${node.label}</div>
+    </div>`;
+  });
+
+  // Interleave connector lines
+  let track = '';
+  nodes.forEach((n, i) => {
+    track += n;
+    if (i < nodes.length - 1) track += `<div class="tp-line"></div>`;
+  });
+
+  return `<div class="token-path-wrap">
+    <div class="token-path-label">Token path</div>
+    <div class="token-path-track">${track}</div>
+    <div class="token-drawer" id="token-drawer">
+      <div class="token-drawer-inner">
+        <div class="td-name" id="td-name"></div>
+        <div class="td-role" id="td-role"></div>
+        <div class="td-desc" id="td-desc"></div>
+        <div class="td-earn-label" id="td-earn-label"></div>
+        <div class="td-earn" id="td-earn"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── BRAVING — map to 7 milestones ──
+function braving(data, p) {
+  return {
+    B: (data.bonfireCount||0) >= 5,
+    R: (data.practiceCount||0) >= 1,
+    A: (data.galleryCount||0) >= 1,
+    V: !!(p.photo && p.bio && p.mainPractice),
+    I: (data.journalCount||0) >= 1,
+    N: (data.processCount||0) >= 1,
+    G: data.tokenStatus === 'granted'
+  };
+}
+
+// ── Specialisations ──
+function specs(p, data) {
+  const s = [];
+  if (p.offersTeaching || p.availableForWorkshops) s.push(['teaching','Teaching']);
+  if ((data.galleryCount||0) >= 1 || p.mainPractice) s.push(['making','Making']);
+  if (p.openToMeetups || p.openToStudioVisits) s.push(['organising','Organising']);
+  if (p.openToExchange) s.push(['exchanging','Exchanging']);
+  if ((data.journalCount||0) >= 1) s.push(['witnessing','Witnessing']);
+  if (data.role === 'founder' || data.role === 'elder') s.push(['governing','Governing']);
+  return s;
+}
+
+// ── Recent records ──
+function recentRecords(data) {
+  const r = [];
+  (data.practiceLog||[]).slice(0,1).forEach(x => r.push({type:'Studio session logged', ts: x.date||x.created_at}));
+  (data.galleryPieces||[]).slice(0,1).forEach(x => r.push({type:'Piece added to gallery', ts: x.created_at}));
+  (data.processBoard||[]).slice(0,1).forEach(x => r.push({type:'Process note shared', ts: x.created_at}));
+  (data.journals||[]).slice(0,1).forEach(x => r.push({type:'Library journal written', ts: x.created_at}));
+  return r.sort((a,b) => new Date(b.ts)-new Date(a.ts)).slice(0,3);
+}
+
+// ── Organic constellation ──
+function drawConstellation(canvas, count) {
+  const W = canvas.width  = canvas.offsetWidth;
+  const H = canvas.height = 240;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const cx = W/2, cy = 112;
+  const n = Math.min(count || 4, 22);
+
+  // Get token color from CSS vars
+  const style = getComputedStyle(document.documentElement);
+  const tc = style.getPropertyValue('--tc').trim() || '#a85c2e';
+
+  for (let i = 0; i < n; i++) {
+    const angle = (i/n)*Math.PI*2 - Math.PI/2 + (Math.random()-0.5)*0.4;
+    const dist  = 58 + Math.random()*80;
+    const x2 = cx + Math.cos(angle)*dist;
+    const y2 = cy + Math.sin(angle)*dist;
+    // Organic: one bezier control point offset perpendicular
+    const perp = angle + Math.PI/2;
+    const bend = (Math.random()-0.5)*32;
+    const cpx  = (cx+x2)/2 + Math.cos(perp)*bend;
+    const cpy  = (cy+y2)/2 + Math.sin(perp)*bend;
+
+    const depth = 1 - i/n;
+    const alpha = 0.03 + depth*0.11;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.quadraticCurveTo(cpx, cpy, x2, y2);
+    ctx.strokeStyle = `rgba(0,0,0,${alpha})`;
+    ctx.lineWidth = 0.4 + depth*0.7;
+    ctx.stroke();
+
+    // node dot
+    ctx.beginPath();
+    ctx.arc(x2, y2, 1.4, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,0,0,${alpha*1.8})`;
+    ctx.fill();
+  }
+}
+
+// ── BRAVING arc SVG ──
+function buildArc(bv) {
+  const keys = ['B','R','A','V','I','N','G'];
+  const allLit = keys.every(k => bv[k]);
+  const cx = 125, cy = 122, gap = 3;
+
+  function toXY(deg, r) {
+    const rad = (deg-90)*Math.PI/180;
+    return { x: cx+r*Math.cos(rad), y: cy+r*Math.sin(rad) };
+  }
+  function arcPath(a1, a2, r1, r2) {
+    const s = toXY(a1,r2), e = toXY(a2,r2), s2 = toXY(a2,r1), e2 = toXY(a1,r1);
+    const lg = (a2-a1)>180 ? 1 : 0;
+    return `M${s.x} ${s.y} A${r2} ${r2} 0 ${lg} 1 ${e.x} ${e.y} L${s2.x} ${s2.y} A${r1} ${r1} 0 ${lg} 0 ${e2.x} ${e2.y} Z`;
+  }
+
+  let paths = '';
+
+  if (allLit) {
+    // Full circle — most visible achievement on the card
+    paths += `<circle cx="${cx}" cy="${cy}" r="90" fill="none" stroke="var(--tc-arc)" stroke-width="14" opacity="0.9" filter="url(#glow)"/>`;
+    paths += `<circle cx="${cx}" cy="${cy}" r="90" fill="none" stroke="var(--tc-arc)" stroke-width="14" opacity="0.3"/>`;
+  } else {
+    const total = 7, start = 202, end = 338, span = end-start;
+    const seg = (span - gap*(total-1))/total;
+    keys.forEach((k,i) => {
+      const a1 = start + i*(seg+gap), a2 = a1+seg;
+      const lit = bv[k];
+      paths += `<path d="${arcPath(a1,a2,77,90)}" fill="${lit ? 'var(--tc-arc)' : 'var(--tc-arc-bg)'}" opacity="${lit ? '1' : '0.7'}" ${lit ? 'filter="url(#glow)"' : ''}/>`;
+      // Pulse animation on lit segments
+      if (lit) paths += `<path d="${arcPath(a1,a2,77,90)}" fill="var(--tc-arc)" opacity="0"><animate attributeName="opacity" values="0;0.3;0" dur="3s" begin="${i*0.4}s" repeatCount="indefinite"/></path>`;
+    });
+  }
+
+  return `<svg class="braving-arc-svg" viewBox="0 0 250 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="2.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    ${paths}
+  </svg>`;
+}
+
+// ── Main render ──
+function render(member, data) {
+  const p   = member.profile_data || {};
+  const name = (p.villageName || p.name || member.display_name || '?').toLowerCase();
+  const cr   = cardRole(member.role || 'resident', data.tokenStatus);
+  const rl   = roleLabel(cr);
+  const photo = p.photo || member.avatar_url || '';
+  const loc   = [p.city, p.country].filter(Boolean).join(', ');
+  const bv    = braving(data, p);
+  const sp    = specs(p, data);
+  const rec   = recentRecords(data);
+  const slug  = encodeURIComponent(name);
+
+  document.title = name + ' · Clay Village';
+
+  const avatarHTML = photo
+    ? `<img src="${photo}" alt="${esc(name)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+    + `<div class="avatar-initial" style="display:none">${name[0].toUpperCase()}</div>`
+    : `<div class="avatar-initial">${name[0].toUpperCase()}</div>`;
+
+  const bkeys = ['B','R','A','V','I','N','G'];
+  const bLetters = bkeys.map(k =>
+    `<div class="braving-l${bv[k]?' lit':''}" data-bkey="${k}" onclick="toggleBraving('${k}',${bv[k]})">${k}</div>`
+  ).join('');
+
+  const SPEC_TIPS = {
+    teaching:   'Shares craft knowledge with others',
+    making:     'Active studio practice',
+    organising: 'Open to meetups & studio visits',
+    exchanging: 'Open to work exchange',
+    witnessing: 'Documents process in journals',
+    governing:  'Village founder or elder'
+  };
+  const specHTML = sp.map(([k,l]) =>
+    `<span class="spec spec-${k}">${l}<span class="spec-tip">${SPEC_TIPS[k]||''}</span></span>`
+  ).join('');
+
+  const recHTML = rec.length
+    ? rec.map(r => `<div class="recent-row"><span class="recent-type">${esc(r.type)}</span><span class="recent-age">${relTime(r.ts)}</span></div>`).join('')
+    : `<div class="recent-row"><span class="recent-type">No activity recorded yet</span></div>`;
+
+  const estDate = data.memberSince
+    ? new Date(data.memberSince).toLocaleDateString('en-GB',{month:'short',year:'numeric'})
+    : '';
+  const verifyLine = `Verified by ${VILLAGE_NAME}${data.memberCount ? ' · '+data.memberCount+' members' : ''}${estDate ? ' · Est. '+estDate : ''}`;
+
+  const html = `
+<div class="card" data-role="${cr}">
+
+  <div class="card-header">
+    <div class="hdr-village">${esc(VILLAGE_NAME)}</div>
+    <div class="hdr-role"><div class="role-ember"></div>${esc(rl)}</div>
+  </div>
+
+  <div class="avatar-zone">
+    <canvas class="constellation" id="cc"></canvas>
+    <div class="avatar-ring" id="ar">${avatarHTML}</div>
+  </div>
+
+  <div class="identity">
+    <div class="identity-name">${esc(name)}</div>
+    ${p.identity ? `<div class="identity-line">${esc(p.identity.slice(0,140))}</div>` : ''}
+    ${loc ? `<div class="identity-location">${esc(loc)}</div>` : ''}
+  </div>
+
+  <div class="braving-wrap">
+    ${buildArc(bv)}
+    <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:8px;">
+      <div class="braving-letters">${bLetters}</div>
+      <button class="info-btn" onclick="showInfo('braving')" title="What is BRAVING?">i</button>
+    </div>
+  </div>
+
+  <div class="braving-drawer" id="braving-drawer">
+    <div class="braving-drawer-inner">
+      <div class="bd-title" id="bd-title"></div>
+      <div class="bd-desc" id="bd-desc"></div>
+      <div class="bd-earn" id="bd-earn"></div>
+    </div>
+  </div>
+
+  ${sp.length ? `<div class="spec-row" style="margin-top:10px;">${specHTML}</div>` : ''}
+
+  <div class="card-sep"></div>
+
+  ${buildQuestSection(bv, data, cr)}
+
+  <div class="card-sep"></div>
+
+  <div style="display:flex;align-items:center;padding:14px 20px 0;">
+    <div style="flex:1;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);">Token path</div>
+    <button class="info-btn" onclick="showInfo('tokens')" title="How tokens work">i</button>
+  </div>
+
+  ${buildTokenPath(cr)}
+
+  <div class="card-sep"></div>
+
+  <div style="display:flex;align-items:center;padding:14px 20px 0 20px;">
+    <div style="flex:1;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);">Presence</div>
+    <button class="info-btn" onclick="showInfo('presence')" title="What these numbers mean">i</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num">${data.bonfireCount||0}</div>
+      <div class="stat-label">Bonfire posts</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">${data.friendCount||0}</div>
+      <div class="stat-label">Connections</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">${data.practiceCount + data.galleryCount + data.processCount + data.journalCount}</div>
+      <div class="stat-label">Things made</div>
+    </div>
+  </div>
+
+  <div class="card-sep"></div>
+
+  <div style="display:flex;align-items:center;padding:14px 20px 2px;">
+    <div style="flex:1;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);">Recent record</div>
+    <button class="info-btn" onclick="showInfo('record')" title="Why we keep a record">i</button>
+  </div>
+
+  <div class="recent">${recHTML}</div>
+
+  <div class="cta-row">
+    <a href="https://village.anotherclay.com" class="cta-btn primary" target="_blank">Visit Clay Village →</a>
+    <button class="cta-btn secondary" id="copy-btn" onclick="copyLink('${slug}')">Copy link</button>
+  </div>
+
+  <div class="card-footer" style="gap:5px;flex-wrap:wrap;justify-content:center;">
+    <span class="verify-flame">🔥</span>
+    <span class="verify-text">${esc(verifyLine)}</span>
+    <button class="info-btn" style="margin-left:4px;" onclick="showInfo('verification')" title="What verified means">i</button>
+  </div>
+
+</div>
+<div class="share-hint">village.anotherclay.com/member/${slug}</div>`;
+
+  const infoPanelHTML = `
+    <div class="info-overlay" id="info-overlay" onclick="hideInfo()"></div>
+    <div class="info-panel" id="info-panel">
+      <button class="info-panel-close" onclick="hideInfo()">×</button>
+      <div class="info-panel-drag"></div>
+      <div class="info-panel-title" id="ip-title"></div>
+      <div class="info-panel-body" id="ip-body"></div>
+    </div>`;
+
+  const backHTML = `<a class="back-btn" href="https://village.anotherclay.com">← Clay Village</a>`;
+  document.getElementById('root').innerHTML = backHTML + html + infoPanelHTML;
+
+  // Apply page background per role
+  const bgMap = { resident:'#dfd0bc', citizen:'#d8c4a0', elder:'#090c14', founder:'#e0d8c8' };
+  document.body.style.background = bgMap[cr] || '#dfd0bc';
+
+  // Draw constellation
+  setTimeout(() => {
+    const c = document.getElementById('cc');
+    if (c) drawConstellation(c, data.friendCount||4);
+  }, 60);
+}
+
+// ── BRAVING legend ──
+const BRAVING_INFO = {
+  B: { title: 'Bonfire', desc: 'You show up and speak around the fire. Your voice is part of this place.', earn: '5 posts in the bonfire', earnKey: 'bonfireCount', threshold: 5 },
+  R: { title: 'Rhythm',  desc: 'You practice regularly. Clay asks consistency more than talent.', earn: 'Log your first studio session', earnKey: 'practiceCount', threshold: 1 },
+  A: { title: 'Archive', desc: 'Your work exists in the village. Something you made is here.', earn: 'Add one piece to the gallery', earnKey: 'galleryCount', threshold: 1 },
+  V: { title: 'Visible', desc: 'You have a face, a name, and a practice. You are not anonymous here.', earn: 'Complete photo, bio, and practice in your profile', earnKey: null, threshold: null },
+  I: { title: 'Ink',     desc: 'You write about your craft. Thinking on paper is part of making.', earn: 'Write one journal entry in the Library', earnKey: 'journalCount', threshold: 1 },
+  N: { title: 'Notice',  desc: 'You share your process, not just the result. The wall holds your thinking.', earn: 'Post one process note on the process board', earnKey: 'processCount', threshold: 1 },
+  G: { title: 'Granted', desc: 'The village has given you a token. You are fully here.', earn: 'Token granted by a founder or elder', earnKey: 'tokenStatus', threshold: 'granted' }
+};
+
+let _activeBKey = null;
+
+function toggleBraving(key, isLit) {
+  const drawer = document.getElementById('braving-drawer');
+  const titleEl = document.getElementById('bd-title');
+  const descEl  = document.getElementById('bd-desc');
+  const earnEl  = document.getElementById('bd-earn');
+  if (!drawer || !titleEl) return;
+
+  // Deactivate all labels
+  document.querySelectorAll('.braving-l').forEach(el => el.classList.remove('active-label'));
+
+  if (_activeBKey === key) {
+    // Toggle off
+    drawer.classList.remove('open');
+    _activeBKey = null;
+    return;
+  }
+
+  _activeBKey = key;
+  document.querySelector(`.braving-l[data-bkey="${key}"]`)?.classList.add('active-label');
+
+  const info = BRAVING_INFO[key];
+  titleEl.textContent = info.title;
+  descEl.textContent  = info.desc;
+  earnEl.textContent  = isLit ? '✓ Earned' : '→ ' + info.earn;
+  earnEl.className    = 'bd-earn' + (isLit ? ' earned' : '');
+
+  drawer.classList.add('open');
+}
+
+// ── Info panel ──────────────────────────────────────────────────────────────
+const INFO_CONTENT = {
+  braving: {
+    title: 'What is BRAVING?',
+    body: `<p><strong>BRAVING</strong> is the seven-milestone arc that shows you are genuinely present in the village — not just signed up.</p>
+<p>Each letter stands for a real action you took:<br>
+<strong>B</strong>onfire — you spoke up publicly<br>
+<strong>R</strong>hythm — you logged a studio session<br>
+<strong>A</strong>rchive — you added a piece to the gallery<br>
+<strong>V</strong>isible — photo, bio, and practice filled in<br>
+<strong>I</strong>nk — you wrote a journal entry<br>
+<strong>N</strong>otice — you posted to the process board<br>
+<strong>G</strong>ranted — the village gave you a token</p>
+<p>When all seven are lit, the arc becomes a full circle. No bot can fake seven real actions across seven different parts of the village over real time.</p>`
+  },
+  tokens: {
+    title: 'How tokens work',
+    body: `<p><strong>Tokens are not badges. They are your record.</strong></p>
+<p>You cannot buy a token. You cannot copy one. No bot can fake three months of presence and ten genuine contributions witnessed by 150 real people.</p>
+<p>Four tokens, four stages of trust:<br>
+<strong>Resident</strong> — you are real and known<br>
+<strong>Citizen</strong> — you have earned the village's trust<br>
+<strong>Elder</strong> — you have given more than you've taken<br>
+<strong>Founder</strong> — you are leaving to start a new fire</p>
+<p>When you travel to another village, your token speaks before you do. An Elder from Clay Village arriving in Berlin doesn't need to explain themselves. The token is the explanation.</p>
+<p>In the long run, these tokens replace minted identity entirely. Your reputation lives on the record, witnessed by the community. It cannot be stolen, sold, or faked.</p>`
+  },
+  quest: {
+    title: 'Your path to the next token',
+    body: `<p>The token system is a game with real stakes. Each milestone is a real action inside the village — not a click, not a like, not a streak counter.</p>
+<p>The tasks are designed so that doing them makes the village better for everyone else. You don't grind for the sake of grinding. You contribute, and the contribution itself is the proof.</p>
+<p><strong>Why it takes time:</strong> some requirements are time-locked — seven days, three months, one year. No shortcut. The village needs to see your rhythm, not just your burst.</p>
+<p>When you complete all milestones, you request confirmation. The founders review your work. When they're satisfied, they grant your token. It cannot be rushed.</p>`
+  },
+  presence: {
+    title: 'What these numbers mean',
+    body: `<p>These are not follower counts. They are your <strong>presence record</strong> — how much of yourself you have put into the village.</p>
+<p><strong>Bonfire posts</strong> — times you spoke in the communal fire. Public, witnessed, real.<br>
+<strong>Connections</strong> — members who have chosen to know you here.<br>
+<strong>Things made</strong> — studio sessions, gallery pieces, process notes, journal entries. The sum of what you have contributed.</p>
+<p>There are no likes, no follower counts, no algorithm amplifying the loudest voice. These numbers exist so the village can understand who you are when you arrive somewhere new.</p>`
+  },
+  record: {
+    title: 'Why we keep a record',
+    body: `<p>Your record is your reputation, made visible.</p>
+<p>When you arrive in a new village — or when someone from outside wants to understand who you are — your record speaks. Studio sessions logged. Pieces made. Words written. Conversations started. All of it is there, time-stamped and witnessed.</p>
+<p><strong>The record cannot be altered.</strong> You cannot edit out a year of silence. You cannot add contributions that didn't happen. The history is the history.</p>
+<p>This is what makes a token mean something: it is backed by a record that 150 people witnessed in real time.</p>`
+  },
+  verification: {
+    title: 'What "Verified by Clay Village" means',
+    body: `<p>This is not email verification. It is not a phone number check.</p>
+<p>Verified by Clay Village means: <strong>at least one real person in this community has vouched for this person with their own reputation.</strong> The village has watched them contribute, show up, and participate over time.</p>
+<p>A machine can pass a CAPTCHA. A machine cannot build a year of genuine relationships with 150 potters who are watching.</p>
+<p>The flame at the bottom of every identity card is a reminder: this record was built around a real fire, by real people, over real time. That is what makes it worth anything.</p>`
+  }
+};
+
+let _activeInfo = null;
+function showInfo(id) {
+  const panel   = document.getElementById('info-panel');
+  const overlay = document.getElementById('info-overlay');
+  const title   = document.getElementById('ip-title');
+  const body    = document.getElementById('ip-body');
+  if (!panel || !INFO_CONTENT[id]) return;
+
+  // Close BRAVING and token drawers when info opens
+  document.getElementById('braving-drawer')?.classList.remove('open');
+  document.getElementById('token-drawer')?.classList.remove('open');
+  _activeBKey = null; _activeToken = null;
+  document.querySelectorAll('.braving-l,.tp-node').forEach(el => {
+    el.classList.remove('active-label','active-tp');
+  });
+  // Mark the triggering button
+  document.querySelectorAll('.info-btn').forEach(b => b.classList.remove('active'));
+
+  _activeInfo = id;
+  title.textContent = INFO_CONTENT[id].title;
+  body.innerHTML    = INFO_CONTENT[id].body;
+  panel.classList.add('open');
+  overlay.classList.add('show');
+}
+function hideInfo() {
+  document.getElementById('info-panel')?.classList.remove('open');
+  document.getElementById('info-overlay')?.classList.remove('show');
+  document.querySelectorAll('.info-btn').forEach(b => b.classList.remove('active'));
+  _activeInfo = null;
+}
+
+// ── Quest section ────────────────────────────────────────────────────────────
+const QUEST_TASKS = {
+  resident: [
+    { key:'V', label:'Complete your profile',      hint:'Photo, bio, and main practice', bKey:'V' },
+    { key:'R', label:'Log a studio session',        hint:'Open the Studio and record your practice', bKey:'R' },
+    { key:'B', label:'Speak at the Bonfire',         hint:'Post 5 messages in the communal fire', bKey:'B' },
+    { key:'A', label:'Add a piece to the Gallery',  hint:'Share something you made', bKey:'A' },
+    { key:'I', label:'Write in the Library',         hint:'One journal entry is enough', bKey:'I' },
+    { key:'N', label:'Post to the Process Board',   hint:'Show what you\'re currently making', bKey:'N' },
+    { key:'G', label:'Receive your village token',  hint:'The founders will review and confirm', bKey:'G' }
+  ],
+  citizen: [
+    { key:'time',   label:'3 months as a Resident',   hint:'Time cannot be rushed or skipped' },
+    { key:'c10',    label:'10 logged contributions',   hint:'Any combination of sessions, pieces, notes, journals' },
+    { key:'vouch2', label:'2 member vouches',           hint:'Two Citizens or Elders who know your work' },
+    { key:'found',  label:'Founder approval',           hint:'Final confirmation from the village founders' }
+  ],
+  elder: [
+    { key:'time',   label:'1 year as a Citizen',       hint:'The village needs to know your long rhythm' },
+    { key:'mentor', label:'Demonstrated mentorship',   hint:'Residents you have guided and supported' },
+    { key:'vote',   label:'Village vote',              hint:'Community decision — not founder decision alone' }
+  ],
+  founder: [
+    { key:'elder',  label:'Elder status',              hint:'You have given more than you have taken' },
+    { key:'bless',  label:'Village blessing',          hint:'The community votes to release you' },
+    { key:'ready',  label:'Demonstrated readiness',    hint:'You have shown you can lead a village' },
+    { key:'decide', label:'The decision to go',        hint:'Founders are not promoted — they leave to build' }
+  ]
+};
+
+function buildQuestSection(bv, data, cr) {
+  const litCount = Object.values(bv).filter(Boolean).length;
+  const total = 7;
+  const pct = Math.round(litCount / total * 100);
+
+  // Determine next token label
+  const nextTokenMap = { resident:'Citizen', citizen:'Elder', elder:'Founder', founder:'—' };
+  const nextToken = nextTokenMap[cr] || 'Citizen';
+  if (cr === 'founder') {
+    return `<div class="quest-wrap">
+      <div class="quest-header">
+        <div class="quest-heading">Token status</div>
+        <button class="info-btn" onclick="showInfo('quest')" title="How this works">i</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-mid);line-height:1.6;padding:4px 0 8px;">
+        You are a Founder. You carry the full record of Clay Village and the weight of everything built here.
+        Your token is recognised in every village. There is no higher step — only the fire you build next.
+      </div>
+    </div>`;
+  }
+
+  // Tasks for current tier
+  const tasks = QUEST_TASKS[cr] || QUEST_TASKS.resident;
+
+  // For Resident tier: tasks map to BRAVING
+  const taskHTML = tasks.map(t => {
+    let done = false;
+    if (t.bKey) done = bv[t.bKey];
+    else if (t.key === 'time') done = false; // can't know client-side
+    else if (t.key === 'c10') done = (data.practiceCount + data.galleryCount + data.processCount + data.journalCount) >= 10;
+    else done = false;
+
+    const stateClass = done ? 'done' : tasks.indexOf(t) === tasks.findIndex(x => (x.bKey ? !bv[x.bKey] : true)) ? 'next' : 'locked';
+    const icon = done ? '✓' : stateClass === 'next' ? '→' : '·';
+    return `<div class="quest-task ${stateClass}">
+      <div class="quest-task-icon">${icon}</div>
+      <div class="quest-task-text">
+        <div>${t.label}</div>
+        ${!done ? `<div class="quest-task-hint">${t.hint}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="quest-wrap">
+    <div class="quest-header">
+      <div class="quest-heading">${cr === 'resident' ? `Path to ${nextToken}` : `Path to ${nextToken}`}</div>
+      <div class="quest-pct">${cr === 'resident' ? `${litCount}/${total}` : ''}</div>
+      <button class="info-btn" onclick="showInfo('quest')" title="How this works">i</button>
+    </div>
+    ${cr === 'resident' ? `<div class="quest-bar-track"><div class="quest-bar-fill" style="width:${pct}%"></div></div>` : ''}
+    <div class="quest-tasks">${taskHTML}</div>
+    ${cr !== 'resident' ? `<div class="quest-tier-locked">Some requirements can only be verified by the village founders and cannot be shown here.</div>` : ''}
+  </div>`;
+}
+
+// ── Token path drawer ──
+let _activeToken = null;
+function toggleToken(id) {
+  const drawer  = document.getElementById('token-drawer');
+  const nameEl  = document.getElementById('td-name');
+  const roleEl  = document.getElementById('td-role');
+  const descEl  = document.getElementById('td-desc');
+  const earnLbl = document.getElementById('td-earn-label');
+  const earnEl  = document.getElementById('td-earn');
+  if (!drawer) return;
+
+  document.querySelectorAll('.tp-node').forEach(n => n.classList.remove('active-tp'));
+
+  if (_activeToken === id) {
+    drawer.classList.remove('open');
+    _activeToken = null;
+    return;
+  }
+  _activeToken = id;
+  document.querySelector(`.tp-node[data-token="${id}"]`)?.classList.add('active-tp');
+
+  const info = TOKEN_INFO[id];
+  nameEl.textContent  = 'Token · ' + id.charAt(0).toUpperCase() + id.slice(1);
+  nameEl.style.color  = info.colour;
+  roleEl.textContent  = info.role;
+  descEl.textContent  = info.desc;
+  earnLbl.textContent = info.earnLabel;
+  earnEl.textContent  = info.earn;
+
+  drawer.classList.add('open');
+}
+
+// ── Copy link ──
+function copyLink(slug) {
+  const url = 'https://village.anotherclay.com/member/' + slug;
+  const btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(url).then(() => {
+    if (!btn) return;
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (btn) { btn.textContent = '✓ Copied'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000); }
+  });
+}
+
+// ── Fetch ──
+async function load() {
+  const path = window.location.pathname;
+  const m    = path.match(/\/member\/([^/?#]+)/);
+  const username = m ? decodeURIComponent(m[1]).toLowerCase()
+                     : (new URLSearchParams(location.search).get('u')||'').toLowerCase();
+
+  if (!username) { render(DEMO.member, DEMO.data); return; }
+
+  try {
+    let { data: rows } = await sb
+      .from('village_members')
+      .select('auth_id,display_name,avatar_url,role,profile_data,created_at')
+      .eq('village_id', VILLAGE_ID)
+      .ilike('display_name', username)
+      .limit(1);
+
+    if (!rows || !rows.length) {
+      // Fallback: scan all members for profile name match
+      const { data: all } = await sb
+        .from('village_members')
+        .select('auth_id,display_name,avatar_url,role,profile_data,created_at')
+        .eq('village_id', VILLAGE_ID).limit(100);
+      rows = (all||[]).filter(r => {
+        const pd = r.profile_data||{};
+        const n  = (pd.villageName||pd.name||r.display_name||'').toLowerCase();
+        return n === username || n.split(' ')[0] === username;
+      });
+    }
+
+    if (!rows || !rows.length) {
+      // Show demo with the name baked in
+      const dm = JSON.parse(JSON.stringify(DEMO.member));
+      dm.display_name = username;
+      dm.profile_data.name = username;
+      dm.profile_data.villageName = username;
+      render(dm, DEMO.data);
+      return;
+    }
+
+    const mem = rows[0];
+    const uid = mem.auth_id;
+
+    const [tok, fri, prac, proc, gal, jour, bon, cnt] = await Promise.all([
+      sb.from('village_tokens').select('status').eq('village_id',VILLAGE_ID).eq('user_id',uid).limit(1).maybeSingle(),
+      sb.from('friends').select('id',{count:'exact',head:true}).eq('village_id',VILLAGE_ID).or(`user_id.eq.${uid},friend_id.eq.${uid}`),
+      sb.from('studio_practice_log').select('date,created_at').eq('village_id',VILLAGE_ID).eq('user_id',uid).order('created_at',{ascending:false}).limit(3),
+      sb.from('studio_process_board').select('created_at').eq('village_id',VILLAGE_ID).eq('author_id',uid).order('created_at',{ascending:false}).limit(3),
+      sb.from('gallery_pieces').select('created_at').eq('village_id',VILLAGE_ID).eq('user_id',uid).order('created_at',{ascending:false}).limit(3),
+      sb.from('library_journals').select('created_at').eq('village_id',VILLAGE_ID).eq('user_id',uid).order('created_at',{ascending:false}).limit(3),
+      sb.from('bonfire_messages').select('id',{count:'exact',head:true}).eq('village_id',VILLAGE_ID).eq('user_id',uid),
+      sb.from('village_members').select('auth_id',{count:'exact',head:true}).eq('village_id',VILLAGE_ID)
+    ]);
+
+    render(mem, {
+      tokenStatus:    (tok.data&&tok.data.status)||'locked',
+      friendCount:    fri.count||0,
+      bonfireCount:   bon.count||0,
+      practiceLog:    prac.data||[], practiceCount: (prac.data||[]).length,
+      processBoard:   proc.data||[], processCount:  (proc.data||[]).length,
+      galleryPieces:  gal.data||[],  galleryCount:  (gal.data||[]).length,
+      journals:       jour.data||[], journalCount:  (jour.data||[]).length,
+      memberSince:    mem.created_at,
+      memberCount:    cnt.count||0,
+      villagesVisited:0,
+      role:           mem.role||'resident'
+    });
+
+  } catch(e) {
+    console.error(e);
+    render(DEMO.member, DEMO.data);
+  }
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/member/:username", "destination": "/member.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
