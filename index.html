@@ -15313,15 +15313,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // MutationObserver — auto-open chat when building becomes visible, auto-close when hidden
     // In wm-mode buildings are windowed panels — skip auto-open (chat would flash then close)
+    var _bldChatPending = false;
     var _bldChatObserver = new MutationObserver(function() {
       if (document.body.classList.contains('wm-mode')) return;
-      var isVisible = overlay.style.display !== 'none' && overlay.style.display !== '';
-      if (isVisible && _activeBldChatSlug !== slug) {
-        // Slight delay so building overlay finishes rendering first
-        setTimeout(function() { toggleBldChat(slug, cfg.label, cfg.placeholder); }, 80);
-      } else if (!isVisible && _activeBldChatSlug === slug) {
-        destroyActiveBldChat();
-      }
+      if (_bldChatPending) return;
+      _bldChatPending = true;
+      requestAnimationFrame(function() {
+        _bldChatPending = false;
+        var isVisible = overlay.style.display !== 'none' && overlay.style.display !== '';
+        if (isVisible && _activeBldChatSlug !== slug) {
+          setTimeout(function() { toggleBldChat(slug, cfg.label, cfg.placeholder); }, 80);
+        } else if (!isVisible && _activeBldChatSlug === slug) {
+          destroyActiveBldChat();
+        }
+      });
     });
     _bldChatObserver.observe(overlay, { attributes: true, attributeFilter: ['style', 'class'] });
   });
@@ -23889,11 +23894,16 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
   }
 
   // Watch for WM windows opening/closing to refresh arrow states
+  var _wmArrPending = false;
   _WM_IDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('wm-close', _updateWmArrows);
-    new MutationObserver(_updateWmArrows).observe(el, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(function() {
+      if (_wmArrPending) return;
+      _wmArrPending = true;
+      requestAnimationFrame(function() { _wmArrPending = false; _updateWmArrows(); });
+    }).observe(el, { attributes: true, attributeFilter: ['class'] });
   });
 
   // Arrow button click handlers
@@ -27439,12 +27449,18 @@ if (mapImg.complete && mapImg.naturalWidth > 0) {
       grid.classList.add('active');
 
       // MutationObserver: re-render when building opens
+      var _wgPending = false;
       new MutationObserver(function() {
-        if(overlay.style.display !== 'none' && overlay.style.display !== '') {
-          var m = _getMode(bldg);
-          grid.classList.toggle('active', m==='widgets');
-          if(m==='widgets') renderWidgetGrid(bldg);
-        }
+        if (_wgPending) return;
+        _wgPending = true;
+        requestAnimationFrame(function() {
+          _wgPending = false;
+          if(overlay.style.display !== 'none' && overlay.style.display !== '') {
+            var m = _getMode(bldg);
+            grid.classList.toggle('active', m==='widgets');
+            if(m==='widgets') renderWidgetGrid(bldg);
+          }
+        });
       }).observe(overlay, { attributes:true, attributeFilter:['style','class'] });
     });
   });
