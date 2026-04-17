@@ -7187,6 +7187,7 @@ function toggleVillageSound() {
             <button id="ms-save-btn" class="ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
             <button id="ms-publish-btn" class="ms-edit-only" style="background:#c8a84b;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Publish</button>
             <button id="ms-pages-btn" class="ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
+            <button id="ms-advanced-btn" class="ms-edit-only" title="Open the full multi-page site builder (Home / Shop / About / Journal / Contact)" style="background:none;color:#b8914a;border:1.5px solid #e4d6ad;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Full site →</button>
             <button id="ms-exit-btn" style="background:none;color:#8e8e8e;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Exit</button>
             <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
           </div>
@@ -21560,6 +21561,36 @@ Mura facilitates. People decide.`;
   var _galOv = document.getElementById('gallery-overlay');
   if (_galOv) _galOv.addEventListener('wm-close', function() {
     document.body.classList.remove('stall-focus');
+  });
+
+  // "Full site →" button — opens the advanced Squarespace-style site builder in its own WM window.
+  // Closes the current Gallery/Market (stall-focus) view so only one editor is visible at a time.
+  var _advBtn=document.getElementById('ms-advanced-btn');
+  if(_advBtn) _advBtn.addEventListener('click',function(){
+    if(_inPreview) _setMode(false);
+    // Close the current Gallery overlay + clear stall-focus.
+    document.body.classList.remove('stall-focus');
+    var ov = document.getElementById('gallery-overlay');
+    if (typeof window._wmClose === 'function' && ov && ov.classList.contains('wm-open')) {
+      window._wmClose('gallery-overlay');
+    } else if (ov) {
+      ov.style.display = 'none';
+    }
+    // Lazy-load the iframe and open the advanced builder window.
+    var iframe = document.getElementById('msb-iframe');
+    if (iframe && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href + 'about:blank')) {
+      iframe.src = 'stall-builder-mockup.html?embedded=1';
+    }
+    if (typeof window._wmOpen === 'function') window._wmOpen('my-stall-builder');
+    else { var w=document.getElementById('my-stall-builder'); if(w) w.classList.add('wm-open'); }
+  });
+
+  // The advanced builder (iframe) sends a postMessage when its "VILLAGE ‹" button is clicked.
+  // Close the window here so the maker returns to the village / simple editor.
+  window.addEventListener('message', function(e) {
+    if (!e.data || e.data.type !== 'msb-close') return;
+    if (typeof window._wmClose === 'function') window._wmClose('my-stall-builder');
+    else { var wn=document.getElementById('my-stall-builder'); if(wn) wn.classList.remove('wm-open'); }
   });
 
   // Inline edit wiring (blur-to-autosave)

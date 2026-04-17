@@ -3360,7 +3360,15 @@
     if (t) t.classList.toggle('on');
   });
 
-  function backToVillage() { showToast('← Returning to Village'); }
+  function backToVillage() {
+    // When embedded in the main app, close the advanced-builder window
+    // so the user returns to whatever they were doing (usually the simple stall editor).
+    if (window.__MSB_EMBEDDED__) {
+      try { window.parent.postMessage({ type: 'msb-close' }, '*'); } catch(e){}
+      return;
+    }
+    showToast('← Returning to Village');
+  }
 
   let toastT;
   function showToast(msg) {
