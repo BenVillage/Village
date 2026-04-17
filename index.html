@@ -7612,6 +7612,129 @@ function toggleVillageSound() {
   </div>
 </div>
 
+<!-- ============ STALL ONBOARDING MODAL ============
+     Shown the first time a member clicks "My Stall" when stall_onboarded is false.
+     Four steps: basics → photos → story + links → first pieces (optional).
+     On finish: saves everything to village_members + gallery_pieces, sets
+     stall_onboarded=true, then opens the template carousel. -->
+<div id="stall-onboarding" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(20,14,6,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;">
+  <div style="background:#fefcf7;border-radius:16px;max-width:680px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3);padding:40px 44px 32px;">
+
+    <!-- Progress dots -->
+    <div id="ob-dots" style="display:flex;gap:8px;margin-bottom:28px;justify-content:center;">
+      <div class="ob-dot" data-step="1" style="width:32px;height:4px;border-radius:2px;background:#b8914a;"></div>
+      <div class="ob-dot" data-step="2" style="width:32px;height:4px;border-radius:2px;background:#e4d6ad;"></div>
+      <div class="ob-dot" data-step="3" style="width:32px;height:4px;border-radius:2px;background:#e4d6ad;"></div>
+      <div class="ob-dot" data-step="4" style="width:32px;height:4px;border-radius:2px;background:#e4d6ad;"></div>
+    </div>
+
+    <!-- Step 1 — Basics -->
+    <div class="ob-step" data-step="1" style="display:block;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:6px;">Step 1 of 4</div>
+      <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:500;color:#1c1713;margin:0 0 6px;letter-spacing:-0.01em;">Tell us about your stall</h2>
+      <p style="color:#6a5d4a;font-size:14px;line-height:1.6;margin:0 0 28px;">This is how other villagers will find you.</p>
+
+      <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Stall name</label>
+      <input id="ob-name" type="text" maxlength="60" placeholder="e.g. Maya's Studio" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:#1c1713;margin-bottom:18px;box-sizing:border-box;">
+
+      <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">URL handle <span style="color:#8e8e8e;font-weight:400;">— clayvillage.com/stall/<span id="ob-slug-preview" style="color:#b8914a;font-weight:600;">your-handle</span></span></label>
+      <input id="ob-slug" type="text" maxlength="40" placeholder="mayas-studio" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:#1c1713;margin-bottom:18px;box-sizing:border-box;">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Location <span style="color:#8e8e8e;font-weight:400;">(optional)</span></label>
+          <input id="ob-location" type="text" maxlength="80" placeholder="Seattle, WA" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Years practising</label>
+          <input id="ob-years" type="number" min="0" max="80" placeholder="3" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">
+        </div>
+      </div>
+
+      <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Craft</label>
+      <select id="ob-craft" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:15px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;cursor:pointer;">
+        <option value="">Choose a craft…</option>
+        <option value="pottery">Pottery</option>
+        <option value="photography">Photography</option>
+        <option value="woodwork">Woodwork</option>
+        <option value="textile">Textile</option>
+        <option value="music">Music</option>
+        <option value="writing">Writing</option>
+        <option value="code">Code</option>
+        <option value="illustration">Illustration</option>
+        <option value="glass">Glass</option>
+        <option value="leather">Leather</option>
+        <option value="sculpture">Sculpture</option>
+        <option value="food">Food</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <!-- Step 2 — Photos -->
+    <div class="ob-step" data-step="2" style="display:none;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:6px;">Step 2 of 4</div>
+      <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:500;color:#1c1713;margin:0 0 6px;letter-spacing:-0.01em;">A face and a cover</h2>
+      <p style="color:#6a5d4a;font-size:14px;line-height:1.6;margin:0 0 28px;">Both optional — you can add them later.</p>
+
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:24px;">
+        <div style="flex-shrink:0;text-align:center;">
+          <div style="font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:8px;">Avatar</div>
+          <label for="ob-avatar-input" style="display:block;width:112px;height:112px;border-radius:50%;background:#faf6ed;border:2px dashed #d4c28e;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#b8914a;font-size:24px;" id="ob-avatar-label">+</label>
+          <input id="ob-avatar-input" type="file" accept="image/*" style="display:none;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:8px;">Cover image</div>
+          <label for="ob-cover-input" style="display:block;width:100%;height:112px;border-radius:10px;background:#faf6ed;border:2px dashed #d4c28e;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#b8914a;font-size:14px;" id="ob-cover-label">+ Add cover</label>
+          <input id="ob-cover-input" type="file" accept="image/*" style="display:none;">
+        </div>
+      </div>
+      <div id="ob-photo-status" style="font-size:12px;color:#8e8e8e;min-height:16px;"></div>
+    </div>
+
+    <!-- Step 3 — Story + Links -->
+    <div class="ob-step" data-step="3" style="display:none;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:6px;">Step 3 of 4</div>
+      <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:500;color:#1c1713;margin:0 0 6px;letter-spacing:-0.01em;">Your story and links</h2>
+      <p style="color:#6a5d4a;font-size:14px;line-height:1.6;margin:0 0 28px;">All optional. Words help visitors feel what the work is.</p>
+
+      <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Bio <span style="color:#8e8e8e;font-weight:400;">(max 500 characters)</span></label>
+      <textarea id="ob-bio" maxlength="500" rows="3" placeholder="How you work, what you care about…" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1c1713;margin-bottom:20px;box-sizing:border-box;resize:vertical;line-height:1.5;"></textarea>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Instagram</label>
+          <input id="ob-instagram" type="text" placeholder="@yourhandle" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin-bottom:6px;">Are.na</label>
+          <input id="ob-arena" type="text" placeholder="are.na/yourname" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">
+        </div>
+      </div>
+      <label style="display:block;font-size:12px;font-weight:600;color:#4a3f2e;margin:14px 0 6px;">Website</label>
+      <input id="ob-website" type="text" placeholder="yoursite.com" style="width:100%;padding:11px 14px;border:1.5px solid #e4d6ad;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">
+    </div>
+
+    <!-- Step 4 — First pieces (optional) -->
+    <div class="ob-step" data-step="4" style="display:none;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:6px;">Step 4 of 4</div>
+      <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:500;color:#1c1713;margin:0 0 6px;letter-spacing:-0.01em;">Add your first pieces</h2>
+      <p style="color:#6a5d4a;font-size:14px;line-height:1.6;margin:0 0 24px;">Optional — skip to start with an empty stall.</p>
+
+      <div id="ob-pieces-list" style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px;"></div>
+      <button id="ob-add-piece-btn" type="button" style="background:none;color:#b8914a;border:1.5px dashed #d4c28e;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;">+ Add a piece</button>
+    </div>
+
+    <!-- Nav buttons -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:20px;border-top:1px solid #f0e6cd;">
+      <button id="ob-back-btn" type="button" style="background:none;color:#8e8e8e;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;padding:8px 0;visibility:hidden;">← Back</button>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button id="ob-skip-btn" type="button" style="background:none;color:#8e8e8e;border:none;font-size:13px;cursor:pointer;font-family:inherit;padding:8px 12px;display:none;">Skip</button>
+        <button id="ob-next-btn" type="button" style="background:#b8914a;color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="cm-toast" id="cm-toast"></div>
 <div id="vault-overlay">
   <button class="vlt-close" id="vault-close">CLOSE</button>
@@ -23553,19 +23676,45 @@ navItems.forEach(item => {
   item.addEventListener('click', () => {
     const panelName = item.dataset.panel;
 
-    // My Stall — routes to the direct-manipulation editor that lives in Gallery/Market > Stall tab.
-    // In stall-focus mode, Gallery+Market tabs are hidden so it feels like its own building.
+    // My Stall — first-time visitors get onboarding → carousel → template.
+    // Returning visitors skip straight to the template editor (Gallery/Market > Stall tab
+    // with stall-focus chrome, so the Gallery+Market tabs hide and it feels like its own building).
     if (panelName === 'my-stall') {
       if (bonfireChatOpen) closeBonfireChat();
       closeAllFlyouts();
-      // Open Gallery/Market with stall-focus chrome.
-      document.body.classList.add('stall-focus');
-      if (typeof window.openGallery === 'function') window.openGallery();
-      // Give the overlay a tick to render, then activate the stall tab.
-      setTimeout(function() {
-        var stallTab = document.querySelector('.gal-tab[data-tab="stall"]');
-        if (stallTab) stallTab.click();
-      }, 30);
+
+      function _openStallEditor() {
+        document.body.classList.add('stall-focus');
+        if (typeof window.openGallery === 'function') window.openGallery();
+        setTimeout(function() {
+          var stallTab = document.querySelector('.gal-tab[data-tab="stall"]');
+          if (stallTab) stallTab.click();
+        }, 30);
+      }
+
+      // Check whether this member has completed onboarding.
+      var _vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+      if (window._supabase && window._sbAuthUid && _vid) {
+        window._supabase.from('village_members')
+          .select('stall_onboarded,stall_template')
+          .eq('auth_id', window._sbAuthUid)
+          .eq('village_id', _vid)
+          .limit(1).single()
+          .then(function(r) {
+            var m = (r && r.data) || {};
+            if (!m.stall_onboarded && typeof window.openStallOnboarding === 'function') {
+              window.openStallOnboarding();
+              return;
+            }
+            if (!m.stall_template && typeof window.openStallTemplateCarousel === 'function') {
+              window.openStallTemplateCarousel();
+              return;
+            }
+            _openStallEditor();
+          });
+      } else {
+        _openStallEditor();
+      }
       return;
     }
 
@@ -29693,6 +29842,378 @@ body.wm-browser-fs #admin-panel:hover {
     container.addEventListener('pointerup', _end);
     container.addEventListener('pointercancel', _end);
   }
+})();
+</script>
+
+<!-- ============ STALL ONBOARDING — wiring ============ -->
+<script>
+(function() {
+  var OB = document.getElementById('stall-onboarding');
+  if (!OB) return;
+
+  // ── State ───────────────────────────────────────────────────────────────
+  var _step = 1;
+  var _data = {
+    stall_name: '',
+    slug: '',
+    stall_location: '',
+    years_practising: null,
+    craft_category: '',
+    stall_avatar_url: '',
+    stall_cover_url: '',
+    stall_bio: '',
+    socials: {},
+    pieces: []                 // [{file, blob, title, price, img_url}]
+  };
+
+  // ── Element handles ─────────────────────────────────────────────────────
+  var $name = document.getElementById('ob-name');
+  var $slug = document.getElementById('ob-slug');
+  var $slugPreview = document.getElementById('ob-slug-preview');
+  var $location = document.getElementById('ob-location');
+  var $years = document.getElementById('ob-years');
+  var $craft = document.getElementById('ob-craft');
+  var $avatarInput = document.getElementById('ob-avatar-input');
+  var $avatarLabel = document.getElementById('ob-avatar-label');
+  var $coverInput = document.getElementById('ob-cover-input');
+  var $coverLabel = document.getElementById('ob-cover-label');
+  var $photoStatus = document.getElementById('ob-photo-status');
+  var $bio = document.getElementById('ob-bio');
+  var $instagram = document.getElementById('ob-instagram');
+  var $arena = document.getElementById('ob-arena');
+  var $website = document.getElementById('ob-website');
+  var $piecesList = document.getElementById('ob-pieces-list');
+  var $addPieceBtn = document.getElementById('ob-add-piece-btn');
+  var $backBtn = document.getElementById('ob-back-btn');
+  var $nextBtn = document.getElementById('ob-next-btn');
+  var $skipBtn = document.getElementById('ob-skip-btn');
+
+  // ── Helpers ─────────────────────────────────────────────────────────────
+  function slugify(s) {
+    return String(s || '').toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .slice(0, 40);
+  }
+
+  function showStep(n) {
+    _step = n;
+    document.querySelectorAll('.ob-step').forEach(function(el) {
+      el.style.display = (el.dataset.step === String(n)) ? 'block' : 'none';
+    });
+    document.querySelectorAll('.ob-dot').forEach(function(el) {
+      el.style.background = (Number(el.dataset.step) <= n) ? '#b8914a' : '#e4d6ad';
+    });
+    $backBtn.style.visibility = (n > 1) ? 'visible' : 'hidden';
+    $skipBtn.style.display = (n >= 2) ? 'inline-block' : 'none';
+    $nextBtn.textContent = (n === 4) ? 'Finish' : 'Continue →';
+  }
+
+  function validateStep(n) {
+    if (n === 1) {
+      var errors = [];
+      if (!$name.value.trim()) errors.push('Stall name is required.');
+      if (!$slug.value.trim()) errors.push('URL handle is required.');
+      if (!$craft.value) errors.push('Pick a craft.');
+      if (!$years.value.trim()) errors.push('Years practising is required.');
+      if (errors.length) { alert(errors.join('\n')); return false; }
+    }
+    return true;
+  }
+
+  function collectStep(n) {
+    if (n === 1) {
+      _data.stall_name = $name.value.trim();
+      _data.slug = slugify($slug.value) || slugify(_data.stall_name);
+      _data.stall_location = $location.value.trim();
+      _data.years_practising = parseInt($years.value, 10) || null;
+      _data.craft_category = $craft.value;
+    } else if (n === 3) {
+      _data.stall_bio = $bio.value.trim();
+      var ig = $instagram.value.trim();
+      var ar = $arena.value.trim();
+      var ws = $website.value.trim();
+      _data.socials = {};
+      if (ig) _data.socials.instagram = ig;
+      if (ar) _data.socials.arena = ar;
+      if (ws) _data.socials.website = ws;
+    } else if (n === 4) {
+      _data.pieces.forEach(function(p, i) {
+        var tEl = document.getElementById('ob-piece-title-' + i);
+        var pEl = document.getElementById('ob-piece-price-' + i);
+        if (tEl) p.title = tEl.value.trim();
+        if (pEl) p.price = pEl.value.trim();
+      });
+    }
+  }
+
+  // ── Image resize + upload ──────────────────────────────────────────────
+  function resizeImage(file, maxEdge, quality) {
+    return new Promise(function(resolve, reject) {
+      var rd = new FileReader();
+      rd.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var w = img.naturalWidth, h = img.naturalHeight;
+          var scale = Math.min(1, maxEdge / Math.max(w, h));
+          w = Math.round(w * scale); h = Math.round(h * scale);
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob(function(blob) {
+            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', quality) });
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      rd.onerror = reject;
+      rd.readAsDataURL(file);
+    });
+  }
+
+  function uploadStallImage(blob, path) {
+    return new Promise(function(resolve) {
+      if (!window._supabase) { resolve(URL.createObjectURL(blob)); return; }
+      var uid = window._sbAuthUid || 'anon';
+      var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : 'unknown';
+      var full = 'stalls/' + vid + '/' + uid + '/' + path;
+      window._supabase.storage.from('village-media')
+        .upload(full, blob, { upsert: true, contentType: 'image/jpeg' })
+        .then(function(r) {
+          if (r.error) { console.warn('[Onboarding upload]', r.error.message); resolve(URL.createObjectURL(blob)); return; }
+          var pub = window._supabase.storage.from('village-media').getPublicUrl(full).data.publicUrl;
+          resolve(pub);
+        });
+    });
+  }
+
+  function handleAvatar(file) {
+    $photoStatus.textContent = 'Resizing avatar…';
+    resizeImage(file, 600, 0.9).then(function(r) {
+      $avatarLabel.style.backgroundImage = 'url(' + r.dataUrl + ')';
+      $avatarLabel.style.backgroundSize = 'cover';
+      $avatarLabel.style.backgroundPosition = 'center';
+      $avatarLabel.style.border = '2px solid #b8914a';
+      $avatarLabel.textContent = '';
+      $photoStatus.textContent = 'Uploading avatar…';
+      uploadStallImage(r.blob, 'avatar-' + Date.now() + '.jpg').then(function(url) {
+        _data.stall_avatar_url = url;
+        $photoStatus.textContent = 'Avatar uploaded.';
+      });
+    });
+  }
+
+  function handleCover(file) {
+    $photoStatus.textContent = 'Resizing cover…';
+    resizeImage(file, 2000, 0.88).then(function(r) {
+      $coverLabel.style.backgroundImage = 'url(' + r.dataUrl + ')';
+      $coverLabel.style.backgroundSize = 'cover';
+      $coverLabel.style.backgroundPosition = 'center';
+      $coverLabel.style.border = '2px solid #b8914a';
+      $coverLabel.textContent = '';
+      $photoStatus.textContent = 'Uploading cover…';
+      uploadStallImage(r.blob, 'cover-' + Date.now() + '.jpg').then(function(url) {
+        _data.stall_cover_url = url;
+        $photoStatus.textContent = 'Cover uploaded.';
+      });
+    });
+  }
+
+  // ── Pieces list (step 4) ───────────────────────────────────────────────
+  function renderPieces() {
+    $piecesList.innerHTML = '';
+    _data.pieces.forEach(function(p, i) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:12px;align-items:center;border:1px solid #e4d6ad;border-radius:10px;padding:10px;background:#faf6ed;';
+      var thumbHtml = p.img_url
+        ? '<div style="width:64px;height:64px;border-radius:8px;background:url(' + p.img_url + ') center/cover;flex-shrink:0;"></div>'
+        : '<label for="ob-piece-img-' + i + '" style="width:64px;height:64px;border-radius:8px;background:#fff;border:1.5px dashed #d4c28e;display:flex;align-items:center;justify-content:center;color:#b8914a;cursor:pointer;flex-shrink:0;">+</label>';
+      row.innerHTML =
+        thumbHtml +
+        '<input id="ob-piece-img-' + i + '" type="file" accept="image/*" style="display:none;" data-idx="' + i + '">' +
+        '<div style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:0;">' +
+          '<input id="ob-piece-title-' + i + '" type="text" placeholder="Title" value="' + (p.title || '').replace(/"/g, '&quot;') + '" style="padding:7px 10px;border:1px solid #e4d6ad;border-radius:6px;font-size:13px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">' +
+          '<input id="ob-piece-price-' + i + '" type="text" placeholder="Price (optional)" value="' + (p.price || '').replace(/"/g, '&quot;') + '" style="padding:7px 10px;border:1px solid #e4d6ad;border-radius:6px;font-size:13px;font-family:inherit;background:#fff;color:#1c1713;box-sizing:border-box;">' +
+        '</div>' +
+        '<button type="button" data-remove="' + i + '" style="background:none;border:none;color:#8e8e8e;cursor:pointer;font-size:20px;padding:4px 8px;">×</button>';
+      $piecesList.appendChild(row);
+    });
+
+    _data.pieces.forEach(function(p, i) {
+      var inp = document.getElementById('ob-piece-img-' + i);
+      if (!inp) return;
+      inp.addEventListener('change', function(e) {
+        var f = e.target.files && e.target.files[0]; if (!f) return;
+        resizeImage(f, 2000, 0.9).then(function(r) {
+          uploadStallImage(r.blob, 'piece-' + Date.now() + '-' + i + '.jpg').then(function(url) {
+            _data.pieces[i].img_url = url;
+            _data.pieces[i].blob = r.blob;
+            renderPieces();
+          });
+        });
+      });
+    });
+
+    $piecesList.querySelectorAll('[data-remove]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        collectStep(4);
+        var idx = parseInt(btn.dataset.remove, 10);
+        _data.pieces.splice(idx, 1);
+        renderPieces();
+      });
+    });
+
+    $addPieceBtn.style.display = (_data.pieces.length >= 3) ? 'none' : 'block';
+  }
+
+  // ── Input wiring ───────────────────────────────────────────────────────
+  $name.addEventListener('input', function() {
+    if (!$slug.dataset.edited) {
+      $slug.value = slugify($name.value);
+      $slugPreview.textContent = $slug.value || 'your-handle';
+    }
+  });
+  $slug.addEventListener('input', function() {
+    $slug.dataset.edited = '1';
+    $slug.value = slugify($slug.value);
+    $slugPreview.textContent = $slug.value || 'your-handle';
+  });
+
+  $avatarInput.addEventListener('change', function(e) {
+    var f = e.target.files && e.target.files[0]; if (f) handleAvatar(f);
+  });
+  $coverInput.addEventListener('change', function(e) {
+    var f = e.target.files && e.target.files[0]; if (f) handleCover(f);
+  });
+
+  $addPieceBtn.addEventListener('click', function() {
+    if (_data.pieces.length >= 3) return;
+    collectStep(4);
+    _data.pieces.push({ title: '', price: '', img_url: '' });
+    renderPieces();
+  });
+
+  $backBtn.addEventListener('click', function() {
+    collectStep(_step);
+    if (_step > 1) showStep(_step - 1);
+  });
+
+  $skipBtn.addEventListener('click', function() {
+    if (_step === 4) { finish(); return; }
+    showStep(_step + 1);
+  });
+
+  $nextBtn.addEventListener('click', function() {
+    if (!validateStep(_step)) return;
+    collectStep(_step);
+    if (_step < 4) { showStep(_step + 1); return; }
+    finish();
+  });
+
+  // ── Finish: save everything, close modal, open carousel ────────────────
+  function finish() {
+    $nextBtn.disabled = true;
+    $nextBtn.textContent = 'Saving…';
+
+    if (!window._supabase) {
+      console.warn('[Onboarding] Supabase unavailable — storing locally only');
+      afterSave();
+      return;
+    }
+
+    var uid = window._sbAuthUid;
+    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+    if (!uid || !vid) { console.warn('[Onboarding] No auth/village id'); afterSave(); return; }
+
+    var payload = {
+      stall_name: _data.stall_name,
+      stall_location: _data.stall_location || null,
+      years_practising: _data.years_practising,
+      craft_category: _data.craft_category || null,
+      stall_avatar_url: _data.stall_avatar_url || null,
+      stall_cover_url: _data.stall_cover_url || null,
+      stall_bio: _data.stall_bio || null,
+      socials: _data.socials || {},
+      stall_onboarded: true,
+      stall_published: true
+    };
+    // Back-compat: mirror instagram into the legacy single field
+    if (_data.socials && _data.socials.instagram) payload.stall_instagram = _data.socials.instagram;
+
+    window._supabase.from('village_members').update(payload)
+      .eq('auth_id', uid).eq('village_id', vid)
+      .then(function(r) {
+        if (r.error) console.warn('[Onboarding save]', r.error.message);
+
+        var piecesToInsert = _data.pieces.filter(function(p) { return p.title && p.img_url; });
+        if (!piecesToInsert.length) { afterSave(); return; }
+
+        var rows = piecesToInsert.map(function(p) {
+          return {
+            village_id: vid,
+            user_id: uid,
+            title: p.title,
+            maker: _data.stall_name,
+            category: _data.craft_category || null,
+            medium: null,
+            description: null,
+            price: p.price || null,
+            available: !!(p.price && p.price.toLowerCase() !== 'not for sale'),
+            img: p.img_url
+          };
+        });
+        window._supabase.from('gallery_pieces').insert(rows)
+          .then(function(r2) {
+            if (r2.error) console.warn('[Onboarding pieces]', r2.error.message);
+            afterSave();
+          });
+      });
+  }
+
+  function afterSave() {
+    $nextBtn.disabled = false;
+    $nextBtn.textContent = 'Finish';
+    OB.style.display = 'none';
+    // Next: open template carousel. Until that exists, fall through to the stall editor.
+    if (typeof window.openStallTemplateCarousel === 'function') {
+      window.openStallTemplateCarousel();
+    } else {
+      document.body.classList.add('stall-focus');
+      if (typeof window.openGallery === 'function') window.openGallery();
+      setTimeout(function() {
+        var tab = document.querySelector('.gal-tab[data-tab="stall"]');
+        if (tab) tab.click();
+      }, 30);
+    }
+  }
+
+  // ── Public API ─────────────────────────────────────────────────────────
+  window.openStallOnboarding = function() {
+    _step = 1;
+    _data = { stall_name:'', slug:'', stall_location:'', years_practising:null, craft_category:'',
+              stall_avatar_url:'', stall_cover_url:'', stall_bio:'', socials:{}, pieces:[] };
+    [$name, $slug, $location, $years, $bio, $instagram, $arena, $website].forEach(function(el) { if (el) el.value = ''; });
+    if ($craft) $craft.value = '';
+    if ($slug) delete $slug.dataset.edited;
+    if ($slugPreview) $slugPreview.textContent = 'your-handle';
+    [$avatarLabel, $coverLabel].forEach(function(el) {
+      if (!el) return;
+      el.style.backgroundImage = '';
+      el.style.border = '2px dashed #d4c28e';
+    });
+    if ($avatarLabel) $avatarLabel.textContent = '+';
+    if ($coverLabel) $coverLabel.textContent = '+ Add cover';
+    if ($photoStatus) $photoStatus.textContent = '';
+    renderPieces();
+    showStep(1);
+    OB.style.display = 'flex';
+  };
+
+  window.closeStallOnboarding = function() { OB.style.display = 'none'; };
 })();
 </script>
 
