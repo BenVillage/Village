@@ -2200,459 +2200,6 @@
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
   .toast .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
 
-  /* ============ STALL STATE SYSTEM ============
-     Three stall states control what a maker sees based on their content:
-       body.stall-empty    → 0 products, onboarding flow
-       body.stall-starter  → 1 product, auto-generated minimal stall
-       (default)           → full customized stall
-     Each state hides/shows content through CSS, no HTML duplication. */
-
-  /* Empty state: hide the full canvas, show the onboarding surface */
-  .empty-canvas { display: none; }
-  body.stall-empty .empty-canvas { display: flex; }
-  body.stall-empty .page-view,
-  body.stall-empty .site-header,
-  body.stall-empty .site-footer { display: none !important; }
-  body.stall-empty .center-pill { display: none; }
-
-  /* Starter state: hide "Featured Works" section (no additional products yet),
-     hide the Journal nav entry (no posts), simplify About preview */
-  body.stall-starter [data-block="works"],
-  body.stall-starter [data-block="about-preview"] .about-portrait { display: none; }
-  body.stall-starter .nav-item[data-page="journal"] { display: none; }
-  body.stall-starter .site-nav-links a[data-link="journal"] { display: none; }
-  .starter-only { display: none !important; }
-  body.stall-starter .starter-only { display: flex !important; }
-  /* Starter: hide most shop products, keep just one + add-product tile */
-  body.stall-starter .shop-grid > *:not(:nth-child(-n+2)):not(.add-product) { display: none; }
-  body.stall-starter .shop-filters,
-  body.stall-starter .shop-settings { display: none; }
-  body.stall-starter .journal-hero + .post-list .post:not(:first-child),
-  body.stall-starter .about-timeline,
-  body.stall-starter .about-three-col,
-  body.stall-starter .studio-strip { display: none; }
-  body.stall-starter .post-list .post:first-child { opacity: 0.5; pointer-events: none; }
-
-  /* State toggle in top toolbar — demo-only UI for flipping stall states */
-  .state-toggle {
-    display: inline-flex;
-    background: var(--chrome-2);
-    border: 1px solid var(--chrome-line);
-    border-radius: 999px;
-    padding: 3px;
-    gap: 2px;
-    margin-right: 4px;
-    position: relative;
-  }
-  .state-toggle::before {
-    content: 'Preview state';
-    position: absolute;
-    bottom: -14px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 8.5px;
-    color: var(--chrome-mute);
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    opacity: 0;
-    transition: opacity .15s;
-    white-space: nowrap;
-  }
-  .state-toggle:hover::before { opacity: 1; }
-  .state-btn {
-    background: transparent;
-    border: 0;
-    color: var(--chrome-mute);
-    padding: 4px 10px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 11px;
-    letter-spacing: .04em;
-    font-weight: 500;
-    transition: all .15s;
-  }
-  .state-btn.active {
-    background: var(--chrome-ink);
-    color: #fff;
-    box-shadow: 0 1px 3px rgba(28,23,19,.18);
-  }
-  .state-btn .dot-e, .state-btn .dot-s, .state-btn .dot-f {
-    display: inline-block;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    margin-right: 5px;
-    vertical-align: middle;
-  }
-  .state-btn .dot-e { background: #c4b89c; }
-  .state-btn .dot-s { background: #b8914a; }
-  .state-btn .dot-f { background: #7a8f5f; }
-  .state-btn.active .dot-e,
-  .state-btn.active .dot-s,
-  .state-btn.active .dot-f { box-shadow: 0 0 0 2px rgba(255,255,255,.24); }
-
-  /* ============ EMPTY CANVAS (first-time onboarding) ============ */
-  .empty-canvas {
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 48px 32px 80px;
-    min-height: 100%;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(184,145,74,.07), transparent 45%),
-      var(--cream);
-    overflow-y: auto;
-  }
-  .ec-eyebrow {
-    font-family: 'Noto Sans JP', sans-serif;
-    font-weight: 300;
-    font-size: 11px;
-    letter-spacing: .32em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .ec-eyebrow::before {
-    content: '';
-    display: inline-block;
-    width: 24px; height: 1px;
-    background: var(--gold);
-    margin-right: 12px;
-    vertical-align: middle;
-  }
-  .ec-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 400;
-    font-size: 44px;
-    line-height: 1.14;
-    color: var(--ink);
-    text-align: center;
-    margin-bottom: 14px;
-    max-width: 580px;
-  }
-  .ec-title em { font-style: italic; color: var(--clay); }
-  .ec-sub {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    line-height: 1.65;
-    color: var(--ink-3);
-    text-align: center;
-    max-width: 480px;
-    margin-bottom: 42px;
-  }
-  .ec-steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 840px;
-    margin-bottom: 40px;
-  }
-  .ec-step {
-    background: #fffdf5;
-    border: 1px solid var(--chrome-line);
-    border-radius: 14px;
-    padding: 22px 22px 24px;
-    position: relative;
-    transition: all .2s;
-  }
-  .ec-step.active {
-    border-color: var(--gold);
-    box-shadow: 0 8px 30px rgba(184,145,74,.14);
-  }
-  .ec-step.done { background: #f7f2e3; border-color: var(--line); }
-  .ec-step-num {
-    position: absolute;
-    top: 14px; right: 14px;
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    background: var(--chrome-2);
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .ec-step.active .ec-step-num { background: var(--gold); color: #fff; }
-  .ec-step.done .ec-step-num {
-    background: var(--gold); color: #fff;
-  }
-  .ec-step.done .ec-step-num::before { content: '✓'; font-size: 12px; }
-  .ec-step.done .ec-step-num-digit { display: none; }
-  .ec-step-label {
-    font-size: 10.5px;
-    letter-spacing: .16em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-  .ec-step-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    line-height: 1.2;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .ec-step-desc {
-    font-size: 12.5px;
-    line-height: 1.55;
-    color: var(--ink-3);
-    margin-bottom: 16px;
-  }
-  .ec-uploader {
-    border: 1.5px dashed var(--line-2);
-    border-radius: 10px;
-    aspect-ratio: 4 / 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    background:
-      repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(184,145,74,.03) 10px, rgba(184,145,74,.03) 20px);
-    cursor: pointer;
-    transition: all .15s;
-    text-align: center;
-    padding: 16px;
-  }
-  .ec-uploader:hover { border-color: var(--gold); color: var(--gold-2); background-color: rgba(184,145,74,.04); }
-  .ec-uploader svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: .7; }
-  .ec-uploader .ec-up-txt { font-size: 12.5px; font-weight: 500; }
-  .ec-uploader .ec-up-hint { font-size: 11px; opacity: .7; margin-top: 3px; }
-  .ec-step input[type="text"], .ec-step textarea {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid var(--chrome-line);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: inherit;
-    font-size: 13px;
-    color: var(--ink);
-    background: #fff;
-    outline: none;
-    margin-bottom: 10px;
-    resize: none;
-  }
-  .ec-step input[type="text"]:focus, .ec-step textarea:focus { border-color: var(--gold); }
-  .ec-step textarea { min-height: 78px; line-height: 1.55; }
-  .ec-skip-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 8px;
-  }
-  .ec-publish {
-    background: var(--chrome-ink);
-    border: 0;
-    color: #fff;
-    padding: 11px 26px;
-    border-radius: 999px;
-    font-family: inherit;
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .ec-publish:hover { background: var(--ink-2); }
-  .ec-publish .plus {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: var(--gold);
-    color: var(--ink);
-  }
-  .ec-skip-link {
-    color: var(--muted);
-    text-decoration: underline;
-    text-decoration-color: var(--line);
-    text-underline-offset: 3px;
-    cursor: pointer;
-    font-size: 12px;
-    background: 0;
-    border: 0;
-    font-family: inherit;
-  }
-  .ec-skip-link:hover { color: var(--ink); text-decoration-color: var(--gold); }
-  .ec-url-hint {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 12px 7px 14px;
-    background: rgba(184,145,74,.08);
-    border: 1px solid rgba(184,145,74,.22);
-    border-radius: 999px;
-    color: var(--ink-2);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    margin-bottom: 32px;
-  }
-  .ec-url-hint b { font-weight: 600; color: var(--gold-2); }
-  .ec-url-hint .ec-url-lbl {
-    font-size: 10px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding-right: 6px;
-    border-right: 1px solid rgba(184,145,74,.28);
-  }
-  .ec-url-hint .ec-url { font-family: 'JetBrains Mono', 'Menlo', monospace; font-size: 12px; color: var(--ink-2); }
-  .ec-url-hint .ec-url strong { color: var(--gold-2); font-weight: 600; }
-  .ec-url-edit {
-    background: transparent;
-    border: 0;
-    color: var(--muted);
-    font-family: inherit;
-    font-size: 10.5px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-left: 1px solid rgba(184,145,74,.28);
-  }
-  .ec-url-edit:hover { color: var(--gold-2); }
-
-  /* Inner width container */
-  .ec-inner { width: 100%; max-width: 920px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-
-  /* Step head (inside each card) */
-  .ec-step-head { margin-bottom: 14px; text-align: left; }
-  .ec-step-head h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 500;
-    font-size: 21px;
-    line-height: 1.22;
-    color: var(--ink);
-    margin: 0 0 4px;
-    padding-right: 30px;
-  }
-  .ec-step-head p {
-    font-size: 12px;
-    line-height: 1.55;
-    color: var(--ink-3);
-    margin: 0;
-  }
-  .ec-optional {
-    display: inline-block;
-    font-family: 'Inter', sans-serif;
-    font-size: 9.5px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 500;
-    margin-left: 6px;
-    padding: 2px 7px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    vertical-align: middle;
-    position: relative;
-    top: -3px;
-  }
-
-  /* Uploader inner pieces */
-  .ec-up-icon {
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 10px;
-    opacity: .75;
-  }
-  .ec-up-icon svg { width: 26px; height: 26px; }
-  .ec-up-title { font-size: 12.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 3px; }
-
-  /* Mini form under step 1 uploader */
-  .ec-mini-form { margin-top: 12px; text-align: left; }
-  .ec-mini-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 8px; margin-bottom: 8px; }
-  .ec-mini-input {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid var(--chrome-line);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: inherit;
-    font-size: 12.5px;
-    color: var(--ink);
-    background: #fff;
-    outline: none;
-  }
-  .ec-mini-input:focus { border-color: var(--gold); }
-  .ec-mini-price { text-align: right; }
-
-  .ec-textarea {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid var(--chrome-line);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: inherit;
-    font-size: 12.5px;
-    color: var(--ink);
-    background: #fff;
-    outline: none;
-    min-height: 90px;
-    line-height: 1.55;
-    resize: none;
-    margin-bottom: 10px;
-  }
-  .ec-textarea:focus { border-color: var(--gold); }
-
-  .ec-reassure {
-    font-size: 11px;
-    letter-spacing: .08em;
-    color: var(--muted);
-    margin-top: 14px;
-    font-style: italic;
-  }
-
-  /* Step 3: center the publish button */
-  .ec-step[data-step="3"] { text-align: center; display: flex; flex-direction: column; align-items: center; }
-  .ec-step[data-step="3"] .ec-step-head { text-align: center; padding-right: 30px; margin-bottom: 20px; }
-
-  /* Starter nudges */
-  .starter-nudge {
-    background: rgba(184,145,74,.08);
-    border: 1px dashed rgba(184,145,74,.35);
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin: 14px 28px;
-    font-size: 13px;
-    color: var(--ink-2);
-  }
-  .starter-nudge .snx { display: flex; gap: 10px; align-items: center; }
-  .starter-nudge svg { color: var(--gold-2); flex-shrink: 0; }
-  .starter-nudge .snbtn {
-    background: var(--chrome-ink);
-    border: 0;
-    color: #fff;
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-family: inherit;
-    font-size: 11px;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .starter-nudge .snbtn.ghost {
-    background: transparent;
-    color: var(--ink-2);
-    border: 1px solid var(--line);
-  }
-
   /* ============ CHECKOUT MODAL ============ */
   .co-backdrop {
     position: fixed;
@@ -2912,7 +2459,7 @@
       </div>
       <div class="wm-title">
         <span class="dot"></span>
-        My Stall · <span class="crumb">anotherclay</span>
+        My Stall · <span class="crumb">yourstudio</span>
       </div>
       <div></div>
     </div>
@@ -2956,12 +2503,6 @@
       </button>
 
       <div class="topbar-right">
-        <div class="state-toggle" title="Preview stall state">
-          <button class="state-btn" data-state="empty" onclick="setStallState('empty')"><span class="dot-e"></span>Empty</button>
-          <button class="state-btn" data-state="starter" onclick="setStallState('starter')"><span class="dot-s"></span>Starter</button>
-          <button class="state-btn active" data-state="full" onclick="setStallState('full')"><span class="dot-f"></span>Full</button>
-        </div>
-        <div class="divider-v"></div>
         <div class="device-toggle">
           <button class="device-btn active" data-device="desktop" onclick="setDevice('desktop')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>
@@ -2995,8 +2536,8 @@
         <div class="stall-header">
           <div class="stall-avatar">a</div>
           <div class="stall-meta">
-            <h3>anotherclay</h3>
-            <div class="url">village.clay/anotherclay</div>
+            <h3>yourstudio</h3>
+            <div class="url">village.clay/yourstudio</div>
           </div>
           <button class="stall-gear">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1"/></svg>
@@ -3061,7 +2602,7 @@
           </div>
           <ul class="nav-list">
             <li class="nav-item"><span class="ni-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.1 0l3-3a5 5 0 10-7.1-7.1"/></svg></span><span class="ni-label">Thank You</span></li>
-            <li class="nav-item"><span class="ni-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.1 0l3-3a5 5 0 10-7.1-7.1"/></svg></span><span class="ni-label">Kiln Sale 2026</span><span class="type-chip">draft</span></li>
+            <li class="nav-item"><span class="ni-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.1 0l3-3a5 5 0 10-7.1-7.1"/></svg></span><span class="ni-label">Spring Sale 2026</span><span class="type-chip">draft</span></li>
           </ul>
         </div>
 
@@ -3136,10 +2677,10 @@
           <div class="sp-section">
             <h4>Color Palette</h4>
             <div class="sp-swatches">
-              <div class="sp-sw active" style="background:linear-gradient(135deg,#f4ede0,#a15a38)" title="Clay Warm"></div>
-              <div class="sp-sw" style="background:linear-gradient(135deg,#fafaf7,#3a342b)" title="Porcelain Ink"></div>
-              <div class="sp-sw" style="background:linear-gradient(135deg,#fff,#d7cdb8)" title="Porcelain"></div>
-              <div class="sp-sw" style="background:linear-gradient(135deg,#f5ede0,#8a3b1c)" title="Kiln Ember"></div>
+              <div class="sp-sw active" style="background:linear-gradient(135deg,#f4ede0,#a15a38)" title="Warm Terracotta"></div>
+              <div class="sp-sw" style="background:linear-gradient(135deg,#fafaf7,#3a342b)" title="Paper Ink"></div>
+              <div class="sp-sw" style="background:linear-gradient(135deg,#fff,#d7cdb8)" title="Bone"></div>
+              <div class="sp-sw" style="background:linear-gradient(135deg,#f5ede0,#8a3b1c)" title="Warm Ember"></div>
               <div class="sp-sw" style="background:linear-gradient(135deg,#e5ecd8,#2a4a3a)" title="Ash Green"></div>
               <div class="sp-sw" style="background:linear-gradient(135deg,#f0e4d0,#2e3a5a)" title="Indigo"></div>
             </div>
@@ -3166,72 +2707,6 @@
         <!-- CANVAS -->
         <div class="canvas-inner" id="canvas">
 
-          <!-- ============ EMPTY CANVAS (first-time onboarding) ============ -->
-          <div class="empty-canvas">
-            <div class="ec-inner">
-              <div class="ec-eyebrow">A new stall · Spring 2026</div>
-              <h1 class="ec-title">Your stall is <em>empty</em>.<br>Let's add one piece.</h1>
-              <p class="ec-sub">A stall is your public corner of the village — one piece is enough to open. You can add a story, an about page, and a journal whenever you're ready. Nothing is hidden until you publish.</p>
-
-              <div class="ec-url-hint">
-                <span class="ec-url-lbl">Your public address</span>
-                <span class="ec-url">village.anotherclay.com/<strong>anotherclay</strong></span>
-                <button class="ec-url-edit" onclick="showToast('Change handle in Settings')">edit</button>
-              </div>
-
-              <div class="ec-steps">
-                <!-- STEP 1: upload -->
-                <div class="ec-step" data-step="1">
-                  <div class="ec-step-num">01</div>
-                  <div class="ec-step-head">
-                    <h3>Upload your first piece</h3>
-                    <p>A photo, a title, a price. That's all it takes to open the stall.</p>
-                  </div>
-                  <label class="ec-uploader" for="ec-file-input">
-                    <div class="ec-up-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 16V4m0 0l-5 5m5-5l5 5M4 20h16"/></svg>
-                    </div>
-                    <div class="ec-up-title">Drop a photo or click to browse</div>
-                    <div class="ec-up-hint">JPG, PNG, HEIC · up to 20 MB</div>
-                    <input id="ec-file-input" type="file" accept="image/*" style="display:none" onchange="handleFirstUpload(event)"/>
-                  </label>
-                  <div class="ec-mini-form">
-                    <div class="ec-mini-row">
-                      <input type="text" placeholder="Title — e.g. Moonjar No. 39" class="ec-mini-input"/>
-                      <input type="text" placeholder="€ Price" class="ec-mini-input ec-mini-price"/>
-                    </div>
-                    <a class="ec-skip-link" onclick="setStallState('starter')">Skip for now — I'll upload later →</a>
-                  </div>
-                </div>
-
-                <!-- STEP 2: studio line -->
-                <div class="ec-step" data-step="2">
-                  <div class="ec-step-num">02</div>
-                  <div class="ec-step-head">
-                    <h3>One line about the studio <span class="ec-optional">optional</span></h3>
-                    <p>Even a single sentence helps a stranger understand what they're looking at.</p>
-                  </div>
-                  <textarea class="ec-textarea" placeholder="e.g. Hand-thrown vessels from a small studio in Berlin, fired once a month in a gas kiln."></textarea>
-                  <a class="ec-skip-link">Skip — just show the piece →</a>
-                </div>
-
-                <!-- STEP 3: publish -->
-                <div class="ec-step" data-step="3">
-                  <div class="ec-step-num">03</div>
-                  <div class="ec-step-head">
-                    <h3>Open the stall</h3>
-                    <p>We'll generate a starter layout from what you uploaded. You can customize anything later.</p>
-                  </div>
-                  <button class="ec-publish" onclick="setStallState('starter'); showToast('Stall opened · 1 piece live')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5 9-9"/></svg>
-                    Open my stall
-                  </button>
-                  <div class="ec-reassure">No algorithm. No feed. Just your corner.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="site" id="site">
 
             <!-- SHARED HEADER -->
@@ -3245,7 +2720,7 @@
                 <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
               </div>
               <nav class="site-nav">
-                <div class="site-brand">anotherclay<span class="jp">アナザークレイ</span></div>
+                <div class="site-brand">yourstudio</div>
                 <div class="site-nav-links">
                   <a data-link="home" class="current" onclick="selectPage(document.querySelector('.nav-item[data-page=home]'),'home','Home')">Home</a>
                   <a data-link="shop" onclick="selectPage(document.querySelector('.nav-item[data-page=shop]'),'shop','Shop')">Shop</a>
@@ -3259,16 +2734,6 @@
 
             <!-- ============ HOME PAGE ============ -->
             <div class="page-view active" data-view="home">
-              <div class="starter-nudge starter-only">
-                <div class="snx">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
-                  <span>Your stall is live with one piece. Want to add a studio story on the Home page?</span>
-                </div>
-                <div>
-                  <button class="snbtn ghost" onclick="this.closest('.starter-nudge').style.display='none'">Later</button>
-                  <button class="snbtn" onclick="showToast('Opening About editor…'); setStallState('full')">Write a line</button>
-                </div>
-              </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
               <div class="block selected" data-block="hero">
                 <div class="edit-tabs">
@@ -3286,11 +2751,11 @@
                 <section class="hero">
                   <div class="hero-image"></div>
                   <div class="hero-body">
-                    <div class="eyebrow">Spring Firing · 2026</div>
-                    <h1 class="hero-title">Pots made <em>quietly</em><br>in a small studio.</h1>
-                    <p class="hero-sub">Hand-thrown vessels from Berlin, fired once a month in a gas kiln. Each piece carries the marks of the hand — no two alike.</p>
+                    <div class="eyebrow">New Work · 2026</div>
+                    <h1 class="hero-title">Made <em>quietly</em><br>in a small studio.</h1>
+                    <p class="hero-sub">Handmade objects from one small studio. Each piece carries the marks of the hand — no two alike.</p>
                     <div class="btn-row">
-                      <a class="btn" onclick="selectPage(document.querySelector('.nav-item[data-page=shop]'),'shop','Shop')">Shop the Kiln</a>
+                      <a class="btn" onclick="selectPage(document.querySelector('.nav-item[data-page=shop]'),'shop','Shop')">Shop the Collection</a>
                       <a class="btn ghost" onclick="selectPage(document.querySelector('.nav-item[data-page=about]'),'about','About')">Read the Story</a>
                     </div>
                   </div>
@@ -3305,11 +2770,11 @@
                   <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button>
                 </div>
                 <section class="sec">
-                  <div class="sec-head"><div class="eyebrow">Featured Works</div><h2 class="sec-title">From the latest firing</h2><div class="sec-rule"></div></div>
+                  <div class="sec-head"><div class="eyebrow">Featured Works</div><h2 class="sec-title">Fresh from the studio</h2><div class="sec-rule"></div></div>
                   <div class="works">
-                    <div class="work" onclick="openCheckout({title:'Moonjar No. 39', no:'No. 039 · Moonjar', price:'€ 420'})" style="cursor:pointer;"><div class="work-image p1"></div><div class="work-meta"><div class="work-no">No. 039 · Moonjar</div><div class="work-name">Moonjar No. 39</div><div class="work-price">€ 420</div></div></div>
-                    <div class="work" onclick="openCheckout({title:'Tall Gourd Vase No. 56', no:'No. 056 · Gourd', price:'€ 750'})" style="cursor:pointer;"><div class="work-image p2"></div><div class="work-meta"><div class="work-no">No. 056 · Gourd</div><div class="work-name">Tall Gourd Vase No. 56</div><div class="work-price">€ 750</div></div></div>
-                    <div class="work"><div class="work-image p3"></div><div class="work-meta"><div class="work-no">No. 044 · Bottle</div><div class="work-name">Quiet Ember Bottle No. 44</div><div class="work-price">€ 380 <span class="sold">Reserved</span></div></div></div>
+                    <div class="work" onclick="openCheckout({title:'Signature Piece No. 39', no:'No. 039', price:'€ 420'})" style="cursor:pointer;"><div class="work-image p1"></div><div class="work-meta"><div class="work-no">No. 039</div><div class="work-name">Signature Piece No. 39</div><div class="work-price">€ 420</div></div></div>
+                    <div class="work" onclick="openCheckout({title:'Tall Form No. 56', no:'No. 056', price:'€ 750'})" style="cursor:pointer;"><div class="work-image p2"></div><div class="work-meta"><div class="work-no">No. 056</div><div class="work-name">Tall Form No. 56</div><div class="work-price">€ 750</div></div></div>
+                    <div class="work"><div class="work-image p3"></div><div class="work-meta"><div class="work-no">No. 044</div><div class="work-name">Quiet Ember No. 44</div><div class="work-price">€ 380 <span class="sold">Reserved</span></div></div></div>
                   </div>
                 </section>
               </div>
@@ -3322,7 +2787,7 @@
                     <div class="about-text">
                       <div class="eyebrow">The Maker</div>
                       <h2>A studio the size of a kitchen.</h2>
-                      <p>I learned to throw in Kyoto in 2017 and moved the practice into a narrow shopfront in Neukölln three years later. The work is slow on purpose — one gas firing a month.</p>
+                      <p>I trained abroad in 2017 and moved the practice into a narrow studio back home three years later. The work is slow on purpose — one small batch a month.</p>
                       <div class="about-sig">— Ben</div>
                     </div>
                   </div>
@@ -3332,8 +2797,8 @@
               <div class="block" data-block="newsletter">
                 <div class="block-toolbar"><span class="label">Newsletter</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
                 <section class="sec newsletter">
-                  <h2>Kiln letters, once a month.</h2>
-                  <p>A quiet email on the morning of each firing. No spam, no funnels — just photos and first access to the new shop drop.</p>
+                  <h2>Studio letters, once a month.</h2>
+                  <p>A quiet email on the morning of each new drop. No spam, no funnels — just photos and first access to what just came out of the studio.</p>
                   <form class="news-form" onsubmit="event.preventDefault(); showToast('Subscribed (demo)');">
                     <input type="email" placeholder="your@email.com" />
                     <button type="submit">Subscribe</button>
@@ -3344,23 +2809,13 @@
 
             <!-- ============ SHOP PAGE ============ -->
             <div class="page-view shop-page" data-view="shop">
-              <div class="starter-nudge starter-only">
-                <div class="snx">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-                  <span>One piece so far — add another when you're ready. The shop grid fills as you upload.</span>
-                </div>
-                <div>
-                  <button class="snbtn ghost" onclick="this.closest('.starter-nudge').style.display='none'">Later</button>
-                  <button class="snbtn" onclick="showToast('Upload opened')">Add a piece</button>
-                </div>
-              </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
               <div class="block" data-block="shop-hero">
                 <div class="block-toolbar"><span class="label">Shop Header</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
                 <section class="shop-hero">
-                  <div class="eyebrow" style="margin-bottom:14px;">Spring Firing · 24 pieces</div>
+                  <div class="eyebrow" style="margin-bottom:14px;">New Work · 24 pieces</div>
                   <h1>Shop</h1>
-                  <p>Every piece is one-of-one, hand-thrown and fired once a month. Shipping worldwide.</p>
+                  <p>Every piece is one-of-one, made by hand in small batches. Shipping worldwide.</p>
                 </section>
               </div>
               <div class="block" data-block="shop-filters">
@@ -3368,15 +2823,15 @@
                 <div class="shop-filters">
                   <div class="filter-chips">
                     <button class="chip active">All · 24</button>
-                    <button class="chip">Moonjars · 8</button>
-                    <button class="chip">Vases · 10</button>
-                    <button class="chip">Bottles · 4</button>
+                    <button class="chip">Vessels · 8</button>
+                    <button class="chip">Objects · 10</button>
+                    <button class="chip">Small · 4</button>
                     <button class="chip">Archive · 2</button>
                   </div>
                   <div class="shop-sort">
                     <span>Sort</span>
                     <select>
-                      <option>Latest firing</option>
+                      <option>Latest</option>
                       <option>Price: low to high</option>
                       <option>Price: high to low</option>
                       <option>Alphabetical</option>
@@ -3397,37 +2852,37 @@
                     <div class="pc-status live">Live · €420</div>
                     <div class="pc-handle"><button title="Edit" onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button title="Move"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M19 9l3 3-3 3M9 19l3 3 3-3"/></svg></button><button title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4"/></svg></button></div>
                     <div class="work-image p1"></div>
-                    <div class="work-meta"><div class="work-no">No. 039 · Moonjar</div><div class="work-name">Moonjar No. 39</div><div class="work-price">€ 420</div></div>
+                    <div class="work-meta"><div class="work-no">No. 039</div><div class="work-name">Signature Piece No. 39</div><div class="work-price">€ 420</div></div>
                   </div>
                   <div class="work">
                     <div class="pc-status live">Live · €750</div>
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="work-image p2"></div>
-                    <div class="work-meta"><div class="work-no">No. 056 · Gourd</div><div class="work-name">Tall Gourd Vase</div><div class="work-price">€ 750</div></div>
+                    <div class="work-meta"><div class="work-no">No. 056</div><div class="work-name">Tall Form</div><div class="work-price">€ 750</div></div>
                   </div>
                   <div class="work">
                     <div class="pc-status sold">Reserved</div>
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="work-image p3"></div>
-                    <div class="work-meta"><div class="work-no">No. 044 · Bottle</div><div class="work-name">Quiet Ember Bottle</div><div class="work-price">€ 380 <span class="sold">Reserved</span></div></div>
+                    <div class="work-meta"><div class="work-no">No. 044</div><div class="work-name">Quiet Ember</div><div class="work-price">€ 380 <span class="sold">Reserved</span></div></div>
                   </div>
                   <div class="work">
                     <div class="pc-status live">Live · €520</div>
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="work-image p4"></div>
-                    <div class="work-meta"><div class="work-no">No. 041 · Moonjar</div><div class="work-name">Pale Moonjar</div><div class="work-price">€ 520</div></div>
+                    <div class="work-meta"><div class="work-no">No. 041</div><div class="work-name">Pale Piece</div><div class="work-price">€ 520</div></div>
                   </div>
                   <div class="work">
                     <div class="pc-status draft">Draft</div>
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="work-image p5"></div>
-                    <div class="work-meta"><div class="work-no">No. 060 · Teabowl</div><div class="work-name">Ash Teabowl</div><div class="work-price">€ 140 <span class="sold" style="color:var(--muted)">Draft</span></div></div>
+                    <div class="work-meta"><div class="work-no">No. 060 · Small</div><div class="work-name">Ash Study</div><div class="work-price">€ 140 <span class="sold" style="color:var(--muted)">Draft</span></div></div>
                   </div>
                   <div class="work">
                     <div class="pc-status live">Live · €680</div>
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="work-image p6"></div>
-                    <div class="work-meta"><div class="work-no">No. 058 · Vase</div><div class="work-name">Long-Neck Vase</div><div class="work-price">€ 680</div></div>
+                    <div class="work-meta"><div class="work-no">No. 058</div><div class="work-name">Long Form</div><div class="work-price">€ 680</div></div>
                   </div>
                   <div class="work">
                     <div class="pc-status live">Live · €320</div>
@@ -3476,16 +2931,6 @@
 
             <!-- ============ ABOUT PAGE ============ -->
             <div class="page-view" data-view="about">
-              <div class="starter-nudge starter-only">
-                <div class="snx">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg>
-                  <span>No story yet. Add a line or two about your studio — it helps people trust the work.</span>
-                </div>
-                <div>
-                  <button class="snbtn ghost" onclick="this.closest('.starter-nudge').style.display='none'">Skip</button>
-                  <button class="snbtn" onclick="showToast('About editor opened'); setStallState('full')">Write</button>
-                </div>
-              </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
               <div class="block selected" data-block="about-hero">
                 <div class="edit-tabs"><button class="active">Design</button><button>Format</button><button>Background</button></div>
@@ -3497,7 +2942,7 @@
                 <section class="about-hero">
                   <div class="eyebrow">The Studio</div>
                   <h1>A studio the size of a <em>kitchen</em>.</h1>
-                  <p>I learned to throw in Kyoto in 2017 and moved the practice to Berlin three years later. The work is slow on purpose — one gas firing a month, thirty to forty pots at a time.</p>
+                  <p>I started making in 2017 and moved into my own studio three years later. The work is slow on purpose — one small batch a month, thirty to forty pieces at a time.</p>
                 </section>
               </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
@@ -3515,10 +2960,10 @@
                 <div class="block-toolbar"><span class="label">Timeline</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
                 <section class="about-timeline">
                   <div class="timeline-inner">
-                    <div class="tl-row"><div class="tl-year"><em>2017</em></div><div><h4>First wheel in Kyoto</h4><p>A three-month apprenticeship at a small family kiln outside Uji. Learned to center clay, trim pots, and wait.</p></div></div>
-                    <div class="tl-row"><div class="tl-year"><em>2019</em></div><div><h4>Back to Berlin</h4><p>Rented a shared studio in Kreuzberg. Sold the first pots through friends and a shelf at a café.</p></div></div>
-                    <div class="tl-row"><div class="tl-year"><em>2021</em></div><div><h4>Own kiln</h4><p>Found a narrow shopfront in Neukölln. Put a small gas kiln in the back. First solo firing that July.</p></div></div>
-                    <div class="tl-row"><div class="tl-year"><em>2024</em></div><div><h4>Once a month, on purpose</h4><p>Switched to a single monthly firing. Fewer pots, more care. The kiln opens on the first Sunday.</p></div></div>
+                    <div class="tl-row"><div class="tl-year"><em>2017</em></div><div><h4>First apprenticeship</h4><p>A three-month stint at a small family workshop. Learned to take my time, repeat the basics, and wait.</p></div></div>
+                    <div class="tl-row"><div class="tl-year"><em>2019</em></div><div><h4>Shared studio</h4><p>Rented a desk in a shared studio. Sold the first pieces through friends and a shelf at a café.</p></div></div>
+                    <div class="tl-row"><div class="tl-year"><em>2021</em></div><div><h4>Own studio</h4><p>Found a narrow shopfront. Set up tools in the back. First solo batch went out that July.</p></div></div>
+                    <div class="tl-row"><div class="tl-year"><em>2024</em></div><div><h4>Once a month, on purpose</h4><p>Switched to a single monthly drop. Fewer pieces, more care. The shop opens on the first Sunday.</p></div></div>
                   </div>
                 </section>
               </div>
@@ -3526,9 +2971,9 @@
               <div class="block" data-block="about-process">
                 <div class="block-toolbar"><span class="label">Three Columns</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
                 <section class="process">
-                  <div class="p-step"><div class="num">i.</div><h4>Thrown by hand</h4><p>Every piece starts as a ball of local stoneware on a kickwheel.</p></div>
-                  <div class="p-step"><div class="num">ii.</div><h4>Glazed from ash</h4><p>Wood-ash and feldspar glazes mixed in small batches.</p></div>
-                  <div class="p-step"><div class="num">iii.</div><h4>Fired once a month</h4><p>A 14-hour firing to cone 10. The kiln opens on the first Sunday.</p></div>
+                  <div class="p-step"><div class="num">i.</div><h4>Made by hand</h4><p>Every piece starts from raw material at the bench.</p></div>
+                  <div class="p-step"><div class="num">ii.</div><h4>Finished slowly</h4><p>Surfaces and details worked by hand, in small batches.</p></div>
+                  <div class="p-step"><div class="num">iii.</div><h4>Shipped once a month</h4><p>One drop a month. The shop opens on the first Sunday.</p></div>
                 </section>
               </div>
             </div>
@@ -3541,7 +2986,7 @@
                 <div class="block-toolbar"><span class="label">Journal Header</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
                 <section class="journal-hero">
                   <h1>Journal</h1>
-                  <p>Notes from the studio, between firings.</p>
+                  <p>Notes from the studio, between drops.</p>
                 </section>
               </div>
 
@@ -3553,9 +2998,9 @@
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="post-img i1"></div>
                     <div>
-                      <div class="post-meta">14 April 2026 · Firing notes</div>
-                      <h3 class="post-title">The spring firing, opened</h3>
-                      <p class="post-excerpt">The kiln was cooler than usual this month. Eight moonjars made it through — the ash glaze broke in places I wasn't expecting. A quiet surprise.</p>
+                      <div class="post-meta">14 April 2026 · Studio notes</div>
+                      <h3 class="post-title">The spring drop, opened</h3>
+                      <p class="post-excerpt">The studio ran cooler than usual this month. Eight pieces made it through — the finish broke in places I wasn't expecting. A quiet surprise.</p>
                       <span class="post-link">Read post →</span>
                     </div>
                   </div>
@@ -3564,9 +3009,9 @@
                     <div class="pc-handle"><button onclick="openProduct(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/></svg></button></div>
                     <div class="post-img i2"></div>
                     <div>
-                      <div class="post-meta">26 March 2026 · Clay</div>
-                      <h3 class="post-title">On waiting for clay to dry</h3>
-                      <p class="post-excerpt">A friend asked why I don't use a dehumidifier. The honest answer is: I don't mind waiting. Here's a small essay on slowness, drying, and trimming the next day.</p>
+                      <div class="post-meta">26 March 2026 · Materials</div>
+                      <h3 class="post-title">On waiting for things to set</h3>
+                      <p class="post-excerpt">A friend asked why I don't rush. The honest answer is: I don't mind waiting. Here's a small essay on slowness, and finishing the next day.</p>
                       <span class="post-link">Read post →</span>
                     </div>
                   </div>
@@ -3576,8 +3021,8 @@
                     <div class="post-img i3"></div>
                     <div>
                       <div class="post-meta">Not published</div>
-                      <h3 class="post-title">A recipe for ash glaze</h3>
-                      <p class="post-excerpt">The recipe I've been using for six years, finally written down. Pine ash, feldspar, a little whiting, and water — the ratios, the sieves, and the three mistakes I used to make.</p>
+                      <h3 class="post-title">A recipe I keep coming back to</h3>
+                      <p class="post-excerpt">The approach I've been using for six years, finally written down. The ratios, the tools, and the three mistakes I used to make.</p>
                       <span class="post-link">Continue editing →</span>
                     </div>
                   </div>
@@ -3604,10 +3049,10 @@
                 <div class="block-toolbar"><span class="label">Contact</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
                 <div class="contact-grid">
                   <div class="contact-info">
-                    <div class="info-block"><h4>Email</h4><a href="#">hello@anotherclay.com</a></div>
+                    <div class="info-block"><h4>Email</h4><a href="#">hello@yourstudio.com</a></div>
                     <div class="info-block"><h4>Studio</h4><p>Weserstraße 42<br>12045 Berlin · DE</p></div>
-                    <div class="info-block"><h4>Visits</h4><p>By appointment, on firing Sundays between 14:00 – 18:00.</p></div>
-                    <div class="info-block"><h4>Elsewhere</h4><p><a href="#">Instagram · @anotherclay</a><br><a href="#">Bonfire · Clay Village</a></p></div>
+                    <div class="info-block"><h4>Visits</h4><p>By appointment, Sundays between 14:00 – 18:00.</p></div>
+                    <div class="info-block"><h4>Elsewhere</h4><p><a href="#">Instagram · @yourstudio</a><br><a href="#">Bonfire · Clay Village</a></p></div>
                   </div>
                   <form class="contact-form" onsubmit="event.preventDefault(); showToast('Message sent (demo)');">
                     <div><label>Name</label><input type="text" placeholder="Your name"/></div>
@@ -3627,11 +3072,11 @@
               <div class="block-toolbar"><span class="label">Footer</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
               <footer class="site-footer">
                 <div class="footer-brand">
-                  <h3>anotherclay</h3>
-                  <p>Stoneware pots fired once a month in a small Berlin studio. Ships worldwide, slowly.</p>
+                  <h3>yourstudio</h3>
+                  <p>Handmade pieces, one small drop a month. Ships worldwide, slowly.</p>
                   <span class="village-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3z"/></svg> Built in Clay Village</span>
                 </div>
-                <div><h5>Shop</h5><ul><li>New Arrivals</li><li>Moonjars</li><li>Bottles</li><li>Archive</li></ul></div>
+                <div><h5>Shop</h5><ul><li>New Arrivals</li><li>Vessels</li><li>Objects</li><li>Archive</li></ul></div>
                 <div><h5>About</h5><ul><li>The Studio</li><li>Journal</li><li>Process</li><li>Contact</li></ul></div>
                 <div><h5>Follow</h5><ul><li>Instagram</li><li>Are.na</li><li>Newsletter</li></ul></div>
               </footer>
@@ -3667,7 +3112,7 @@
         <div class="bm-cat">Village</div>
         <div class="bm-item">Bonfire Feed</div>
         <div class="bm-item">Neighbor Stalls</div>
-        <div class="bm-item">Kiln Schedule</div>
+        <div class="bm-item">Drop Schedule</div>
       </div>
       <div class="block-modal-body">
         <h3>Add a block</h3>
@@ -3691,7 +3136,7 @@
   <div class="modal-backdrop m-product" onclick="if(event.target===this)closeProduct()">
     <div class="product-modal">
       <div class="pm-head">
-        <h3>Edit product · <span style="color:var(--chrome-mute); font-family:inherit; font-size:13px;">No. 039 — Moonjar</span></h3>
+        <h3>Edit product · <span style="color:var(--chrome-mute); font-family:inherit; font-size:13px;">No. 039 — Signature Piece</span></h3>
         <div class="pm-actions">
           <button class="save-pill"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5 9-9"/></svg> Saved</button>
           <button class="bm-close" style="position:relative; top:0; right:0;" onclick="closeProduct()">✕</button>
@@ -3711,18 +3156,18 @@
         </div>
         <div style="margin-top:20px;">
           <div style="font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--chrome-mute); font-weight:700; margin-bottom:10px;">Description</div>
-          <div style="font-size:13px; color:var(--chrome-ink-2); line-height:1.7;">Moonjar No. 39 is hand-thrown in two halves and joined at the waist. The ash glaze pooled generously on the shoulder during the March firing — a quiet, silver-grey surface.</div>
+          <div style="font-size:13px; color:var(--chrome-ink-2); line-height:1.7;">Signature Piece No. 39 is made by hand in two halves and joined at the waist. The finish pooled generously on the shoulder — a quiet, silver-grey surface.</div>
         </div>
       </div>
       <div class="pm-right">
-        <div class="pm-field"><label>Title</label><input type="text" value="Moonjar No. 39"/></div>
-        <div class="pm-field"><label>Subtitle</label><input type="text" value="Hand-thrown stoneware · 2026"/></div>
+        <div class="pm-field"><label>Title</label><input type="text" value="Signature Piece No. 39"/></div>
+        <div class="pm-field"><label>Subtitle</label><input type="text" value="Made by hand · 2026"/></div>
         <div class="pm-row">
           <div class="pm-field"><label>Price</label><input type="text" value="€ 420"/></div>
-          <div class="pm-field"><label>SKU</label><input type="text" value="AC-039"/></div>
+          <div class="pm-field"><label>SKU</label><input type="text" value="YS-039"/></div>
         </div>
         <div class="pm-field"><label>Category</label>
-          <select><option>Moonjars</option><option>Vases</option><option>Bottles</option><option>Teabowls</option><option>Archive</option></select>
+          <select><option>Vessels</option><option>Objects</option><option>Small</option><option>Studies</option><option>Archive</option></select>
         </div>
         <div class="pm-toggle on">
           <div><div class="tt">One-of-one</div><div class="sub">Inventory locks to 1 after purchase</div></div>
@@ -3738,8 +3183,8 @@
           <div style="display:flex; flex-direction:column; gap:12px; padding-top:10px;">
             <div class="pm-field"><label>Dimensions</label><input type="text" value="H 24 × Ø 22 cm"/></div>
             <div class="pm-field"><label>Weight</label><input type="text" value="1.8 kg"/></div>
-            <div class="pm-field"><label>Materials</label><input type="text" value="Stoneware, ash glaze"/></div>
-            <div class="pm-field"><label>Firing</label><input type="text" value="Cone 10 reduction · March 2026"/></div>
+            <div class="pm-field"><label>Materials</label><input type="text" placeholder="e.g. oak · linen · brass" value=""/></div>
+            <div class="pm-field"><label>Finished</label><input type="text" value="March 2026"/></div>
             <div class="pm-field"><label>Shipping profile</label><select><option>Fragile EU · €12</option><option>Fragile Worldwide · €28</option><option>Pickup only</option></select></div>
           </div>
         </details>
@@ -3759,8 +3204,8 @@
           <div class="co-piece">
             <div class="co-piece-image co-piece-img"></div>
             <div class="co-piece-meta">
-              <div class="pn co-piece-no">No. 039 · Moonjar</div>
-              <div class="pt co-piece-name">Moonjar No. 39</div>
+              <div class="pn co-piece-no">No. 039</div>
+              <div class="pt co-piece-name">Signature Piece No. 39</div>
               <div class="pp co-subtotal-val">€ 420</div>
             </div>
           </div>
@@ -3769,7 +3214,7 @@
           <div class="co-maker">
             <div class="co-maker-avatar">a</div>
             <div class="co-maker-body">
-              <div class="co-maker-name">anotherclay · Berlin</div>
+              <div class="co-maker-name">yourstudio · Berlin</div>
               <div class="co-maker-note">Member of Clay Village since 2024 · 47 pieces sold</div>
             </div>
             <a class="co-skip-link" href="#" onclick="event.preventDefault(); showToast('Opening maker profile…')">visit →</a>
@@ -3781,7 +3226,7 @@
             If anything arrives damaged, we cover the return.
           </p>
           <p class="co-commission-note">
-            6% of each sale stays with the village. It pays for hosting, the shared search, the moderators, and the kiln-share program — nothing more. No ads, no middle layer.
+            6% of each sale stays with the village. It pays for hosting, the shared search, the moderators, and the maker-support program — nothing more. No ads, no middle layer.
           </p>
         </div>
 
@@ -4020,61 +3465,6 @@
       document.body.classList.remove('styles-open','layers-open');
     }
   });
-
-  /* ============ STALL STATE SYSTEM ============
-     Flip between empty / starter / full-customized stall previews.
-     In production this would be determined by the maker's actual content count. */
-  function setStallState(state) {
-    const b = document.body;
-    b.classList.remove('stall-empty', 'stall-starter', 'stall-full');
-    if (state === 'empty')   b.classList.add('stall-empty');
-    if (state === 'starter') b.classList.add('stall-starter');
-    // 'full' needs no class — default state
-
-    // Update toggle UI
-    document.querySelectorAll('.state-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.state === state);
-    });
-
-    // In starter mode, reset any nudges the user dismissed in a previous session
-    if (state === 'starter') {
-      document.querySelectorAll('.starter-nudge').forEach(n => { n.style.display = ''; });
-    }
-
-    // Friendly feedback
-    const msg = state === 'empty'
-      ? 'Empty stall · first-time onboarding'
-      : state === 'starter'
-      ? 'Starter stall · auto-generated from one piece'
-      : 'Full stall · fully customized';
-    showToast(msg);
-
-    // In empty state, scroll canvas to top so the onboarding is visible
-    const canvas = document.getElementById('canvas');
-    if (canvas && state === 'empty') canvas.scrollTop = 0;
-  }
-
-  /* When the user drops or selects a first image in the empty canvas,
-     preview it then flip to starter state after a short beat. */
-  function handleFirstUpload(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const uploader = document.querySelector('.ec-uploader');
-      if (uploader) {
-        uploader.style.backgroundImage = 'url('+e.target.result+')';
-        uploader.style.backgroundSize = 'cover';
-        uploader.style.backgroundPosition = 'center';
-        uploader.style.borderStyle = 'solid';
-        uploader.style.borderColor = 'var(--gold)';
-        const lbls = uploader.querySelectorAll('.ec-up-icon, .ec-up-title, .ec-up-hint');
-        lbls.forEach(el => el.style.opacity = '0');
-      }
-      showToast('Photo added · continue to step 2 ↓');
-    };
-    reader.readAsDataURL(file);
-  }
 
   /* ============ CHECKOUT MODAL ============
      Village-owned checkout — payment flows through the village, not Stripe-at-source.

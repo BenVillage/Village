@@ -21539,8 +21539,27 @@ Mura facilitates. People decide.`;
   var _exitBtn=document.getElementById('ms-exit-btn');
   if(_exitBtn) _exitBtn.addEventListener('click',function(){
     if(_inPreview) _setMode(false);
+    // In stall-focus mode (entered via the admin "My Stall" nav), Exit closes the whole window
+    // since there's no Gallery tab to return to.
+    if (document.body.classList.contains('stall-focus')) {
+      document.body.classList.remove('stall-focus');
+      var ov = document.getElementById('gallery-overlay');
+      if (typeof window._wmClose === 'function' && ov && ov.classList.contains('wm-open')) {
+        window._wmClose('gallery-overlay');
+      } else if (ov) {
+        ov.style.display = 'none';
+      }
+      return;
+    }
     var galleryTab=document.querySelector('.gal-tab[data-tab="gallery"]');
     if(galleryTab) galleryTab.click();
+  });
+
+  // Auto-clear stall-focus class if the gallery window is closed by any other means
+  // (window's own traffic-light close button, cmd-W, etc).
+  var _galOv = document.getElementById('gallery-overlay');
+  if (_galOv) _galOv.addEventListener('wm-close', function() {
+    document.body.classList.remove('stall-focus');
   });
 
   // Inline edit wiring (blur-to-autosave)
@@ -23545,16 +23564,31 @@ navItems.forEach(item => {
   item.addEventListener('click', () => {
     const panelName = item.dataset.panel;
 
-    // My Stall — opens the stall-builder overlay in the WM. Iframe is lazy-loaded on first open.
+    // My Stall — routes to the direct-manipulation editor that lives in Gallery/Market > Stall tab.
+    // In stall-focus mode, Gallery+Market tabs are hidden so it feels like its own building.
+    // Advanced opt-in: append ?stall=advanced to the URL to open the legacy full-site builder iframe instead.
     if (panelName === 'my-stall') {
       if (bonfireChatOpen) closeBonfireChat();
       closeAllFlyouts();
-      const iframe = document.getElementById('msb-iframe');
-      if (iframe && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href + 'about:blank')) {
-        iframe.src = 'stall-builder-mockup.html?embedded=1';
+      var _stallAdvanced = /[?&]stall=advanced(?:&|$)/.test(window.location.search)
+                        || localStorage.getItem('stall_advanced') === '1';
+      if (_stallAdvanced) {
+        const iframe = document.getElementById('msb-iframe');
+        if (iframe && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href + 'about:blank')) {
+          iframe.src = 'stall-builder-mockup.html?embedded=1';
+        }
+        if (typeof window._wmOpen === 'function') window._wmOpen('my-stall-builder');
+        else document.getElementById('my-stall-builder').classList.add('wm-open');
+        return;
       }
-      if (typeof window._wmOpen === 'function') window._wmOpen('my-stall-builder');
-      else document.getElementById('my-stall-builder').classList.add('wm-open');
+      // Default path — open Gallery/Market but with stall-focus chrome.
+      document.body.classList.add('stall-focus');
+      if (typeof window.openGallery === 'function') window.openGallery();
+      // Give the overlay a tick to render, then activate the stall tab.
+      setTimeout(function() {
+        var stallTab = document.querySelector('.gal-tab[data-tab="stall"]');
+        if (stallTab) stallTab.click();
+      }, 30);
       return;
     }
 
@@ -28574,6 +28608,25 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   }
   body.wm-mode #village-search .bld-title-bar { color:#1c1713 !important; font-weight:500 !important; letter-spacing:.02em !important; }
   body.wm-mode #village-search .bld-body { padding:0 !important; overflow:hidden !important; background:#faf6ed !important; }
+
+  /* Stall-focus mode: Gallery/Market building feels like "My Stall" when entered via admin nav.
+     - The tab bar is hidden (only Stall tab is relevant, already auto-selected).
+     - Title bar text is replaced with "My Stall".
+     - Cream palette matches the rest of the maker-facing chrome. */
+  body.stall-focus #gallery-overlay { background:#fefcf7 !important; }
+  body.stall-focus #gallery-overlay .bld-top {
+    background:linear-gradient(180deg,#faf6ea,#f4eedb) !important;
+    border-bottom:1px solid #eae2cf !important;
+  }
+  body.stall-focus #gallery-overlay .bld-title-bar {
+    color:#1c1713 !important; font-weight:500 !important; letter-spacing:.02em !important;
+    font-size:0 !important; /* hide original "Gallery / Market" text */
+  }
+  body.stall-focus #gallery-overlay .bld-title-bar::before {
+    content:'My Stall'; font-size:14px; font-family:inherit;
+  }
+  body.stall-focus #gal-tab-bar { display:none !important; }
+  body.stall-focus #gallery-overlay .presence-strip { display:none !important; }
   /* The WM's full-viewport drag cover (z-index 99999) already swallows pointer events
      over the iframe during drag/resize, so no manual guard needed here. */
   body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
