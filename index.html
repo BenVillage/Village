@@ -7182,7 +7182,15 @@ function toggleVillageSound() {
       <div id="gal-panel-stall" style="display:none;position:relative;">
         <!-- Mode bar -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
-          <span id="ms-preview-label" style="display:none;font-size:11px;font-weight:600;color:#c8a84b;">Published view</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="ms-preview-label" style="display:none;font-size:11px;font-weight:600;color:#c8a84b;">Published view</span>
+            <span class="ms-edit-only" style="font-size:11px;color:#8e8e8e;">
+              <span style="color:#b8914a;font-weight:600;">Template:</span>
+              <span id="ms-template-name" style="color:#1c1713;font-weight:500;">Hand-made</span>
+              <span style="margin:0 6px;color:#d4c28e;">·</span>
+              <a id="ms-change-template" href="#" style="color:#b8914a;text-decoration:none;font-weight:600;">Change</a>
+            </span>
+          </div>
           <div style="display:flex;gap:6px;">
             <button id="ms-save-btn" class="ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
             <button id="ms-publish-btn" class="ms-edit-only" style="background:#c8a84b;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Publish</button>
@@ -30408,6 +30416,56 @@ body.wm-browser-fs #admin-panel:hover {
     $closeBtn.style.display = opts.dismissable ? 'block' : 'none';
     TC.style.display = 'flex';
   };
+})();
+</script>
+
+<!-- ============ STALL TEMPLATE LABEL + CHANGE LINK ============
+     Shows the current template in the stall editor's action bar and lets the
+     maker reopen the carousel to switch. -->
+<script>
+(function() {
+  var TEMPLATE_LABELS = {
+    'handmade':    'Hand-made',
+    'grid':        'Minimal Grid',
+    'magazine':    'Magazine',
+    'journal':     'Journal',
+    'tall-mobile': 'Tall Mobile'
+  };
+
+  var $name = document.getElementById('ms-template-name');
+  var $link = document.getElementById('ms-change-template');
+
+  function refreshLabel() {
+    if (!$name) return;
+    if (!window._supabase || !window._sbAuthUid) return;
+    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+    if (!vid) return;
+    window._supabase.from('village_members')
+      .select('stall_template')
+      .eq('auth_id', window._sbAuthUid)
+      .eq('village_id', vid)
+      .limit(1).single()
+      .then(function(r) {
+        var tpl = (r && r.data && r.data.stall_template) || 'handmade';
+        $name.textContent = TEMPLATE_LABELS[tpl] || 'Hand-made';
+      });
+  }
+
+  // Refresh when the stall tab becomes visible.
+  document.addEventListener('click', function(e) {
+    var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
+    if (t) setTimeout(refreshLabel, 80);
+  });
+
+  // Also refresh once shortly after DOM is ready so labels appear for returning users.
+  setTimeout(refreshLabel, 1200);
+
+  if ($link) $link.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (typeof window.openStallTemplateCarousel === 'function') {
+      window.openStallTemplateCarousel({ dismissable: true });
+    }
+  });
 })();
 </script>
 
