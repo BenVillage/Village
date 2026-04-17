@@ -7743,6 +7743,30 @@ function toggleVillageSound() {
   </div>
 </div>
 
+<!-- ============ STALL TEMPLATE PREVIEW ============
+     Full-screen surface that renders the maker's data using the chosen template
+     (grid / magazine / journal / tall-mobile). Template #1 (handmade) opens the
+     existing editor instead — this overlay stays closed for it. -->
+<div id="stall-template-preview" style="display:none;position:fixed;inset:0;z-index:9350;background:#fefcf7;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;">
+  <!-- Top bar: template name, switch + edit actions -->
+  <div style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #f0e6cd;background:#fefcf7;">
+    <div style="display:flex;align-items:center;gap:14px;font-size:12px;color:#8e8e8e;">
+      <button id="stp-close" type="button" style="background:none;border:none;color:#1c1713;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 0;">← Back</button>
+      <span style="color:#d4c28e;">·</span>
+      <span>Template: <span id="stp-name" style="color:#1c1713;font-weight:600;">Template</span></span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="stp-switch-btn" type="button" style="background:none;color:#b8914a;border:1.5px solid #e4d6ad;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Switch template</button>
+      <button id="stp-edit-btn" type="button" style="background:#b8914a;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Edit content →</button>
+    </div>
+  </div>
+
+  <!-- Render area — filled by renderStallTemplate() -->
+  <div id="stp-body" style="flex:1;overflow-y:auto;background:#fefcf7;">
+    <div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>
+  </div>
+</div>
+
 <!-- ============ STALL TEMPLATE CAROUSEL ============
      Opens after onboarding finishes, or from a "Change template" button in the editor.
      Five tiles, each showing a schematic preview of a layout. Clicking one saves
@@ -30465,6 +30489,299 @@ body.wm-browser-fs #admin-panel:hover {
     if (typeof window.openStallTemplateCarousel === 'function') {
       window.openStallTemplateCarousel({ dismissable: true });
     }
+  });
+})();
+</script>
+
+<!-- ============ STALL TEMPLATE RENDERERS ============
+     Four new layouts (grid, magazine, journal, tall-mobile) that read the
+     maker's village_members row + gallery_pieces and render as read-only views.
+     The hand-made template (#1) keeps using the existing editor — this overlay
+     is a preview surface for the alternative layouts. -->
+<script>
+(function() {
+  var STP = document.getElementById('stall-template-preview');
+  if (!STP) return;
+
+  var $name = document.getElementById('stp-name');
+  var $body = document.getElementById('stp-body');
+  var $close = document.getElementById('stp-close');
+  var $switch = document.getElementById('stp-switch-btn');
+  var $edit = document.getElementById('stp-edit-btn');
+
+  var LABELS = { 'grid':'Minimal Grid', 'magazine':'Magazine', 'journal':'Journal', 'tall-mobile':'Tall Mobile' };
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function pieceImg(p) { return p.img || (p.image_urls && p.image_urls[0]) || ''; }
+
+  function igUrl(h) {
+    if (!h) return '';
+    var s = String(h).trim();
+    if (/^https?:/.test(s)) return s;
+    return 'https://instagram.com/' + s.replace(/^@/, '');
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  function fetchData() {
+    var empty = { member: {}, pieces: [] };
+    if (!window._supabase || !window._sbAuthUid) return Promise.resolve(empty);
+    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+    if (!vid) return Promise.resolve(empty);
+    return Promise.all([
+      window._supabase.from('village_members')
+        .select('stall_name,stall_tagline,stall_location,stall_instagram,stall_bio,stall_cover_url,stall_avatar_url,display_name,has_token,craft_category,years_practising,socials,stall_theme')
+        .eq('auth_id', window._sbAuthUid).eq('village_id', vid).limit(1).single(),
+      window._supabase.from('gallery_pieces')
+        .select('*').eq('user_id', window._sbAuthUid).eq('village_id', vid).order('created_at', { ascending: false })
+    ]).then(function(rs) {
+      return { member: (rs[0] && rs[0].data) || {}, pieces: (rs[1] && rs[1].data) || [] };
+    }).catch(function() { return empty; });
+  }
+
+  // ── Template #2: Minimal Grid ─────────────────────────────────────────
+  function renderGrid(d) {
+    var m = d.member, pieces = d.pieces;
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var avatar = esc(m.stall_avatar_url || '');
+    var avatarEl = avatar
+      ? '<div style="width:96px;height:96px;border-radius:50%;background:url(' + avatar + ') center/cover;flex-shrink:0;"></div>'
+      : '<div style="width:96px;height:96px;border-radius:50%;background:#e4d6ad;flex-shrink:0;"></div>';
+    var bioHtml = m.stall_bio ? '<p style="color:#1c1713;font-size:14px;line-height:1.7;margin:12px 0 0;max-width:620px;">' + esc(m.stall_bio) + '</p>' : '';
+    var tagHtml = m.stall_tagline ? '<div style="color:#6a5d4a;font-size:14px;margin-top:2px;">' + esc(m.stall_tagline) + '</div>' : '';
+
+    var piecesHtml = pieces.length
+      ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">' + pieces.map(function(p) {
+          var img = pieceImg(p);
+          var bg = img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad';
+          return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:' + bg + ';">' +
+            '<div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff;">' +
+              '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:18px;font-weight:500;">' + esc(p.title) + '</div>' +
+              (p.price ? '<div style="font-size:13px;opacity:0.92;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+            '</div></div>';
+        }).join('') + '</div>'
+      : '<div style="text-align:center;padding:80px 20px;color:#8e8e8e;font-size:14px;">No pieces yet. Add some from the editor.</div>';
+
+    return '<div style="max-width:1200px;margin:0 auto;padding:60px 24px;">' +
+      '<div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:48px;">' +
+        avatarEl +
+        '<div style="flex:1;min-width:0;">' +
+          '<h1 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:48px;font-weight:500;margin:0 0 2px;letter-spacing:-0.01em;color:#1c1713;">' + name + '</h1>' +
+          tagHtml + bioHtml +
+        '</div>' +
+      '</div>' +
+      piecesHtml +
+    '</div>';
+  }
+
+  // ── Template #3: Magazine ─────────────────────────────────────────────
+  function renderMagazine(d) {
+    var m = d.member, pieces = d.pieces;
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var cover = esc(m.stall_cover_url || '');
+    var coverStyle = cover
+      ? 'background:url(' + cover + ') center/cover;'
+      : 'background:linear-gradient(135deg,#d4c28e,#b8914a);';
+    var categoryLine = esc(m.craft_category || m.stall_tagline || '');
+    var location = esc(m.stall_location || '');
+    var years = m.years_practising != null ? (m.years_practising + ' year' + (m.years_practising === 1 ? '' : 's')) : '';
+
+    var bioHtml = m.stall_bio
+      ? '<div style="color:#1c1713;font-size:16px;line-height:1.85;white-space:pre-wrap;">' + esc(m.stall_bio) + '</div>'
+      : '<div style="color:#8e8e8e;font-style:italic;">Share your story from the editor.</div>';
+
+    var metaRows = [];
+    if (location) metaRows.push(['Based in', location]);
+    if (years) metaRows.push(['Practising', years]);
+    if (m.stall_instagram) metaRows.push(['Instagram', esc(m.stall_instagram)]);
+    var metaHtml = metaRows.map(function(r) {
+      return '<div style="margin-bottom:18px;">' +
+        '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:4px;">' + r[0] + '</div>' +
+        '<div style="font-size:15px;color:#1c1713;">' + r[1] + '</div>' +
+      '</div>';
+    }).join('');
+
+    var piecesHtml = pieces.length
+      ? pieces.map(function(p) {
+          var img = pieceImg(p);
+          var imgHtml = img
+            ? '<div style="width:100%;aspect-ratio:4/5;background:url(' + esc(img) + ') center/cover;border-radius:4px;"></div>'
+            : '<div style="width:100%;aspect-ratio:4/5;background:#e4d6ad;border-radius:4px;"></div>';
+          return '<div>' + imgHtml +
+            '<div style="margin-top:12px;font-family:\'Cormorant Garamond\',Georgia,serif;font-size:22px;font-weight:500;color:#1c1713;">' + esc(p.title) + '</div>' +
+            (p.price ? '<div style="font-size:13px;color:' + (p.available ? '#b8914a' : '#8e8e8e') + ';margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+          '</div>';
+        }).join('')
+      : '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#8e8e8e;font-size:14px;">No pieces yet.</div>';
+
+    return '<div>' +
+      '<div style="position:relative;width:100%;height:360px;' + coverStyle + '">' +
+        '<div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(28,23,19,0.55));"></div>' +
+        '<div style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);text-align:center;color:#fefcf7;">' +
+          '<h1 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:64px;font-weight:400;margin:0;letter-spacing:-0.01em;text-shadow:0 2px 8px rgba(0,0,0,0.3);">' + name + '</h1>' +
+          (categoryLine ? '<div style="font-size:13px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;opacity:0.94;">' + categoryLine + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div style="max-width:960px;margin:0 auto;padding:56px 24px 80px;">' +
+        '<div style="display:grid;grid-template-columns:2fr 1fr;gap:48px;margin-bottom:60px;">' +
+          '<div>' +
+            '<h2 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:30px;font-weight:500;margin:0 0 20px;color:#1c1713;">About</h2>' +
+            bioHtml +
+          '</div>' +
+          '<div style="border-left:1.5px solid #e4d6ad;padding-left:28px;">' + metaHtml + '</div>' +
+        '</div>' +
+        '<hr style="border:none;border-top:1px solid #e4d6ad;margin:60px 0;">' +
+        '<h2 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:40px;font-weight:500;text-align:center;margin:0 0 40px;color:#1c1713;">Work</h2>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:36px;">' + piecesHtml + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── Template #4: Journal ──────────────────────────────────────────────
+  function renderJournal(d) {
+    var m = d.member, pieces = d.pieces;
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var location = esc(m.stall_location || '');
+    var years = m.years_practising != null ? (m.years_practising + ' year' + (m.years_practising === 1 ? '' : 's')) : '';
+    var subtitle = [location, years].filter(Boolean).join(' · ');
+
+    var header = '<header style="text-align:center;margin-bottom:60px;padding-bottom:40px;border-bottom:1px solid #e4d6ad;">' +
+      '<h1 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:52px;font-weight:400;margin:0 0 12px;letter-spacing:-0.01em;color:#1c1713;">' + name + '</h1>' +
+      (subtitle ? '<div style="color:#6a5d4a;font-size:14px;letter-spacing:0.05em;margin-bottom:18px;">' + subtitle + '</div>' : '') +
+      (m.stall_bio ? '<p style="font-style:italic;color:#3d3428;font-size:16px;line-height:1.8;max-width:520px;margin:0 auto;">' + esc(m.stall_bio) + '</p>' : '') +
+    '</header>';
+
+    var entries = pieces.length
+      ? pieces.map(function(p) {
+          var img = pieceImg(p);
+          var imgHtml = img ? '<img src="' + esc(img) + '" style="width:100%;border-radius:4px;margin-bottom:18px;display:block;" loading="lazy" />' : '';
+          var date = formatDate(p.created_at);
+          return '<article style="margin-bottom:64px;">' +
+            (date ? '<div style="font-size:11px;color:#8e8e8e;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">' + date + '</div>' : '') +
+            '<h2 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:32px;font-weight:500;margin:0 0 16px;color:#1c1713;">' + esc(p.title) + '</h2>' +
+            imgHtml +
+            (p.description ? '<p style="color:#1c1713;font-size:16px;line-height:1.85;font-family:Georgia,serif;">' + esc(p.description) + '</p>' : '') +
+            (p.price ? '<div style="font-size:13px;color:' + (p.available ? '#b8914a' : '#8e8e8e') + ';font-weight:600;margin-top:14px;letter-spacing:0.02em;">' + esc(p.price) + '</div>' : '') +
+          '</article>';
+        }).join('')
+      : '<div style="text-align:center;padding:40px 20px;color:#8e8e8e;font-size:14px;">No entries yet.</div>';
+
+    return '<div style="max-width:680px;margin:0 auto;padding:72px 24px 80px;">' + header + entries + '</div>';
+  }
+
+  // ── Template #5: Tall Mobile ──────────────────────────────────────────
+  function renderTallMobile(d) {
+    var m = d.member, pieces = d.pieces;
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var avatar = esc(m.stall_avatar_url || '');
+    var avatarEl = avatar
+      ? '<div style="width:112px;height:112px;border-radius:50%;background:url(' + avatar + ') center/cover;margin:0 auto 14px;"></div>'
+      : '<div style="width:112px;height:112px;border-radius:50%;background:#e4d6ad;margin:0 auto 14px;"></div>';
+
+    var socials = m.socials || {};
+    if (!socials.instagram && m.stall_instagram) socials.instagram = m.stall_instagram;
+    var socialLinks = [];
+    if (socials.instagram) socialLinks.push('<a href="' + esc(igUrl(socials.instagram)) + '" target="_blank" rel="noopener" style="color:#b8914a;font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid #e4d6ad;border-radius:18px;">Instagram</a>');
+    if (socials.arena) socialLinks.push('<a href="' + esc(/^https?:/.test(socials.arena) ? socials.arena : 'https://are.na/' + socials.arena.replace(/^\/+/, '')) + '" target="_blank" rel="noopener" style="color:#b8914a;font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid #e4d6ad;border-radius:18px;">Are.na</a>');
+    if (socials.website) socialLinks.push('<a href="' + esc(/^https?:/.test(socials.website) ? socials.website : 'https://' + socials.website) + '" target="_blank" rel="noopener" style="color:#b8914a;font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid #e4d6ad;border-radius:18px;">Website</a>');
+
+    var socialsHtml = socialLinks.length
+      ? '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px;">' + socialLinks.join('') + '</div>'
+      : '';
+
+    var piecesHtml = pieces.length
+      ? pieces.map(function(p) {
+          var img = pieceImg(p);
+          var imgHtml = img
+            ? '<div style="width:100%;aspect-ratio:1;background:url(' + esc(img) + ') center/cover;"></div>'
+            : '<div style="width:100%;aspect-ratio:1;background:#e4d6ad;"></div>';
+          return '<div style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid #e4d6ad;">' + imgHtml +
+            '<div style="padding:14px 16px;">' +
+              '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:20px;font-weight:500;color:#1c1713;">' + esc(p.title) + '</div>' +
+              (p.price ? '<div style="font-size:13px;color:' + (p.available ? '#b8914a' : '#8e8e8e') + ';margin-top:4px;">' + esc(p.price) + '</div>' : '') +
+            '</div>' +
+          '</div>';
+        }).join('')
+      : '<div style="text-align:center;padding:40px 20px;color:#8e8e8e;font-size:14px;">No pieces yet.</div>';
+
+    return '<div style="max-width:440px;margin:0 auto;padding:40px 20px 60px;">' +
+      '<div style="text-align:center;margin-bottom:28px;">' +
+        avatarEl +
+        '<h1 style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:30px;font-weight:500;margin:0 0 4px;color:#1c1713;">' + name + '</h1>' +
+        (m.stall_location ? '<div style="color:#6a5d4a;font-size:13px;">' + esc(m.stall_location) + '</div>' : '') +
+        (m.stall_bio ? '<p style="color:#1c1713;font-size:14px;line-height:1.65;margin:12px 0 0;">' + esc(m.stall_bio) + '</p>' : '') +
+        socialsHtml +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:14px;">' + piecesHtml + '</div>' +
+    '</div>';
+  }
+
+  var RENDERERS = {
+    'grid': renderGrid,
+    'magazine': renderMagazine,
+    'journal': renderJournal,
+    'tall-mobile': renderTallMobile
+  };
+
+  function applyTheme(m) {
+    var theme = (m && m.stall_theme) || {};
+    if (theme.accent_color) {
+      // Keep simple: expose as a CSS variable on the preview body. Templates don't
+      // currently reference it, but this hook lets the theme panel work later.
+      $body.style.setProperty('--stall-accent', theme.accent_color);
+    }
+  }
+
+  // ── Public API ────────────────────────────────────────────────────────
+  window.openStallTemplate = function(tpl) {
+    // Template #1 (handmade) always falls through to the existing editor.
+    if (tpl === 'handmade' || !RENDERERS[tpl]) {
+      STP.style.display = 'none';
+      document.body.classList.add('stall-focus');
+      if (typeof window.openGallery === 'function') window.openGallery();
+      setTimeout(function() {
+        var tab = document.querySelector('.gal-tab[data-tab="stall"]');
+        if (tab) tab.click();
+      }, 30);
+      return;
+    }
+
+    $name.textContent = LABELS[tpl] || tpl;
+    $body.innerHTML = '<div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>';
+    STP.style.display = 'flex';
+
+    fetchData().then(function(data) {
+      applyTheme(data.member);
+      var render = RENDERERS[tpl];
+      if (render) $body.innerHTML = render(data);
+    });
+  };
+
+  if ($close) $close.addEventListener('click', function() { STP.style.display = 'none'; });
+  if ($switch) $switch.addEventListener('click', function() {
+    STP.style.display = 'none';
+    if (typeof window.openStallTemplateCarousel === 'function') {
+      window.openStallTemplateCarousel({ dismissable: true });
+    }
+  });
+  if ($edit) $edit.addEventListener('click', function() {
+    STP.style.display = 'none';
+    document.body.classList.add('stall-focus');
+    if (typeof window.openGallery === 'function') window.openGallery();
+    setTimeout(function() {
+      var tab = document.querySelector('.gal-tab[data-tab="stall"]');
+      if (tab) tab.click();
+    }, 30);
   });
 })();
 </script>
