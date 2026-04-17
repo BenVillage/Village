@@ -2200,6 +2200,670 @@
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
   .toast .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
 
+  /* ============ STALL STATE SYSTEM ============
+     Three stall states control what a maker sees based on their content:
+       body.stall-empty    → 0 products, onboarding flow
+       body.stall-starter  → 1 product, auto-generated minimal stall
+       (default)           → full customized stall
+     Each state hides/shows content through CSS, no HTML duplication. */
+
+  /* Empty state: hide the full canvas, show the onboarding surface */
+  .empty-canvas { display: none; }
+  body.stall-empty .empty-canvas { display: flex; }
+  body.stall-empty .page-view,
+  body.stall-empty .site-header,
+  body.stall-empty .site-footer { display: none !important; }
+  body.stall-empty .center-pill { display: none; }
+
+  /* Starter state: hide "Featured Works" section (no additional products yet),
+     hide the Journal nav entry (no posts), simplify About preview */
+  body.stall-starter [data-block="works"],
+  body.stall-starter [data-block="about-preview"] .about-portrait { display: none; }
+  body.stall-starter .nav-item[data-page="journal"] { display: none; }
+  body.stall-starter .site-nav-links a[data-link="journal"] { display: none; }
+  .starter-only { display: none !important; }
+  body.stall-starter .starter-only { display: flex !important; }
+  /* Starter: hide most shop products, keep just one + add-product tile */
+  body.stall-starter .shop-grid > *:not(:nth-child(-n+2)):not(.add-product) { display: none; }
+  body.stall-starter .shop-filters,
+  body.stall-starter .shop-settings { display: none; }
+  body.stall-starter .journal-hero + .post-list .post:not(:first-child),
+  body.stall-starter .about-timeline,
+  body.stall-starter .about-three-col,
+  body.stall-starter .studio-strip { display: none; }
+  body.stall-starter .post-list .post:first-child { opacity: 0.5; pointer-events: none; }
+
+  /* State toggle in top toolbar — demo-only UI for flipping stall states */
+  .state-toggle {
+    display: inline-flex;
+    background: var(--chrome-2);
+    border: 1px solid var(--chrome-line);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+    margin-right: 4px;
+    position: relative;
+  }
+  .state-toggle::before {
+    content: 'Preview state';
+    position: absolute;
+    bottom: -14px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 8.5px;
+    color: var(--chrome-mute);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity .15s;
+    white-space: nowrap;
+  }
+  .state-toggle:hover::before { opacity: 1; }
+  .state-btn {
+    background: transparent;
+    border: 0;
+    color: var(--chrome-mute);
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: .04em;
+    font-weight: 500;
+    transition: all .15s;
+  }
+  .state-btn.active {
+    background: var(--chrome-ink);
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(28,23,19,.18);
+  }
+  .state-btn .dot-e, .state-btn .dot-s, .state-btn .dot-f {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .state-btn .dot-e { background: #c4b89c; }
+  .state-btn .dot-s { background: #b8914a; }
+  .state-btn .dot-f { background: #7a8f5f; }
+  .state-btn.active .dot-e,
+  .state-btn.active .dot-s,
+  .state-btn.active .dot-f { box-shadow: 0 0 0 2px rgba(255,255,255,.24); }
+
+  /* ============ EMPTY CANVAS (first-time onboarding) ============ */
+  .empty-canvas {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 48px 32px 80px;
+    min-height: 100%;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(184,145,74,.07), transparent 45%),
+      var(--cream);
+    overflow-y: auto;
+  }
+  .ec-eyebrow {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: .32em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .ec-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--gold);
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+  .ec-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1.14;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: 14px;
+    max-width: 580px;
+  }
+  .ec-title em { font-style: italic; color: var(--clay); }
+  .ec-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-3);
+    text-align: center;
+    max-width: 480px;
+    margin-bottom: 42px;
+  }
+  .ec-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 840px;
+    margin-bottom: 40px;
+  }
+  .ec-step {
+    background: #fffdf5;
+    border: 1px solid var(--chrome-line);
+    border-radius: 14px;
+    padding: 22px 22px 24px;
+    position: relative;
+    transition: all .2s;
+  }
+  .ec-step.active {
+    border-color: var(--gold);
+    box-shadow: 0 8px 30px rgba(184,145,74,.14);
+  }
+  .ec-step.done { background: #f7f2e3; border-color: var(--line); }
+  .ec-step-num {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--chrome-2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ec-step.active .ec-step-num { background: var(--gold); color: #fff; }
+  .ec-step.done .ec-step-num {
+    background: var(--gold); color: #fff;
+  }
+  .ec-step.done .ec-step-num::before { content: '✓'; font-size: 12px; }
+  .ec-step.done .ec-step-num-digit { display: none; }
+  .ec-step-label {
+    font-size: 10.5px;
+    letter-spacing: .16em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .ec-step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .ec-step-desc {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink-3);
+    margin-bottom: 16px;
+  }
+  .ec-uploader {
+    border: 1.5px dashed var(--line-2);
+    border-radius: 10px;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    background:
+      repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(184,145,74,.03) 10px, rgba(184,145,74,.03) 20px);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+    padding: 16px;
+  }
+  .ec-uploader:hover { border-color: var(--gold); color: var(--gold-2); background-color: rgba(184,145,74,.04); }
+  .ec-uploader svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: .7; }
+  .ec-uploader .ec-up-txt { font-size: 12.5px; font-weight: 500; }
+  .ec-uploader .ec-up-hint { font-size: 11px; opacity: .7; margin-top: 3px; }
+  .ec-step input[type="text"], .ec-step textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--chrome-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+    margin-bottom: 10px;
+    resize: none;
+  }
+  .ec-step input[type="text"]:focus, .ec-step textarea:focus { border-color: var(--gold); }
+  .ec-step textarea { min-height: 78px; line-height: 1.55; }
+  .ec-skip-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .ec-publish {
+    background: var(--chrome-ink);
+    border: 0;
+    color: #fff;
+    padding: 11px 26px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ec-publish:hover { background: var(--ink-2); }
+  .ec-publish .plus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .ec-skip-link {
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    background: 0;
+    border: 0;
+    font-family: inherit;
+  }
+  .ec-skip-link:hover { color: var(--ink); text-decoration-color: var(--gold); }
+  .ec-url-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px 7px 14px;
+    background: rgba(184,145,74,.08);
+    border: 1px solid rgba(184,145,74,.22);
+    border-radius: 999px;
+    color: var(--ink-2);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    margin-bottom: 32px;
+  }
+  .ec-url-hint b { font-weight: 600; color: var(--gold-2); }
+  .ec-url-hint .ec-url-lbl {
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-right: 6px;
+    border-right: 1px solid rgba(184,145,74,.28);
+  }
+  .ec-url-hint .ec-url { font-family: 'JetBrains Mono', 'Menlo', monospace; font-size: 12px; color: var(--ink-2); }
+  .ec-url-hint .ec-url strong { color: var(--gold-2); font-weight: 600; }
+  .ec-url-edit {
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-left: 1px solid rgba(184,145,74,.28);
+  }
+  .ec-url-edit:hover { color: var(--gold-2); }
+
+  /* Inner width container */
+  .ec-inner { width: 100%; max-width: 920px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  /* Step head (inside each card) */
+  .ec-step-head { margin-bottom: 14px; text-align: left; }
+  .ec-step-head h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 21px;
+    line-height: 1.22;
+    color: var(--ink);
+    margin: 0 0 4px;
+    padding-right: 30px;
+  }
+  .ec-step-head p {
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink-3);
+    margin: 0;
+  }
+  .ec-optional {
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-left: 6px;
+    padding: 2px 7px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    vertical-align: middle;
+    position: relative;
+    top: -3px;
+  }
+
+  /* Uploader inner pieces */
+  .ec-up-icon {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+    opacity: .75;
+  }
+  .ec-up-icon svg { width: 26px; height: 26px; }
+  .ec-up-title { font-size: 12.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 3px; }
+
+  /* Mini form under step 1 uploader */
+  .ec-mini-form { margin-top: 12px; text-align: left; }
+  .ec-mini-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .ec-mini-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--chrome-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+  }
+  .ec-mini-input:focus { border-color: var(--gold); }
+  .ec-mini-price { text-align: right; }
+
+  .ec-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--chrome-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+    min-height: 90px;
+    line-height: 1.55;
+    resize: none;
+    margin-bottom: 10px;
+  }
+  .ec-textarea:focus { border-color: var(--gold); }
+
+  .ec-reassure {
+    font-size: 11px;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-top: 14px;
+    font-style: italic;
+  }
+
+  /* Step 3: center the publish button */
+  .ec-step[data-step="3"] { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .ec-step[data-step="3"] .ec-step-head { text-align: center; padding-right: 30px; margin-bottom: 20px; }
+
+  /* Starter nudges */
+  .starter-nudge {
+    background: rgba(184,145,74,.08);
+    border: 1px dashed rgba(184,145,74,.35);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 14px 28px;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .starter-nudge .snx { display: flex; gap: 10px; align-items: center; }
+  .starter-nudge svg { color: var(--gold-2); flex-shrink: 0; }
+  .starter-nudge .snbtn {
+    background: var(--chrome-ink);
+    border: 0;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .starter-nudge .snbtn.ghost {
+    background: transparent;
+    color: var(--ink-2);
+    border: 1px solid var(--line);
+  }
+
+  /* ============ CHECKOUT MODAL ============ */
+  .co-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(28,23,19,.52);
+    display: none;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(2px);
+  }
+  body.modal-checkout .co-backdrop { display: flex; }
+  .co-modal {
+    width: min(920px, 100%);
+    max-height: 92%;
+    background: var(--chrome-bg);
+    border-radius: 14px;
+    box-shadow: 0 30px 70px rgba(28,23,19,.35);
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    overflow: hidden;
+    animation: coIn .28s cubic-bezier(0.2,0.8,0.3,1);
+  }
+  @keyframes coIn { from { transform: translateY(8px) scale(.985); opacity: 0; } to { transform: none; opacity: 1; } }
+  .co-left {
+    background: var(--cream);
+    padding: 34px 38px;
+    border-right: 1px solid var(--chrome-line);
+    overflow-y: auto;
+  }
+  .co-right {
+    padding: 30px 34px;
+    overflow-y: auto;
+    background: #fffdf7;
+  }
+  .co-label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: .3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .co-piece {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .co-piece-image {
+    aspect-ratio: 1;
+    background:
+      radial-gradient(ellipse 72% 65% at 50% 50%, #f4ede0 0%, #e8d9bb 40%, #7a5c38 90%);
+    border-radius: 8px;
+  }
+  .co-piece-meta .pn { font-family:'Noto Sans JP', sans-serif; font-weight:300; font-size: 10px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
+  .co-piece-meta .pt { font-family:'Cormorant Garamond', serif; font-size: 18px; color:var(--ink); margin-bottom: 4px; }
+  .co-piece-meta .pp { font-size: 13px; color:var(--ink-2); font-weight: 500; }
+  .co-maker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fffaec;
+    border: 1px solid rgba(184,145,74,.2);
+    border-radius: 10px;
+    margin-bottom: 22px;
+  }
+  .co-maker-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--gold); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .co-maker-body { flex: 1; }
+  .co-maker-name { font-weight: 600; font-size: 13px; color: var(--ink); }
+  .co-maker-note { font-size: 11.5px; color: var(--ink-3); line-height: 1.45; }
+  .co-prose { font-size: 12.5px; line-height: 1.65; color: var(--ink-3); margin-bottom: 18px; }
+  .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .co-right h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .co-right .co-sub { font-size: 12px; color: var(--ink-3); margin-bottom: 22px; }
+  .co-field { margin-bottom: 10px; }
+  .co-field label { display: block; font-size: 10px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+  .co-field input, .co-field select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--chrome-line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+  }
+  .co-field input:focus { border-color: var(--gold); }
+  .co-ship {
+    display: grid; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .co-ship-opt {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border: 1px solid var(--chrome-line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .co-ship-opt.selected { border-color: var(--gold); background: rgba(184,145,74,.06); }
+  .co-ship-opt .dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1.5px solid var(--line-2);
+  }
+  .co-ship-opt.selected .dot {
+    border-color: var(--gold);
+    background: radial-gradient(circle, var(--gold) 0 45%, transparent 50%);
+  }
+  .co-ship-opt .so-meta { font-size: 12px; color: var(--ink); }
+  .co-ship-opt .so-meta .so-name { font-weight: 500; }
+  .co-ship-opt .so-meta .so-eta { font-size: 10.5px; color: var(--muted); letter-spacing: .06em; }
+  .co-ship-opt .so-price { font-size: 12px; font-weight: 500; color: var(--ink-2); }
+  .co-breakdown {
+    border-top: 1px solid var(--chrome-line);
+    padding-top: 14px;
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .co-breakdown .bd-row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .co-breakdown .bd-row.sm { font-size: 11px; color: var(--muted); padding-left: 14px; }
+  .co-breakdown .bd-row.total {
+    font-size: 14px; font-weight: 600; color: var(--ink);
+    padding-top: 10px;
+    border-top: 1px solid var(--chrome-line);
+    margin-top: 10px;
+  }
+  .co-cta {
+    width: 100%;
+    background: var(--chrome-ink);
+    color: #fff;
+    border: 0;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .co-cta:hover { background: var(--ink-2); }
+  .co-cta svg { width: 14px; height: 14px; }
+  .co-close {
+    position: absolute;
+    top: 14px; right: 18px;
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 3;
+  }
+  .co-close:hover { color: var(--ink); }
+  .co-commission-note {
+    font-size: 10.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 8px;
+    font-style: italic;
+  }
+  .co-village-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(184,145,74,.12);
+    color: var(--gold-2);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .co-village-badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
   /* ============ EMBEDDED MODE ============
      When loaded inside the main Clay Village app (?embedded=1 or via iframe),
      the outer Mac window chrome + Village backdrop are owned by the host WM.
@@ -2292,6 +2956,12 @@
       </button>
 
       <div class="topbar-right">
+        <div class="state-toggle" title="Preview stall state">
+          <button class="state-btn" data-state="empty" onclick="setStallState('empty')"><span class="dot-e"></span>Empty</button>
+          <button class="state-btn" data-state="starter" onclick="setStallState('starter')"><span class="dot-s"></span>Starter</button>
+          <button class="state-btn active" data-state="full" onclick="setStallState('full')"><span class="dot-f"></span>Full</button>
+        </div>
+        <div class="divider-v"></div>
         <div class="device-toggle">
           <button class="device-btn active" data-device="desktop" onclick="setDevice('desktop')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>
@@ -2495,6 +3165,73 @@
 
         <!-- CANVAS -->
         <div class="canvas-inner" id="canvas">
+
+          <!-- ============ EMPTY CANVAS (first-time onboarding) ============ -->
+          <div class="empty-canvas">
+            <div class="ec-inner">
+              <div class="ec-eyebrow">A new stall · Spring 2026</div>
+              <h1 class="ec-title">Your stall is <em>empty</em>.<br>Let's add one piece.</h1>
+              <p class="ec-sub">A stall is your public corner of the village — one piece is enough to open. You can add a story, an about page, and a journal whenever you're ready. Nothing is hidden until you publish.</p>
+
+              <div class="ec-url-hint">
+                <span class="ec-url-lbl">Your public address</span>
+                <span class="ec-url">village.anotherclay.com/<strong>anotherclay</strong></span>
+                <button class="ec-url-edit" onclick="showToast('Change handle in Settings')">edit</button>
+              </div>
+
+              <div class="ec-steps">
+                <!-- STEP 1: upload -->
+                <div class="ec-step" data-step="1">
+                  <div class="ec-step-num">01</div>
+                  <div class="ec-step-head">
+                    <h3>Upload your first piece</h3>
+                    <p>A photo, a title, a price. That's all it takes to open the stall.</p>
+                  </div>
+                  <label class="ec-uploader" for="ec-file-input">
+                    <div class="ec-up-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 16V4m0 0l-5 5m5-5l5 5M4 20h16"/></svg>
+                    </div>
+                    <div class="ec-up-title">Drop a photo or click to browse</div>
+                    <div class="ec-up-hint">JPG, PNG, HEIC · up to 20 MB</div>
+                    <input id="ec-file-input" type="file" accept="image/*" style="display:none" onchange="handleFirstUpload(event)"/>
+                  </label>
+                  <div class="ec-mini-form">
+                    <div class="ec-mini-row">
+                      <input type="text" placeholder="Title — e.g. Moonjar No. 39" class="ec-mini-input"/>
+                      <input type="text" placeholder="€ Price" class="ec-mini-input ec-mini-price"/>
+                    </div>
+                    <a class="ec-skip-link" onclick="setStallState('starter')">Skip for now — I'll upload later →</a>
+                  </div>
+                </div>
+
+                <!-- STEP 2: studio line -->
+                <div class="ec-step" data-step="2">
+                  <div class="ec-step-num">02</div>
+                  <div class="ec-step-head">
+                    <h3>One line about the studio <span class="ec-optional">optional</span></h3>
+                    <p>Even a single sentence helps a stranger understand what they're looking at.</p>
+                  </div>
+                  <textarea class="ec-textarea" placeholder="e.g. Hand-thrown vessels from a small studio in Berlin, fired once a month in a gas kiln."></textarea>
+                  <a class="ec-skip-link">Skip — just show the piece →</a>
+                </div>
+
+                <!-- STEP 3: publish -->
+                <div class="ec-step" data-step="3">
+                  <div class="ec-step-num">03</div>
+                  <div class="ec-step-head">
+                    <h3>Open the stall</h3>
+                    <p>We'll generate a starter layout from what you uploaded. You can customize anything later.</p>
+                  </div>
+                  <button class="ec-publish" onclick="setStallState('starter'); showToast('Stall opened · 1 piece live')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5 9-9"/></svg>
+                    Open my stall
+                  </button>
+                  <div class="ec-reassure">No algorithm. No feed. Just your corner.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="site" id="site">
 
             <!-- SHARED HEADER -->
@@ -2522,6 +3259,16 @@
 
             <!-- ============ HOME PAGE ============ -->
             <div class="page-view active" data-view="home">
+              <div class="starter-nudge starter-only">
+                <div class="snx">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
+                  <span>Your stall is live with one piece. Want to add a studio story on the Home page?</span>
+                </div>
+                <div>
+                  <button class="snbtn ghost" onclick="this.closest('.starter-nudge').style.display='none'">Later</button>
+                  <button class="snbtn" onclick="showToast('Opening About editor…'); setStallState('full')">Write a line</button>
+                </div>
+              </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
               <div class="block selected" data-block="hero">
                 <div class="edit-tabs">
@@ -2560,8 +3307,8 @@
                 <section class="sec">
                   <div class="sec-head"><div class="eyebrow">Featured Works</div><h2 class="sec-title">From the latest firing</h2><div class="sec-rule"></div></div>
                   <div class="works">
-                    <div class="work"><div class="work-image p1"></div><div class="work-meta"><div class="work-no">No. 039 · Moonjar</div><div class="work-name">Moonjar No. 39</div><div class="work-price">€ 420</div></div></div>
-                    <div class="work"><div class="work-image p2"></div><div class="work-meta"><div class="work-no">No. 056 · Gourd</div><div class="work-name">Tall Gourd Vase No. 56</div><div class="work-price">€ 750</div></div></div>
+                    <div class="work" onclick="openCheckout({title:'Moonjar No. 39', no:'No. 039 · Moonjar', price:'€ 420'})" style="cursor:pointer;"><div class="work-image p1"></div><div class="work-meta"><div class="work-no">No. 039 · Moonjar</div><div class="work-name">Moonjar No. 39</div><div class="work-price">€ 420</div></div></div>
+                    <div class="work" onclick="openCheckout({title:'Tall Gourd Vase No. 56', no:'No. 056 · Gourd', price:'€ 750'})" style="cursor:pointer;"><div class="work-image p2"></div><div class="work-meta"><div class="work-no">No. 056 · Gourd</div><div class="work-name">Tall Gourd Vase No. 56</div><div class="work-price">€ 750</div></div></div>
                     <div class="work"><div class="work-image p3"></div><div class="work-meta"><div class="work-no">No. 044 · Bottle</div><div class="work-name">Quiet Ember Bottle No. 44</div><div class="work-price">€ 380 <span class="sold">Reserved</span></div></div></div>
                   </div>
                 </section>
@@ -2597,6 +3344,16 @@
 
             <!-- ============ SHOP PAGE ============ -->
             <div class="page-view shop-page" data-view="shop">
+              <div class="starter-nudge starter-only">
+                <div class="snx">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                  <span>One piece so far — add another when you're ready. The shop grid fills as you upload.</span>
+                </div>
+                <div>
+                  <button class="snbtn ghost" onclick="this.closest('.starter-nudge').style.display='none'">Later</button>
+                  <button class="snbtn" onclick="showToast('Upload opened')">Add a piece</button>
+                </div>
+              </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
               <div class="block" data-block="shop-hero">
                 <div class="block-toolbar"><span class="label">Shop Header</span><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4l5 5L8 21H3v-5z"/></svg></button></div>
@@ -2719,6 +3476,16 @@
 
             <!-- ============ ABOUT PAGE ============ -->
             <div class="page-view" data-view="about">
+              <div class="starter-nudge starter-only">
+                <div class="snx">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg>
+                  <span>No story yet. Add a line or two about your studio — it helps people trust the work.</span>
+                </div>
+                <div>
+                  <button class="snbtn ghost" onclick="this.closest('.starter-nudge').style.display='none'">Skip</button>
+                  <button class="snbtn" onclick="showToast('About editor opened'); setStallState('full')">Write</button>
+                </div>
+              </div>
               <div class="add-section"><button onclick="openBlockModal()">＋ Add section</button></div>
               <div class="block selected" data-block="about-hero">
                 <div class="edit-tabs"><button class="active">Design</button><button>Format</button><button>Background</button></div>
@@ -2980,6 +3747,103 @@
     </div>
   </div>
 
+  <!-- ============ VILLAGE-OWNED CHECKOUT MODAL ============ -->
+  <div class="co-backdrop" id="checkoutModal" onclick="if(event.target===this)closeCheckout()">
+      <div class="co-modal" role="dialog" aria-label="Checkout">
+        <button class="co-close" onclick="closeCheckout()" aria-label="Close">✕</button>
+
+        <!-- LEFT: piece + maker + reassurance -->
+        <div class="co-left">
+          <div class="co-village-badge">Clay Village · Checkout</div>
+          <div class="co-label">Piece</div>
+          <div class="co-piece">
+            <div class="co-piece-image co-piece-img"></div>
+            <div class="co-piece-meta">
+              <div class="pn co-piece-no">No. 039 · Moonjar</div>
+              <div class="pt co-piece-name">Moonjar No. 39</div>
+              <div class="pp co-subtotal-val">€ 420</div>
+            </div>
+          </div>
+
+          <div class="co-label">Maker</div>
+          <div class="co-maker">
+            <div class="co-maker-avatar">a</div>
+            <div class="co-maker-body">
+              <div class="co-maker-name">anotherclay · Berlin</div>
+              <div class="co-maker-note">Member of Clay Village since 2024 · 47 pieces sold</div>
+            </div>
+            <a class="co-skip-link" href="#" onclick="event.preventDefault(); showToast('Opening maker profile…')">visit →</a>
+          </div>
+
+          <div class="co-label">About this purchase</div>
+          <p class="co-prose">
+            Every piece in Clay Village ships directly from the maker's studio. Your payment goes through the village — we hold it for 24 hours while the maker confirms the piece is ready, then release it.
+            If anything arrives damaged, we cover the return.
+          </p>
+          <p class="co-commission-note">
+            6% of each sale stays with the village. It pays for hosting, the shared search, the moderators, and the kiln-share program — nothing more. No ads, no middle layer.
+          </p>
+        </div>
+
+        <!-- RIGHT: form -->
+        <div class="co-right">
+          <h3>Complete your order</h3>
+          <div class="co-sub">Shipping to your country only · secure village payment</div>
+
+          <div class="co-field"><label>Email for receipt</label><input type="email" placeholder="you@studio.com"/></div>
+
+          <div class="co-row">
+            <div class="co-field"><label>First name</label><input type="text"/></div>
+            <div class="co-field"><label>Last name</label><input type="text"/></div>
+          </div>
+          <div class="co-field"><label>Address</label><input type="text" placeholder="Street + number"/></div>
+          <div class="co-row">
+            <div class="co-field"><label>City</label><input type="text"/></div>
+            <div class="co-field"><label>Postal code</label><input type="text"/></div>
+          </div>
+          <div class="co-field"><label>Country</label><select><option>Germany</option><option>France</option><option>Netherlands</option><option>United Kingdom</option><option>United States</option><option>Japan</option></select></div>
+
+          <div class="co-label" style="margin-top:16px;margin-bottom:8px;">Shipping</div>
+          <div class="co-ship">
+            <label class="co-ship-opt selected">
+              <input type="radio" name="ship" data-price="12" checked onchange="this.closest('.co-ship').querySelectorAll('.co-ship-opt').forEach(o=>o.classList.remove('selected')); this.closest('.co-ship-opt').classList.add('selected'); onShipChange()" style="display:none"/>
+              <span class="dot"></span>
+              <div class="so-meta"><div class="so-name">Fragile · Europe</div><div class="so-eta">3–5 days · tracked · insured</div></div>
+              <div class="so-price">€ 12</div>
+            </label>
+            <label class="co-ship-opt">
+              <input type="radio" name="ship" data-price="28" onchange="this.closest('.co-ship').querySelectorAll('.co-ship-opt').forEach(o=>o.classList.remove('selected')); this.closest('.co-ship-opt').classList.add('selected'); onShipChange()" style="display:none"/>
+              <span class="dot"></span>
+              <div class="so-meta"><div class="so-name">Fragile · Worldwide</div><div class="so-eta">7–14 days · tracked · insured</div></div>
+              <div class="so-price">€ 28</div>
+            </label>
+            <label class="co-ship-opt">
+              <input type="radio" name="ship" data-price="0" onchange="this.closest('.co-ship').querySelectorAll('.co-ship-opt').forEach(o=>o.classList.remove('selected')); this.closest('.co-ship-opt').classList.add('selected'); onShipChange()" style="display:none"/>
+              <span class="dot"></span>
+              <div class="so-meta"><div class="so-name">Studio pickup · Berlin</div><div class="so-eta">By appointment · 10963</div></div>
+              <div class="so-price">Free</div>
+            </label>
+          </div>
+
+          <div class="co-breakdown">
+            <div class="bd-row"><span>Subtotal</span><span class="co-val co-subtotal-val">€ 420</span></div>
+            <div class="bd-row co-line-ship"><span>Shipping</span><span class="co-val">€ 12</span></div>
+            <div class="bd-row sm co-line-maker"><span>→ to the maker</span><span class="co-val">€ 394.80</span></div>
+            <div class="bd-row sm co-line-commission"><span>→ village fee · 6%</span><span class="co-val">– € 25.20</span></div>
+            <div class="bd-row total"><span>You pay</span><span class="co-val co-total-val">€ 432</span></div>
+          </div>
+
+          <button class="co-cta" onclick="showToast('Demo · order placed'); setTimeout(closeCheckout, 900)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3 10h18M7 15h4"/></svg>
+            Pay with card · € 432
+          </button>
+          <div class="co-commission-note" style="text-align:center;margin-top:12px;">
+            Your card is charged by Clay Village, not by the maker. Refundable within 14 days of arrival.
+          </div>
+        </div>
+      </div>
+    </div>
+
   <div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
 
 <script>
@@ -3152,9 +4016,108 @@
     if ((e.key==='g'||e.key==='G') && !e.target.matches('input,textarea,select')) toggleGrid();
     if (e.key==='Escape') {
       closeBlockModal(); closeProduct();
+      closeCheckout();
       document.body.classList.remove('styles-open','layers-open');
     }
   });
+
+  /* ============ STALL STATE SYSTEM ============
+     Flip between empty / starter / full-customized stall previews.
+     In production this would be determined by the maker's actual content count. */
+  function setStallState(state) {
+    const b = document.body;
+    b.classList.remove('stall-empty', 'stall-starter', 'stall-full');
+    if (state === 'empty')   b.classList.add('stall-empty');
+    if (state === 'starter') b.classList.add('stall-starter');
+    // 'full' needs no class — default state
+
+    // Update toggle UI
+    document.querySelectorAll('.state-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.state === state);
+    });
+
+    // In starter mode, reset any nudges the user dismissed in a previous session
+    if (state === 'starter') {
+      document.querySelectorAll('.starter-nudge').forEach(n => { n.style.display = ''; });
+    }
+
+    // Friendly feedback
+    const msg = state === 'empty'
+      ? 'Empty stall · first-time onboarding'
+      : state === 'starter'
+      ? 'Starter stall · auto-generated from one piece'
+      : 'Full stall · fully customized';
+    showToast(msg);
+
+    // In empty state, scroll canvas to top so the onboarding is visible
+    const canvas = document.getElementById('canvas');
+    if (canvas && state === 'empty') canvas.scrollTop = 0;
+  }
+
+  /* When the user drops or selects a first image in the empty canvas,
+     preview it then flip to starter state after a short beat. */
+  function handleFirstUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const uploader = document.querySelector('.ec-uploader');
+      if (uploader) {
+        uploader.style.backgroundImage = 'url('+e.target.result+')';
+        uploader.style.backgroundSize = 'cover';
+        uploader.style.backgroundPosition = 'center';
+        uploader.style.borderStyle = 'solid';
+        uploader.style.borderColor = 'var(--gold)';
+        const lbls = uploader.querySelectorAll('.ec-up-icon, .ec-up-title, .ec-up-hint');
+        lbls.forEach(el => el.style.opacity = '0');
+      }
+      showToast('Photo added · continue to step 2 ↓');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ============ CHECKOUT MODAL ============
+     Village-owned checkout — payment flows through the village, not Stripe-at-source.
+     This makes the cut transparent and lets us show "of this, X goes to the maker." */
+  function openCheckout(opts) {
+    opts = opts || {};
+    const modal = document.getElementById('checkoutModal');
+    if (!modal) return;
+
+    // Populate piece data if passed
+    if (opts.title)  modal.querySelector('.co-piece-name').textContent = opts.title;
+    if (opts.no)     modal.querySelector('.co-piece-no').textContent = opts.no;
+    if (opts.price)  modal.querySelector('.co-subtotal-val').textContent = opts.price;
+    if (opts.image)  modal.querySelector('.co-piece-img').style.backgroundImage = 'url('+opts.image+')';
+
+    document.body.classList.add('modal-checkout');
+  }
+
+  function closeCheckout() {
+    document.body.classList.remove('modal-checkout');
+  }
+
+  /* Update shipping total when radio changes */
+  function onShipChange() {
+    const radio = document.querySelector('.co-ship-opt input[type="radio"]:checked');
+    if (!radio) return;
+    const price = parseFloat(radio.dataset.price || '0');
+    const shipCell = document.querySelector('.co-line-ship .co-val');
+    if (shipCell) shipCell.textContent = price === 0 ? 'Free' : '€ ' + price.toFixed(2);
+    recomputeTotal();
+  }
+  function recomputeTotal() {
+    const sub = parseFloat((document.querySelector('.co-subtotal-val').textContent||'0').replace(/[^\d.]/g,'')) || 0;
+    const ship = parseFloat((document.querySelector('.co-line-ship .co-val').textContent||'0').replace(/[^\d.]/g,'')) || 0;
+    const total = sub + ship;
+    document.querySelector('.co-total-val').textContent = '€ ' + total.toFixed(2);
+    // Village commission line — 6% of the subtotal, shown transparently
+    const commission = sub * 0.06;
+    const commEl = document.querySelector('.co-line-commission .co-val');
+    if (commEl) commEl.textContent = '– € ' + commission.toFixed(2);
+    const makerEl = document.querySelector('.co-line-maker .co-val');
+    if (makerEl) makerEl.textContent = '€ ' + (sub - commission).toFixed(2);
+  }
 </script>
 </body>
 </html>

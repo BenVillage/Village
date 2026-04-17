@@ -6088,6 +6088,10 @@ function toggleVillageSound() {
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11a1 1 0 0 0 1 1h5v-7h4v7h5a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/></svg></span>
       <span class="admin-nav-label">My Stall</span>
     </div>
+    <div class="admin-nav-item" data-panel="village-search" id="nav-village-search" title="Search — find pieces and makers across all villages">
+      <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <span class="admin-nav-label">Search</span>
+    </div>
     <div class="admin-nav-divider"></div>
     <div class="admin-nav-item" id="nav-signin" title="Sign In" style="display:none;">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span>
@@ -7605,6 +7609,17 @@ function toggleVillageSound() {
   </div>
   <div class="bld-body" style="padding:0;overflow:hidden;background:#fefcf7;">
     <iframe id="msb-iframe" title="Stall Builder" src="about:blank" style="display:block;width:100%;height:100%;border:0;background:#fefcf7;"></iframe>
+  </div>
+</div>
+
+<!-- Village Search — editorial search surface across all stalls. Content lives in village-search-mockup.html and is lazy-loaded into an iframe on first open. -->
+<div id="village-search" style="display:none;position:fixed;inset:0;z-index:9000;background:#faf6ed;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div class="bld-top">
+    <div class="bld-title-bar">Village Search <span style="color:#8e8e8e;font-weight:400;margin-left:6px;">· pieces + makers across villages</span></div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="bld-body" style="padding:0;overflow:hidden;background:#faf6ed;">
+    <iframe id="vs-iframe" title="Village Search" src="about:blank" style="display:block;width:100%;height:100%;border:0;background:#faf6ed;"></iframe>
   </div>
 </div>
 
@@ -23543,6 +23558,19 @@ navItems.forEach(item => {
       return;
     }
 
+    // Village Search — opens the search mockup in the WM. Iframe is lazy-loaded on first open.
+    if (panelName === 'village-search') {
+      if (bonfireChatOpen) closeBonfireChat();
+      closeAllFlyouts();
+      const iframe = document.getElementById('vs-iframe');
+      if (iframe && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href + 'about:blank')) {
+        iframe.src = 'village-search-mockup.html?embedded=1';
+      }
+      if (typeof window._wmOpen === 'function') window._wmOpen('village-search');
+      else document.getElementById('village-search').classList.add('wm-open');
+      return;
+    }
+
     // Messages uses openMailbox/closeMailbox
     if (panelName === 'messages') {
       const flyout = document.getElementById('flyout-messages');
@@ -28515,7 +28543,7 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   body.wm-mode #studio-quarter-overlay, body.wm-mode #library-overlay,
   body.wm-mode #gallery-overlay, body.wm-mode #bonfire-manifesto-overlay,
   body.wm-mode #exchange-overlay, body.wm-mode #school-overlay,
-  body.wm-mode #cafe-room-overlay, body.wm-mode #my-stall-builder {
+  body.wm-mode #cafe-room-overlay, body.wm-mode #my-stall-builder, body.wm-mode #village-search {
     inset:auto !important; position:fixed !important;
     border-radius:10px !important; overflow:hidden !important;
     box-shadow:0 12px 40px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.08) !important;
@@ -28527,7 +28555,7 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   body.wm-mode #gallery-overlay.wm-open, body.wm-mode #observatory-overlay.wm-open,
   body.wm-mode #school-overlay.wm-open, body.wm-mode #mentor-overlay.wm-open,
   body.wm-mode #exchange-overlay.wm-open, body.wm-mode #bonfire-manifesto-overlay.wm-open,
-  body.wm-mode #cafe-room-overlay.wm-open, body.wm-mode #my-stall-builder.wm-open { display:flex !important; }
+  body.wm-mode #cafe-room-overlay.wm-open, body.wm-mode #my-stall-builder.wm-open, body.wm-mode #village-search.wm-open { display:flex !important; }
   /* My Stall builder: the iframe fills the body and is light-cream */
   body.wm-mode #my-stall-builder { background:#fefcf7 !important; }
   body.wm-mode #my-stall-builder .bld-top {
@@ -28537,6 +28565,15 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   }
   body.wm-mode #my-stall-builder .bld-title-bar { color:#1c1713 !important; font-weight:500 !important; letter-spacing:.02em !important; }
   body.wm-mode #my-stall-builder .bld-body { padding:0 !important; overflow:hidden !important; background:#fefcf7 !important; }
+  /* Village Search: same cream palette as the stall builder, iframe fills body */
+  body.wm-mode #village-search { background:#faf6ed !important; }
+  body.wm-mode #village-search .bld-top {
+    background:linear-gradient(180deg,#f5ecd9,#eee0c2) !important;
+    border-bottom:1px solid #e3d9c0 !important;
+    color:#1c1713 !important;
+  }
+  body.wm-mode #village-search .bld-title-bar { color:#1c1713 !important; font-weight:500 !important; letter-spacing:.02em !important; }
+  body.wm-mode #village-search .bld-body { padding:0 !important; overflow:hidden !important; background:#faf6ed !important; }
   /* The WM's full-viewport drag cover (z-index 99999) already swallows pointer events
      over the iframe during drag/resize, so no manual guard needed here. */
   body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
@@ -28706,7 +28743,7 @@ body.wm-browser-fs #admin-panel:hover {
 (function() {
   document.body.classList.add('wm-mode');
   var _topZ = 9100;
-  var BLDG_IDS = ['studio-quarter-overlay','gallery-overlay','library-overlay','cafe-room-overlay','observatory-overlay','school-overlay','mentor-overlay','exchange-overlay','bonfire-manifesto-overlay','my-stall-builder'];
+  var BLDG_IDS = ['studio-quarter-overlay','gallery-overlay','library-overlay','cafe-room-overlay','observatory-overlay','school-overlay','mentor-overlay','exchange-overlay','bonfire-manifesto-overlay','my-stall-builder','village-search'];
   var _savedPos = {};
   var _preFullPos = {}; // pre-fullscreen positions — separate from _savedPos so _closeAll never clobbers them
   var _preSnapPos = {}; // pre-snap positions so dragging a snapped window restores it

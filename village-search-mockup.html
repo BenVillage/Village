@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Village Search · Clay Village</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=Noto+Sans+JP:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Same warm-instagram palette as the stall builder */
+    --cream: #faf6ed;
+    --cream-2: #f5ecd9;
+    --warm: #fff9ea;
+    --ink: #2a241c;
+    --ink-2: #3e372e;
+    --ink-3: #5a5044;
+    --muted: #8a7f6f;
+    --muted-2: #a89d87;
+    --line: rgba(28,23,19,.1);
+    --line-2: rgba(28,23,19,.18);
+    --gold: #b8914a;
+    --gold-2: #916a30;
+    --chrome-bg: #fdfaf2;
+    --chrome-2: rgba(28,23,19,.04);
+    --chrome-line: rgba(28,23,19,.09);
+    --chrome-mute: #8a7f6f;
+    --chrome-ink: #2a241c;
+    --chrome-ink-2: #3e372e;
+    --ink-2: #3e372e;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ============ STANDALONE-MODE VILLAGE BACKDROP ============
+     When viewed outside the host app, show a soft village backdrop.
+     Hidden in embedded mode so the host WM owns the chrome. */
+  .village-backdrop {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 25% 20%, rgba(184,145,74,.12), transparent 50%),
+      radial-gradient(circle at 80% 75%, rgba(122,95,56,.08), transparent 55%),
+      linear-gradient(180deg, #f2e7cd 0%, #e8dabc 60%, #d8c497 100%);
+    z-index: -1;
+  }
+
+  /* ============ WINDOW CHROME ============ */
+  .wm-window {
+    position: absolute;
+    left: 80px; top: 20px;
+    width: calc(100vw - 160px); height: calc(100vh - 40px);
+    background: var(--chrome-bg);
+    border-radius: 14px;
+    box-shadow: 0 30px 90px rgba(28,23,19,.35), 0 0 0 1px rgba(28,23,19,.12);
+    display: grid;
+    grid-template-rows: 28px 1fr;
+    overflow: hidden;
+  }
+  .wm-titlebar {
+    background: linear-gradient(180deg, #f5ecd9 0%, #eee0c2 100%);
+    border-bottom: 1px solid rgba(28,23,19,.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--ink-3);
+    letter-spacing: .02em;
+    position: relative;
+  }
+  .traffic {
+    position: absolute; left: 10px; top: 8px;
+    display: flex; gap: 7px;
+  }
+  .tl { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .tl-close { background: #ff5f57; }
+  .tl-min { background: #febc2e; }
+  .tl-zoom { background: #28c840; }
+
+  /* ============ SEARCH LAYOUT ============ */
+  .vs-root {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* LEFT: facet sidebar */
+  .vs-sidebar {
+    background: var(--warm);
+    border-right: 1px solid var(--chrome-line);
+    padding: 24px 22px;
+    overflow-y: auto;
+  }
+  .vs-sidebar-head {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: .3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .vs-facet {
+    margin-bottom: 22px;
+  }
+  .vs-facet h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--ink);
+    margin: 0 0 10px;
+  }
+  .vs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    background: #fff;
+    border: 1px solid var(--chrome-line);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--ink-3);
+    margin: 0 4px 6px 0;
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .vs-chip:hover { border-color: var(--gold); color: var(--gold-2); }
+  .vs-chip.active { background: var(--chrome-ink); color: #fff; border-color: var(--chrome-ink); }
+  .vs-chip .ct { opacity: .55; font-size: 10.5px; margin-left: 2px; }
+  .vs-chip.active .ct { opacity: .75; }
+  .vs-range {
+    display: flex; gap: 8px; align-items: center; margin-top: 4px;
+  }
+  .vs-range input {
+    width: 72px; padding: 7px 10px;
+    border: 1px solid var(--chrome-line);
+    border-radius: 7px;
+    font-size: 12px;
+    background: #fff;
+    outline: none;
+    font-family: inherit;
+  }
+  .vs-range input:focus { border-color: var(--gold); }
+  .vs-range span { color: var(--muted); font-size: 11px; }
+  .vs-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--ink-2);
+    border-bottom: 1px dashed var(--line);
+  }
+  .vs-toggle-row:last-child { border-bottom: 0; }
+  .vs-toggle {
+    width: 30px; height: 17px; border-radius: 999px;
+    background: var(--chrome-line); position: relative; cursor: pointer;
+    transition: background .15s;
+  }
+  .vs-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 13px; height: 13px; border-radius: 50%; background: #fff;
+    transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,.12);
+  }
+  .vs-toggle.on { background: var(--gold); }
+  .vs-toggle.on::after { transform: translateX(13px); }
+
+  /* RIGHT: results */
+  .vs-main {
+    overflow-y: auto;
+    background: var(--cream);
+  }
+
+  /* Search header */
+  .vs-header {
+    padding: 30px 40px 22px;
+    border-bottom: 1px solid var(--chrome-line);
+    background: var(--chrome-bg);
+    position: sticky; top: 0; z-index: 5;
+    backdrop-filter: blur(6px);
+  }
+  .vs-search-row {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .vs-search-box {
+    flex: 1;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px;
+    background: #fff;
+    border: 1px solid var(--chrome-line);
+    border-radius: 999px;
+    transition: all .15s;
+  }
+  .vs-search-box:focus-within { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(184,145,74,.12); }
+  .vs-search-box svg { width: 17px; height: 17px; color: var(--muted); flex-shrink: 0; }
+  .vs-search-input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .vs-search-input::placeholder { color: var(--muted-2); }
+  .vs-clear {
+    background: transparent; border: 0; color: var(--muted);
+    font-size: 13px; cursor: pointer; padding: 2px 6px;
+  }
+  .vs-clear:hover { color: var(--ink); }
+
+  .vs-tabs {
+    display: flex; gap: 4px; margin-top: 18px;
+    border-bottom: 1px solid var(--chrome-line);
+  }
+  .vs-tab {
+    background: transparent; border: 0;
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    position: relative;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all .15s;
+  }
+  .vs-tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--gold);
+    font-weight: 500;
+  }
+  .vs-tab .ct {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 10.5px;
+    background: var(--chrome-2);
+    padding: 1px 7px;
+    border-radius: 999px;
+    color: var(--muted);
+  }
+  .vs-tab.active .ct { background: rgba(184,145,74,.18); color: var(--gold-2); }
+
+  /* Curated collections strip */
+  .vs-collections {
+    padding: 24px 40px 10px;
+  }
+  .vs-col-label {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: .3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .vs-col-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .vs-col-card {
+    position: relative;
+    height: 96px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .vs-col-card:hover { transform: translateY(-2px); }
+  .vs-col-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(28,23,19,.65) 100%);
+  }
+  .vs-col-card .vs-col-body {
+    position: absolute; bottom: 10px; left: 14px; right: 14px;
+    color: #fff;
+    z-index: 2;
+  }
+  .vs-col-card .vs-col-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: .01em;
+  }
+  .vs-col-card .vs-col-count {
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: .8;
+    margin-top: 2px;
+  }
+  .vs-col-card.c1 { background: radial-gradient(ellipse 90% 80% at 30% 30%, #f4ede0 0%, #c4a57a 40%, #7a5c38 100%); }
+  .vs-col-card.c2 { background: radial-gradient(ellipse 90% 80% at 50% 40%, #e5ecd8 0%, #859075 40%, #2a4a3a 100%); }
+  .vs-col-card.c3 { background: radial-gradient(ellipse 90% 80% at 40% 60%, #f0e4d0 0%, #8a7a55 50%, #3e2e1c 100%); }
+  .vs-col-card.c4 { background: radial-gradient(ellipse 90% 80% at 60% 50%, #faf5eb 0%, #b8914a 45%, #5a3e1a 100%); }
+
+  /* Results meta bar */
+  .vs-meta {
+    padding: 18px 40px 6px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .vs-meta-l { font-family: 'Noto Sans JP', sans-serif; font-weight: 300; letter-spacing: .06em; }
+  .vs-meta-l b { color: var(--ink); font-weight: 600; font-family: 'Inter', sans-serif; }
+  .vs-sort {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px;
+  }
+  .vs-sort select {
+    background: transparent;
+    border: 0; border-bottom: 1px solid var(--line-2);
+    padding: 3px 14px 3px 4px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--ink-2);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%235a5044' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+  }
+
+  /* Grid of pieces */
+  .vs-grid {
+    padding: 16px 40px 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 18px;
+  }
+  .vs-card {
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .vs-card:hover { transform: translateY(-3px); }
+  .vs-card:hover .vs-card-img::after { opacity: 1; }
+  .vs-card-img {
+    aspect-ratio: 4/5;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .vs-card-img::after {
+    content: '';
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 0 1px rgba(184,145,74,.4);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  .vs-card-img.vp1 { background: radial-gradient(ellipse 70% 60% at 50% 50%, #f4ede0 0%, #c4a57a 40%, #5a3e1a 100%); }
+  .vs-card-img.vp2 { background: radial-gradient(ellipse 60% 75% at 50% 50%, #f8efd9 0%, #a88956 45%, #4a321a 100%); }
+  .vs-card-img.vp3 { background: radial-gradient(ellipse 75% 60% at 50% 50%, #e5ecd8 0%, #859075 45%, #3e524a 100%); }
+  .vs-card-img.vp4 { background: radial-gradient(ellipse 65% 70% at 50% 50%, #f0e4d0 0%, #8a7a55 50%, #3e2e1c 100%); }
+  .vs-card-img.vp5 { background: radial-gradient(ellipse 55% 80% at 50% 50%, #faf5eb 0%, #b8914a 45%, #5a3e1a 100%); }
+  .vs-card-img.vp6 { background: radial-gradient(ellipse 78% 55% at 50% 50%, #f0e8d5 0%, #7a6a4a 50%, #2e2418 100%); }
+  .vs-card-img.vp7 { background: radial-gradient(ellipse 72% 62% at 50% 50%, #e8dabc 0%, #6a5a3a 50%, #2e2418 100%); }
+  .vs-card-img.vp8 { background: radial-gradient(ellipse 62% 72% at 50% 50%, #f2e6cd 0%, #8a6a3a 45%, #4a321a 100%); }
+
+  .vs-card-badges {
+    position: absolute; top: 8px; left: 8px;
+    display: flex; gap: 5px;
+  }
+  .vs-badge {
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(28,23,19,.7);
+    backdrop-filter: blur(4px);
+  }
+  .vs-badge.gold { background: rgba(184,145,74,.9); }
+  .vs-badge.new { background: rgba(122,143,95,.9); }
+
+  .vs-card-no {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: .22em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .vs-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .vs-card-maker {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .vs-card-maker a {
+    color: var(--ink-3);
+    text-decoration: underline;
+    text-decoration-color: var(--line-2);
+    text-underline-offset: 2px;
+  }
+  .vs-card-maker a:hover { color: var(--gold-2); text-decoration-color: var(--gold); }
+  .vs-card-price {
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 500;
+    display: flex; justify-content: space-between;
+    align-items: center;
+  }
+  .vs-card-geo {
+    font-size: 10.5px;
+    color: var(--muted);
+    letter-spacing: .05em;
+  }
+
+  /* ============ MAKERS VIEW ============ */
+  .vs-makers {
+    padding: 18px 40px 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .vs-maker-card {
+    background: #fff;
+    border: 1px solid var(--chrome-line);
+    border-radius: 14px;
+    padding: 22px 22px 20px;
+    cursor: pointer;
+    transition: all .15s;
+    display: none;
+  }
+  body.tab-makers .vs-maker-card { display: block; }
+  body.tab-makers .vs-grid,
+  body.tab-makers .vs-collections,
+  body.tab-makers .vs-meta { display: none; }
+  body.tab-pieces .vs-makers { display: none; }
+  .vs-maker-card:hover { border-color: var(--gold); box-shadow: 0 8px 30px rgba(184,145,74,.12); }
+  .vs-maker-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .vs-maker-avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: var(--gold); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .vs-maker-body h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 20px;
+    margin: 0 0 2px;
+    color: var(--ink);
+  }
+  .vs-maker-geo {
+    font-size: 11px;
+    letter-spacing: .08em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .vs-maker-desc {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+  }
+  .vs-maker-pieces {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .vs-mp-thumb {
+    aspect-ratio: 1;
+    border-radius: 6px;
+  }
+  .vs-maker-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--muted);
+    padding-top: 12px;
+    border-top: 1px solid var(--chrome-line);
+  }
+  .vs-maker-meta b { color: var(--ink-2); font-weight: 600; }
+
+  /* ============ EMBEDDED MODE ============ */
+  body.embedded .village-backdrop,
+  body.embedded .wm-titlebar { display: none !important; }
+  body.embedded .wm-window {
+    position: absolute !important;
+    inset: 0 !important;
+    left: 0 !important; top: 0 !important;
+    width: 100% !important; height: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    grid-template-rows: 1fr !important;
+  }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed;
+    bottom: 26px; left: 50%;
+    transform: translate(-50%, 8px);
+    background: var(--chrome-ink); color: #fff;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: .04em;
+    opacity: 0;
+    transition: all .22s;
+    pointer-events: none;
+    z-index: 200;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+  /* Narrow adjustments */
+  @media (max-width: 1100px) {
+    .vs-grid, .vs-makers, .vs-col-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .vs-root { grid-template-columns: 240px 1fr; }
+    .vs-grid, .vs-makers { grid-template-columns: repeat(2, 1fr); }
+    .vs-col-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body class="tab-pieces">
+
+  <div class="village-backdrop"></div>
+
+  <div class="wm-window" id="wm">
+    <div class="wm-titlebar">
+      <div class="traffic">
+        <span class="tl tl-close"></span>
+        <span class="tl tl-min"></span>
+        <span class="tl tl-zoom"></span>
+      </div>
+      <span>Village Search · Clay Village</span>
+    </div>
+
+    <div class="vs-root">
+      <!-- ============ SIDEBAR: FACETS ============ -->
+      <aside class="vs-sidebar">
+        <div class="vs-sidebar-head">Filter</div>
+
+        <div class="vs-facet">
+          <h4>Medium</h4>
+          <div>
+            <button class="vs-chip active">All<span class="ct">342</span></button>
+            <button class="vs-chip">Stoneware<span class="ct">186</span></button>
+            <button class="vs-chip">Porcelain<span class="ct">94</span></button>
+            <button class="vs-chip">Earthenware<span class="ct">38</span></button>
+            <button class="vs-chip">Raku<span class="ct">24</span></button>
+          </div>
+        </div>
+
+        <div class="vs-facet">
+          <h4>Form</h4>
+          <div>
+            <button class="vs-chip">Vessels<span class="ct">128</span></button>
+            <button class="vs-chip">Cups &amp; Bowls<span class="ct">92</span></button>
+            <button class="vs-chip">Plates<span class="ct">47</span></button>
+            <button class="vs-chip">Moonjars<span class="ct">29</span></button>
+            <button class="vs-chip">Sculpture<span class="ct">18</span></button>
+          </div>
+        </div>
+
+        <div class="vs-facet">
+          <h4>Price</h4>
+          <div class="vs-range">
+            <input type="text" value="€ 0"/>
+            <span>to</span>
+            <input type="text" value="€ 1000+"/>
+          </div>
+        </div>
+
+        <div class="vs-facet">
+          <h4>Maker location</h4>
+          <div>
+            <button class="vs-chip">Berlin<span class="ct">14</span></button>
+            <button class="vs-chip">Kyoto<span class="ct">9</span></button>
+            <button class="vs-chip">Copenhagen<span class="ct">7</span></button>
+            <button class="vs-chip">Lisbon<span class="ct">5</span></button>
+            <button class="vs-chip">Brooklyn<span class="ct">4</span></button>
+          </div>
+        </div>
+
+        <div class="vs-facet">
+          <h4>Preferences</h4>
+          <div class="vs-toggle-row">
+            <span>One-of-one only</span>
+            <div class="vs-toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="vs-toggle-row">
+            <span>Ships worldwide</span>
+            <div class="vs-toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="vs-toggle-row">
+            <span>Just out of the kiln</span>
+            <div class="vs-toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="vs-toggle-row">
+            <span>In stock</span>
+            <div class="vs-toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ============ MAIN: RESULTS ============ -->
+      <main class="vs-main">
+        <div class="vs-header">
+          <div class="vs-search-row">
+            <div class="vs-search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.4-4.4"/></svg>
+              <input class="vs-search-input" type="text" placeholder="Search pots, bowls, makers, or a word like 'ash glaze'…" value=""/>
+              <button class="vs-clear" onclick="this.previousElementSibling.value=''; this.previousElementSibling.focus()">Clear</button>
+            </div>
+          </div>
+          <div class="vs-tabs">
+            <button class="vs-tab active" data-tab="pieces" onclick="setTab('pieces')">Pieces <span class="ct">342</span></button>
+            <button class="vs-tab" data-tab="makers" onclick="setTab('makers')">Makers <span class="ct">47</span></button>
+            <button class="vs-tab" data-tab="journal" onclick="setTab('journal')">Journal <span class="ct">120</span></button>
+            <button class="vs-tab" data-tab="villages" onclick="setTab('villages')">Villages <span class="ct">12</span></button>
+          </div>
+        </div>
+
+        <!-- CURATED COLLECTIONS -->
+        <div class="vs-collections">
+          <div class="vs-col-label">Editorially curated · updated weekly</div>
+          <div class="vs-col-row">
+            <div class="vs-col-card c1" onclick="showToast('Opening: Just out of the kiln')">
+              <div class="vs-col-body">
+                <div class="vs-col-title">Just out of the kiln</div>
+                <div class="vs-col-count">18 pieces · this week</div>
+              </div>
+            </div>
+            <div class="vs-col-card c2" onclick="showToast('Opening: Under €100')">
+              <div class="vs-col-body">
+                <div class="vs-col-title">Under €100</div>
+                <div class="vs-col-count">62 pieces · everyday</div>
+              </div>
+            </div>
+            <div class="vs-col-card c3" onclick="showToast('Opening: One-of-one vessels')">
+              <div class="vs-col-body">
+                <div class="vs-col-title">One-of-one vessels</div>
+                <div class="vs-col-count">94 pieces · no reprints</div>
+              </div>
+            </div>
+            <div class="vs-col-card c4" onclick="showToast('Opening: New voices · Spring 2026')">
+              <div class="vs-col-body">
+                <div class="vs-col-title">New voices</div>
+                <div class="vs-col-count">12 makers · spring '26</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- META + SORT -->
+        <div class="vs-meta">
+          <div class="vs-meta-l"><b>342</b> pieces · from <b>47</b> makers in <b>12</b> villages</div>
+          <div class="vs-sort">
+            <span>Sort</span>
+            <select>
+              <option>Most recent firing</option>
+              <option>Price · low to high</option>
+              <option>Price · high to low</option>
+              <option>Village-picked</option>
+              <option>Closest to me</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PIECES GRID -->
+        <div class="vs-grid">
+          <div class="vs-card" onclick="showToast('Opening piece · Moonjar No. 39')">
+            <div class="vs-card-img vp1"><div class="vs-card-badges"><span class="vs-badge new">Kiln · 3d</span><span class="vs-badge gold">1 of 1</span></div></div>
+            <div class="vs-card-no">No. 039 · Moonjar</div>
+            <div class="vs-card-name">Moonjar No. 39</div>
+            <div class="vs-card-maker">by <a>anotherclay</a> · Berlin</div>
+            <div class="vs-card-price"><span>€ 420</span><span class="vs-card-geo">ships EU · €12</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Tall Gourd Vase')">
+            <div class="vs-card-img vp2"><div class="vs-card-badges"><span class="vs-badge gold">1 of 1</span></div></div>
+            <div class="vs-card-no">No. 056 · Gourd</div>
+            <div class="vs-card-name">Tall Gourd Vase No. 56</div>
+            <div class="vs-card-maker">by <a>anotherclay</a> · Berlin</div>
+            <div class="vs-card-price"><span>€ 750</span><span class="vs-card-geo">ships EU · €12</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Ash Teabowl')">
+            <div class="vs-card-img vp3"><div class="vs-card-badges"><span class="vs-badge new">Kiln · 5d</span></div></div>
+            <div class="vs-card-no">No. 012 · Teabowl</div>
+            <div class="vs-card-name">Ash Teabowl · set of four</div>
+            <div class="vs-card-maker">by <a>kiln-smoke</a> · Copenhagen</div>
+            <div class="vs-card-price"><span>€ 240</span><span class="vs-card-geo">ships worldwide</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Porcelain Plate')">
+            <div class="vs-card-img vp4"><div class="vs-card-badges"><span class="vs-badge gold">1 of 1</span></div></div>
+            <div class="vs-card-no">No. 089 · Plate</div>
+            <div class="vs-card-name">Porcelain Dinner Plate</div>
+            <div class="vs-card-maker">by <a>kumonoue</a> · Kyoto</div>
+            <div class="vs-card-price"><span>€ 180</span><span class="vs-card-geo">from Japan</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Pale Moonjar')">
+            <div class="vs-card-img vp5"><div class="vs-card-badges"><span class="vs-badge gold">1 of 1</span></div></div>
+            <div class="vs-card-no">No. 041 · Moonjar</div>
+            <div class="vs-card-name">Pale Moonjar No. 41</div>
+            <div class="vs-card-maker">by <a>anotherclay</a> · Berlin</div>
+            <div class="vs-card-price"><span>€ 520</span><span class="vs-card-geo">ships EU · €12</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Long-Neck Vase')">
+            <div class="vs-card-img vp6"><div class="vs-card-badges"><span class="vs-badge new">Kiln · 1w</span></div></div>
+            <div class="vs-card-no">No. 058 · Vase</div>
+            <div class="vs-card-name">Long-Neck Vase</div>
+            <div class="vs-card-maker">by <a>anotherclay</a> · Berlin</div>
+            <div class="vs-card-price"><span>€ 680</span><span class="vs-card-geo">ships EU · €12</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Breakfast Cup')">
+            <div class="vs-card-img vp7"></div>
+            <div class="vs-card-no">No. 063 · Cup</div>
+            <div class="vs-card-name">Breakfast Cup</div>
+            <div class="vs-card-maker">by <a>anotherclay</a> · Berlin</div>
+            <div class="vs-card-price"><span>€ 320</span><span class="vs-card-geo">ships EU · €12</span></div>
+          </div>
+          <div class="vs-card" onclick="showToast('Opening piece · Garlic Pot')">
+            <div class="vs-card-img vp8"><div class="vs-card-badges"><span class="vs-badge">Small batch</span></div></div>
+            <div class="vs-card-no">No. 102 · Jar</div>
+            <div class="vs-card-name">Garlic Pot</div>
+            <div class="vs-card-maker">by <a>terra-oliveira</a> · Lisbon</div>
+            <div class="vs-card-price"><span>€ 95</span><span class="vs-card-geo">ships EU · €14</span></div>
+          </div>
+        </div>
+
+        <!-- MAKERS VIEW (shown when tab-makers) -->
+        <div class="vs-makers">
+          <div class="vs-maker-card" onclick="showToast('Opening maker · anotherclay')">
+            <div class="vs-maker-head">
+              <div class="vs-maker-avatar">a</div>
+              <div class="vs-maker-body">
+                <h3>anotherclay</h3>
+                <div class="vs-maker-geo">Berlin · since 2024</div>
+              </div>
+            </div>
+            <p class="vs-maker-desc">Hand-thrown vessels from a small studio in Berlin, fired once a month in a gas kiln.</p>
+            <div class="vs-maker-pieces">
+              <div class="vs-mp-thumb vs-card-img vp1"></div>
+              <div class="vs-mp-thumb vs-card-img vp2"></div>
+              <div class="vs-mp-thumb vs-card-img vp5"></div>
+            </div>
+            <div class="vs-maker-meta">
+              <span><b>24</b> pieces live</span>
+              <span>Next firing · May 8</span>
+            </div>
+          </div>
+          <div class="vs-maker-card" onclick="showToast('Opening maker · kumonoue')">
+            <div class="vs-maker-head">
+              <div class="vs-maker-avatar" style="background:#d9cdaf">k</div>
+              <div class="vs-maker-body">
+                <h3>kumonoue</h3>
+                <div class="vs-maker-geo">Kyoto · since 2023</div>
+              </div>
+            </div>
+            <p class="vs-maker-desc">Porcelain plates and serving ware. Third-generation potter, trained in Seto, based in Kyoto.</p>
+            <div class="vs-maker-pieces">
+              <div class="vs-mp-thumb vs-card-img vp4"></div>
+              <div class="vs-mp-thumb vs-card-img vp6"></div>
+              <div class="vs-mp-thumb vs-card-img vp7"></div>
+            </div>
+            <div class="vs-maker-meta">
+              <span><b>18</b> pieces live</span>
+              <span>Ships from Japan</span>
+            </div>
+          </div>
+          <div class="vs-maker-card" onclick="showToast('Opening maker · kiln-smoke')">
+            <div class="vs-maker-head">
+              <div class="vs-maker-avatar" style="background:#b8d0b8">k</div>
+              <div class="vs-maker-body">
+                <h3>kiln-smoke</h3>
+                <div class="vs-maker-geo">Copenhagen · since 2025</div>
+              </div>
+            </div>
+            <p class="vs-maker-desc">Ash-glazed teabowls and everyday stoneware. Noborigama firings, twice a year.</p>
+            <div class="vs-maker-pieces">
+              <div class="vs-mp-thumb vs-card-img vp3"></div>
+              <div class="vs-mp-thumb vs-card-img vp6"></div>
+              <div class="vs-mp-thumb vs-card-img vp8"></div>
+            </div>
+            <div class="vs-maker-meta">
+              <span><b>9</b> pieces live</span>
+              <span>Next firing · June</span>
+            </div>
+          </div>
+          <div class="vs-maker-card" onclick="showToast('Opening maker · terra-oliveira')">
+            <div class="vs-maker-head">
+              <div class="vs-maker-avatar" style="background:#e0bfa0">t</div>
+              <div class="vs-maker-body">
+                <h3>terra-oliveira</h3>
+                <div class="vs-maker-geo">Lisbon · since 2024</div>
+              </div>
+            </div>
+            <p class="vs-maker-desc">Earthenware kitchen objects — garlic pots, butter bells, yogurt jars. Rustic, Portuguese terracotta.</p>
+            <div class="vs-maker-pieces">
+              <div class="vs-mp-thumb vs-card-img vp8"></div>
+              <div class="vs-mp-thumb vs-card-img vp5"></div>
+              <div class="vs-mp-thumb vs-card-img vp2"></div>
+            </div>
+            <div class="vs-maker-meta">
+              <span><b>14</b> pieces live</span>
+              <span>Ships Europe only</span>
+            </div>
+          </div>
+          <div class="vs-maker-card" onclick="showToast('Opening maker · noko-studio')">
+            <div class="vs-maker-head">
+              <div class="vs-maker-avatar" style="background:#c8b8d8">n</div>
+              <div class="vs-maker-body">
+                <h3>noko-studio</h3>
+                <div class="vs-maker-geo">Brooklyn · since 2022</div>
+              </div>
+            </div>
+            <p class="vs-maker-desc">Raku sculpture and vessels. Large-scale work for gardens and interiors. Commission-based.</p>
+            <div class="vs-maker-pieces">
+              <div class="vs-mp-thumb vs-card-img vp1"></div>
+              <div class="vs-mp-thumb vs-card-img vp3"></div>
+              <div class="vs-mp-thumb vs-card-img vp7"></div>
+            </div>
+            <div class="vs-maker-meta">
+              <span><b>6</b> pieces live</span>
+              <span>Commissions open</span>
+            </div>
+          </div>
+          <div class="vs-maker-card" onclick="showToast('Opening maker · slow-hands')">
+            <div class="vs-maker-head">
+              <div class="vs-maker-avatar" style="background:#d0c8a0">s</div>
+              <div class="vs-maker-body">
+                <h3>slow-hands</h3>
+                <div class="vs-maker-geo">Amsterdam · since 2023</div>
+              </div>
+            </div>
+            <p class="vs-maker-desc">Soda-fired stoneware. Dinnerware sets and tea accessories. Restaurants welcome.</p>
+            <div class="vs-maker-pieces">
+              <div class="vs-mp-thumb vs-card-img vp2"></div>
+              <div class="vs-mp-thumb vs-card-img vp4"></div>
+              <div class="vs-mp-thumb vs-card-img vp6"></div>
+            </div>
+            <div class="vs-maker-meta">
+              <span><b>22</b> pieces live</span>
+              <span>Next firing · May 22</span>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Saved</span></div>
+
+<script>
+  // Embedded-mode detection — mirrors the pattern used in stall-builder-mockup.html
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var isEmbedded = params.get('embedded') === '1' || window.top !== window.self;
+    if (isEmbedded) {
+      if (document.body) document.body.classList.add('embedded');
+      else document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('embedded'); });
+      window.__VS_EMBEDDED__ = true;
+    }
+  })();
+
+  function setTab(tab) {
+    document.body.classList.remove('tab-pieces', 'tab-makers', 'tab-journal', 'tab-villages');
+    document.body.classList.add('tab-' + tab);
+    document.querySelectorAll('.vs-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    if (tab === 'journal' || tab === 'villages') showToast('Coming soon · ' + tab);
+  }
+
+  // Chip filter interaction
+  document.querySelectorAll('.vs-chip').forEach(c => {
+    c.addEventListener('click', function(e) {
+      if (this.classList.contains('active')) { this.classList.remove('active'); return; }
+      // In each facet, 'All' is mutually exclusive with others
+      const facet = this.closest('.vs-facet');
+      if (this.textContent.trim().startsWith('All')) {
+        facet.querySelectorAll('.vs-chip').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
+      } else {
+        const all = facet.querySelector('.vs-chip');
+        if (all && all.textContent.trim().startsWith('All')) all.classList.remove('active');
+        this.classList.add('active');
+      }
+    });
+  });
+
+  // Toast
+  let toastT;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+</script>
+</body>
+</html>
