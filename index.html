@@ -7735,6 +7735,126 @@ function toggleVillageSound() {
   </div>
 </div>
 
+<!-- ============ STALL TEMPLATE CAROUSEL ============
+     Opens after onboarding finishes, or from a "Change template" button in the editor.
+     Five tiles, each showing a schematic preview of a layout. Clicking one saves
+     stall_template to village_members and opens the editor rendered in that style.
+     Template #1 = the hand-made editor; templates #2-5 are new layouts. -->
+<div id="stall-template-carousel" style="display:none;position:fixed;inset:0;z-index:9400;background:rgba(20,14,6,0.58);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;">
+  <div style="background:#fefcf7;border-radius:16px;max-width:1040px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.3);padding:40px 44px 36px;position:relative;">
+    <button id="tc-close-btn" type="button" title="Close" style="display:none;position:absolute;top:18px;right:20px;background:none;border:none;font-size:24px;color:#8e8e8e;cursor:pointer;padding:6px 10px;line-height:1;">×</button>
+
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:8px;">Template</div>
+      <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:500;color:#1c1713;margin:0 0 6px;letter-spacing:-0.01em;">Choose how your stall looks</h2>
+      <p style="color:#6a5d4a;font-size:14px;line-height:1.6;margin:0;max-width:540px;margin-left:auto;margin-right:auto;">Your content stays the same. You can switch any time.</p>
+    </div>
+
+    <div id="tc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;">
+      <!-- Tile: Hand-made -->
+      <div class="tc-tile" data-template="handmade" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
+        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
+          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
+            <rect x="0" y="0" width="200" height="18" fill="#e4d6ad"/>
+            <rect x="10" y="6" width="40" height="6" rx="1" fill="#b8914a"/>
+            <rect x="120" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
+            <rect x="138" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
+            <rect x="156" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
+            <rect x="174" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
+            <rect x="10" y="28" width="180" height="50" rx="4" fill="#d4c28e"/>
+            <rect x="10" y="86" width="54" height="54" rx="3" fill="#e4d6ad"/>
+            <rect x="70" y="86" width="54" height="54" rx="3" fill="#e4d6ad"/>
+            <rect x="130" y="86" width="54" height="54" rx="3" fill="#e4d6ad"/>
+          </svg>
+        </div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Hand-made</div>
+        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Build page by page. Full control over every block.</div>
+        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
+      </div>
+
+      <!-- Tile: Minimal Grid -->
+      <div class="tc-tile" data-template="grid" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
+        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
+            <rect x="14" y="10" width="80" height="10" rx="1" fill="#1c1713"/>
+            <rect x="14" y="24" width="50" height="4" rx="1" fill="#8e8e8e"/>
+            <rect x="14" y="40" width="54" height="54" rx="2" fill="#d4c28e"/>
+            <rect x="74" y="40" width="54" height="54" rx="2" fill="#e4d6ad"/>
+            <rect x="134" y="40" width="54" height="54" rx="2" fill="#d4c28e"/>
+            <rect x="14" y="100" width="54" height="34" rx="2" fill="#e4d6ad"/>
+            <rect x="74" y="100" width="54" height="34" rx="2" fill="#d4c28e"/>
+            <rect x="134" y="100" width="54" height="34" rx="2" fill="#e4d6ad"/>
+          </svg>
+        </div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Minimal Grid</div>
+        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Your work, large, center-stage. No distraction.</div>
+        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
+      </div>
+
+      <!-- Tile: Magazine -->
+      <div class="tc-tile" data-template="magazine" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
+        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
+            <rect x="0" y="0" width="200" height="60" fill="#d4c28e"/>
+            <rect x="60" y="22" width="80" height="8" rx="1" fill="#fefcf7"/>
+            <rect x="70" y="36" width="60" height="4" rx="1" fill="#fefcf7" opacity="0.8"/>
+            <rect x="14" y="72" width="78" height="4" rx="1" fill="#1c1713"/>
+            <rect x="14" y="82" width="78" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="14" y="89" width="78" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="14" y="96" width="60" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="100" y="72" width="86" height="60" rx="2" fill="#e4d6ad"/>
+            <rect x="14" y="110" width="30" height="22" rx="1" fill="#e4d6ad"/>
+            <rect x="48" y="110" width="30" height="22" rx="1" fill="#e4d6ad"/>
+          </svg>
+        </div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Magazine</div>
+        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">For storytellers. Intro, essay, and a gallery below.</div>
+        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
+      </div>
+
+      <!-- Tile: Journal -->
+      <div class="tc-tile" data-template="journal" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
+        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
+            <rect x="50" y="10" width="100" height="8" rx="1" fill="#1c1713"/>
+            <rect x="70" y="22" width="60" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="36" width="120" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="42" width="120" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="48" width="90" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="60" width="120" height="28" rx="2" fill="#e4d6ad"/>
+            <rect x="40" y="96" width="120" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="102" width="120" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="108" width="80" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="40" y="120" width="60" height="14" rx="2" fill="#d4c28e"/>
+          </svg>
+        </div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Journal</div>
+        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Linear, reflective. Reads like a diary or essay.</div>
+        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
+      </div>
+
+      <!-- Tile: Tall Mobile -->
+      <div class="tc-tile" data-template="tall-mobile" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
+        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
+            <rect x="70" y="12" width="60" height="126" rx="8" fill="#1c1713"/>
+            <rect x="76" y="18" width="48" height="114" rx="4" fill="#faf6ed"/>
+            <circle cx="100" cy="34" r="10" fill="#d4c28e"/>
+            <rect x="88" y="50" width="24" height="4" rx="1" fill="#1c1713"/>
+            <rect x="82" y="60" width="36" height="3" rx="1" fill="#8e8e8e"/>
+            <rect x="82" y="70" width="36" height="16" rx="2" fill="#e4d6ad"/>
+            <rect x="82" y="90" width="36" height="16" rx="2" fill="#d4c28e"/>
+            <rect x="82" y="110" width="36" height="16" rx="2" fill="#e4d6ad"/>
+          </svg>
+        </div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Tall Mobile</div>
+        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Phone-first. Single column of blocks, vertical flow.</div>
+        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="cm-toast" id="cm-toast"></div>
 <div id="vault-overlay">
   <button class="vlt-close" id="vault-close">CLOSE</button>
@@ -30214,6 +30334,80 @@ body.wm-browser-fs #admin-panel:hover {
   };
 
   window.closeStallOnboarding = function() { OB.style.display = 'none'; };
+})();
+</script>
+
+<!-- ============ STALL TEMPLATE CAROUSEL — wiring ============ -->
+<script>
+(function() {
+  var TC = document.getElementById('stall-template-carousel');
+  if (!TC) return;
+
+  var $closeBtn = document.getElementById('tc-close-btn');
+  var $tiles = TC.querySelectorAll('.tc-tile');
+
+  // Hover shimmer
+  $tiles.forEach(function(t) {
+    t.addEventListener('mouseenter', function() {
+      t.style.transform = 'translateY(-3px)';
+      t.style.boxShadow = '0 8px 24px rgba(184,145,74,0.18)';
+      t.style.borderColor = '#b8914a';
+    });
+    t.addEventListener('mouseleave', function() {
+      t.style.transform = '';
+      t.style.boxShadow = '';
+      t.style.borderColor = '#e4d6ad';
+    });
+
+    t.addEventListener('click', function() {
+      var tpl = t.dataset.template;
+      if (!tpl) return;
+      chooseTemplate(tpl);
+    });
+  });
+
+  function chooseTemplate(tpl) {
+    if (!window._supabase) { openTemplate(tpl); return; }
+    var uid = window._sbAuthUid;
+    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+    if (!uid || !vid) { openTemplate(tpl); return; }
+
+    // Optimistic: close carousel + render, save in the background
+    openTemplate(tpl);
+
+    window._supabase.from('village_members').update({ stall_template: tpl })
+      .eq('auth_id', uid).eq('village_id', vid)
+      .then(function(r) {
+        if (r.error) console.warn('[Template save]', r.error.message);
+      });
+  }
+
+  function openTemplate(tpl) {
+    TC.style.display = 'none';
+    // Template #1 (handmade) always goes to the existing Gallery/Market stall editor.
+    // Templates #2-5 will each route to their own renderer once those land;
+    // until then we fall through to the editor so content still renders.
+    if (typeof window.openStallTemplate === 'function') {
+      window.openStallTemplate(tpl);
+    } else {
+      document.body.classList.add('stall-focus');
+      if (typeof window.openGallery === 'function') window.openGallery();
+      setTimeout(function() {
+        var tab = document.querySelector('.gal-tab[data-tab="stall"]');
+        if (tab) tab.click();
+      }, 30);
+    }
+  }
+
+  if ($closeBtn) $closeBtn.addEventListener('click', function() { TC.style.display = 'none'; });
+
+  // Public API
+  window.openStallTemplateCarousel = function(opts) {
+    opts = opts || {};
+    // Show close button only when maker is already onboarded (otherwise onboarding forces a choice).
+    $closeBtn.style.display = opts.dismissable ? 'block' : 'none';
+    TC.style.display = 'flex';
+  };
 })();
 </script>
 
