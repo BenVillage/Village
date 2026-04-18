@@ -7122,10 +7122,11 @@ function toggleVillageSound() {
   </div>
   <div class="presence-strip" id="gallery-presence-strip"></div>
   <div class="bld-body" style="display:flex;flex-direction:column;min-height:0;">
-    <div id="gal-tab-bar" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;padding:0 24px;flex-shrink:0;">
+    <div id="gal-tab-bar" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;padding:0 24px;flex-shrink:0;align-items:center;">
       <button class="gal-tab active" data-tab="gallery" style="padding:10px 20px;font-size:12px;font-weight:600;color:#c8a84b;cursor:pointer;border:none;background:none;border-bottom:2px solid #c8a84b;font-family:inherit;">Gallery</button>
       <button class="gal-tab" data-tab="market" style="padding:10px 20px;font-size:12px;font-weight:600;color:#8e8e8e;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;">Market</button>
       <button class="gal-tab" data-tab="stall" style="padding:10px 20px;font-size:12px;font-weight:600;color:#8e8e8e;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;">My Stall</button>
+      <button id="ms-preview-btn" style="display:none;margin-left:auto;background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;line-height:1.4;">Preview</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:24px;">
       <!-- Gallery tab: random showcase -->
@@ -7176,12 +7177,6 @@ function toggleVillageSound() {
       </div>
       <!-- My Stall tab — website template -->
       <div id="gal-panel-stall" style="display:none;position:relative;">
-        <!-- Mode bar: Preview toggle (left-aligned, auto-saves on preview) -->
-        <div style="display:flex;align-items:center;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
-          <div style="display:flex;gap:6px;align-items:center;">
-            <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview</button>
-          </div>
-        </div>
         <!-- Nav settings panel — draggable floating panel, moved to body on open -->
         <div id="ms-nav-settings-panel" style="display:none;position:fixed;top:120px;right:20px;z-index:999990;background:rgba(255,255,255,0.18);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border:1px solid rgba(255,255,255,0.35);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:0 14px 14px;min-width:220px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
           <div id="ms-ns-drag" style="cursor:grab;padding:10px 0 8px;display:flex;align-items:center;justify-content:space-between;color:#999;user-select:none;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:10px;">
@@ -18933,6 +18928,8 @@ Mura facilitates. People decide.`;
       document.getElementById('gal-panel-market').style.display  = _activeGalTab === 'market'  ? '' : 'none';
       document.getElementById('gal-panel-add').style.display     = _activeGalTab === 'add'     ? '' : 'none';
       document.getElementById('gal-panel-stall').style.display   = _activeGalTab === 'stall'   ? '' : 'none';
+      var _prevBtnTab = document.getElementById('ms-preview-btn');
+      if (_prevBtnTab) _prevBtnTab.style.display = _activeGalTab === 'stall' ? '' : 'none';
       // When switching away from stall, reset shop panel and restore ig-section
       var _shopP = document.getElementById('gal-panel-shop');
       if (_shopP) _shopP.style.display = 'none';
@@ -31167,11 +31164,16 @@ body.wm-browser-fs #admin-panel:hover {
   // The stall hero/nav stays visible on both pages — we just swap the body content.
   window.openStallShop = function() {
     _closeDrawer();
-    var igSection = document.getElementById('ms-ig-section');
-    var shop      = document.getElementById('gal-panel-shop');
+    var igSection  = document.getElementById('ms-ig-section');
+    var shop       = document.getElementById('gal-panel-shop');
+    var stallPanel = document.getElementById('gal-panel-stall');
     // Keep stall panel visible (so hero + nav shows); hide the home body
     if (igSection) igSection.style.display = 'none';
     if (shop)      shop.style.display = '';
+    // Lock header editing — header is only editable from the home page
+    if (stallPanel) stallPanel.querySelectorAll('[contenteditable]').forEach(function(el) {
+      el.contentEditable = 'false';
+    });
     // Inherit preview state
     window._applyShopMode(window._stallInPreview !== false);
     $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading…</div>';
@@ -31180,10 +31182,17 @@ body.wm-browser-fs #admin-panel:hover {
 
   window.openStallHome = function() {
     _closeDrawer();
-    var igSection = document.getElementById('ms-ig-section');
-    var shop      = document.getElementById('gal-panel-shop');
+    var igSection  = document.getElementById('ms-ig-section');
+    var shop       = document.getElementById('gal-panel-shop');
+    var stallPanel = document.getElementById('gal-panel-stall');
     if (shop)      shop.style.display = 'none';
     if (igSection) igSection.style.display = '';
+    // Restore header editing if currently in edit mode
+    if (!window._stallInPreview && stallPanel) {
+      stallPanel.querySelectorAll('[contenteditable]').forEach(function(el) {
+        el.contentEditable = 'true';
+      });
+    }
   };
 
   // ── Public API ─────────────────────────────────────────────────────────
