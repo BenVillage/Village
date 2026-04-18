@@ -7191,14 +7191,37 @@ function toggleVillageSound() {
               <a id="ms-change-template" href="#" style="color:#b8914a;text-decoration:none;font-weight:600;">Change</a>
             </span>
           </div>
-          <div style="display:flex;gap:6px;">
-            <button id="ms-save-btn" class="ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
-            <button id="ms-publish-btn" class="ms-edit-only" style="background:#c8a84b;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Publish</button>
-            <button id="ms-pages-btn" class="ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
-            <button id="ms-exit-btn" style="background:none;color:#8e8e8e;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Exit</button>
-            <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
+          <div style="display:flex;gap:6px;align-items:center;position:relative;">
+            <!-- Theme: always available regardless of template -->
+            <button id="ms-theme-btn" title="Change fonts and accent color" style="background:none;color:#6a5d4a;border:1.5px solid #e4d6ad;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Theme</button>
+            <!-- Handmade-only buttons (hidden when template isn't handmade) -->
+            <button id="ms-pages-btn" class="ms-handmade-only ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
+            <button id="ms-save-btn"  class="ms-handmade-only ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
+            <button id="ms-preview-btn" class="ms-handmade-only" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
+            <!-- Always-visible -->
+            <button id="ms-publish-btn" style="background:#c8a84b;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Publish</button>
+            <button id="ms-exit-btn"   style="background:none;color:#8e8e8e;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Exit</button>
+
+            <!-- Theme panel dropdown — anchored to Theme button -->
+            <div id="ms-theme-panel" style="display:none;position:absolute;top:36px;right:0;z-index:10;background:#fff;border:1px solid #e4d6ad;border-radius:12px;box-shadow:0 12px 32px rgba(20,14,6,0.18);padding:18px 20px;min-width:280px;text-align:left;">
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Heading font</div>
+              <div id="ms-heading-opts" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Body font</div>
+              <div id="ms-body-opts" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Accent color</div>
+              <div id="ms-color-opts" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;"></div>
+            </div>
           </div>
         </div>
+
+        <!-- Template render surface — shown when template is NOT handmade.
+             Handmade body stays below, hidden via #ms-handmade-body. -->
+        <div id="ms-template-render" style="display:none;width:calc(100% + 48px);margin:0 -24px;"></div>
+
+        <!-- Handmade editor body — wrapped so we can toggle it off when the
+             maker chooses a different template. Everything inside is the
+             hand-made editor (nav settings, hero, profile, mobile menu). -->
+        <div id="ms-handmade-body">
         <!-- Nav settings panel — draggable floating panel, moved to body on open -->
         <div id="ms-nav-settings-panel" style="display:none;position:fixed;top:120px;right:20px;z-index:999990;background:rgba(255,255,255,0.18);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border:1px solid rgba(255,255,255,0.35);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:0 14px 14px;min-width:220px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
           <div id="ms-ns-drag" style="cursor:grab;padding:10px 0 8px;display:flex;align-items:center;justify-content:space-between;color:#999;user-select:none;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:10px;">
@@ -7293,6 +7316,7 @@ function toggleVillageSound() {
           </div>
           <div id="ms-mm-items" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow-y:auto;padding:20px 0;"></div>
         </div>
+        </div> <!-- /#ms-handmade-body -->
       </div>
       <!-- Crop modal (fixed overlay, used by all stall image uploads) -->
       <div id="ms-crop-modal" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">
@@ -7740,43 +7764,6 @@ function toggleVillageSound() {
         <button id="ob-next-btn" type="button" style="background:#b8914a;color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Continue →</button>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- ============ STALL TEMPLATE PREVIEW ============
-     Full-screen surface that renders the maker's data using the chosen template
-     (grid / magazine / journal / tall-mobile). Template #1 (handmade) opens the
-     existing editor instead — this overlay stays closed for it. -->
-<div id="stall-template-preview" style="display:none;position:fixed;inset:0;z-index:9350;background:#fefcf7;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;">
-  <!-- Top bar: template name, switch + edit actions -->
-  <div style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #f0e6cd;background:#fefcf7;">
-    <div style="display:flex;align-items:center;gap:14px;font-size:12px;color:#8e8e8e;">
-      <button id="stp-close" type="button" title="Leave your stall" style="background:none;border:1.5px solid #e4d6ad;border-radius:6px;color:#1c1713;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:5px 12px;">← Exit stall</button>
-      <span style="color:#d4c28e;">·</span>
-      <span>Template: <span id="stp-name" style="color:#1c1713;font-weight:600;">Template</span></span>
-    </div>
-    <div style="display:flex;gap:8px;position:relative;">
-      <button id="stp-theme-btn" type="button" title="Change fonts and accent color" style="background:none;color:#6a5d4a;border:1.5px solid #e4d6ad;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Theme</button>
-      <button id="stp-switch-btn" type="button" style="background:none;color:#b8914a;border:1.5px solid #e4d6ad;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Switch template</button>
-      <button id="stp-edit-btn" type="button" style="background:#b8914a;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Edit content →</button>
-
-      <!-- Theme panel — dropdown from the Theme button -->
-      <div id="stp-theme-panel" style="display:none;position:absolute;top:40px;right:0;z-index:10;background:#fff;border:1px solid #e4d6ad;border-radius:12px;box-shadow:0 12px 32px rgba(20,14,6,0.18);padding:18px 20px;min-width:280px;text-align:left;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Heading font</div>
-        <div id="stp-heading-opts" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
-
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Body font</div>
-        <div id="stp-body-opts" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
-
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Accent color</div>
-        <div id="stp-color-opts" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Render area — filled by renderStallTemplate() -->
-  <div id="stp-body" style="flex:1;overflow-y:auto;background:#fefcf7;">
-    <div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>
   </div>
 </div>
 
@@ -23842,13 +23829,19 @@ navItems.forEach(item => {
     const panelName = item.dataset.panel;
 
     // My Stall — first-time visitors get onboarding → carousel → template.
-    // Returning visitors skip straight to the template editor (Gallery/Market > Stall tab
-    // with stall-focus chrome, so the Gallery+Market tabs hide and it feels like its own building).
+    // Returning visitors land on whichever template they previously picked.
+    // All templates (including hand-made) now share one surface: the My Stall
+    // panel inside the Gallery window. window.openStallTemplate handles both
+    // the handmade editor and the rendered templates, so the routing stays flat.
     if (panelName === 'my-stall') {
       if (bonfireChatOpen) closeBonfireChat();
       closeAllFlyouts();
 
       function _openStallEditor() {
+        if (typeof window.openStallTemplate === 'function') {
+          window.openStallTemplate('handmade');
+          return;
+        }
         document.body.classList.add('stall-focus');
         if (typeof window.openGallery === 'function') window.openGallery();
         setTimeout(function() {
@@ -23857,10 +23850,6 @@ navItems.forEach(item => {
         }, 30);
       }
 
-      // Check whether this member has completed onboarding.
-      // Routing: not-onboarded → onboarding; no template → carousel;
-      // template = 'handmade' → editor; any other template → preview overlay.
-      // This way returning members land back on the template they actually picked.
       var _vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
       if (window._supabase && window._sbAuthUid && _vid) {
         window._supabase.from('village_members')
@@ -23878,9 +23867,8 @@ navItems.forEach(item => {
               window.openStallTemplateCarousel();
               return;
             }
-            // Non-handmade templates render in the preview overlay.
-            if (m.stall_template && m.stall_template !== 'handmade' && typeof window.openStallTemplate === 'function') {
-              window.openStallTemplate(m.stall_template);
+            if (typeof window.openStallTemplate === 'function') {
+              window.openStallTemplate(m.stall_template || 'handmade');
               return;
             }
             _openStallEditor();
@@ -30681,18 +30669,17 @@ body.wm-browser-fs #admin-panel:hover {
 <!-- ============ STALL TEMPLATE RENDERERS ============
      Four new layouts (grid, magazine, journal, tall-mobile) that read the
      maker's village_members row + gallery_pieces and render as read-only views.
-     The hand-made template (#1) keeps using the existing editor — this overlay
-     is a preview surface for the alternative layouts. -->
+     All templates — including hand-made — share the same My Stall panel inside
+     the Gallery window. Hand-made reveals the editor body; the other four
+     render into #ms-template-render. -->
 <script>
 (function() {
-  var STP = document.getElementById('stall-template-preview');
-  if (!STP) return;
-
-  var $name = document.getElementById('stp-name');
-  var $body = document.getElementById('stp-body');
-  var $close = document.getElementById('stp-close');
-  var $switch = document.getElementById('stp-switch-btn');
-  var $edit = document.getElementById('stp-edit-btn');
+  // Unified My Stall surface. All templates render into the same panel inside
+  // the Gallery window — hand-made shows the editor body (#ms-handmade-body),
+  // every other template renders into the preview container (#ms-template-render).
+  var $render   = document.getElementById('ms-template-render');
+  var $handmade = document.getElementById('ms-handmade-body');
+  if (!$render || !$handmade) return;
 
   var LABELS = { 'grid':'Minimal Grid', 'magazine':'Magazine', 'journal':'Journal', 'tall-mobile':'Tall Mobile' };
 
@@ -30978,10 +30965,10 @@ body.wm-browser-fs #admin-panel:hover {
       body_font:    theme.body_font    || BODY_FONTS[0].value,
       accent_color: theme.accent_color || ACCENT_COLORS[0].value
     };
-    $body.style.setProperty('--stall-heading', _currentTheme.heading_font);
-    $body.style.setProperty('--stall-body',    _currentTheme.body_font);
-    $body.style.setProperty('--stall-accent',  _currentTheme.accent_color);
-    $body.style.fontFamily = 'var(--stall-body)';
+    $render.style.setProperty('--stall-heading', _currentTheme.heading_font);
+    $render.style.setProperty('--stall-body',    _currentTheme.body_font);
+    $render.style.setProperty('--stall-accent',  _currentTheme.accent_color);
+    $render.style.fontFamily = 'var(--stall-body)';
   }
 
   function saveTheme() {
@@ -30995,11 +30982,13 @@ body.wm-browser-fs #admin-panel:hover {
   }
 
   // ── Theme panel wiring ───────────────────────────────────────────────
-  var $themeBtn    = document.getElementById('stp-theme-btn');
-  var $themePanel  = document.getElementById('stp-theme-panel');
-  var $headOpts    = document.getElementById('stp-heading-opts');
-  var $bodyOpts    = document.getElementById('stp-body-opts');
-  var $colorOpts   = document.getElementById('stp-color-opts');
+  // Anchored to the Theme button in the My Stall mode bar (always visible
+  // regardless of template choice).
+  var $themeBtn    = document.getElementById('ms-theme-btn');
+  var $themePanel  = document.getElementById('ms-theme-panel');
+  var $headOpts    = document.getElementById('ms-heading-opts');
+  var $bodyOpts    = document.getElementById('ms-body-opts');
+  var $colorOpts   = document.getElementById('ms-color-opts');
 
   function makeChip(label, active) {
     return '<button type="button" style="background:' + (active ? '#faf6ed' : '#fff') +
@@ -31029,7 +31018,7 @@ body.wm-browser-fs #admin-panel:hover {
     Array.prototype.forEach.call($headOpts.children, function(btn, i) {
       btn.addEventListener('click', function() {
         _currentTheme.heading_font = HEADING_FONTS[i].value;
-        $body.style.setProperty('--stall-heading', _currentTheme.heading_font);
+        $render.style.setProperty('--stall-heading', _currentTheme.heading_font);
         renderThemePanel();
         saveTheme();
       });
@@ -31037,8 +31026,8 @@ body.wm-browser-fs #admin-panel:hover {
     Array.prototype.forEach.call($bodyOpts.children, function(btn, i) {
       btn.addEventListener('click', function() {
         _currentTheme.body_font = BODY_FONTS[i].value;
-        $body.style.setProperty('--stall-body', _currentTheme.body_font);
-        $body.style.fontFamily = 'var(--stall-body)';
+        $render.style.setProperty('--stall-body', _currentTheme.body_font);
+        $render.style.fontFamily = 'var(--stall-body)';
         renderThemePanel();
         saveTheme();
       });
@@ -31046,7 +31035,7 @@ body.wm-browser-fs #admin-panel:hover {
     Array.prototype.forEach.call($colorOpts.children, function(btn, i) {
       btn.addEventListener('click', function() {
         _currentTheme.accent_color = ACCENT_COLORS[i].value;
-        $body.style.setProperty('--stall-accent', _currentTheme.accent_color);
+        $render.style.setProperty('--stall-accent', _currentTheme.accent_color);
         renderThemePanel();
         saveTheme();
       });
@@ -31068,64 +31057,68 @@ body.wm-browser-fs #admin-panel:hover {
   });
 
   // ── Public API ────────────────────────────────────────────────────────
+  // Toggles every element carrying .ms-handmade-only between its original
+  // display value and "none". Stashes the original display on a data attr
+  // so inline layout (inline-block etc) survives the round-trip.
+  function setHandmadeOnlyVisible(visible) {
+    document.querySelectorAll('.ms-handmade-only').forEach(function(el) {
+      if (visible) {
+        el.style.display = el.dataset.msHmDisplay != null ? el.dataset.msHmDisplay : '';
+      } else {
+        if (el.dataset.msHmDisplay == null) el.dataset.msHmDisplay = el.style.display || '';
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  // Unified entry point: every template — including hand-made — opens inside
+  // the same My Stall panel in the Gallery window. No more fullscreen overlay,
+  // so the chrome (traffic lights, tabs) and the mode bar stay consistent
+  // between templates. Hand-made reveals the editor body; the rendered
+  // templates swap it out for a preview.
   window.openStallTemplate = function(tpl) {
-    // Template #1 (handmade) always falls through to the existing editor.
-    if (tpl === 'handmade' || !RENDERERS[tpl]) {
-      STP.style.display = 'none';
-      document.body.classList.add('stall-focus');
-      if (typeof window.openGallery === 'function') window.openGallery();
-      setTimeout(function() {
-        var tab = document.querySelector('.gal-tab[data-tab="stall"]');
-        if (tab) tab.click();
-      }, 30);
+    document.body.classList.add('stall-focus');
+    if (typeof window.openGallery === 'function') window.openGallery();
+    setTimeout(function() {
+      var tab = document.querySelector('.gal-tab[data-tab="stall"]');
+      if (tab) tab.click();
+    }, 30);
+
+    var isHandmade = (tpl === 'handmade' || !tpl || !RENDERERS[tpl]);
+
+    // Reflect the current template in the mode bar label.
+    var $label = document.getElementById('ms-template-name');
+    if ($label) $label.textContent = isHandmade ? 'Hand-made' : (LABELS[tpl] || tpl);
+
+    // Pages / Save / Preview only make sense while editing the hand-made
+    // template — hide them when a rendered template is active.
+    setHandmadeOnlyVisible(isHandmade);
+
+    if (isHandmade) {
+      $handmade.style.display = '';
+      $render.style.display = 'none';
+      $render.innerHTML = '';
       return;
     }
 
-    $name.textContent = LABELS[tpl] || tpl;
-    $body.innerHTML = '<div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>';
-    STP.style.display = 'flex';
+    $handmade.style.display = 'none';
+    $render.style.display = '';
+    $render.innerHTML = '<div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>';
 
     fetchData().then(function(data) {
       applyTheme(data.member);
       var render = RENDERERS[tpl];
-      if (render) $body.innerHTML = render(data);
+      if (render) $render.innerHTML = render(data);
     });
   };
 
-  if ($close) $close.addEventListener('click', function() {
-    STP.style.display = 'none';
-    document.body.classList.remove('stall-focus');
-  });
-  if ($switch) $switch.addEventListener('click', function() {
-    STP.style.display = 'none';
-    if (typeof window.openStallTemplateCarousel === 'function') {
-      window.openStallTemplateCarousel({ dismissable: true });
-    }
-  });
-
-  // Click-delegate for "+ Add a piece" cards inside rendered templates.
-  // Closes the preview, opens the gallery stall editor so the maker can
-  // add/edit pieces. After adding, the admin entry will route them back
-  // to the preview on next open.
-  if ($body) $body.addEventListener('click', function(e) {
+  // "+ Add a piece" tiles inside a rendered template send the maker back to
+  // the hand-made editor, where stall content is managed. They can jump back
+  // to the chosen template via the "Change" link in the mode bar.
+  if ($render) $render.addEventListener('click', function(e) {
     var tile = e.target.closest && e.target.closest('.stp-add-piece');
     if (!tile) return;
-    STP.style.display = 'none';
-    document.body.classList.add('stall-focus');
-    if (typeof window.openGallery === 'function') window.openGallery();
-    setTimeout(function() {
-      var tab = document.querySelector('.gal-tab[data-tab="stall"]');
-      if (tab) tab.click();
-    }, 30);
-  });
-  if ($edit) $edit.addEventListener('click', function() {
-    STP.style.display = 'none';
-    document.body.classList.add('stall-focus');
-    if (typeof window.openGallery === 'function') window.openGallery();
-    setTimeout(function() {
-      var tab = document.querySelector('.gal-tab[data-tab="stall"]');
-      if (tab) tab.click();
-    }, 30);
+    window.openStallTemplate('handmade');
   });
 })();
 </script>
