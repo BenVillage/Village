@@ -7179,7 +7179,7 @@ function toggleVillageSound() {
         <!-- Mode bar: Preview toggle (left-aligned, auto-saves on preview) -->
         <div style="display:flex;align-items:center;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
           <div style="display:flex;gap:6px;align-items:center;">
-            <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
+            <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview</button>
           </div>
         </div>
         <!-- Nav settings panel — draggable floating panel, moved to body on open -->
@@ -7294,21 +7294,15 @@ function toggleVillageSound() {
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><rect x="0" y="1" width="16" height="2" rx="1"/><rect x="0" y="7" width="16" height="2" rx="1"/><rect x="0" y="13" width="16" height="2" rx="1"/></svg>List
               </button>
             </div>
-            <div style="width:1px;height:20px;background:#e0dbd4;flex-shrink:0;"></div>
-            <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;flex-shrink:0;">Columns</span>
-            <div style="display:flex;gap:4px;">
-              <button class="ms-shop-cols-btn" data-cols="2" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">2</button>
-              <button class="ms-shop-cols-btn active" data-cols="3" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #1c1713;background:#1c1713;color:#fff;">3</button>
-              <button class="ms-shop-cols-btn" data-cols="4" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">4</button>
+            <div id="ms-shop-cols-group" style="display:flex;align-items:center;gap:8px;">
+              <div style="width:1px;height:20px;background:#e0dbd4;flex-shrink:0;"></div>
+              <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;flex-shrink:0;">Columns</span>
+              <div style="display:flex;gap:4px;">
+                <button class="ms-shop-cols-btn" data-cols="2" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">2</button>
+                <button class="ms-shop-cols-btn active" data-cols="3" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #1c1713;background:#1c1713;color:#fff;">3</button>
+                <button class="ms-shop-cols-btn" data-cols="4" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">4</button>
+              </div>
             </div>
-            <div style="width:1px;height:20px;background:#e0dbd4;flex-shrink:0;"></div>
-            <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#444;cursor:pointer;">
-              <span class="ms-toggle" style="transform:scale(0.85);transform-origin:left center;">
-                <input type="checkbox" id="ms-shop-show-price" checked/>
-                <span class="ms-toggle-track"><span class="ms-toggle-thumb"></span></span>
-              </span>
-              Price
-            </label>
           </div>
         </div>
         <!-- Piece grid: filled by renderer -->
@@ -21712,10 +21706,10 @@ Mura facilitates. People decide.`;
       }
     }
     if(preview){
-      if(previewBtn){previewBtn.textContent='← Edit';previewBtn.style.background='#262626';previewBtn.style.color='#fff';previewBtn.style.borderColor='#262626';}
+      if(previewBtn){previewBtn.textContent='Edit';previewBtn.style.background='#262626';previewBtn.style.color='#fff';previewBtn.style.borderColor='#262626';}
       if(previewLabel) previewLabel.style.display='';
     } else {
-      if(previewBtn){previewBtn.textContent='Preview →';previewBtn.style.background='';previewBtn.style.color='#262626';previewBtn.style.borderColor='#262626';}
+      if(previewBtn){previewBtn.textContent='Preview';previewBtn.style.background='';previewBtn.style.color='#262626';previewBtn.style.borderColor='#262626';}
       if(previewLabel) previewLabel.style.display='none';
     }
   }
@@ -31118,6 +31112,8 @@ body.wm-browser-fs #admin-panel:hover {
       b.style.color      = active ? '#fff'    : '#555';
       b.style.borderColor= active ? '#1c1713' : '#d8d3cc';
     });
+    var $colsGroup = document.getElementById('ms-shop-cols-group');
+    if ($colsGroup) $colsGroup.style.display = _shopSettings.layout === 'list' ? 'none' : '';
     _rerender();
   });
 
