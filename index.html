@@ -7751,7 +7751,7 @@ function toggleVillageSound() {
   <!-- Top bar: template name, switch + edit actions -->
   <div style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #f0e6cd;background:#fefcf7;">
     <div style="display:flex;align-items:center;gap:14px;font-size:12px;color:#8e8e8e;">
-      <button id="stp-close" type="button" style="background:none;border:none;color:#1c1713;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 0;">← Back</button>
+      <button id="stp-close" type="button" title="Leave your stall" style="background:none;border:1.5px solid #e4d6ad;border-radius:6px;color:#1c1713;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:5px 12px;">← Exit stall</button>
       <span style="color:#d4c28e;">·</span>
       <span>Template: <span id="stp-name" style="color:#1c1713;font-weight:600;">Template</span></span>
     </div>
@@ -7798,7 +7798,7 @@ function toggleVillageSound() {
     <div id="tc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;">
       <!-- Tile: Hand-made -->
       <div class="tc-tile" data-template="handmade" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
+        <div class="tc-preview" data-tpl="handmade" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
           <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
             <rect x="0" y="0" width="200" height="18" fill="#e4d6ad"/>
             <rect x="10" y="6" width="40" height="6" rx="1" fill="#b8914a"/>
@@ -7819,7 +7819,7 @@ function toggleVillageSound() {
 
       <!-- Tile: Minimal Grid -->
       <div class="tc-tile" data-template="grid" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+        <div class="tc-preview" data-tpl="grid" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
           <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
             <rect x="14" y="10" width="80" height="10" rx="1" fill="#1c1713"/>
             <rect x="14" y="24" width="50" height="4" rx="1" fill="#8e8e8e"/>
@@ -7838,7 +7838,7 @@ function toggleVillageSound() {
 
       <!-- Tile: Magazine -->
       <div class="tc-tile" data-template="magazine" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+        <div class="tc-preview" data-tpl="magazine" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
           <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
             <rect x="0" y="0" width="200" height="60" fill="#d4c28e"/>
             <rect x="60" y="22" width="80" height="8" rx="1" fill="#fefcf7"/>
@@ -7859,7 +7859,7 @@ function toggleVillageSound() {
 
       <!-- Tile: Journal -->
       <div class="tc-tile" data-template="journal" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+        <div class="tc-preview" data-tpl="journal" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
           <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
             <rect x="50" y="10" width="100" height="8" rx="1" fill="#1c1713"/>
             <rect x="70" y="22" width="60" height="3" rx="1" fill="#8e8e8e"/>
@@ -7880,7 +7880,7 @@ function toggleVillageSound() {
 
       <!-- Tile: Tall Mobile -->
       <div class="tc-tile" data-template="tall-mobile" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+        <div class="tc-preview" data-tpl="tall-mobile" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
           <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
             <rect x="70" y="12" width="60" height="126" rx="8" fill="#1c1713"/>
             <rect x="76" y="18" width="48" height="114" rx="4" fill="#faf6ed"/>
@@ -23858,6 +23858,9 @@ navItems.forEach(item => {
       }
 
       // Check whether this member has completed onboarding.
+      // Routing: not-onboarded → onboarding; no template → carousel;
+      // template = 'handmade' → editor; any other template → preview overlay.
+      // This way returning members land back on the template they actually picked.
       var _vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
       if (window._supabase && window._sbAuthUid && _vid) {
         window._supabase.from('village_members')
@@ -23873,6 +23876,11 @@ navItems.forEach(item => {
             }
             if (!m.stall_template && typeof window.openStallTemplateCarousel === 'function') {
               window.openStallTemplateCarousel();
+              return;
+            }
+            // Non-handmade templates render in the preview overlay.
+            if (m.stall_template && m.stall_template !== 'handmade' && typeof window.openStallTemplate === 'function') {
+              window.openStallTemplate(m.stall_template);
               return;
             }
             _openStallEditor();
@@ -30018,6 +30026,10 @@ body.wm-browser-fs #admin-panel:hover {
 
   // ── State ───────────────────────────────────────────────────────────────
   var _step = 1;
+  // _pending tracks in-flight uploads so finish() can await them all before
+  // writing to village_members. Without this, a fast click on "Finish" sends
+  // an empty avatar/cover/piece URL to the DB and templates render blank.
+  var _pending = [];
   var _data = {
     stall_name: '',
     slug: '',
@@ -30158,34 +30170,36 @@ body.wm-browser-fs #admin-panel:hover {
 
   function handleAvatar(file) {
     $photoStatus.textContent = 'Resizing avatar…';
-    resizeImage(file, 600, 0.9).then(function(r) {
+    var p = resizeImage(file, 600, 0.9).then(function(r) {
       $avatarLabel.style.backgroundImage = 'url(' + r.dataUrl + ')';
       $avatarLabel.style.backgroundSize = 'cover';
       $avatarLabel.style.backgroundPosition = 'center';
       $avatarLabel.style.border = '2px solid #b8914a';
       $avatarLabel.textContent = '';
       $photoStatus.textContent = 'Uploading avatar…';
-      uploadStallImage(r.blob, 'avatar-' + Date.now() + '.jpg').then(function(url) {
+      return uploadStallImage(r.blob, 'avatar-' + Date.now() + '.jpg').then(function(url) {
         _data.stall_avatar_url = url;
         $photoStatus.textContent = 'Avatar uploaded.';
       });
     });
+    _pending.push(p);
   }
 
   function handleCover(file) {
     $photoStatus.textContent = 'Resizing cover…';
-    resizeImage(file, 2000, 0.88).then(function(r) {
+    var p = resizeImage(file, 2000, 0.88).then(function(r) {
       $coverLabel.style.backgroundImage = 'url(' + r.dataUrl + ')';
       $coverLabel.style.backgroundSize = 'cover';
       $coverLabel.style.backgroundPosition = 'center';
       $coverLabel.style.border = '2px solid #b8914a';
       $coverLabel.textContent = '';
       $photoStatus.textContent = 'Uploading cover…';
-      uploadStallImage(r.blob, 'cover-' + Date.now() + '.jpg').then(function(url) {
+      return uploadStallImage(r.blob, 'cover-' + Date.now() + '.jpg').then(function(url) {
         _data.stall_cover_url = url;
         $photoStatus.textContent = 'Cover uploaded.';
       });
     });
+    _pending.push(p);
   }
 
   // ── Pieces list (step 4) ───────────────────────────────────────────────
@@ -30213,13 +30227,14 @@ body.wm-browser-fs #admin-panel:hover {
       if (!inp) return;
       inp.addEventListener('change', function(e) {
         var f = e.target.files && e.target.files[0]; if (!f) return;
-        resizeImage(f, 2000, 0.9).then(function(r) {
-          uploadStallImage(r.blob, 'piece-' + Date.now() + '-' + i + '.jpg').then(function(url) {
+        var promise = resizeImage(f, 2000, 0.9).then(function(r) {
+          return uploadStallImage(r.blob, 'piece-' + Date.now() + '-' + i + '.jpg').then(function(url) {
             _data.pieces[i].img_url = url;
             _data.pieces[i].blob = r.blob;
             renderPieces();
           });
         });
+        _pending.push(promise);
       });
     });
 
@@ -30282,8 +30297,19 @@ body.wm-browser-fs #admin-panel:hover {
   // ── Finish: save everything, close modal, open carousel ────────────────
   function finish() {
     $nextBtn.disabled = true;
-    $nextBtn.textContent = 'Saving…';
+    $nextBtn.textContent = _pending.length ? 'Finishing uploads…' : 'Saving…';
 
+    // Wait for any in-flight avatar/cover/piece uploads so the URLs are
+    // actually in _data by the time we write to the DB. Otherwise templates
+    // like magazine render blank because the uploads didn't race finish.
+    Promise.all(_pending.slice()).then(function() {
+      _pending = [];
+      $nextBtn.textContent = 'Saving…';
+      doSave();
+    });
+  }
+
+  function doSave() {
     if (!window._supabase) {
       console.warn('[Onboarding] Supabase unavailable — storing locally only');
       afterSave();
@@ -30309,10 +30335,18 @@ body.wm-browser-fs #admin-panel:hover {
     // Back-compat: mirror instagram into the legacy single field
     if (_data.socials && _data.socials.instagram) payload.stall_instagram = _data.socials.instagram;
 
+    // Use update (not upsert) because village_members has RLS + a compound key
+    // on (auth_id, village_id) that's hard to match via upsert's conflict target.
+    // If the row is missing we log loudly — the member was added to the village
+    // during join, so a missing row here is a real bug worth surfacing.
     window._supabase.from('village_members').update(payload)
       .eq('auth_id', uid).eq('village_id', vid)
+      .select()          // ← select() forces the row back so we can check count
       .then(function(r) {
         if (r.error) console.warn('[Onboarding save]', r.error.message);
+        if (!r.error && (!r.data || r.data.length === 0)) {
+          console.warn('[Onboarding save] No village_members row updated — member may not be joined to village.', { uid: uid, vid: vid });
+        }
 
         var piecesToInsert = _data.pieces.filter(function(p) { return p.title && p.img_url; });
         if (!piecesToInsert.length) { afterSave(); return; }
@@ -30359,6 +30393,7 @@ body.wm-browser-fs #admin-panel:hover {
   // ── Public API ─────────────────────────────────────────────────────────
   window.openStallOnboarding = function() {
     _step = 1;
+    _pending = [];
     _data = { stall_name:'', slug:'', stall_location:'', years_practising:null, craft_category:'',
               stall_avatar_url:'', stall_cover_url:'', stall_bio:'', socials:{}, pieces:[] };
     [$name, $slug, $location, $years, $bio, $instagram, $arena, $website].forEach(function(el) { if (el) el.value = ''; });
@@ -30446,12 +30481,149 @@ body.wm-browser-fs #admin-panel:hover {
 
   if ($closeBtn) $closeBtn.addEventListener('click', function() { TC.style.display = 'none'; });
 
+  // ── Live preview of the maker's data inside each carousel tile ────────
+  // Instead of abstract SVG schematics, show the user's actual avatar, cover,
+  // name, and first few pieces so they can see how each layout handles their
+  // content before committing.
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function pieceImg(p) { return (p && (p.img || (p.image_urls && p.image_urls[0]))) || ''; }
+
+  // Each mini-preview renders into the 4:3 tile preview area. They use inline
+  // styles because the carousel is an isolated overlay — no classes to
+  // collide with Gallery/Market chrome.
+  function miniHandmade(d) {
+    var m = d.member, pcs = d.pieces.slice(0, 3);
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var cover = esc(m.stall_cover_url || '');
+    var coverCss = cover ? 'url(' + cover + ') center/cover' : 'linear-gradient(135deg,#e4d6ad,#b8914a)';
+    return '<div style="position:absolute;inset:0;display:flex;flex-direction:column;font-size:10px;color:#1c1713;">' +
+      '<div style="display:flex;align-items:center;gap:4px;padding:3px 6px;background:#e4d6ad;font-size:7px;font-weight:700;color:#4a3f2e;">' +
+        '<div style="width:6px;height:6px;border-radius:50%;background:#b8914a;"></div>' +
+        '<div>' + name.slice(0, 18) + '</div>' +
+      '</div>' +
+      '<div style="height:34%;background:' + coverCss + ';"></div>' +
+      '<div style="flex:1;background:#faf6ed;padding:4px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">' +
+        [0,1,2].map(function(i) {
+          var img = pieceImg(pcs[i]);
+          return '<div style="background:' + (img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad') + ';border-radius:2px;"></div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  function miniGrid(d) {
+    var m = d.member, pcs = d.pieces.slice(0, 6);
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var avatar = esc(m.stall_avatar_url || '');
+    return '<div style="position:absolute;inset:0;padding:10px;background:#fefcf7;display:flex;flex-direction:column;gap:6px;">' +
+      '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<div style="width:14px;height:14px;border-radius:50%;background:' + (avatar ? 'url(' + avatar + ') center/cover' : '#e4d6ad') + ';flex-shrink:0;"></div>' +
+        '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:9px;font-weight:500;color:#1c1713;">' + name + '</div>' +
+      '</div>' +
+      '<div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:3px;">' +
+        [0,1,2,3,4,5].map(function(i) {
+          var img = pieceImg(pcs[i]);
+          return '<div style="background:' + (img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad') + ';border-radius:2px;"></div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  function miniMagazine(d) {
+    var m = d.member, pcs = d.pieces.slice(0, 3);
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var cover = esc(m.stall_cover_url || '');
+    var coverCss = cover ? 'url(' + cover + ') center/cover' : 'linear-gradient(135deg,#d4c28e,#b8914a)';
+    var cat = esc(m.craft_category || '');
+    return '<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fefcf7;">' +
+      '<div style="height:48%;background:' + coverCss + ';position:relative;">' +
+        '<div style="position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,0.5));"></div>' +
+        '<div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;color:#fefcf7;">' +
+          '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:11px;font-weight:400;">' + name + '</div>' +
+          (cat ? '<div style="font-size:6px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.9;">' + cat + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div style="flex:1;padding:6px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">' +
+        [0,1,2].map(function(i) {
+          var img = pieceImg(pcs[i]);
+          return '<div style="background:' + (img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad') + ';border-radius:2px;aspect-ratio:4/5;"></div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  function miniJournal(d) {
+    var m = d.member, p = d.pieces[0];
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var img = pieceImg(p);
+    var bio = esc((m.stall_bio || '').slice(0, 60));
+    return '<div style="position:absolute;inset:0;padding:10px 14px;background:#fefcf7;display:flex;flex-direction:column;">' +
+      '<div style="text-align:center;padding-bottom:6px;border-bottom:1px solid #e4d6ad;margin-bottom:6px;">' +
+        '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:11px;font-weight:400;color:#1c1713;">' + name + '</div>' +
+        (bio ? '<div style="font-style:italic;color:#6a5d4a;font-size:5px;line-height:1.4;margin-top:2px;">' + bio + '…</div>' : '') +
+      '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:8px;color:#1c1713;margin-bottom:3px;">' + esc((p && p.title) || 'First entry') + '</div>' +
+        '<div style="width:100%;height:60%;background:' + (img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad') + ';border-radius:2px;"></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function miniTallMobile(d) {
+    var m = d.member, pcs = d.pieces.slice(0, 3);
+    var name = esc(m.stall_name || m.display_name || 'Your stall');
+    var avatar = esc(m.stall_avatar_url || '');
+    return '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#faf6ed;">' +
+      '<div style="width:36%;height:90%;border:2px solid #1c1713;border-radius:6px;background:#fefcf7;padding:6px;display:flex;flex-direction:column;align-items:center;gap:3px;">' +
+        '<div style="width:18px;height:18px;border-radius:50%;background:' + (avatar ? 'url(' + avatar + ') center/cover' : '#e4d6ad') + ';"></div>' +
+        '<div style="font-family:\'Cormorant Garamond\',Georgia,serif;font-size:6px;color:#1c1713;text-align:center;line-height:1;">' + name + '</div>' +
+        [0,1,2].map(function(i) {
+          var img = pieceImg(pcs[i]);
+          return '<div style="width:100%;aspect-ratio:1;background:' + (img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad') + ';border-radius:2px;"></div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  var MINIS = { handmade: miniHandmade, grid: miniGrid, magazine: miniMagazine, journal: miniJournal, 'tall-mobile': miniTallMobile };
+
+  function paintPreviews(d) {
+    var hasAny = !!(d.member.stall_avatar_url || d.member.stall_cover_url || (d.pieces && d.pieces.length));
+    if (!hasAny) return; // keep the SVG schematic for brand-new makers
+    TC.querySelectorAll('.tc-preview').forEach(function(box) {
+      var tpl = box.dataset.tpl;
+      var fn = MINIS[tpl]; if (!fn) return;
+      box.innerHTML = fn(d);
+    });
+  }
+
+  function fetchCarouselData() {
+    var empty = { member: {}, pieces: [] };
+    if (!window._supabase || !window._sbAuthUid) return Promise.resolve(empty);
+    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+    if (!vid) return Promise.resolve(empty);
+    return Promise.all([
+      window._supabase.from('village_members')
+        .select('stall_name,stall_avatar_url,stall_cover_url,stall_bio,display_name,craft_category')
+        .eq('auth_id', window._sbAuthUid).eq('village_id', vid).limit(1).single(),
+      window._supabase.from('gallery_pieces')
+        .select('title,img,image_urls').eq('user_id', window._sbAuthUid).eq('village_id', vid)
+        .order('created_at', { ascending: false }).limit(6)
+    ]).then(function(rs) {
+      return { member: (rs[0] && rs[0].data) || {}, pieces: (rs[1] && rs[1].data) || [] };
+    }).catch(function() { return empty; });
+  }
+
   // Public API
   window.openStallTemplateCarousel = function(opts) {
     opts = opts || {};
     // Show close button only when maker is already onboarded (otherwise onboarding forces a choice).
     $closeBtn.style.display = opts.dismissable ? 'block' : 'none';
     TC.style.display = 'flex';
+    fetchCarouselData().then(paintPreviews);
   };
 })();
 </script>
@@ -30562,6 +30734,22 @@ body.wm-browser-fs #admin-panel:hover {
     }).catch(function() { return empty; });
   }
 
+  // "Add another piece" card appended to pieces grids so makers can expand
+  // their content directly from a template preview.
+  var ADD_PIECE_TILE = '<div class="stp-add-piece" style="aspect-ratio:1;border:1.5px dashed #d4c28e;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">' +
+    '<div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div>' +
+    '<div style="font-size:12px;font-weight:600;letter-spacing:0.02em;">Add a piece</div>' +
+  '</div>';
+
+  // Grid gets a sensible column count based on piece count — stops 3 pieces
+  // looking marooned in a 5-column auto-fill grid.
+  function gridCols(n) {
+    if (n <= 1) return 'repeat(2,1fr)';
+    if (n <= 3) return 'repeat(3,1fr)';
+    if (n <= 4) return 'repeat(2,1fr)';
+    return 'repeat(auto-fill,minmax(240px,1fr))';
+  }
+
   // ── Template #2: Minimal Grid ─────────────────────────────────────────
   function renderGrid(d) {
     var m = d.member, pieces = d.pieces;
@@ -30573,17 +30761,20 @@ body.wm-browser-fs #admin-panel:hover {
     var bioHtml = m.stall_bio ? '<p style="color:#1c1713;font-size:14px;line-height:1.7;margin:12px 0 0;max-width:620px;">' + esc(m.stall_bio) + '</p>' : '';
     var tagHtml = m.stall_tagline ? '<div style="color:#6a5d4a;font-size:14px;margin-top:2px;">' + esc(m.stall_tagline) + '</div>' : '';
 
-    var piecesHtml = pieces.length
-      ? '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">' + pieces.map(function(p) {
-          var img = pieceImg(p);
-          var bg = img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad';
-          return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:' + bg + ';">' +
-            '<div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff;">' +
-              '<div style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:18px;font-weight:500;">' + esc(p.title) + '</div>' +
-              (p.price ? '<div style="font-size:13px;opacity:0.92;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
-            '</div></div>';
-        }).join('') + '</div>'
-      : '<div style="text-align:center;padding:80px 20px;color:#8e8e8e;font-size:14px;">No pieces yet. Add some from the editor.</div>';
+    var pieceTiles = pieces.map(function(p) {
+      var img = pieceImg(p);
+      var bg = img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad';
+      return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:' + bg + ';">' +
+        '<div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff;">' +
+          '<div style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:18px;font-weight:500;">' + esc(p.title) + '</div>' +
+          (p.price ? '<div style="font-size:13px;opacity:0.92;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+        '</div></div>';
+    });
+    // Only show the +Add tile in edit preview (we always do for now — read-only
+    // viewers can ignore it since nothing happens until clicked).
+    pieceTiles.push(ADD_PIECE_TILE);
+
+    var piecesHtml = '<div style="display:grid;grid-template-columns:' + gridCols(pieces.length) + ';gap:14px;max-width:980px;margin:0 auto;">' + pieceTiles.join('') + '</div>';
 
     return '<div style="max-width:1200px;margin:0 auto;padding:60px 24px;">' +
       '<div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:48px;">' +
@@ -30602,6 +30793,9 @@ body.wm-browser-fs #admin-panel:hover {
     var m = d.member, pieces = d.pieces;
     var name = esc(m.stall_name || m.display_name || 'Your stall');
     var cover = esc(m.stall_cover_url || '');
+    // Hero shrinks when no cover is set so the page doesn't start with a huge
+    // plain gradient block. 360px (hero) → 220px (no cover).
+    var heroHeight = cover ? 360 : 220;
     var coverStyle = cover
       ? 'background:url(' + cover + ') center/cover;'
       : 'background:linear-gradient(135deg,#d4c28e,var(--stall-accent,#b8914a));';
@@ -30624,24 +30818,28 @@ body.wm-browser-fs #admin-panel:hover {
       '</div>';
     }).join('');
 
-    var piecesHtml = pieces.length
-      ? pieces.map(function(p) {
-          var img = pieceImg(p);
-          var imgHtml = img
-            ? '<div style="width:100%;aspect-ratio:4/5;background:url(' + esc(img) + ') center/cover;border-radius:4px;"></div>'
-            : '<div style="width:100%;aspect-ratio:4/5;background:#e4d6ad;border-radius:4px;"></div>';
-          return '<div>' + imgHtml +
-            '<div style="margin-top:12px;font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:22px;font-weight:500;color:#1c1713;">' + esc(p.title) + '</div>' +
-            (p.price ? '<div style="font-size:13px;color:' + (p.available ? 'var(--stall-accent,#b8914a)' : '#8e8e8e') + ';margin-top:2px;">' + esc(p.price) + '</div>' : '') +
-          '</div>';
-        }).join('')
-      : '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#8e8e8e;font-size:14px;">No pieces yet.</div>';
+    var pieceTiles = pieces.map(function(p) {
+      var img = pieceImg(p);
+      var imgHtml = img
+        ? '<div style="width:100%;aspect-ratio:4/5;background:url(' + esc(img) + ') center/cover;border-radius:4px;"></div>'
+        : '<div style="width:100%;aspect-ratio:4/5;background:#e4d6ad;border-radius:4px;"></div>';
+      return '<div>' + imgHtml +
+        '<div style="margin-top:12px;font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:22px;font-weight:500;color:#1c1713;">' + esc(p.title) + '</div>' +
+        (p.price ? '<div style="font-size:13px;color:' + (p.available ? 'var(--stall-accent,#b8914a)' : '#8e8e8e') + ';margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+      '</div>';
+    });
+    // Magazine uses a 4/5 portrait tile, so the "+ Add" card matches that
+    // aspect to keep the grid rhythm consistent.
+    var addTile = '<div class="stp-add-piece" style="aspect-ratio:4/5;border:1.5px dashed #d4c28e;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'"><div style="font-size:32px;line-height:1;margin-bottom:8px;">+</div><div style="font-size:13px;font-weight:600;">Add a piece</div></div>';
+    pieceTiles.push(addTile);
+
+    var piecesGridCols = pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(260px,1fr))';
 
     return '<div>' +
-      '<div style="position:relative;width:100%;height:360px;' + coverStyle + '">' +
+      '<div style="position:relative;width:100%;height:' + heroHeight + 'px;' + coverStyle + '">' +
         '<div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(28,23,19,0.55));"></div>' +
         '<div style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);text-align:center;color:#fefcf7;">' +
-          '<h1 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:64px;font-weight:400;margin:0;letter-spacing:-0.01em;text-shadow:0 2px 8px rgba(0,0,0,0.3);">' + name + '</h1>' +
+          '<h1 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:' + (cover ? 64 : 48) + 'px;font-weight:400;margin:0;letter-spacing:-0.01em;text-shadow:0 2px 8px rgba(0,0,0,0.3);">' + name + '</h1>' +
           (categoryLine ? '<div style="font-size:13px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;opacity:0.94;">' + categoryLine + '</div>' : '') +
         '</div>' +
       '</div>' +
@@ -30655,7 +30853,7 @@ body.wm-browser-fs #admin-panel:hover {
         '</div>' +
         '<hr style="border:none;border-top:1px solid #e4d6ad;margin:60px 0;">' +
         '<h2 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:40px;font-weight:500;text-align:center;margin:0 0 40px;color:#1c1713;">Work</h2>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:36px;">' + piecesHtml + '</div>' +
+        '<div style="display:grid;grid-template-columns:' + piecesGridCols + ';gap:36px;">' + pieceTiles.join('') + '</div>' +
       '</div>' +
     '</div>';
   }
@@ -30894,12 +31092,31 @@ body.wm-browser-fs #admin-panel:hover {
     });
   };
 
-  if ($close) $close.addEventListener('click', function() { STP.style.display = 'none'; });
+  if ($close) $close.addEventListener('click', function() {
+    STP.style.display = 'none';
+    document.body.classList.remove('stall-focus');
+  });
   if ($switch) $switch.addEventListener('click', function() {
     STP.style.display = 'none';
     if (typeof window.openStallTemplateCarousel === 'function') {
       window.openStallTemplateCarousel({ dismissable: true });
     }
+  });
+
+  // Click-delegate for "+ Add a piece" cards inside rendered templates.
+  // Closes the preview, opens the gallery stall editor so the maker can
+  // add/edit pieces. After adding, the admin entry will route them back
+  // to the preview on next open.
+  if ($body) $body.addEventListener('click', function(e) {
+    var tile = e.target.closest && e.target.closest('.stp-add-piece');
+    if (!tile) return;
+    STP.style.display = 'none';
+    document.body.classList.add('stall-focus');
+    if (typeof window.openGallery === 'function') window.openGallery();
+    setTimeout(function() {
+      var tab = document.querySelector('.gal-tab[data-tab="stall"]');
+      if (tab) tab.click();
+    }, 30);
   });
   if ($edit) $edit.addEventListener('click', function() {
     STP.style.display = 'none';
