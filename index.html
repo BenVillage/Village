@@ -7180,10 +7180,9 @@ function toggleVillageSound() {
       </div>
       <!-- My Stall tab — website template -->
       <div id="gal-panel-stall" style="display:none;position:relative;">
-        <!-- Mode bar -->
+        <!-- Mode bar: Template label + Save/Pages/Preview only -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <span id="ms-preview-label" style="display:none;font-size:11px;font-weight:600;color:#c8a84b;">Published view</span>
             <span class="ms-edit-only" style="font-size:11px;color:#8e8e8e;">
               <span style="color:#b8914a;font-weight:600;">Template:</span>
               <span id="ms-template-name" style="color:#1c1713;font-weight:500;">Hand-made</span>
@@ -7191,37 +7190,12 @@ function toggleVillageSound() {
               <a id="ms-change-template" href="#" style="color:#b8914a;text-decoration:none;font-weight:600;">Change</a>
             </span>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;position:relative;">
-            <!-- Theme: always available regardless of template -->
-            <button id="ms-theme-btn" title="Change fonts and accent color" style="background:none;color:#6a5d4a;border:1.5px solid #e4d6ad;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Theme</button>
-            <!-- Handmade-only buttons (hidden when template isn't handmade) -->
-            <button id="ms-pages-btn" class="ms-handmade-only ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
-            <button id="ms-save-btn"  class="ms-handmade-only ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
-            <button id="ms-preview-btn" class="ms-handmade-only" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
-            <!-- Always-visible -->
-            <button id="ms-publish-btn" style="background:#c8a84b;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Publish</button>
-            <button id="ms-exit-btn"   style="background:none;color:#8e8e8e;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Exit</button>
-
-            <!-- Theme panel dropdown — anchored to Theme button -->
-            <div id="ms-theme-panel" style="display:none;position:absolute;top:36px;right:0;z-index:10;background:#fff;border:1px solid #e4d6ad;border-radius:12px;box-shadow:0 12px 32px rgba(20,14,6,0.18);padding:18px 20px;min-width:280px;text-align:left;">
-              <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Heading font</div>
-              <div id="ms-heading-opts" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
-              <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Body font</div>
-              <div id="ms-body-opts" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
-              <div style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;margin-bottom:10px;">Accent color</div>
-              <div id="ms-color-opts" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;"></div>
-            </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button id="ms-pages-btn" class="ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
+            <button id="ms-save-btn" class="ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
+            <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
           </div>
         </div>
-
-        <!-- Template render surface — shown when template is NOT handmade.
-             Handmade body stays below, hidden via #ms-handmade-body. -->
-        <div id="ms-template-render" style="display:none;width:calc(100% + 48px);margin:0 -24px;"></div>
-
-        <!-- Handmade editor body — wrapped so we can toggle it off when the
-             maker chooses a different template. Everything inside is the
-             hand-made editor (nav settings, hero, profile, mobile menu). -->
-        <div id="ms-handmade-body">
         <!-- Nav settings panel — draggable floating panel, moved to body on open -->
         <div id="ms-nav-settings-panel" style="display:none;position:fixed;top:120px;right:20px;z-index:999990;background:rgba(255,255,255,0.18);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);border:1px solid rgba(255,255,255,0.35);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:0 14px 14px;min-width:220px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
           <div id="ms-ns-drag" style="cursor:grab;padding:10px 0 8px;display:flex;align-items:center;justify-content:space-between;color:#999;user-select:none;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:10px;">
@@ -7306,6 +7280,15 @@ function toggleVillageSound() {
             <input type="file" id="stall-avatar-input" accept="image/*" style="display:none;"/>
           </div>
         </div>
+
+        <!-- Shop section: always present below the profile. Filled by
+             openStallTemplate() with the maker's pieces in whichever layout
+             they chose. Handmade keeps a simple vertical stack; the other
+             templates swap in their own piece grid. -->
+        <div id="ms-shop-section" style="width:calc(100% + 48px);margin:0 -24px;">
+          <div style="text-align:center;padding:60px 20px;color:#aaa;font-size:13px;">Your pieces will appear here</div>
+        </div>
+
         <!-- Mobile nav menu overlay -->
         <div id="ms-nav-mobile-menu" style="display:none;position:fixed;inset:0;z-index:99994;background:#f2f1ef;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;flex-shrink:0;">
@@ -7316,7 +7299,6 @@ function toggleVillageSound() {
           </div>
           <div id="ms-mm-items" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow-y:auto;padding:20px 0;"></div>
         </div>
-        </div> <!-- /#ms-handmade-body -->
       </div>
       <!-- Crop modal (fixed overlay, used by all stall image uploads) -->
       <div id="ms-crop-modal" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">
@@ -28906,15 +28888,8 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   body.stall-focus #gal-tab-bar { display:none !important; }
   body.stall-focus #gallery-overlay .presence-strip { display:none !important; }
 
-  /* Template mode: when a non-handmade template is active, the My Stall panel
-     hides the hand-made editor body + any buttons that only apply while
-     editing the hand-made template. These !important rules win against the
-     inline display toggles used by _setMode (Preview/Edit), so switching
-     modes can't un-hide them. */
-  #gal-panel-stall.ms-template-mode #ms-handmade-body { display: none !important; }
-  #gal-panel-stall.ms-template-mode .ms-handmade-only { display: none !important; }
-  #gal-panel-stall.ms-template-mode #ms-template-render { display: block !important; }
-  #gal-panel-stall:not(.ms-template-mode) #ms-template-render { display: none !important; }
+  /* Shop section always fills the full panel width edge-to-edge */
+  #ms-shop-section { overflow-x: hidden; }
   /* The WM's full-viewport drag cover (z-index 99999) already swallows pointer events
      over the iframe during drag/resize, so no manual guard needed here. */
   body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
@@ -30677,403 +30652,128 @@ body.wm-browser-fs #admin-panel:hover {
 </script>
 
 <!-- ============ STALL TEMPLATE RENDERERS ============
-     Four new layouts (grid, magazine, journal, tall-mobile) that read the
-     maker's village_members row + gallery_pieces and render as read-only views.
-     All templates — including hand-made — share the same My Stall panel inside
-     the Gallery window. Hand-made reveals the editor body; the other four
-     render into #ms-template-render. -->
+     All templates share the same hero + nav + profile section (always editable).
+     The template choice only changes how PIECES are displayed in #ms-shop-section
+     below the profile. This way header/avatar uploads are always accessible. -->
 <script>
 (function() {
-  // Unified My Stall surface. All templates render into the same panel inside
-  // the Gallery window — hand-made shows the editor body (#ms-handmade-body),
-  // every other template renders into the preview container (#ms-template-render).
-  var $render   = document.getElementById('ms-template-render');
-  var $handmade = document.getElementById('ms-handmade-body');
-  if (!$render || !$handmade) return;
+  var $shop = document.getElementById('ms-shop-section');
+  if (!$shop) return;
 
-  var LABELS = { 'grid':'Minimal Grid', 'magazine':'Magazine', 'journal':'Journal', 'tall-mobile':'Tall Mobile' };
+  var LABELS = { 'handmade':'Hand-made', 'grid':'Grid', 'magazine':'Magazine', 'journal':'Journal', 'tall-mobile':'Tall' };
 
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
+  function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function pieceImg(p) { return p.img || (p.image_urls && p.image_urls[0]) || ''; }
-
-  function igUrl(h) {
-    if (!h) return '';
-    var s = String(h).trim();
-    if (/^https?:/.test(s)) return s;
-    return 'https://instagram.com/' + s.replace(/^@/, '');
-  }
-
   function formatDate(iso) {
     if (!iso) return '';
     var d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    if (isNaN(d)) return '';
+    return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
   }
 
-  function fetchData() {
-    var empty = { member: {}, pieces: [] };
-    if (!window._supabase || !window._sbAuthUid) return Promise.resolve(empty);
+  function fetchPieces() {
+    if (!window._supabase || !window._sbAuthUid) return Promise.resolve([]);
     var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
-    if (!vid) return Promise.resolve(empty);
-    return Promise.all([
-      window._supabase.from('village_members')
-        .select('stall_name,stall_tagline,stall_location,stall_instagram,stall_bio,stall_cover_url,stall_avatar_url,display_name,has_token,craft_category,years_practising,socials,stall_theme')
-        .eq('auth_id', window._sbAuthUid).eq('village_id', vid).limit(1).single(),
-      window._supabase.from('gallery_pieces')
-        .select('*').eq('user_id', window._sbAuthUid).eq('village_id', vid).order('created_at', { ascending: false })
-    ]).then(function(rs) {
-      return { member: (rs[0] && rs[0].data) || {}, pieces: (rs[1] && rs[1].data) || [] };
-    }).catch(function() { return empty; });
+    if (!vid) return Promise.resolve([]);
+    return window._supabase.from('gallery_pieces')
+      .select('*').eq('user_id', window._sbAuthUid).eq('village_id', vid)
+      .order('created_at', { ascending: false })
+      .then(function(r) { return (r && r.data) || []; })
+      .catch(function() { return []; });
   }
 
-  // "Add another piece" card appended to pieces grids so makers can expand
-  // their content directly from a template preview.
-  var ADD_PIECE_TILE = '<div class="stp-add-piece" style="aspect-ratio:1;border:1.5px dashed #d4c28e;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">' +
+  // Add-piece card — always the last tile
+  var ADD_TILE = '<div class="stp-add-piece" style="aspect-ratio:1;border:1.5px dashed #d4c28e;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">' +
     '<div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div>' +
-    '<div style="font-size:12px;font-weight:600;letter-spacing:0.02em;">Add a piece</div>' +
-  '</div>';
+    '<div style="font-size:12px;font-weight:600;">Add a piece</div></div>';
 
-  // Grid gets a sensible column count based on piece count — stops 3 pieces
-  // looking marooned in a 5-column auto-fill grid.
-  function gridCols(n) {
-    if (n <= 1) return 'repeat(2,1fr)';
-    if (n <= 3) return 'repeat(3,1fr)';
-    if (n <= 4) return 'repeat(2,1fr)';
-    return 'repeat(auto-fill,minmax(240px,1fr))';
+  // ── Piece-grid layouts ────────────────────────────────────────────────
+  // Each renderer gets the pieces array and returns HTML for #ms-shop-section.
+  // They do NOT duplicate the hero/avatar — that's always in the DOM above.
+
+  function shopHeader(label) {
+    return '<div style="padding:32px 24px 20px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;">' + label + '</div>';
   }
 
-  // ── Template #2: Minimal Grid ─────────────────────────────────────────
-  function renderGrid(d) {
-    var m = d.member, pieces = d.pieces;
-    var name = esc(m.stall_name || m.display_name || 'Your stall');
-    var avatar = esc(m.stall_avatar_url || '');
-    var avatarEl = avatar
-      ? '<div style="width:96px;height:96px;border-radius:50%;background:url(' + avatar + ') center/cover;flex-shrink:0;"></div>'
-      : '<div style="width:96px;height:96px;border-radius:50%;background:#e4d6ad;flex-shrink:0;"></div>';
-    var bioHtml = m.stall_bio ? '<p style="color:#1c1713;font-size:14px;line-height:1.7;margin:12px 0 0;max-width:620px;">' + esc(m.stall_bio) + '</p>' : '';
-    var tagHtml = m.stall_tagline ? '<div style="color:#6a5d4a;font-size:14px;margin-top:2px;">' + esc(m.stall_tagline) + '</div>' : '';
-
-    var pieceTiles = pieces.map(function(p) {
+  // Handmade / Grid: square tiles, overlay label + price
+  function renderSquareGrid(pieces) {
+    var cols = pieces.length <= 2 ? 'repeat(2,1fr)' : pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(220px,1fr))';
+    var tiles = pieces.map(function(p) {
       var img = pieceImg(p);
-      var bg = img ? 'url(' + esc(img) + ') center/cover' : '#e4d6ad';
-      return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:' + bg + ';">' +
-        '<div style="position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff;">' +
-          '<div style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:18px;font-weight:500;">' + esc(p.title) + '</div>' +
-          (p.price ? '<div style="font-size:13px;opacity:0.92;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+      var bg = img ? 'url('+esc(img)+') center/cover' : '#e4d6ad';
+      return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:'+bg+';">' +
+        '<div style="position:absolute;inset:0;bottom:0;top:auto;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,0.65));color:#fff;">' +
+          '<div style="font-size:14px;font-weight:600;">' + esc(p.title) + '</div>' +
+          (p.price ? '<div style="font-size:12px;opacity:0.9;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
         '</div></div>';
     });
-    // Only show the +Add tile in edit preview (we always do for now — read-only
-    // viewers can ignore it since nothing happens until clicked).
-    pieceTiles.push(ADD_PIECE_TILE);
-
-    var piecesHtml = '<div style="display:grid;grid-template-columns:' + gridCols(pieces.length) + ';gap:14px;max-width:980px;margin:0 auto;">' + pieceTiles.join('') + '</div>';
-
-    return '<div style="max-width:1200px;margin:0 auto;padding:60px 24px;">' +
-      '<div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:48px;">' +
-        avatarEl +
-        '<div style="flex:1;min-width:0;">' +
-          '<h1 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:48px;font-weight:500;margin:0 0 2px;letter-spacing:-0.01em;color:#1c1713;">' + name + '</h1>' +
-          tagHtml + bioHtml +
-        '</div>' +
-      '</div>' +
-      piecesHtml +
-    '</div>';
+    tiles.push(ADD_TILE);
+    return shopHeader('Shop') + '<div style="padding:0 24px 40px;display:grid;grid-template-columns:'+cols+';gap:10px;">' + tiles.join('') + '</div>';
   }
 
-  // ── Template #3: Magazine ─────────────────────────────────────────────
-  function renderMagazine(d) {
-    var m = d.member, pieces = d.pieces;
-    var name = esc(m.stall_name || m.display_name || 'Your stall');
-    var cover = esc(m.stall_cover_url || '');
-    // Hero shrinks when no cover is set so the page doesn't start with a huge
-    // plain gradient block. 360px (hero) → 220px (no cover).
-    var heroHeight = cover ? 360 : 220;
-    var coverStyle = cover
-      ? 'background:url(' + cover + ') center/cover;'
-      : 'background:linear-gradient(135deg,#d4c28e,var(--stall-accent,#b8914a));';
-    var categoryLine = esc(m.craft_category || m.stall_tagline || '');
-    var location = esc(m.stall_location || '');
-    var years = m.years_practising != null ? (m.years_practising + ' year' + (m.years_practising === 1 ? '' : 's')) : '';
-
-    var bioHtml = m.stall_bio
-      ? '<div style="color:#1c1713;font-size:16px;line-height:1.85;white-space:pre-wrap;">' + esc(m.stall_bio) + '</div>'
-      : '<div style="color:#8e8e8e;font-style:italic;">Share your story from the editor.</div>';
-
-    var metaRows = [];
-    if (location) metaRows.push(['Based in', location]);
-    if (years) metaRows.push(['Practising', years]);
-    if (m.stall_instagram) metaRows.push(['Instagram', esc(m.stall_instagram)]);
-    var metaHtml = metaRows.map(function(r) {
-      return '<div style="margin-bottom:18px;">' +
-        '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--stall-accent,#b8914a);margin-bottom:4px;">' + r[0] + '</div>' +
-        '<div style="font-size:15px;color:#1c1713;">' + r[1] + '</div>' +
-      '</div>';
-    }).join('');
-
-    var pieceTiles = pieces.map(function(p) {
+  // Magazine: portrait 4/5 tiles with title below
+  function renderMagazineGrid(pieces) {
+    var cols = pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(200px,1fr))';
+    var addMag = '<div class="stp-add-piece" style="aspect-ratio:4/5;border:1.5px dashed #d4c28e;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'"><div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div><div style="font-size:12px;font-weight:600;">Add a piece</div></div>';
+    var tiles = pieces.map(function(p) {
       var img = pieceImg(p);
-      var imgHtml = img
-        ? '<div style="width:100%;aspect-ratio:4/5;background:url(' + esc(img) + ') center/cover;border-radius:4px;"></div>'
-        : '<div style="width:100%;aspect-ratio:4/5;background:#e4d6ad;border-radius:4px;"></div>';
-      return '<div>' + imgHtml +
-        '<div style="margin-top:12px;font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:22px;font-weight:500;color:#1c1713;">' + esc(p.title) + '</div>' +
-        (p.price ? '<div style="font-size:13px;color:' + (p.available ? 'var(--stall-accent,#b8914a)' : '#8e8e8e') + ';margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+      return '<div>' +
+        '<div style="aspect-ratio:4/5;background:' + (img ? 'url('+esc(img)+') center/cover' : '#e4d6ad') + ';border-radius:6px;"></div>' +
+        '<div style="margin-top:10px;font-size:15px;font-weight:600;color:#1c1713;">' + esc(p.title) + '</div>' +
+        (p.price ? '<div style="font-size:12px;color:'+(p.available?'#b8914a':'#8e8e8e')+';margin-top:2px;">' + esc(p.price) + '</div>' : '') +
       '</div>';
     });
-    // Magazine uses a 4/5 portrait tile, so the "+ Add" card matches that
-    // aspect to keep the grid rhythm consistent.
-    var addTile = '<div class="stp-add-piece" style="aspect-ratio:4/5;border:1.5px dashed #d4c28e;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'"><div style="font-size:32px;line-height:1;margin-bottom:8px;">+</div><div style="font-size:13px;font-weight:600;">Add a piece</div></div>';
-    pieceTiles.push(addTile);
+    tiles.push(addMag);
+    return shopHeader('Work') + '<div style="padding:0 24px 48px;display:grid;grid-template-columns:'+cols+';gap:24px;">' + tiles.join('') + '</div>';
+  }
 
-    var piecesGridCols = pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(260px,1fr))';
-
-    return '<div>' +
-      '<div style="position:relative;width:100%;height:' + heroHeight + 'px;' + coverStyle + '">' +
-        '<div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(28,23,19,0.55));"></div>' +
-        '<div style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);text-align:center;color:#fefcf7;">' +
-          '<h1 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:' + (cover ? 64 : 48) + 'px;font-weight:400;margin:0;letter-spacing:-0.01em;text-shadow:0 2px 8px rgba(0,0,0,0.3);">' + name + '</h1>' +
-          (categoryLine ? '<div style="font-size:13px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;margin-top:8px;opacity:0.94;">' + categoryLine + '</div>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div style="max-width:960px;margin:0 auto;padding:56px 24px 80px;">' +
-        '<div style="display:grid;grid-template-columns:2fr 1fr;gap:48px;margin-bottom:60px;">' +
-          '<div>' +
-            '<h2 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:30px;font-weight:500;margin:0 0 20px;color:#1c1713;">About</h2>' +
-            bioHtml +
-          '</div>' +
-          '<div style="border-left:1.5px solid #e4d6ad;padding-left:28px;">' + metaHtml + '</div>' +
-        '</div>' +
-        '<hr style="border:none;border-top:1px solid #e4d6ad;margin:60px 0;">' +
-        '<h2 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:40px;font-weight:500;text-align:center;margin:0 0 40px;color:#1c1713;">Work</h2>' +
-        '<div style="display:grid;grid-template-columns:' + piecesGridCols + ';gap:36px;">' + pieceTiles.join('') + '</div>' +
-      '</div>' +
+  // Journal: full-width image + text entries
+  function renderJournalList(pieces) {
+    if (!pieces.length) return shopHeader('Work') + '<div style="padding:20px 24px 40px;color:#8e8e8e;font-size:14px;">No pieces yet. Add one to get started.</div>';
+    var entries = pieces.map(function(p) {
+      var img = pieceImg(p);
+      var date = formatDate(p.created_at);
+      return '<div style="margin-bottom:48px;border-bottom:1px solid #f0ece4;padding-bottom:48px;">' +
+        (date ? '<div style="font-size:11px;color:#8e8e8e;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">' + date + '</div>' : '') +
+        '<div style="font-size:22px;font-weight:700;color:#1c1713;margin-bottom:14px;">' + esc(p.title) + '</div>' +
+        (img ? '<img src="'+esc(img)+'" style="width:100%;border-radius:6px;margin-bottom:14px;display:block;" loading="lazy"/>' : '') +
+        (p.description ? '<div style="font-size:15px;line-height:1.8;color:#3d3428;">' + esc(p.description) + '</div>' : '') +
+        (p.price ? '<div style="font-size:13px;color:'+(p.available?'#b8914a':'#8e8e8e')+';font-weight:600;margin-top:12px;">' + esc(p.price) + '</div>' : '') +
+      '</div>';
+    }).join('');
+    return shopHeader('Work') + '<div style="padding:0 24px 40px;max-width:640px;">' + entries +
+      '<div class="stp-add-piece" style="padding:20px;border:1.5px dashed #d4c28e;border-radius:8px;text-align:center;cursor:pointer;color:#b8914a;font-weight:600;font-size:14px;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">+ Add a piece</div>' +
     '</div>';
   }
 
-  // ── Template #4: Journal ──────────────────────────────────────────────
-  function renderJournal(d) {
-    var m = d.member, pieces = d.pieces;
-    var name = esc(m.stall_name || m.display_name || 'Your stall');
-    var location = esc(m.stall_location || '');
-    var years = m.years_practising != null ? (m.years_practising + ' year' + (m.years_practising === 1 ? '' : 's')) : '';
-    var subtitle = [location, years].filter(Boolean).join(' · ');
-
-    var header = '<header style="text-align:center;margin-bottom:60px;padding-bottom:40px;border-bottom:1px solid #e4d6ad;">' +
-      '<h1 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:52px;font-weight:400;margin:0 0 12px;letter-spacing:-0.01em;color:#1c1713;">' + name + '</h1>' +
-      (subtitle ? '<div style="color:#6a5d4a;font-size:14px;letter-spacing:0.05em;margin-bottom:18px;">' + subtitle + '</div>' : '') +
-      (m.stall_bio ? '<p style="font-style:italic;color:#3d3428;font-size:16px;line-height:1.8;max-width:520px;margin:0 auto;">' + esc(m.stall_bio) + '</p>' : '') +
-    '</header>';
-
-    var entries = pieces.length
-      ? pieces.map(function(p) {
-          var img = pieceImg(p);
-          var imgHtml = img ? '<img src="' + esc(img) + '" style="width:100%;border-radius:4px;margin-bottom:18px;display:block;" loading="lazy" />' : '';
-          var date = formatDate(p.created_at);
-          return '<article style="margin-bottom:64px;">' +
-            (date ? '<div style="font-size:11px;color:#8e8e8e;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">' + date + '</div>' : '') +
-            '<h2 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:32px;font-weight:500;margin:0 0 16px;color:#1c1713;">' + esc(p.title) + '</h2>' +
-            imgHtml +
-            (p.description ? '<p style="color:#1c1713;font-size:16px;line-height:1.85;font-family:Georgia,serif;">' + esc(p.description) + '</p>' : '') +
-            (p.price ? '<div style="font-size:13px;color:' + (p.available ? 'var(--stall-accent,#b8914a)' : '#8e8e8e') + ';font-weight:600;margin-top:14px;letter-spacing:0.02em;">' + esc(p.price) + '</div>' : '') +
-          '</article>';
-        }).join('')
-      : '<div style="text-align:center;padding:40px 20px;color:#8e8e8e;font-size:14px;">No entries yet.</div>';
-
-    return '<div style="max-width:680px;margin:0 auto;padding:72px 24px 80px;">' + header + entries + '</div>';
-  }
-
-  // ── Template #5: Tall Mobile ──────────────────────────────────────────
-  function renderTallMobile(d) {
-    var m = d.member, pieces = d.pieces;
-    var name = esc(m.stall_name || m.display_name || 'Your stall');
-    var avatar = esc(m.stall_avatar_url || '');
-    var avatarEl = avatar
-      ? '<div style="width:112px;height:112px;border-radius:50%;background:url(' + avatar + ') center/cover;margin:0 auto 14px;"></div>'
-      : '<div style="width:112px;height:112px;border-radius:50%;background:#e4d6ad;margin:0 auto 14px;"></div>';
-
-    var socials = m.socials || {};
-    if (!socials.instagram && m.stall_instagram) socials.instagram = m.stall_instagram;
-    var socialLinks = [];
-    if (socials.instagram) socialLinks.push('<a href="' + esc(igUrl(socials.instagram)) + '" target="_blank" rel="noopener" style="color:var(--stall-accent,#b8914a);font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid #e4d6ad;border-radius:18px;">Instagram</a>');
-    if (socials.arena) socialLinks.push('<a href="' + esc(/^https?:/.test(socials.arena) ? socials.arena : 'https://are.na/' + socials.arena.replace(/^\/+/, '')) + '" target="_blank" rel="noopener" style="color:var(--stall-accent,#b8914a);font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid #e4d6ad;border-radius:18px;">Are.na</a>');
-    if (socials.website) socialLinks.push('<a href="' + esc(/^https?:/.test(socials.website) ? socials.website : 'https://' + socials.website) + '" target="_blank" rel="noopener" style="color:var(--stall-accent,#b8914a);font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid #e4d6ad;border-radius:18px;">Website</a>');
-
-    var socialsHtml = socialLinks.length
-      ? '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px;">' + socialLinks.join('') + '</div>'
-      : '';
-
-    var piecesHtml = pieces.length
-      ? pieces.map(function(p) {
-          var img = pieceImg(p);
-          var imgHtml = img
-            ? '<div style="width:100%;aspect-ratio:1;background:url(' + esc(img) + ') center/cover;"></div>'
-            : '<div style="width:100%;aspect-ratio:1;background:#e4d6ad;"></div>';
-          return '<div style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid #e4d6ad;">' + imgHtml +
-            '<div style="padding:14px 16px;">' +
-              '<div style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:20px;font-weight:500;color:#1c1713;">' + esc(p.title) + '</div>' +
-              (p.price ? '<div style="font-size:13px;color:' + (p.available ? 'var(--stall-accent,#b8914a)' : '#8e8e8e') + ';margin-top:4px;">' + esc(p.price) + '</div>' : '') +
-            '</div>' +
-          '</div>';
-        }).join('')
-      : '<div style="text-align:center;padding:40px 20px;color:#8e8e8e;font-size:14px;">No pieces yet.</div>';
-
-    return '<div style="max-width:440px;margin:0 auto;padding:40px 20px 60px;">' +
-      '<div style="text-align:center;margin-bottom:28px;">' +
-        avatarEl +
-        '<h1 style="font-family:var(--stall-heading, \'Cormorant Garamond\', Georgia, serif);font-size:30px;font-weight:500;margin:0 0 4px;color:#1c1713;">' + name + '</h1>' +
-        (m.stall_location ? '<div style="color:#6a5d4a;font-size:13px;">' + esc(m.stall_location) + '</div>' : '') +
-        (m.stall_bio ? '<p style="color:#1c1713;font-size:14px;line-height:1.65;margin:12px 0 0;">' + esc(m.stall_bio) + '</p>' : '') +
-        socialsHtml +
-      '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:14px;">' + piecesHtml + '</div>' +
+  // Tall-mobile: narrow single-column cards
+  function renderTallList(pieces) {
+    var cards = pieces.map(function(p) {
+      var img = pieceImg(p);
+      return '<div style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid #ede8de;">' +
+        (img ? '<div style="width:100%;aspect-ratio:1;background:url('+esc(img)+') center/cover;"></div>' : '<div style="width:100%;aspect-ratio:1;background:#e4d6ad;"></div>') +
+        '<div style="padding:14px 16px;">' +
+          '<div style="font-size:16px;font-weight:700;color:#1c1713;">' + esc(p.title) + '</div>' +
+          (p.price ? '<div style="font-size:13px;color:'+(p.available?'#b8914a':'#8e8e8e')+';margin-top:4px;">' + esc(p.price) + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+    return shopHeader('Shop') + '<div style="padding:0 24px 40px;max-width:380px;display:flex;flex-direction:column;gap:14px;">' + cards +
+      '<div class="stp-add-piece" style="padding:20px;border:1.5px dashed #d4c28e;border-radius:12px;text-align:center;cursor:pointer;color:#b8914a;font-weight:600;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">+ Add a piece</div>' +
     '</div>';
   }
 
   var RENDERERS = {
-    'grid': renderGrid,
-    'magazine': renderMagazine,
-    'journal': renderJournal,
-    'tall-mobile': renderTallMobile
+    'handmade':   renderSquareGrid,
+    'grid':       renderSquareGrid,
+    'magazine':   renderMagazineGrid,
+    'journal':    renderJournalList,
+    'tall-mobile':renderTallList
   };
 
-  // Theme presets — the full list shown in the Theme panel. Keeping them inline
-  // so the panel stays self-contained and doesn't need an extra round trip.
-  var HEADING_FONTS = [
-    { label: 'Cormorant',    value: "'Cormorant Garamond', Georgia, serif" },
-    { label: 'Playfair',     value: "'Playfair Display', Georgia, serif" },
-    { label: 'Georgia',      value: "Georgia, 'Times New Roman', serif" },
-    { label: 'Editorial',    value: "'EB Garamond', Georgia, serif" },
-    { label: 'Inter Bold',   value: "Inter, -apple-system, sans-serif" }
-  ];
-  var BODY_FONTS = [
-    { label: 'Inter',    value: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
-    { label: 'Georgia',  value: "Georgia, 'Times New Roman', serif" },
-    { label: 'Helvetica',value: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
-    { label: 'IBM Plex', value: "'IBM Plex Sans', -apple-system, sans-serif" }
-  ];
-  var ACCENT_COLORS = [
-    { label: 'Amber',     value: '#b8914a' },
-    { label: 'Sage',      value: '#6d8a71' },
-    { label: 'Dusk',      value: '#5a6b8a' },
-    { label: 'Rose',      value: '#b86a7a' },
-    { label: 'Terracotta',value: '#b86a4a' },
-    { label: 'Charcoal',  value: '#3d3428' }
-  ];
-
-  var _currentTheme = { heading_font: HEADING_FONTS[0].value, body_font: BODY_FONTS[0].value, accent_color: ACCENT_COLORS[0].value };
-  var _currentTpl = null;
-
-  function applyTheme(m) {
-    var theme = (m && m.stall_theme) || {};
-    _currentTheme = {
-      heading_font: theme.heading_font || HEADING_FONTS[0].value,
-      body_font:    theme.body_font    || BODY_FONTS[0].value,
-      accent_color: theme.accent_color || ACCENT_COLORS[0].value
-    };
-    $render.style.setProperty('--stall-heading', _currentTheme.heading_font);
-    $render.style.setProperty('--stall-body',    _currentTheme.body_font);
-    $render.style.setProperty('--stall-accent',  _currentTheme.accent_color);
-    $render.style.fontFamily = 'var(--stall-body)';
-  }
-
-  function saveTheme() {
-    if (!window._supabase || !window._sbAuthUid) return;
-    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
-    if (!vid) return;
-    window._supabase.from('village_members')
-      .update({ stall_theme: _currentTheme })
-      .eq('auth_id', window._sbAuthUid).eq('village_id', vid)
-      .then(function(r) { if (r.error) console.warn('[Theme save]', r.error.message); });
-  }
-
-  // ── Theme panel wiring ───────────────────────────────────────────────
-  // Anchored to the Theme button in the My Stall mode bar (always visible
-  // regardless of template choice).
-  var $themeBtn    = document.getElementById('ms-theme-btn');
-  var $themePanel  = document.getElementById('ms-theme-panel');
-  var $headOpts    = document.getElementById('ms-heading-opts');
-  var $bodyOpts    = document.getElementById('ms-body-opts');
-  var $colorOpts   = document.getElementById('ms-color-opts');
-
-  function makeChip(label, active) {
-    return '<button type="button" style="background:' + (active ? '#faf6ed' : '#fff') +
-      ';color:#1c1713;border:1.5px solid ' + (active ? '#b8914a' : '#e4d6ad') +
-      ';border-radius:6px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">' +
-      label + '</button>';
-  }
-  function makeSwatch(color, active) {
-    return '<button type="button" title="' + color + '" style="width:28px;height:28px;border-radius:50%;background:' + color +
-      ';border:2px solid ' + (active ? '#1c1713' : 'transparent') +
-      ';cursor:pointer;padding:0;outline:2px solid #e4d6ad;outline-offset:-6px;"></button>';
-  }
-
-  function renderThemePanel() {
-    if (!$headOpts) return;
-    $headOpts.innerHTML = HEADING_FONTS.map(function(f) {
-      return makeChip(f.label, f.value === _currentTheme.heading_font);
-    }).join('');
-    $bodyOpts.innerHTML = BODY_FONTS.map(function(f) {
-      return makeChip(f.label, f.value === _currentTheme.body_font);
-    }).join('');
-    $colorOpts.innerHTML = ACCENT_COLORS.map(function(c) {
-      return makeSwatch(c.value, c.value === _currentTheme.accent_color);
-    }).join('');
-
-    // Wire chips
-    Array.prototype.forEach.call($headOpts.children, function(btn, i) {
-      btn.addEventListener('click', function() {
-        _currentTheme.heading_font = HEADING_FONTS[i].value;
-        $render.style.setProperty('--stall-heading', _currentTheme.heading_font);
-        renderThemePanel();
-        saveTheme();
-      });
-    });
-    Array.prototype.forEach.call($bodyOpts.children, function(btn, i) {
-      btn.addEventListener('click', function() {
-        _currentTheme.body_font = BODY_FONTS[i].value;
-        $render.style.setProperty('--stall-body', _currentTheme.body_font);
-        $render.style.fontFamily = 'var(--stall-body)';
-        renderThemePanel();
-        saveTheme();
-      });
-    });
-    Array.prototype.forEach.call($colorOpts.children, function(btn, i) {
-      btn.addEventListener('click', function() {
-        _currentTheme.accent_color = ACCENT_COLORS[i].value;
-        $render.style.setProperty('--stall-accent', _currentTheme.accent_color);
-        renderThemePanel();
-        saveTheme();
-      });
-    });
-  }
-
-  if ($themeBtn) $themeBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    var open = $themePanel.style.display !== 'none';
-    $themePanel.style.display = open ? 'none' : 'block';
-    if (!open) renderThemePanel();
-  });
-  // Close panel on outside click
-  document.addEventListener('click', function(e) {
-    if (!$themePanel) return;
-    if ($themePanel.style.display === 'none') return;
-    if ($themePanel.contains(e.target) || (e.target === $themeBtn)) return;
-    $themePanel.style.display = 'none';
-  });
-
   // ── Public API ────────────────────────────────────────────────────────
-  // Unified entry point: every template — including hand-made — opens inside
-  // the same My Stall panel in the Gallery window. No more fullscreen overlay,
-  // so the chrome (traffic lights, tabs) and the mode bar stay consistent
-  // between templates. The .ms-template-mode class on #gal-panel-stall flips
-  // the view between the hand-made editor body and the rendered template
-  // preview via CSS with !important — so _setMode's inline-display toggles
-  // for .ms-edit-only can't override it.
+  // Opens My Stall in the Gallery window. Hero + nav + profile are always
+  // visible. Only the shop/pieces section below changes with the template.
   window.openStallTemplate = function(tpl) {
     document.body.classList.add('stall-focus');
     if (typeof window.openGallery === 'function') window.openGallery();
@@ -31082,62 +30782,43 @@ body.wm-browser-fs #admin-panel:hover {
       if (tab) tab.click();
     }, 30);
 
-    var isHandmade = (tpl === 'handmade' || !tpl || !RENDERERS[tpl]);
-    var panel = document.getElementById('gal-panel-stall');
-
-    // Reflect the current template in the mode bar label.
     var $label = document.getElementById('ms-template-name');
-    if ($label) $label.textContent = isHandmade ? 'Hand-made' : (LABELS[tpl] || tpl);
+    if ($label) $label.textContent = LABELS[tpl] || 'Hand-made';
 
-    if (isHandmade) {
-      if (panel) panel.classList.remove('ms-template-mode');
-      $render.innerHTML = '';
-      return;
-    }
+    var render = RENDERERS[tpl] || renderSquareGrid;
+    $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading pieces…</div>';
 
-    // Switch the whole panel into template mode. CSS does the rest.
-    if (panel) panel.classList.add('ms-template-mode');
-    $render.innerHTML = '<div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>';
-
-    fetchData().then(function(data) {
-      applyTheme(data.member);
-      var render = RENDERERS[tpl];
-      if (render) $render.innerHTML = render(data);
+    fetchPieces().then(function(pieces) {
+      $shop.innerHTML = render(pieces);
     });
   };
 
-  // "+ Add a piece" tiles inside a rendered template jump straight to the
-  // Add-a-piece form inside the Gallery window — the actual place where
-  // gallery_pieces rows are created. We do this by hiding the other gal
-  // panels and showing #gal-panel-add directly, which works whether or not
-  // the Gallery tab has been touched yet. This kills the dead-end where
-  // clicking "+ Add" used to dump the maker back into the hand-made editor
-  // with no piece-creation UI in sight.
-  function openAddPiecePanel() {
-    var panel = document.getElementById('gal-panel-stall');
-    if (panel) panel.classList.remove('ms-template-mode'); // leave template mode
-    // Make sure Gallery window itself is open.
+  // Refresh the shop section when stall tab becomes active
+  document.addEventListener('click', function(e) {
+    var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
+    if (!t) return;
+    // Re-read the saved template from the label and re-render
+    setTimeout(function() {
+      var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
+      var tplKey = Object.keys(LABELS).find(function(k) { return LABELS[k] === tplName; }) || 'handmade';
+      var render = RENDERERS[tplKey] || renderSquareGrid;
+      fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
+    }, 80);
+  });
+
+  // "+ Add a piece" tiles open the Add-a-piece form
+  $shop.addEventListener('click', function(e) {
+    var tile = e.target.closest && e.target.closest('.stp-add-piece');
+    if (!tile) return;
     if (typeof window.openGallery === 'function') window.openGallery();
-    // Show the Add form; hide everything else inside the Gallery body.
     ['gal-panel-gallery','gal-panel-market','gal-panel-stall'].forEach(function(id) {
       var el = document.getElementById(id); if (el) el.style.display = 'none';
     });
     var add = document.getElementById('gal-panel-add');
     if (add) add.style.display = '';
-    // Title switches the tab strip highlighting off — no tab lights up for
-    // "add" by design, but we clear any active highlight so it doesn't read
-    // as "you're still on Stall but empty".
     document.querySelectorAll('.gal-tab').forEach(function(t) {
-      t.style.color = '#8e8e8e';
-      t.style.borderBottomColor = 'transparent';
-      t.classList.remove('active');
+      t.style.color = '#8e8e8e'; t.style.borderBottomColor = 'transparent'; t.classList.remove('active');
     });
-  }
-
-  if ($render) $render.addEventListener('click', function(e) {
-    var tile = e.target.closest && e.target.closest('.stp-add-piece');
-    if (!tile) return;
-    openAddPiecePanel();
   });
 })();
 </script>
