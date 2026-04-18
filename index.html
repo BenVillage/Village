@@ -7281,14 +7281,6 @@ function toggleVillageSound() {
           </div>
         </div>
 
-        <!-- Shop section: always present below the profile. Filled by
-             openStallTemplate() with the maker's pieces in whichever layout
-             they chose. Handmade keeps a simple vertical stack; the other
-             templates swap in their own piece grid. -->
-        <div id="ms-shop-section" style="width:calc(100% + 48px);margin:0 -24px;">
-          <div style="text-align:center;padding:60px 20px;color:#aaa;font-size:13px;">Your pieces will appear here</div>
-        </div>
-
         <!-- Mobile nav menu overlay -->
         <div id="ms-nav-mobile-menu" style="display:none;position:fixed;inset:0;z-index:99994;background:#f2f1ef;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;flex-shrink:0;">
@@ -7298,6 +7290,22 @@ function toggleVillageSound() {
             </button>
           </div>
           <div id="ms-mm-items" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow-y:auto;padding:20px 0;"></div>
+        </div>
+      </div>
+      <!-- ── Shop panel — piece grid, separate page from the stall homepage ── -->
+      <div id="gal-panel-shop" style="display:none;position:relative;">
+        <!-- Shop header bar -->
+        <div style="display:flex;align-items:center;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;gap:12px;">
+          <button id="ms-shop-back-btn" style="background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#262626;padding:0;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap;">← Home</button>
+          <span style="font-size:14px;font-weight:700;color:#1c1713;flex:1;letter-spacing:-0.01em;">Shop</span>
+          <span style="font-size:11px;color:#8e8e8e;white-space:nowrap;">
+            <span style="color:#b8914a;font-weight:600;">Template:</span>
+            <span id="ms-shop-template-name" style="color:#1c1713;font-weight:500;">Hand-made</span>
+          </span>
+        </div>
+        <!-- Piece grid: filled by template renderers via openStallTemplate() -->
+        <div id="ms-shop-section" style="width:calc(100% + 48px);margin:0 -24px;">
+          <div style="text-align:center;padding:60px 20px;color:#aaa;font-size:13px;">Your pieces will appear here</div>
         </div>
       </div>
       <!-- Crop modal (fixed overlay, used by all stall image uploads) -->
@@ -18984,6 +18992,9 @@ Mura facilitates. People decide.`;
       document.getElementById('gal-panel-market').style.display  = _activeGalTab === 'market'  ? '' : 'none';
       document.getElementById('gal-panel-add').style.display     = _activeGalTab === 'add'     ? '' : 'none';
       document.getElementById('gal-panel-stall').style.display   = _activeGalTab === 'stall'   ? '' : 'none';
+      // Shop is a sub-panel of stall — always hidden when switching tabs
+      var _shopP = document.getElementById('gal-panel-shop');
+      if (_shopP) _shopP.style.display = 'none';
       if (_activeGalTab === 'gallery') { document.getElementById('gallery-filters').style.display = ''; renderShowcase(); }
       if (_activeGalTab === 'market')  { document.getElementById('gallery-filters').style.display = 'none'; if (typeof window._ensureStallDataLoaded === 'function') window._ensureStallDataLoaded(); renderMakerCards(); }
       if (_activeGalTab === 'stall') {
@@ -21041,7 +21052,7 @@ Mura facilitates. People decide.`;
     var content = document.getElementById('gal-sp-content');
     var tabBar = document.getElementById('gal-tab-bar');
     if (!sp || !content) return;
-    ['gal-panel-gallery','gal-panel-market','gal-panel-add','gal-panel-stall'].forEach(function(id) {
+    ['gal-panel-gallery','gal-panel-market','gal-panel-add','gal-panel-stall','gal-panel-shop'].forEach(function(id) {
       var el = document.getElementById(id); if (el) el.style.display = 'none';
     });
     if (tabBar) tabBar.style.display = 'none';
@@ -21826,7 +21837,7 @@ Mura facilitates. People decide.`;
   }
   _wire('ms-nav-brand', 'rgba(255,255,255,0.25)', 'rgba(38,38,38,0.38)');
 
-  // Nav links — editable labels only (no navigation on click)
+  // Nav links — editable in edit mode; "Shop" link navigates to shop panel in preview mode
   function _renderNav(links) {
     var nl=document.getElementById('ms-nav-links'); if(!nl) return;
     _navLinks=links.map(function(l){return{label:l.label||''};});
@@ -21842,6 +21853,13 @@ Mura facilitates. People decide.`;
         _saveField('stall_nav_links',JSON.stringify(_navLinks));
       });
       sp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sp.blur();}});
+      // In preview mode: "Shop" link navigates to the shop panel
+      sp.addEventListener('click',function(){
+        if(!_inPreview) return;
+        if(sp.textContent.trim().toLowerCase()==='shop' && typeof window.openStallShop==='function') {
+          window.openStallShop();
+        }
+      });
       nl.appendChild(sp);
     });
   }
@@ -30771,9 +30789,48 @@ body.wm-browser-fs #admin-panel:hover {
     'tall-mobile':renderTallList
   };
 
+  // ── Helper: sync template label from stall homepage → shop header ──────
+  function _syncShopLabel() {
+    var src  = document.getElementById('ms-template-name');
+    var dest = document.getElementById('ms-shop-template-name');
+    if (src && dest) dest.textContent = src.textContent;
+  }
+
+  // ── Navigate: stall homepage ↔ shop panel ────────────────────────────
+  window.openStallShop = function() {
+    var stall = document.getElementById('gal-panel-stall');
+    var shop  = document.getElementById('gal-panel-shop');
+    if (stall) stall.style.display = 'none';
+    if (shop)  shop.style.display  = '';
+    _syncShopLabel();
+    // Render pieces if shop section is empty / showing placeholder
+    var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
+    var tplKey  = Object.keys(LABELS).find(function(k) { return LABELS[k] === tplName; }) || 'handmade';
+    var render  = RENDERERS[tplKey] || renderSquareGrid;
+    if ($shop.querySelector('.stp-add-piece') === null) {
+      // Not yet rendered — fetch and draw
+      $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading pieces…</div>';
+      fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
+    }
+  };
+
+  window.openStallHome = function() {
+    var stall = document.getElementById('gal-panel-stall');
+    var shop  = document.getElementById('gal-panel-shop');
+    if (shop)  shop.style.display  = 'none';
+    if (stall) stall.style.display = '';
+  };
+
+  // "← Home" button in shop panel
+  document.addEventListener('click', function(e) {
+    if (e.target.closest && e.target.closest('#ms-shop-back-btn')) {
+      window.openStallHome();
+    }
+  });
+
   // ── Public API ────────────────────────────────────────────────────────
-  // Opens My Stall in the Gallery window. Hero + nav + profile are always
-  // visible. Only the shop/pieces section below changes with the template.
+  // Sets the active template label and pre-renders the shop section.
+  // Always lands on the stall homepage — user navigates to shop via nav.
   window.openStallTemplate = function(tpl) {
     document.body.classList.add('stall-focus');
     if (typeof window.openGallery === 'function') window.openGallery();
@@ -30782,36 +30839,34 @@ body.wm-browser-fs #admin-panel:hover {
       if (tab) tab.click();
     }, 30);
 
+    // Update template label on both stall homepage and shop header
     var $label = document.getElementById('ms-template-name');
     if ($label) $label.textContent = LABELS[tpl] || 'Hand-made';
+    _syncShopLabel();
 
+    // Pre-load pieces into the shop section in the background
     var render = RENDERERS[tpl] || renderSquareGrid;
-    $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading pieces…</div>';
-
-    fetchPieces().then(function(pieces) {
-      $shop.innerHTML = render(pieces);
-    });
+    fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
   };
 
-  // Refresh the shop section when stall tab becomes active
+  // Refresh shop when stall tab is clicked (handles re-entry after adding pieces)
   document.addEventListener('click', function(e) {
     var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
     if (!t) return;
-    // Re-read the saved template from the label and re-render
     setTimeout(function() {
       var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
-      var tplKey = Object.keys(LABELS).find(function(k) { return LABELS[k] === tplName; }) || 'handmade';
-      var render = RENDERERS[tplKey] || renderSquareGrid;
+      var tplKey  = Object.keys(LABELS).find(function(k) { return LABELS[k] === tplName; }) || 'handmade';
+      var render  = RENDERERS[tplKey] || renderSquareGrid;
       fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
     }, 80);
   });
 
-  // "+ Add a piece" tiles open the Add-a-piece form
+  // "+ Add a piece" tiles → open Add-a-piece form
   $shop.addEventListener('click', function(e) {
     var tile = e.target.closest && e.target.closest('.stp-add-piece');
     if (!tile) return;
     if (typeof window.openGallery === 'function') window.openGallery();
-    ['gal-panel-gallery','gal-panel-market','gal-panel-stall'].forEach(function(id) {
+    ['gal-panel-gallery','gal-panel-market','gal-panel-stall','gal-panel-shop'].forEach(function(id) {
       var el = document.getElementById(id); if (el) el.style.display = 'none';
     });
     var add = document.getElementById('gal-panel-add');
