@@ -6084,10 +6084,6 @@ function toggleVillageSound() {
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
       <span class="admin-nav-label">Travel</span>
     </div>
-    <div class="admin-nav-item" data-panel="my-stall" id="nav-my-stall" title="My Stall — your website inside the village">
-      <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11a1 1 0 0 0 1 1h5v-7h4v7h5a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/></svg></span>
-      <span class="admin-nav-label">My Stall</span>
-    </div>
     <div class="admin-nav-item" data-panel="village-search" id="nav-village-search" title="Search — find pieces and makers across all villages">
       <span class="admin-nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
       <span class="admin-nav-label">Search</span>
@@ -7129,7 +7125,6 @@ function toggleVillageSound() {
     <div id="gal-tab-bar" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;padding:0 24px;flex-shrink:0;">
       <button class="gal-tab active" data-tab="gallery" style="padding:10px 20px;font-size:12px;font-weight:600;color:#c8a84b;cursor:pointer;border:none;background:none;border-bottom:2px solid #c8a84b;font-family:inherit;">Gallery</button>
       <button class="gal-tab" data-tab="market" style="padding:10px 20px;font-size:12px;font-weight:600;color:#8e8e8e;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;">Market</button>
-      <button class="gal-tab" data-tab="stall" style="padding:10px 20px;font-size:12px;font-weight:600;color:#8e8e8e;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;">My Stall</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:24px;">
       <!-- Gallery tab: random showcase -->
@@ -7180,11 +7175,9 @@ function toggleVillageSound() {
       </div>
       <!-- My Stall tab — website template -->
       <div id="gal-panel-stall" style="display:none;position:relative;">
-        <!-- Mode bar: Save/Pages/Preview -->
-        <div style="display:flex;align-items:center;justify-content:flex-end;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
+        <!-- Mode bar: Preview toggle (left-aligned, auto-saves on preview) -->
+        <div style="display:flex;align-items:center;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
           <div style="display:flex;gap:6px;align-items:center;">
-            <button id="ms-pages-btn" class="ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
-            <button id="ms-save-btn" class="ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
             <button id="ms-preview-btn" style="background:none;color:#262626;border:1.5px solid #262626;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Preview →</button>
           </div>
         </div>
@@ -7286,34 +7279,96 @@ function toggleVillageSound() {
           <div id="ms-mm-items" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow-y:auto;padding:20px 0;"></div>
         </div>
       </div>
-      <!-- ── Shop panel — piece grid, separate page from the stall homepage ── -->
+      <!-- ── Shop panel — appears below the stall hero/nav when viewing the shop ── -->
       <div id="gal-panel-shop" style="display:none;position:relative;">
-        <!-- Shop header bar -->
-        <div style="display:flex;align-items:center;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;gap:12px;">
-          <button id="ms-shop-back-btn" style="background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#262626;padding:0;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap;">← Home</button>
-          <span style="font-size:14px;font-weight:700;color:#1c1713;flex:1;letter-spacing:-0.01em;">Shop</span>
+        <!-- Shop edit settings bar (edit mode only) -->
+        <div id="ms-shop-settings-bar" style="display:none;background:#faf8f5;border-bottom:1px solid #e8e4de;padding:10px 0;width:calc(100% + 48px);margin:0 -24px;padding-left:24px;padding-right:24px;box-sizing:border-box;">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;flex-shrink:0;">Layout</span>
+            <div style="display:flex;gap:4px;">
+              <button class="ms-shop-layout-btn" data-layout="grid" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid #1c1713;background:#1c1713;color:#fff;">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><rect x="0" y="0" width="7" height="7" rx="1"/><rect x="9" y="0" width="7" height="7" rx="1"/><rect x="0" y="9" width="7" height="7" rx="1"/><rect x="9" y="9" width="7" height="7" rx="1"/></svg>Grid
+              </button>
+              <button class="ms-shop-layout-btn" data-layout="list" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><rect x="0" y="1" width="16" height="2" rx="1"/><rect x="0" y="7" width="16" height="2" rx="1"/><rect x="0" y="13" width="16" height="2" rx="1"/></svg>List
+              </button>
+            </div>
+            <div style="width:1px;height:20px;background:#e0dbd4;flex-shrink:0;"></div>
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8e8e8e;flex-shrink:0;">Columns</span>
+            <div style="display:flex;gap:4px;">
+              <button class="ms-shop-cols-btn" data-cols="2" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">2</button>
+              <button class="ms-shop-cols-btn active" data-cols="3" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #1c1713;background:#1c1713;color:#fff;">3</button>
+              <button class="ms-shop-cols-btn" data-cols="4" style="width:30px;height:30px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid #d8d3cc;background:#fff;color:#555;">4</button>
+            </div>
+            <div style="width:1px;height:20px;background:#e0dbd4;flex-shrink:0;"></div>
+            <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#444;cursor:pointer;">
+              <span class="ms-toggle" style="transform:scale(0.85);transform-origin:left center;">
+                <input type="checkbox" id="ms-shop-show-price" checked/>
+                <span class="ms-toggle-track"><span class="ms-toggle-thumb"></span></span>
+              </span>
+              Price
+            </label>
+          </div>
         </div>
-        <!-- Piece grid: filled by template renderers via openStallTemplate() -->
+        <!-- Piece grid: filled by renderer -->
         <div id="ms-shop-section" style="width:calc(100% + 48px);margin:0 -24px;">
           <div style="text-align:center;padding:60px 20px;color:#aaa;font-size:13px;">Your pieces will appear here</div>
         </div>
-        <!-- Piece edit drawer — appears over the shop grid when editing a piece -->
+        <!-- Piece edit drawer — Squarespace-style product editor -->
         <div id="ms-piece-drawer">
-          <div style="display:flex;align-items:center;padding:14px 0 14px;border-bottom:1px solid #f0f0f0;gap:12px;position:sticky;top:0;background:#fff;z-index:2;">
-            <button id="ms-drawer-back" style="background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#262626;padding:0;font-family:inherit;display:flex;align-items:center;gap:4px;white-space:nowrap;">← Shop</button>
-            <span style="font-size:14px;font-weight:700;color:#1c1713;flex:1;letter-spacing:-0.01em;">Edit piece</span>
-            <button id="ms-drawer-delete" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#c94a4a;padding:0;font-family:inherit;white-space:nowrap;">Delete piece</button>
+          <!-- Top bar -->
+          <div class="ms-drawer-topbar">
+            <button id="ms-drawer-back" class="ms-drawer-cancel">Cancel</button>
+            <div class="ms-drawer-titleblock">
+              <span id="ms-drawer-name-preview">Untitled</span>
+              <span class="ms-drawer-subtitle">Physical Product</span>
+            </div>
+            <button id="ms-drawer-delete" class="ms-drawer-del-btn" title="Delete piece">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+            <button id="ms-drawer-save" class="ms-drawer-save-btn">Save</button>
           </div>
-          <div style="padding:20px 0 40px;">
-            <div id="ms-drawer-img" style="width:100%;aspect-ratio:4/3;background:#f0ece4 url() center/cover;border-radius:10px;margin-bottom:20px;"></div>
-            <input id="ms-drawer-title" placeholder="Title" style="width:100%;box-sizing:border-box;border:1.5px solid #e8e4de;border-radius:8px;padding:11px 13px;font-size:15px;font-weight:600;font-family:inherit;color:#1c1713;outline:none;margin-bottom:10px;transition:border-color 0.15s;" onfocus="this.style.borderColor='#b8914a'" onblur="this.style.borderColor='#e8e4de'"/>
-            <input id="ms-drawer-price" placeholder="Price — e.g. £45 or Not for sale" style="width:100%;box-sizing:border-box;border:1.5px solid #e8e4de;border-radius:8px;padding:11px 13px;font-size:14px;font-family:inherit;color:#1c1713;outline:none;margin-bottom:10px;transition:border-color 0.15s;" onfocus="this.style.borderColor='#b8914a'" onblur="this.style.borderColor='#e8e4de'"/>
-            <textarea id="ms-drawer-desc" placeholder="Description" rows="4" style="width:100%;box-sizing:border-box;border:1.5px solid #e8e4de;border-radius:8px;padding:11px 13px;font-size:14px;font-family:inherit;color:#1c1713;outline:none;resize:none;line-height:1.65;margin-bottom:14px;transition:border-color 0.15s;" onfocus="this.style.borderColor='#b8914a'" onblur="this.style.borderColor='#e8e4de'"></textarea>
-            <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:#1c1713;margin-bottom:24px;cursor:pointer;user-select:none;">
-              <input type="checkbox" id="ms-drawer-available" style="accent-color:#b8914a;width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
-              Available for sale
-            </label>
-            <button id="ms-drawer-save" style="width:100%;background:#1c1713;color:#fff;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:-0.01em;transition:background 0.15s;" onmouseover="this.style.background='#b8914a'" onmouseout="this.style.background='#1c1713'">Save changes</button>
+          <!-- Tab bar -->
+          <div class="ms-drawer-tabs">
+            <button class="ms-drawer-tab active" data-panel="details">Details</button>
+            <button class="ms-drawer-tab" data-panel="images">Images</button>
+            <button class="ms-drawer-tab" data-panel="inventory">Inventory</button>
+          </div>
+          <!-- Details panel -->
+          <div class="ms-drawer-panel active" id="ms-dpanel-details">
+            <div class="ms-drawer-card">
+              <label class="ms-drawer-label">Product name</label>
+              <input id="ms-drawer-title" class="ms-drawer-input" placeholder="e.g. Handmade ceramic mug"/>
+              <label class="ms-drawer-label" style="margin-top:18px;">Description</label>
+              <textarea id="ms-drawer-desc" class="ms-drawer-textarea" rows="5" placeholder="Describe your piece — materials, dimensions, inspiration…"></textarea>
+            </div>
+          </div>
+          <!-- Images panel -->
+          <div class="ms-drawer-panel" id="ms-dpanel-images">
+            <div class="ms-drawer-card">
+              <label class="ms-drawer-label">Images</label>
+              <div id="ms-drawer-img-grid" class="ms-img-grid"></div>
+              <label class="ms-drawer-add-img-btn">
+                <input type="file" accept="image/*" multiple id="ms-drawer-img-input" style="display:none;"/>
+                + Add images
+              </label>
+            </div>
+          </div>
+          <!-- Inventory panel -->
+          <div class="ms-drawer-panel" id="ms-dpanel-inventory">
+            <div class="ms-drawer-card">
+              <div class="ms-drawer-row">
+                <span class="ms-drawer-row-label">Price</span>
+                <input id="ms-drawer-price" class="ms-drawer-price-input" placeholder="£0.00"/>
+              </div>
+              <div class="ms-drawer-row" style="border-top:1px solid #f0f0f0;">
+                <span class="ms-drawer-row-label">Available for sale</span>
+                <label class="ms-toggle">
+                  <input type="checkbox" id="ms-drawer-available"/>
+                  <span class="ms-toggle-track"><span class="ms-toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -18883,19 +18938,13 @@ Mura facilitates. People decide.`;
       document.getElementById('gal-panel-market').style.display  = _activeGalTab === 'market'  ? '' : 'none';
       document.getElementById('gal-panel-add').style.display     = _activeGalTab === 'add'     ? '' : 'none';
       document.getElementById('gal-panel-stall').style.display   = _activeGalTab === 'stall'   ? '' : 'none';
-      // Shop is a sub-panel of stall — always hidden when switching tabs
+      // When switching away from stall, reset shop panel and restore ig-section
       var _shopP = document.getElementById('gal-panel-shop');
       if (_shopP) _shopP.style.display = 'none';
+      var _igS = document.getElementById('ms-ig-section');
+      if (_igS && _activeGalTab !== 'stall') _igS.style.display = '';
       if (_activeGalTab === 'gallery') { document.getElementById('gallery-filters').style.display = ''; renderShowcase(); }
       if (_activeGalTab === 'market')  { document.getElementById('gallery-filters').style.display = 'none'; if (typeof window._ensureStallDataLoaded === 'function') window._ensureStallDataLoaded(); renderMakerCards(); }
-      if (_activeGalTab === 'stall') {
-        if (typeof window._loadStallIdentity === 'function') window._loadStallIdentity();
-        // Open in preview mode — user sees how their stall looks to others first
-        setTimeout(function() {
-          var prevBtn = document.getElementById('ms-preview-btn');
-          if (prevBtn && prevBtn.textContent.indexOf('Preview') !== -1) prevBtn.click();
-        }, 50);
-      }
     });
   });
 
@@ -21623,6 +21672,8 @@ Mura facilitates. People decide.`;
   // Edit / Preview toggle
   function _setMode(preview) {
     _inPreview = preview;
+    window._stallInPreview = preview;
+    if (typeof window._applyShopMode === 'function') window._applyShopMode(preview);
     var panel=document.getElementById('gal-panel-stall');
     if(panel) panel.querySelectorAll('[contenteditable]').forEach(function(el){el.contentEditable=preview?'false':'true';});
     document.querySelectorAll('.ms-edit-only').forEach(function(el){
@@ -21659,9 +21710,10 @@ Mura facilitates. People decide.`;
     }
   }
   var _previewBtn=document.getElementById('ms-preview-btn');
-  if(_previewBtn) _previewBtn.addEventListener('click',function(){_setMode(!_inPreview);});
-  var _saveBtn=document.getElementById('ms-save-btn');
-  if(_saveBtn) _saveBtn.addEventListener('click',_saveAll);
+  if(_previewBtn) _previewBtn.addEventListener('click',function(){
+    if(!_inPreview) _saveAll(); // auto-save when entering preview
+    _setMode(!_inPreview);
+  });
   // Publish button
   var _stallPublished=false;
   var _pubBtn=document.getElementById('ms-publish-btn');
@@ -21758,6 +21810,7 @@ Mura facilitates. People decide.`;
         e.preventDefault();
         var label=sp.textContent.trim().toLowerCase();
         if(label==='shop' && typeof window.openStallShop==='function') window.openStallShop();
+        if(label==='home' && typeof window.openStallHome==='function') window.openStallHome();
       });
       nl.appendChild(sp);
     });
@@ -28828,12 +28881,159 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   /* Journal / tall tiles — edit bar sits above text, inside image wrapper */
   .stp-tile-img-wrap { position: relative; }
 
-  /* ── Piece edit drawer ────────────────────────────────────────────────── */
+  /* ── Piece edit drawer — Squarespace style ──────────────────────────── */
   #ms-piece-drawer {
     display: none; position: absolute; inset: 0;
-    background: #fff; z-index: 20; overflow-y: auto;
+    background: #f7f5f2; z-index: 20; overflow-y: auto;
+    flex-direction: column;
   }
-  #ms-piece-drawer.open { display: block; }
+  #ms-piece-drawer.open { display: flex; }
+  .ms-drawer-topbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 20px; background: #fff;
+    border-bottom: 1px solid #e8e4de;
+    position: sticky; top: 0; z-index: 10; flex-shrink: 0;
+  }
+  .ms-drawer-cancel {
+    background: none; border: 1.5px solid #d8d3cc; border-radius: 8px;
+    padding: 7px 12px; font-size: 13px; font-weight: 600;
+    color: #555; cursor: pointer; font-family: inherit;
+    transition: background 0.12s, border-color 0.12s; white-space: nowrap;
+  }
+  .ms-drawer-cancel:hover { background: #f5f3ef; border-color: #bbb; }
+  .ms-drawer-titleblock {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 1px; min-width: 0; overflow: hidden;
+  }
+  #ms-drawer-name-preview {
+    font-size: 13px; font-weight: 700; color: #1c1713;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 130px; display: block;
+  }
+  .ms-drawer-subtitle {
+    font-size: 10px; color: #aaa; font-weight: 500; letter-spacing: 0.02em;
+  }
+  .ms-drawer-del-btn {
+    background: none; border: none; cursor: pointer;
+    color: #c94a4a; display: flex; align-items: center; justify-content: center;
+    padding: 6px; border-radius: 8px; transition: background 0.12s; flex-shrink: 0;
+  }
+  .ms-drawer-del-btn:hover { background: #fdf0f0; }
+  .ms-drawer-save-btn {
+    background: #1c1713; color: #fff; border: none;
+    border-radius: 8px; padding: 7px 16px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.12s; white-space: nowrap; flex-shrink: 0;
+  }
+  .ms-drawer-save-btn:hover { background: #b8914a; }
+  .ms-drawer-save-btn:disabled { background: #ccc; cursor: not-allowed; }
+  /* Tab bar */
+  .ms-drawer-tabs {
+    display: flex; background: #fff;
+    border-bottom: 1px solid #e8e4de; padding: 0 20px; flex-shrink: 0;
+  }
+  .ms-drawer-tab {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: #aaa;
+    padding: 12px 14px 11px; border-bottom: 2px solid transparent;
+    font-family: inherit; transition: color 0.13s, border-color 0.13s;
+    margin-bottom: -1px; white-space: nowrap;
+  }
+  .ms-drawer-tab.active { color: #1c1713; border-bottom-color: #1c1713; }
+  .ms-drawer-tab:hover:not(.active) { color: #555; }
+  /* Panels */
+  .ms-drawer-panel { display: none; padding: 18px 20px 60px; }
+  .ms-drawer-panel.active { display: block; }
+  /* Card containers */
+  .ms-drawer-card {
+    background: #fff; border-radius: 12px;
+    border: 1px solid #e8e4de; padding: 18px; margin-bottom: 14px;
+  }
+  .ms-drawer-label {
+    display: block; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #8e8e8e; margin-bottom: 8px;
+  }
+  .ms-drawer-input {
+    width: 100%; box-sizing: border-box;
+    border: 1.5px solid #e8e4de; border-radius: 8px;
+    padding: 11px 13px; font-size: 15px; font-weight: 600;
+    font-family: inherit; color: #1c1713; outline: none;
+    transition: border-color 0.15s;
+  }
+  .ms-drawer-input:focus { border-color: #b8914a; }
+  .ms-drawer-textarea {
+    width: 100%; box-sizing: border-box;
+    border: 1.5px solid #e8e4de; border-radius: 8px;
+    padding: 11px 13px; font-size: 14px;
+    font-family: inherit; color: #1c1713; outline: none;
+    resize: vertical; line-height: 1.65; transition: border-color 0.15s;
+  }
+  .ms-drawer-textarea:focus { border-color: #b8914a; }
+  /* Image grid */
+  .ms-img-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;
+  }
+  .ms-img-thumb {
+    position: relative; aspect-ratio: 1; border-radius: 8px;
+    overflow: hidden; background: #f0ece4;
+  }
+  .ms-img-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ms-img-rm {
+    position: absolute; top: 4px; right: 4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,0.55); color: #fff; border: none;
+    cursor: pointer; font-size: 12px; display: flex;
+    align-items: center; justify-content: center; line-height: 1;
+    opacity: 0; transition: opacity 0.13s;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  .ms-img-thumb:hover .ms-img-rm { opacity: 1; }
+  .ms-drawer-add-img-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 11px; border: 1.5px dashed #d8d3cc;
+    border-radius: 8px; font-size: 13px; font-weight: 600;
+    color: #555; cursor: pointer; transition: border-color 0.13s, background 0.13s;
+    box-sizing: border-box;
+  }
+  .ms-drawer-add-img-btn:hover { border-color: #b8914a; background: #faf8f5; color: #b8914a; }
+  /* Inventory rows */
+  .ms-drawer-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0; gap: 12px;
+  }
+  .ms-drawer-row:first-child { padding-top: 0; }
+  .ms-drawer-row:last-child  { padding-bottom: 0; }
+  .ms-drawer-row-label { font-size: 14px; font-weight: 600; color: #1c1713; }
+  .ms-drawer-price-input {
+    width: 110px; border: 1.5px solid #e8e4de; border-radius: 8px;
+    padding: 9px 12px; font-size: 14px; font-weight: 600;
+    font-family: inherit; color: #1c1713; outline: none;
+    transition: border-color 0.15s; text-align: right;
+  }
+  .ms-drawer-price-input:focus { border-color: #b8914a; }
+  /* iOS-style toggle */
+  .ms-toggle {
+    position: relative; display: inline-flex; align-items: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .ms-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .ms-toggle-track {
+    width: 44px; height: 26px; background: #ddd; border-radius: 999px;
+    position: relative; transition: background 0.2s; display: block;
+  }
+  .ms-toggle input:checked + .ms-toggle-track { background: #34c759; }
+  .ms-toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; background: #fff;
+    border-radius: 50%; transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+  .ms-toggle input:checked + .ms-toggle-track .ms-toggle-thumb { transform: translateX(18px); }
+
+  /* ── Shop preview mode: hide edit overlays ───────────────────────────── */
+  #gal-panel-shop.shop-preview .stp-edit-bar { opacity: 0 !important; pointer-events: none !important; }
+  #gal-panel-shop.shop-preview .stp-add-piece { display: none !important; }
 
   /* ── Nav link hover ───────────────────────────────────────────────────── */
   #ms-nav-links span { transition: background 0.13s, opacity 0.13s; border-radius: 4px; }
@@ -30614,22 +30814,47 @@ body.wm-browser-fs #admin-panel:hover {
   }
 
   // ── Renderers ─────────────────────────────────────────────────────────
-  // Square / Grid: square tiles with gradient overlay + edit bar
+  // Grid: square tiles, columns controlled by _shopSettings.cols
   function renderSquareGrid(pieces) {
-    var cols = pieces.length <= 2 ? 'repeat(2,1fr)' : pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(200px,1fr))';
+    var c = (_shopSettings && _shopSettings.cols) || 3;
     var tiles = pieces.map(function(p) {
       var img = pieceImg(p);
       var bg  = img ? 'url('+esc(img)+') center/cover' : '#e4d6ad';
+      var priceHtml = (_shopSettings.showPrice !== false) && p.price
+        ? '<div style="font-size:12px;opacity:0.85;margin-top:2px;">' + esc(p.price) + '</div>' : '';
+      var soldOut = p.available === false
+        ? '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);"><span style="background:#fff;color:#333;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:20px;">Sold out</span></div>' : '';
       return '<div class="stp-piece-tile" data-pid="'+esc(p.id)+'" style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:'+bg+';cursor:pointer;">' +
+        soldOut +
         '<div style="position:absolute;inset:0;bottom:0;top:auto;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff;pointer-events:none;">' +
-          '<div style="font-size:14px;font-weight:600;">' + esc(p.title) + '</div>' +
-          (p.price ? '<div style="font-size:12px;opacity:0.85;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+          '<div style="font-size:13px;font-weight:600;line-height:1.35;">' + esc(p.title) + '</div>' +
+          priceHtml +
         '</div>' +
         editBar(p.id) +
       '</div>';
     });
     tiles.push(ADD_TILE_SQ);
-    return shopHeader('Shop') + '<div style="padding:0 24px 40px;display:grid;grid-template-columns:'+cols+';gap:10px;">' + tiles.join('') + '</div>';
+    return '<div style="padding:20px 24px 48px;display:grid;grid-template-columns:repeat('+c+',1fr);gap:10px;">' + tiles.join('') + '</div>';
+  }
+
+  // List: horizontal rows with thumbnail + title/price/desc
+  function renderListLayout(pieces) {
+    var rows = pieces.map(function(p) {
+      var img = pieceImg(p);
+      var priceHtml = (_shopSettings.showPrice !== false) && p.price
+        ? '<div style="font-size:13px;color:#b8914a;font-weight:600;margin-top:5px;">' + esc(p.price) + (p.available===false?' <span style="color:#999;font-weight:400;font-size:11px;">· Sold out</span>':'') + '</div>' : '';
+      return '<div class="stp-piece-tile" data-pid="'+esc(p.id)+'" style="display:flex;gap:16px;padding:18px 24px;border-bottom:1px solid #f0ece4;cursor:pointer;position:relative;align-items:flex-start;">' +
+        '<div style="width:88px;height:88px;flex-shrink:0;border-radius:8px;overflow:hidden;background:'+(img?'url('+esc(img)+') center/cover':'#e4d6ad')+'"></div>' +
+        '<div style="flex:1;min-width:0;padding-top:2px;">' +
+          '<div style="font-size:15px;font-weight:600;color:#1c1713;line-height:1.35;">' + esc(p.title) + '</div>' +
+          (p.description ? '<div style="font-size:13px;color:#6a5d4a;margin-top:3px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + esc(p.description) + '</div>' : '') +
+          priceHtml +
+        '</div>' +
+        editBar(p.id) +
+      '</div>';
+    });
+    rows.push('<div class="stp-add-piece" style="margin:12px 24px 48px;padding:16px;text-align:center;border:1.5px dashed #d4c28e;border-radius:10px;cursor:pointer;color:#b8914a;font-weight:600;font-size:14px;background:#faf6ed;">+ Add a piece</div>');
+    return '<div>' + rows.join('') + '</div>';
   }
 
   // Magazine: portrait 4/5 with title below, edit bar on image
@@ -30686,38 +30911,127 @@ body.wm-browser-fs #admin-panel:hover {
     return shopHeader('Shop') + '<div style="padding:0 24px 40px;max-width:380px;display:flex;flex-direction:column;gap:14px;">' + cards + ADD_TILE_ROW + '</div>';
   }
 
-  // Single renderer — square grid (templates removed)
-  var _render = renderSquareGrid;
+  // Dispatch renderer based on current shop settings
+  function _render(pieces) {
+    return _shopSettings.layout === 'list' ? renderListLayout(pieces) : renderSquareGrid(pieces);
+  }
 
-  // ── Piece edit drawer ─────────────────────────────────────────────────
-  var $drawer = document.getElementById('ms-piece-drawer');
-  var $dBack  = document.getElementById('ms-drawer-back');
-  var $dDel   = document.getElementById('ms-drawer-delete');
-  var $dSave  = document.getElementById('ms-drawer-save');
-  var $dImg   = document.getElementById('ms-drawer-img');
-  var $dTitle = document.getElementById('ms-drawer-title');
-  var $dPrice = document.getElementById('ms-drawer-price');
-  var $dDesc  = document.getElementById('ms-drawer-desc');
-  var $dAvail = document.getElementById('ms-drawer-available');
+  // ── Piece edit drawer — Squarespace style ────────────────────────────
+  var $drawer    = document.getElementById('ms-piece-drawer');
+  var $dBack     = document.getElementById('ms-drawer-back');
+  var $dDel      = document.getElementById('ms-drawer-delete');
+  var $dSave     = document.getElementById('ms-drawer-save');
+  var $dTitle    = document.getElementById('ms-drawer-title');
+  var $dPrice    = document.getElementById('ms-drawer-price');
+  var $dDesc     = document.getElementById('ms-drawer-desc');
+  var $dAvail    = document.getElementById('ms-drawer-available');
+  var $dImgGrid  = document.getElementById('ms-drawer-img-grid');
+  var $dImgInput = document.getElementById('ms-drawer-img-input');
+  var $dNamePrv  = document.getElementById('ms-drawer-name-preview');
 
+  var _drawerImages = []; // working copy of images for the piece being edited
+
+  // ── Tab switching ─────────────────────────────────────────────────────
+  var $drawerTabs = $drawer ? $drawer.querySelectorAll('.ms-drawer-tab') : [];
+  Array.prototype.forEach.call($drawerTabs, function(tab) {
+    tab.addEventListener('click', function() {
+      Array.prototype.forEach.call($drawerTabs, function(t) { t.classList.remove('active'); });
+      Array.prototype.forEach.call($drawer.querySelectorAll('.ms-drawer-panel'), function(pn) { pn.classList.remove('active'); });
+      tab.classList.add('active');
+      var panel = $drawer.querySelector('#ms-dpanel-' + tab.dataset.panel);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  // ── Image grid rendering ──────────────────────────────────────────────
+  function _renderImgGrid() {
+    if (!$dImgGrid) return;
+    if (!_drawerImages.length) { $dImgGrid.innerHTML = ''; return; }
+    $dImgGrid.innerHTML = _drawerImages.map(function(url, i) {
+      return '<div class="ms-img-thumb" data-idx="'+i+'">' +
+        '<img src="'+esc(url)+'" alt=""/>' +
+        '<button class="ms-img-rm" data-idx="'+i+'" title="Remove">×</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Remove image thumbnail (delegated on drawer)
+  if ($drawer) $drawer.addEventListener('click', function(e) {
+    var btn = e.target.closest && e.target.closest('.ms-img-rm');
+    if (!btn) return;
+    e.stopPropagation();
+    var idx = parseInt(btn.dataset.idx, 10);
+    if (!isNaN(idx)) { _drawerImages.splice(idx, 1); _renderImgGrid(); }
+  });
+
+  // ── Image upload ──────────────────────────────────────────────────────
+  if ($dImgInput) $dImgInput.addEventListener('change', function() {
+    var files = Array.prototype.slice.call($dImgInput.files);
+    if (!files.length || !_editingId) return;
+    $dImgInput.value = '';
+    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
+    files.forEach(function(file) {
+      // Instant blob preview
+      var blobUrl = URL.createObjectURL(file);
+      _drawerImages.push(blobUrl);
+      _renderImgGrid();
+      if (!window._supabase || !vid) return; // stay with blob URL if offline
+      var uid  = window._sbAuthUid || 'anon';
+      var ext  = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      var path = 'stalls/' + vid + '/' + uid + '/pieces/' + _editingId + '/img-' + Date.now() + '.' + ext;
+      window._supabase.storage.from('village-media')
+        .upload(path, file, { upsert: true, contentType: file.type || 'image/jpeg' })
+        .then(function(res) {
+          if (res.error) return;
+          var pub = window._supabase.storage.from('village-media').getPublicUrl(path).data.publicUrl;
+          var blobIdx = _drawerImages.indexOf(blobUrl);
+          if (blobIdx !== -1) { _drawerImages[blobIdx] = pub; _renderImgGrid(); }
+        });
+    });
+  });
+
+  // ── Open / close ──────────────────────────────────────────────────────
   function _openDrawer(pid) {
     _editingId = pid;
     var p = _allPieces.filter(function(x){ return String(x.id) === String(pid); })[0];
     if (!p || !$drawer) return;
-    var img = pieceImg(p);
-    if ($dImg)   { $dImg.style.backgroundImage = img ? 'url('+esc(img)+')' : 'none'; $dImg.style.background = img ? 'url('+esc(img)+') center/cover' : '#f0ece4'; }
-    if ($dTitle) $dTitle.value   = p.title       || '';
-    if ($dPrice) $dPrice.value   = p.price       || '';
-    if ($dDesc)  $dDesc.value    = p.description || '';
-    if ($dAvail) $dAvail.checked = !!p.available;
+
+    // Combine img + image_urls into a deduplicated array
+    var allImgs = [p.img].concat(p.image_urls || []).filter(Boolean);
+    _drawerImages = allImgs.filter(function(u, i){ return allImgs.indexOf(u) === i; });
+    _renderImgGrid();
+
+    // Details
+    if ($dTitle)  $dTitle.value   = p.title       || '';
+    if ($dDesc)   $dDesc.value    = p.description || '';
+    // Inventory
+    if ($dPrice)  $dPrice.value   = p.price       || '';
+    if ($dAvail)  $dAvail.checked = !!p.available;
+    // Top-bar name preview
+    if ($dNamePrv) $dNamePrv.textContent = p.title || 'Untitled';
+
+    // Reset to Details tab
+    Array.prototype.forEach.call($drawerTabs, function(t) { t.classList.remove('active'); });
+    Array.prototype.forEach.call($drawer.querySelectorAll('.ms-drawer-panel'), function(pn) { pn.classList.remove('active'); });
+    if ($drawerTabs[0]) $drawerTabs[0].classList.add('active');
+    var detPanel = document.getElementById('ms-dpanel-details');
+    if (detPanel) detPanel.classList.add('active');
+
     $drawer.classList.add('open');
-    // Scroll drawer to top
     $drawer.scrollTop = 0;
+  }
+
+  // Keep name preview in sync as user types
+  if ($dTitle && $dNamePrv) {
+    $dTitle.addEventListener('input', function() {
+      $dNamePrv.textContent = $dTitle.value.trim() || 'Untitled';
+    });
   }
 
   function _closeDrawer() {
     if ($drawer) $drawer.classList.remove('open');
     _editingId = null;
+    _drawerImages = [];
   }
 
   function _rerender() {
@@ -30732,23 +31046,24 @@ body.wm-browser-fs #admin-panel:hover {
     btn.textContent = 'Saving…'; btn.disabled = true;
     var updates = {
       title:       ($dTitle ? $dTitle.value.trim() : '') || 'Untitled',
-      price:        $dPrice ? $dPrice.value.trim()  : '',
-      description:  $dDesc  ? $dDesc.value.trim()   : '',
-      available:    $dAvail ? $dAvail.checked       : false
+      price:       $dPrice ? $dPrice.value.trim()  : '',
+      description: $dDesc  ? $dDesc.value.trim()   : '',
+      available:   $dAvail ? $dAvail.checked       : false,
+      img:         _drawerImages[0] || null,
+      image_urls:  _drawerImages.slice()
     };
     window._supabase.from('gallery_pieces')
       .update(updates).eq('id', _editingId)
       .then(function() {
-        // Update local cache
         _allPieces = _allPieces.map(function(p) {
           return String(p.id) === String(_editingId) ? Object.assign({}, p, updates) : p;
         });
         _closeDrawer();
         _rerender();
-        btn.textContent = 'Save changes'; btn.disabled = false;
+        btn.textContent = 'Save'; btn.disabled = false;
       })
       .catch(function() {
-        btn.textContent = 'Save changes'; btn.disabled = false;
+        btn.textContent = 'Save'; btn.disabled = false;
         alert('Could not save. Please try again.');
       });
   });
@@ -30766,20 +31081,72 @@ body.wm-browser-fs #admin-panel:hover {
       .catch(function() { alert('Could not delete. Please try again.'); });
   });
 
-  // Delegation: ✎ Edit button
+  // ── Shop settings state ───────────────────────────────────────────────
+  var _shopSettings = { layout: 'grid', cols: 3, showPrice: true };
+  var $shopPanel    = document.getElementById('gal-panel-shop');
+  var $shopSettingsBar = document.getElementById('ms-shop-settings-bar');
+  var _shopPreview  = true; // mirrors stall edit/preview state
+
+  // Called by _setMode in the stall IIFE whenever the mode changes
+  window._applyShopMode = function(preview) {
+    _shopPreview = preview;
+    if ($shopPanel) {
+      if (preview) $shopPanel.classList.add('shop-preview');
+      else         $shopPanel.classList.remove('shop-preview');
+    }
+    if ($shopSettingsBar) $shopSettingsBar.style.display = preview ? 'none' : '';
+  };
+
+  // Settings bar: layout toggle
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest && e.target.closest('.ms-shop-layout-btn');
+    if (!btn || !$shopPanel || !$shopPanel.contains(btn)) return;
+    _shopSettings.layout = btn.dataset.layout;
+    $shopPanel.querySelectorAll('.ms-shop-layout-btn').forEach(function(b) {
+      var active = b.dataset.layout === _shopSettings.layout;
+      b.style.background = active ? '#1c1713' : '#fff';
+      b.style.color      = active ? '#fff'    : '#555';
+      b.style.borderColor= active ? '#1c1713' : '#d8d3cc';
+    });
+    _rerender();
+  });
+
+  // Settings bar: columns toggle
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest && e.target.closest('.ms-shop-cols-btn');
+    if (!btn || !$shopPanel || !$shopPanel.contains(btn)) return;
+    _shopSettings.cols = parseInt(btn.dataset.cols, 10);
+    $shopPanel.querySelectorAll('.ms-shop-cols-btn').forEach(function(b) {
+      var active = parseInt(b.dataset.cols, 10) === _shopSettings.cols;
+      b.style.background = active ? '#1c1713' : '#fff';
+      b.style.color      = active ? '#fff'    : '#555';
+      b.style.borderColor= active ? '#1c1713' : '#d8d3cc';
+    });
+    _rerender();
+  });
+
+  // Settings bar: price toggle
+  var $showPrice = document.getElementById('ms-shop-show-price');
+  if ($showPrice) $showPrice.addEventListener('change', function() {
+    _shopSettings.showPrice = $showPrice.checked;
+    _rerender();
+  });
+
+  // Delegation: ✎ Edit button — only in edit mode
   $shop.addEventListener('click', function(e) {
     var btn = e.target.closest && e.target.closest('.stp-edit-btn');
     if (!btn) return;
     e.stopPropagation();
+    if (_shopPreview) return;
     _openDrawer(btn.dataset.pid);
   });
 
-  // Delegation: × Delete button
+  // Delegation: × Delete button — only in edit mode
   $shop.addEventListener('click', function(e) {
     var btn = e.target.closest && e.target.closest('.stp-del-btn');
     if (!btn) return;
     e.stopPropagation();
-    if (!window._supabase) return;
+    if (_shopPreview || !window._supabase) return;
     if (!confirm('Delete this piece? This cannot be undone.')) return;
     var pid = btn.dataset.pid;
     window._supabase.from('gallery_pieces').delete().eq('id', pid)
@@ -30790,57 +31157,48 @@ body.wm-browser-fs #admin-panel:hover {
       .catch(function() { alert('Could not delete. Please try again.'); });
   });
 
-  // Delegation: click whole tile → open drawer (but not Add tile)
-  $shop.addEventListener('click', function(e) {
-    if (e.target.closest && (e.target.closest('.stp-edit-btn') || e.target.closest('.stp-del-btn') || e.target.closest('.stp-add-piece'))) return;
-    var tile = e.target.closest && e.target.closest('.stp-piece-tile');
-    if (!tile) return;
-    _openDrawer(tile.dataset.pid);
-  });
-
-  // ── Navigate: stall homepage ↔ shop panel ─────────────────────────────
+  // ── Navigate: stall homepage ↔ shop ───────────────────────────────────
+  // The stall hero/nav stays visible on both pages — we just swap the body content.
   window.openStallShop = function() {
     _closeDrawer();
-    var stall = document.getElementById('gal-panel-stall');
-    var shop  = document.getElementById('gal-panel-shop');
-    if (stall) stall.style.display = 'none';
-    if (shop)  shop.style.display  = '';
+    var igSection = document.getElementById('ms-ig-section');
+    var shop      = document.getElementById('gal-panel-shop');
+    // Keep stall panel visible (so hero + nav shows); hide the home body
+    if (igSection) igSection.style.display = 'none';
+    if (shop)      shop.style.display = '';
+    // Inherit preview state
+    window._applyShopMode(window._stallInPreview !== false);
     $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading…</div>';
     fetchPieces().then(function(pieces) { $shop.innerHTML = _render(pieces); });
   };
 
   window.openStallHome = function() {
     _closeDrawer();
-    var stall = document.getElementById('gal-panel-stall');
-    var shop  = document.getElementById('gal-panel-shop');
-    if (shop)  shop.style.display  = 'none';
-    if (stall) stall.style.display = '';
+    var igSection = document.getElementById('ms-ig-section');
+    var shop      = document.getElementById('gal-panel-shop');
+    if (shop)      shop.style.display = 'none';
+    if (igSection) igSection.style.display = '';
   };
-
-  // "← Home" button
-  document.addEventListener('click', function(e) {
-    if (e.target.closest && e.target.closest('#ms-shop-back-btn')) window.openStallHome();
-  });
 
   // ── Public API ─────────────────────────────────────────────────────────
   window.openStallTemplate = function() {
     document.body.classList.add('stall-focus');
     if (typeof window.openGallery === 'function') window.openGallery();
+    // Show stall panel directly (no tab — stall tab was removed from tab bar)
     setTimeout(function() {
-      var tab = document.querySelector('.gal-tab[data-tab="stall"]');
-      if (tab) tab.click();
+      ['gal-panel-gallery','gal-panel-market','gal-panel-add','gal-panel-shop'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.style.display = 'none';
+      });
+      var stallPanel = document.getElementById('gal-panel-stall');
+      if (stallPanel) stallPanel.style.display = '';
+      var igSection = document.getElementById('ms-ig-section');
+      if (igSection) igSection.style.display = ''; // ensure home content shows
+      if (typeof window._loadStallIdentity === 'function') window._loadStallIdentity();
+      // Start in preview mode
+      var prevBtn = document.getElementById('ms-preview-btn');
+      if (prevBtn && prevBtn.textContent.indexOf('Preview') !== -1) prevBtn.click();
     }, 30);
-    fetchPieces().then(function(pieces) { $shop.innerHTML = _render(pieces); });
   };
-
-  // Refresh shop when stall tab is clicked (after adding a piece, etc.)
-  document.addEventListener('click', function(e) {
-    var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
-    if (!t) return;
-    setTimeout(function() {
-      fetchPieces().then(function(pieces) { $shop.innerHTML = _render(pieces); });
-    }, 80);
-  });
 
   // "+ Add a piece" tiles → open the Add-a-piece form
   $shop.addEventListener('click', function(e) {
