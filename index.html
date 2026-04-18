@@ -28905,6 +28905,16 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
   }
   body.stall-focus #gal-tab-bar { display:none !important; }
   body.stall-focus #gallery-overlay .presence-strip { display:none !important; }
+
+  /* Template mode: when a non-handmade template is active, the My Stall panel
+     hides the hand-made editor body + any buttons that only apply while
+     editing the hand-made template. These !important rules win against the
+     inline display toggles used by _setMode (Preview/Edit), so switching
+     modes can't un-hide them. */
+  #gal-panel-stall.ms-template-mode #ms-handmade-body { display: none !important; }
+  #gal-panel-stall.ms-template-mode .ms-handmade-only { display: none !important; }
+  #gal-panel-stall.ms-template-mode #ms-template-render { display: block !important; }
+  #gal-panel-stall:not(.ms-template-mode) #ms-template-render { display: none !important; }
   /* The WM's full-viewport drag cover (z-index 99999) already swallows pointer events
      over the iframe during drag/resize, so no manual guard needed here. */
   body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
@@ -31057,25 +31067,13 @@ body.wm-browser-fs #admin-panel:hover {
   });
 
   // ── Public API ────────────────────────────────────────────────────────
-  // Toggles every element carrying .ms-handmade-only between its original
-  // display value and "none". Stashes the original display on a data attr
-  // so inline layout (inline-block etc) survives the round-trip.
-  function setHandmadeOnlyVisible(visible) {
-    document.querySelectorAll('.ms-handmade-only').forEach(function(el) {
-      if (visible) {
-        el.style.display = el.dataset.msHmDisplay != null ? el.dataset.msHmDisplay : '';
-      } else {
-        if (el.dataset.msHmDisplay == null) el.dataset.msHmDisplay = el.style.display || '';
-        el.style.display = 'none';
-      }
-    });
-  }
-
   // Unified entry point: every template — including hand-made — opens inside
   // the same My Stall panel in the Gallery window. No more fullscreen overlay,
   // so the chrome (traffic lights, tabs) and the mode bar stay consistent
-  // between templates. Hand-made reveals the editor body; the rendered
-  // templates swap it out for a preview.
+  // between templates. The .ms-template-mode class on #gal-panel-stall flips
+  // the view between the hand-made editor body and the rendered template
+  // preview via CSS with !important — so _setMode's inline-display toggles
+  // for .ms-edit-only can't override it.
   window.openStallTemplate = function(tpl) {
     document.body.classList.add('stall-focus');
     if (typeof window.openGallery === 'function') window.openGallery();
@@ -31085,24 +31083,20 @@ body.wm-browser-fs #admin-panel:hover {
     }, 30);
 
     var isHandmade = (tpl === 'handmade' || !tpl || !RENDERERS[tpl]);
+    var panel = document.getElementById('gal-panel-stall');
 
     // Reflect the current template in the mode bar label.
     var $label = document.getElementById('ms-template-name');
     if ($label) $label.textContent = isHandmade ? 'Hand-made' : (LABELS[tpl] || tpl);
 
-    // Pages / Save / Preview only make sense while editing the hand-made
-    // template — hide them when a rendered template is active.
-    setHandmadeOnlyVisible(isHandmade);
-
     if (isHandmade) {
-      $handmade.style.display = '';
-      $render.style.display = 'none';
+      if (panel) panel.classList.remove('ms-template-mode');
       $render.innerHTML = '';
       return;
     }
 
-    $handmade.style.display = 'none';
-    $render.style.display = '';
+    // Switch the whole panel into template mode. CSS does the rest.
+    if (panel) panel.classList.add('ms-template-mode');
     $render.innerHTML = '<div style="text-align:center;padding:120px 20px;color:#8e8e8e;font-size:14px;">Loading your stall…</div>';
 
     fetchData().then(function(data) {
@@ -31112,13 +31106,38 @@ body.wm-browser-fs #admin-panel:hover {
     });
   };
 
-  // "+ Add a piece" tiles inside a rendered template send the maker back to
-  // the hand-made editor, where stall content is managed. They can jump back
-  // to the chosen template via the "Change" link in the mode bar.
+  // "+ Add a piece" tiles inside a rendered template jump straight to the
+  // Add-a-piece form inside the Gallery window — the actual place where
+  // gallery_pieces rows are created. We do this by hiding the other gal
+  // panels and showing #gal-panel-add directly, which works whether or not
+  // the Gallery tab has been touched yet. This kills the dead-end where
+  // clicking "+ Add" used to dump the maker back into the hand-made editor
+  // with no piece-creation UI in sight.
+  function openAddPiecePanel() {
+    var panel = document.getElementById('gal-panel-stall');
+    if (panel) panel.classList.remove('ms-template-mode'); // leave template mode
+    // Make sure Gallery window itself is open.
+    if (typeof window.openGallery === 'function') window.openGallery();
+    // Show the Add form; hide everything else inside the Gallery body.
+    ['gal-panel-gallery','gal-panel-market','gal-panel-stall'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.style.display = 'none';
+    });
+    var add = document.getElementById('gal-panel-add');
+    if (add) add.style.display = '';
+    // Title switches the tab strip highlighting off — no tab lights up for
+    // "add" by design, but we clear any active highlight so it doesn't read
+    // as "you're still on Stall but empty".
+    document.querySelectorAll('.gal-tab').forEach(function(t) {
+      t.style.color = '#8e8e8e';
+      t.style.borderBottomColor = 'transparent';
+      t.classList.remove('active');
+    });
+  }
+
   if ($render) $render.addEventListener('click', function(e) {
     var tile = e.target.closest && e.target.closest('.stp-add-piece');
     if (!tile) return;
-    window.openStallTemplate('handmade');
+    openAddPiecePanel();
   });
 })();
 </script>
