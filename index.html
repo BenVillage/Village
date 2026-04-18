@@ -7256,6 +7256,8 @@ function toggleVillageSound() {
                 </div>
               </button>
             </div>
+            <!-- Nav settings hint — appears on hover, CSS-driven -->
+            <span id="ms-nav-edit-hint" class="ms-edit-only">⚙ Nav settings</span>
           </nav>
           <div id="ms-hero-ph" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8e8e8e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
           <input type="file" id="stall-hero-input" accept="image/*" style="display:none;"/>
@@ -7306,6 +7308,25 @@ function toggleVillageSound() {
         <!-- Piece grid: filled by template renderers via openStallTemplate() -->
         <div id="ms-shop-section" style="width:calc(100% + 48px);margin:0 -24px;">
           <div style="text-align:center;padding:60px 20px;color:#aaa;font-size:13px;">Your pieces will appear here</div>
+        </div>
+        <!-- Piece edit drawer — appears over the shop grid when editing a piece -->
+        <div id="ms-piece-drawer">
+          <div style="display:flex;align-items:center;padding:14px 0 14px;border-bottom:1px solid #f0f0f0;gap:12px;position:sticky;top:0;background:#fff;z-index:2;">
+            <button id="ms-drawer-back" style="background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#262626;padding:0;font-family:inherit;display:flex;align-items:center;gap:4px;white-space:nowrap;">← Shop</button>
+            <span style="font-size:14px;font-weight:700;color:#1c1713;flex:1;letter-spacing:-0.01em;">Edit piece</span>
+            <button id="ms-drawer-delete" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;color:#c94a4a;padding:0;font-family:inherit;white-space:nowrap;">Delete piece</button>
+          </div>
+          <div style="padding:20px 0 40px;">
+            <div id="ms-drawer-img" style="width:100%;aspect-ratio:4/3;background:#f0ece4 url() center/cover;border-radius:10px;margin-bottom:20px;"></div>
+            <input id="ms-drawer-title" placeholder="Title" style="width:100%;box-sizing:border-box;border:1.5px solid #e8e4de;border-radius:8px;padding:11px 13px;font-size:15px;font-weight:600;font-family:inherit;color:#1c1713;outline:none;margin-bottom:10px;transition:border-color 0.15s;" onfocus="this.style.borderColor='#b8914a'" onblur="this.style.borderColor='#e8e4de'"/>
+            <input id="ms-drawer-price" placeholder="Price — e.g. £45 or Not for sale" style="width:100%;box-sizing:border-box;border:1.5px solid #e8e4de;border-radius:8px;padding:11px 13px;font-size:14px;font-family:inherit;color:#1c1713;outline:none;margin-bottom:10px;transition:border-color 0.15s;" onfocus="this.style.borderColor='#b8914a'" onblur="this.style.borderColor='#e8e4de'"/>
+            <textarea id="ms-drawer-desc" placeholder="Description" rows="4" style="width:100%;box-sizing:border-box;border:1.5px solid #e8e4de;border-radius:8px;padding:11px 13px;font-size:14px;font-family:inherit;color:#1c1713;outline:none;resize:none;line-height:1.65;margin-bottom:14px;transition:border-color 0.15s;" onfocus="this.style.borderColor='#b8914a'" onblur="this.style.borderColor='#e8e4de'"></textarea>
+            <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:#1c1713;margin-bottom:24px;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="ms-drawer-available" style="accent-color:#b8914a;width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
+              Available for sale
+            </label>
+            <button id="ms-drawer-save" style="width:100%;background:#1c1713;color:#fff;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:-0.01em;transition:background 0.15s;" onmouseover="this.style.background='#b8914a'" onmouseout="this.style.background='#1c1713'">Save changes</button>
+          </div>
         </div>
       </div>
       <!-- Crop modal (fixed overlay, used by all stall image uploads) -->
@@ -21837,7 +21858,7 @@ Mura facilitates. People decide.`;
   }
   _wire('ms-nav-brand', 'rgba(255,255,255,0.25)', 'rgba(38,38,38,0.38)');
 
-  // Nav links — editable in edit mode; "Shop" link navigates to shop panel in preview mode
+  // Nav links — editable in edit mode, navigable in preview mode
   function _renderNav(links) {
     var nl=document.getElementById('ms-nav-links'); if(!nl) return;
     _navLinks=links.map(function(l){return{label:l.label||''};});
@@ -21845,20 +21866,28 @@ Mura facilitates. People decide.`;
     _navLinks.forEach(function(link,i){
       var sp=document.createElement('span');
       sp.textContent=link.label; sp.contentEditable='true'; sp.spellcheck=false;
-      sp.style.cssText='font-size:13px;color:#262626;cursor:text;outline:none;border-radius:3px;padding:1px 6px;white-space:nowrap;';
-      sp.addEventListener('focus',function(){sp.style.background='rgba(255,255,255,0.6)';});
+      sp.style.cssText='font-size:13px;color:#262626;outline:none;border-radius:5px;padding:3px 8px;white-space:nowrap;cursor:text;transition:background 0.12s,opacity 0.12s;';
+      // Edit mode hover: show pill highlight
+      sp.addEventListener('mouseenter',function(){
+        if(_inPreview){sp.style.opacity='0.65';sp.style.cursor='pointer';}
+        else{sp.style.background='rgba(255,255,255,0.55)';sp.style.cursor='text';}
+      });
+      sp.addEventListener('mouseleave',function(){
+        if(document.activeElement!==sp){sp.style.background='';sp.style.opacity='';}
+      });
+      sp.addEventListener('focus',function(){sp.style.background='rgba(255,255,255,0.75)';sp.style.opacity='';});
       sp.addEventListener('blur',function(){
-        sp.style.background='';
+        sp.style.background='';sp.style.opacity='';
         _navLinks[i].label=sp.textContent.trim()||link.label;
         _saveField('stall_nav_links',JSON.stringify(_navLinks));
       });
       sp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sp.blur();}});
-      // In preview mode: "Shop" link navigates to the shop panel
-      sp.addEventListener('click',function(){
+      // Preview mode: navigate
+      sp.addEventListener('click',function(e){
         if(!_inPreview) return;
-        if(sp.textContent.trim().toLowerCase()==='shop' && typeof window.openStallShop==='function') {
-          window.openStallShop();
-        }
+        e.preventDefault();
+        var label=sp.textContent.trim().toLowerCase();
+        if(label==='shop' && typeof window.openStallShop==='function') window.openStallShop();
       });
       nl.appendChild(sp);
     });
@@ -28908,6 +28937,56 @@ body.wm-mode #observatory-overlay, body.wm-mode #mentor-overlay,
 
   /* Shop section always fills the full panel width edge-to-edge */
   #ms-shop-section { overflow-x: hidden; }
+
+  /* ── Squarespace-style piece tile edit overlays ─────────────────────── */
+  .stp-piece-tile { position: relative; }
+  .stp-edit-bar {
+    position: absolute; top: 8px; right: 8px;
+    display: flex; gap: 4px; z-index: 5;
+    opacity: 0; transition: opacity 0.15s; pointer-events: none;
+  }
+  .stp-piece-tile:hover .stp-edit-bar { opacity: 1; pointer-events: all; }
+  .stp-edit-btn, .stp-del-btn {
+    width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.94); cursor: pointer; display: flex;
+    align-items: center; justify-content: center; line-height: 1;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    transition: background 0.1s, transform 0.1s;
+  }
+  .stp-edit-btn { color: #1c1713; font-size: 14px; }
+  .stp-del-btn  { color: #c94a4a; font-size: 18px; font-weight: 300; }
+  .stp-edit-btn:hover, .stp-del-btn:hover {
+    background: #fff; transform: scale(1.08);
+  }
+  /* Journal / tall tiles — edit bar sits above text, inside image wrapper */
+  .stp-tile-img-wrap { position: relative; }
+
+  /* ── Piece edit drawer ────────────────────────────────────────────────── */
+  #ms-piece-drawer {
+    display: none; position: absolute; inset: 0;
+    background: #fff; z-index: 20; overflow-y: auto;
+  }
+  #ms-piece-drawer.open { display: block; }
+
+  /* ── Nav link hover ───────────────────────────────────────────────────── */
+  #ms-nav-links span { transition: background 0.13s, opacity 0.13s; border-radius: 4px; }
+  /* Preview mode: links look clickable */
+  body:not(.ms-edit-nav) #ms-nav-links span[contenteditable="false"] { cursor: pointer; }
+  body:not(.ms-edit-nav) #ms-nav-links span[contenteditable="false"]:hover {
+    opacity: 0.7;
+  }
+  /* Nav area setting hint */
+  #ms-nav-edit-hint {
+    position: absolute; bottom: 8px; right: 8px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: rgba(255,255,255,0.9);
+    background: rgba(28,23,19,0.55); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px); border-radius: 10px;
+    padding: 3px 9px; pointer-events: none;
+    opacity: 0; transition: opacity 0.18s;
+  }
+  #ms-stall-nav:hover #ms-nav-edit-hint { opacity: 1; }
   /* The WM's full-viewport drag cover (z-index 99999) already swallows pointer events
      over the iframe during drag/resize, so no manual guard needed here. */
   body.wm-mode .bld-body { flex:1; overflow-y:auto !important; min-height:0 !important; overflow-x:hidden !important; }
@@ -30680,6 +30759,11 @@ body.wm-browser-fs #admin-panel:hover {
 
   var LABELS = { 'handmade':'Hand-made', 'grid':'Grid', 'magazine':'Magazine', 'journal':'Journal', 'tall-mobile':'Tall' };
 
+  // Cache of fetched pieces — kept in sync with every fetch
+  var _allPieces = [];
+  // ID of piece currently open in the drawer
+  var _editingId = null;
+
   function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function pieceImg(p) { return p.img || (p.image_urls && p.image_urls[0]) || ''; }
   function formatDate(iso) {
@@ -30696,141 +30780,256 @@ body.wm-browser-fs #admin-panel:hover {
     return window._supabase.from('gallery_pieces')
       .select('*').eq('user_id', window._sbAuthUid).eq('village_id', vid)
       .order('created_at', { ascending: false })
-      .then(function(r) { return (r && r.data) || []; })
+      .then(function(r) { _allPieces = (r && r.data) || []; return _allPieces; })
       .catch(function() { return []; });
   }
 
-  // Add-piece card — always the last tile
-  var ADD_TILE = '<div class="stp-add-piece" style="aspect-ratio:1;border:1.5px dashed #d4c28e;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">' +
-    '<div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div>' +
-    '<div style="font-size:12px;font-weight:600;">Add a piece</div></div>';
+  // ── Edit bar injected into every piece tile ───────────────────────────
+  function editBar(id) {
+    return '<div class="stp-edit-bar">' +
+      '<button class="stp-edit-btn" data-pid="'+esc(id)+'" title="Edit piece">✎</button>' +
+      '<button class="stp-del-btn"  data-pid="'+esc(id)+'" title="Delete piece">×</button>' +
+    '</div>';
+  }
 
-  // ── Piece-grid layouts ────────────────────────────────────────────────
-  // Each renderer gets the pieces array and returns HTML for #ms-shop-section.
-  // They do NOT duplicate the hero/avatar — that's always in the DOM above.
+  // Add-piece tile (common)
+  var ADD_TILE_SQ = '<div class="stp-add-piece" style="aspect-ratio:1;border:1.5px dashed #d4c28e;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'"><div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div><div style="font-size:12px;font-weight:600;">Add a piece</div></div>';
+  var ADD_TILE_PORT = '<div class="stp-add-piece" style="aspect-ratio:4/5;border:1.5px dashed #d4c28e;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'"><div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div><div style="font-size:12px;font-weight:600;">Add a piece</div></div>';
+  var ADD_TILE_ROW  = '<div class="stp-add-piece" style="padding:18px;border:1.5px dashed #d4c28e;border-radius:10px;text-align:center;cursor:pointer;color:#b8914a;font-weight:600;font-size:14px;background:#faf6ed;transition:border-color 0.15s;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">+ Add a piece</div>';
 
   function shopHeader(label) {
     return '<div style="padding:32px 24px 20px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#b8914a;">' + label + '</div>';
   }
 
-  // Handmade / Grid: square tiles, overlay label + price
+  // ── Renderers ─────────────────────────────────────────────────────────
+  // Square / Grid: square tiles with gradient overlay + edit bar
   function renderSquareGrid(pieces) {
-    var cols = pieces.length <= 2 ? 'repeat(2,1fr)' : pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(220px,1fr))';
+    var cols = pieces.length <= 2 ? 'repeat(2,1fr)' : pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(200px,1fr))';
     var tiles = pieces.map(function(p) {
       var img = pieceImg(p);
-      var bg = img ? 'url('+esc(img)+') center/cover' : '#e4d6ad';
-      return '<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:'+bg+';">' +
-        '<div style="position:absolute;inset:0;bottom:0;top:auto;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,0.65));color:#fff;">' +
+      var bg  = img ? 'url('+esc(img)+') center/cover' : '#e4d6ad';
+      return '<div class="stp-piece-tile" data-pid="'+esc(p.id)+'" style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:'+bg+';cursor:pointer;">' +
+        '<div style="position:absolute;inset:0;bottom:0;top:auto;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,0.7));color:#fff;pointer-events:none;">' +
           '<div style="font-size:14px;font-weight:600;">' + esc(p.title) + '</div>' +
-          (p.price ? '<div style="font-size:12px;opacity:0.9;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
-        '</div></div>';
+          (p.price ? '<div style="font-size:12px;opacity:0.85;margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+        '</div>' +
+        editBar(p.id) +
+      '</div>';
     });
-    tiles.push(ADD_TILE);
+    tiles.push(ADD_TILE_SQ);
     return shopHeader('Shop') + '<div style="padding:0 24px 40px;display:grid;grid-template-columns:'+cols+';gap:10px;">' + tiles.join('') + '</div>';
   }
 
-  // Magazine: portrait 4/5 tiles with title below
+  // Magazine: portrait 4/5 with title below, edit bar on image
   function renderMagazineGrid(pieces) {
-    var cols = pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(200px,1fr))';
-    var addMag = '<div class="stp-add-piece" style="aspect-ratio:4/5;border:1.5px dashed #d4c28e;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#b8914a;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'"><div style="font-size:28px;line-height:1;margin-bottom:6px;">+</div><div style="font-size:12px;font-weight:600;">Add a piece</div></div>';
+    var cols = pieces.length <= 3 ? 'repeat(3,1fr)' : 'repeat(auto-fill,minmax(180px,1fr))';
     var tiles = pieces.map(function(p) {
       var img = pieceImg(p);
-      return '<div>' +
-        '<div style="aspect-ratio:4/5;background:' + (img ? 'url('+esc(img)+') center/cover' : '#e4d6ad') + ';border-radius:6px;"></div>' +
+      return '<div class="stp-piece-tile" data-pid="'+esc(p.id)+'" style="cursor:pointer;">' +
+        '<div class="stp-tile-img-wrap" style="aspect-ratio:4/5;background:'+(img?'url('+esc(img)+') center/cover':'#e4d6ad')+';border-radius:6px;overflow:hidden;">' +
+          editBar(p.id) +
+        '</div>' +
         '<div style="margin-top:10px;font-size:15px;font-weight:600;color:#1c1713;">' + esc(p.title) + '</div>' +
-        (p.price ? '<div style="font-size:12px;color:'+(p.available?'#b8914a':'#8e8e8e')+';margin-top:2px;">' + esc(p.price) + '</div>' : '') +
+        (p.price ? '<div style="font-size:12px;color:'+(p.available?'#b8914a':'#8e8e8e')+';margin-top:3px;">' + esc(p.price) + '</div>' : '') +
       '</div>';
     });
-    tiles.push(addMag);
+    tiles.push(ADD_TILE_PORT);
     return shopHeader('Work') + '<div style="padding:0 24px 48px;display:grid;grid-template-columns:'+cols+';gap:24px;">' + tiles.join('') + '</div>';
   }
 
-  // Journal: full-width image + text entries
+  // Journal: full-width, edit bar on image
   function renderJournalList(pieces) {
     if (!pieces.length) return shopHeader('Work') + '<div style="padding:20px 24px 40px;color:#8e8e8e;font-size:14px;">No pieces yet. Add one to get started.</div>';
     var entries = pieces.map(function(p) {
-      var img = pieceImg(p);
+      var img  = pieceImg(p);
       var date = formatDate(p.created_at);
-      return '<div style="margin-bottom:48px;border-bottom:1px solid #f0ece4;padding-bottom:48px;">' +
+      return '<div class="stp-piece-tile" data-pid="'+esc(p.id)+'" style="margin-bottom:48px;border-bottom:1px solid #f0ece4;padding-bottom:48px;cursor:pointer;">' +
         (date ? '<div style="font-size:11px;color:#8e8e8e;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">' + date + '</div>' : '') +
         '<div style="font-size:22px;font-weight:700;color:#1c1713;margin-bottom:14px;">' + esc(p.title) + '</div>' +
-        (img ? '<img src="'+esc(img)+'" style="width:100%;border-radius:6px;margin-bottom:14px;display:block;" loading="lazy"/>' : '') +
+        (img ? '<div class="stp-tile-img-wrap" style="position:relative;margin-bottom:14px;">' +
+          '<img src="'+esc(img)+'" style="width:100%;border-radius:6px;display:block;" loading="lazy"/>' +
+          editBar(p.id) +
+        '</div>' : editBar(p.id)) +
         (p.description ? '<div style="font-size:15px;line-height:1.8;color:#3d3428;">' + esc(p.description) + '</div>' : '') +
         (p.price ? '<div style="font-size:13px;color:'+(p.available?'#b8914a':'#8e8e8e')+';font-weight:600;margin-top:12px;">' + esc(p.price) + '</div>' : '') +
       '</div>';
     }).join('');
-    return shopHeader('Work') + '<div style="padding:0 24px 40px;max-width:640px;">' + entries +
-      '<div class="stp-add-piece" style="padding:20px;border:1.5px dashed #d4c28e;border-radius:8px;text-align:center;cursor:pointer;color:#b8914a;font-weight:600;font-size:14px;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">+ Add a piece</div>' +
-    '</div>';
+    return shopHeader('Work') + '<div style="padding:0 24px 40px;max-width:640px;">' + entries + ADD_TILE_ROW + '</div>';
   }
 
-  // Tall-mobile: narrow single-column cards
+  // Tall: narrow single-column cards, edit bar on image
   function renderTallList(pieces) {
     var cards = pieces.map(function(p) {
       var img = pieceImg(p);
-      return '<div style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid #ede8de;">' +
-        (img ? '<div style="width:100%;aspect-ratio:1;background:url('+esc(img)+') center/cover;"></div>' : '<div style="width:100%;aspect-ratio:1;background:#e4d6ad;"></div>') +
+      return '<div class="stp-piece-tile" data-pid="'+esc(p.id)+'" style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid #ede8de;cursor:pointer;">' +
+        '<div class="stp-tile-img-wrap" style="width:100%;aspect-ratio:1;background:'+(img?'url('+esc(img)+') center/cover':'#e4d6ad')+';position:relative;">' +
+          editBar(p.id) +
+        '</div>' +
         '<div style="padding:14px 16px;">' +
           '<div style="font-size:16px;font-weight:700;color:#1c1713;">' + esc(p.title) + '</div>' +
           (p.price ? '<div style="font-size:13px;color:'+(p.available?'#b8914a':'#8e8e8e')+';margin-top:4px;">' + esc(p.price) + '</div>' : '') +
         '</div>' +
       '</div>';
     }).join('');
-    return shopHeader('Shop') + '<div style="padding:0 24px 40px;max-width:380px;display:flex;flex-direction:column;gap:14px;">' + cards +
-      '<div class="stp-add-piece" style="padding:20px;border:1.5px dashed #d4c28e;border-radius:12px;text-align:center;cursor:pointer;color:#b8914a;font-weight:600;background:#faf6ed;" onmouseover="this.style.borderColor=\'#b8914a\'" onmouseout="this.style.borderColor=\'#d4c28e\'">+ Add a piece</div>' +
-    '</div>';
+    return shopHeader('Shop') + '<div style="padding:0 24px 40px;max-width:380px;display:flex;flex-direction:column;gap:14px;">' + cards + ADD_TILE_ROW + '</div>';
   }
 
   var RENDERERS = {
-    'handmade':   renderSquareGrid,
-    'grid':       renderSquareGrid,
-    'magazine':   renderMagazineGrid,
-    'journal':    renderJournalList,
-    'tall-mobile':renderTallList
+    'handmade':    renderSquareGrid,
+    'grid':        renderSquareGrid,
+    'magazine':    renderMagazineGrid,
+    'journal':     renderJournalList,
+    'tall-mobile': renderTallList
   };
 
-  // ── Helper: sync template label from stall homepage → shop header ──────
+  // ── Piece edit drawer ─────────────────────────────────────────────────
+  var $drawer = document.getElementById('ms-piece-drawer');
+  var $dBack  = document.getElementById('ms-drawer-back');
+  var $dDel   = document.getElementById('ms-drawer-delete');
+  var $dSave  = document.getElementById('ms-drawer-save');
+  var $dImg   = document.getElementById('ms-drawer-img');
+  var $dTitle = document.getElementById('ms-drawer-title');
+  var $dPrice = document.getElementById('ms-drawer-price');
+  var $dDesc  = document.getElementById('ms-drawer-desc');
+  var $dAvail = document.getElementById('ms-drawer-available');
+
+  function _openDrawer(pid) {
+    _editingId = pid;
+    var p = _allPieces.filter(function(x){ return String(x.id) === String(pid); })[0];
+    if (!p || !$drawer) return;
+    var img = pieceImg(p);
+    if ($dImg)   { $dImg.style.backgroundImage = img ? 'url('+esc(img)+')' : 'none'; $dImg.style.background = img ? 'url('+esc(img)+') center/cover' : '#f0ece4'; }
+    if ($dTitle) $dTitle.value   = p.title       || '';
+    if ($dPrice) $dPrice.value   = p.price       || '';
+    if ($dDesc)  $dDesc.value    = p.description || '';
+    if ($dAvail) $dAvail.checked = !!p.available;
+    $drawer.classList.add('open');
+    // Scroll drawer to top
+    $drawer.scrollTop = 0;
+  }
+
+  function _closeDrawer() {
+    if ($drawer) $drawer.classList.remove('open');
+    _editingId = null;
+  }
+
+  function _rerender() {
+    var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
+    var tplKey  = Object.keys(LABELS).find(function(k){ return LABELS[k] === tplName; }) || 'handmade';
+    var render  = RENDERERS[tplKey] || renderSquareGrid;
+    $shop.innerHTML = render(_allPieces);
+  }
+
+  if ($dBack) $dBack.addEventListener('click', _closeDrawer);
+
+  if ($dSave) $dSave.addEventListener('click', function() {
+    if (!_editingId || !window._supabase) return;
+    var btn = $dSave;
+    btn.textContent = 'Saving…'; btn.disabled = true;
+    var updates = {
+      title:       ($dTitle ? $dTitle.value.trim() : '') || 'Untitled',
+      price:        $dPrice ? $dPrice.value.trim()  : '',
+      description:  $dDesc  ? $dDesc.value.trim()   : '',
+      available:    $dAvail ? $dAvail.checked       : false
+    };
+    window._supabase.from('gallery_pieces')
+      .update(updates).eq('id', _editingId)
+      .then(function() {
+        // Update local cache
+        _allPieces = _allPieces.map(function(p) {
+          return String(p.id) === String(_editingId) ? Object.assign({}, p, updates) : p;
+        });
+        _closeDrawer();
+        _rerender();
+        btn.textContent = 'Save changes'; btn.disabled = false;
+      })
+      .catch(function() {
+        btn.textContent = 'Save changes'; btn.disabled = false;
+        alert('Could not save. Please try again.');
+      });
+  });
+
+  if ($dDel) $dDel.addEventListener('click', function() {
+    if (!_editingId || !window._supabase) return;
+    if (!confirm('Delete this piece? This cannot be undone.')) return;
+    var pid = _editingId;
+    _closeDrawer();
+    window._supabase.from('gallery_pieces').delete().eq('id', pid)
+      .then(function() {
+        _allPieces = _allPieces.filter(function(p){ return String(p.id) !== String(pid); });
+        _rerender();
+      })
+      .catch(function() { alert('Could not delete. Please try again.'); });
+  });
+
+  // Delegation: ✎ Edit button
+  $shop.addEventListener('click', function(e) {
+    var btn = e.target.closest && e.target.closest('.stp-edit-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    _openDrawer(btn.dataset.pid);
+  });
+
+  // Delegation: × Delete button
+  $shop.addEventListener('click', function(e) {
+    var btn = e.target.closest && e.target.closest('.stp-del-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    if (!window._supabase) return;
+    if (!confirm('Delete this piece? This cannot be undone.')) return;
+    var pid = btn.dataset.pid;
+    window._supabase.from('gallery_pieces').delete().eq('id', pid)
+      .then(function() {
+        _allPieces = _allPieces.filter(function(p){ return String(p.id) !== String(pid); });
+        _rerender();
+      })
+      .catch(function() { alert('Could not delete. Please try again.'); });
+  });
+
+  // Delegation: click whole tile → open drawer (but not Add tile)
+  $shop.addEventListener('click', function(e) {
+    if (e.target.closest && (e.target.closest('.stp-edit-btn') || e.target.closest('.stp-del-btn') || e.target.closest('.stp-add-piece'))) return;
+    var tile = e.target.closest && e.target.closest('.stp-piece-tile');
+    if (!tile) return;
+    _openDrawer(tile.dataset.pid);
+  });
+
+  // ── Helper: sync template label stall homepage → shop header ──────────
   function _syncShopLabel() {
     var src  = document.getElementById('ms-template-name');
     var dest = document.getElementById('ms-shop-template-name');
     if (src && dest) dest.textContent = src.textContent;
   }
 
-  // ── Navigate: stall homepage ↔ shop panel ────────────────────────────
+  // ── Navigate: stall homepage ↔ shop panel ─────────────────────────────
   window.openStallShop = function() {
+    _closeDrawer();
     var stall = document.getElementById('gal-panel-stall');
     var shop  = document.getElementById('gal-panel-shop');
     if (stall) stall.style.display = 'none';
     if (shop)  shop.style.display  = '';
     _syncShopLabel();
-    // Render pieces if shop section is empty / showing placeholder
     var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
-    var tplKey  = Object.keys(LABELS).find(function(k) { return LABELS[k] === tplName; }) || 'handmade';
+    var tplKey  = Object.keys(LABELS).find(function(k){ return LABELS[k] === tplName; }) || 'handmade';
     var render  = RENDERERS[tplKey] || renderSquareGrid;
-    if ($shop.querySelector('.stp-add-piece') === null) {
-      // Not yet rendered — fetch and draw
-      $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading pieces…</div>';
-      fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
-    }
+    $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading…</div>';
+    fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
   };
 
   window.openStallHome = function() {
+    _closeDrawer();
     var stall = document.getElementById('gal-panel-stall');
     var shop  = document.getElementById('gal-panel-shop');
     if (shop)  shop.style.display  = 'none';
     if (stall) stall.style.display = '';
   };
 
-  // "← Home" button in shop panel
+  // "← Home" button
   document.addEventListener('click', function(e) {
-    if (e.target.closest && e.target.closest('#ms-shop-back-btn')) {
-      window.openStallHome();
-    }
+    if (e.target.closest && e.target.closest('#ms-shop-back-btn')) window.openStallHome();
   });
 
-  // ── Public API ────────────────────────────────────────────────────────
-  // Sets the active template label and pre-renders the shop section.
-  // Always lands on the stall homepage — user navigates to shop via nav.
+  // ── Public API ─────────────────────────────────────────────────────────
   window.openStallTemplate = function(tpl) {
     document.body.classList.add('stall-focus');
     if (typeof window.openGallery === 'function') window.openGallery();
@@ -30838,30 +31037,26 @@ body.wm-browser-fs #admin-panel:hover {
       var tab = document.querySelector('.gal-tab[data-tab="stall"]');
       if (tab) tab.click();
     }, 30);
-
-    // Update template label on both stall homepage and shop header
     var $label = document.getElementById('ms-template-name');
     if ($label) $label.textContent = LABELS[tpl] || 'Hand-made';
     _syncShopLabel();
-
-    // Pre-load pieces into the shop section in the background
     var render = RENDERERS[tpl] || renderSquareGrid;
     fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
   };
 
-  // Refresh shop when stall tab is clicked (handles re-entry after adding pieces)
+  // Refresh shop when stall tab is clicked (after adding a piece, etc.)
   document.addEventListener('click', function(e) {
     var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
     if (!t) return;
     setTimeout(function() {
       var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
-      var tplKey  = Object.keys(LABELS).find(function(k) { return LABELS[k] === tplName; }) || 'handmade';
+      var tplKey  = Object.keys(LABELS).find(function(k){ return LABELS[k] === tplName; }) || 'handmade';
       var render  = RENDERERS[tplKey] || renderSquareGrid;
       fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
     }, 80);
   });
 
-  // "+ Add a piece" tiles → open Add-a-piece form
+  // "+ Add a piece" tiles → open the Add-a-piece form
   $shop.addEventListener('click', function(e) {
     var tile = e.target.closest && e.target.closest('.stp-add-piece');
     if (!tile) return;
