@@ -7180,16 +7180,8 @@ function toggleVillageSound() {
       </div>
       <!-- My Stall tab — website template -->
       <div id="gal-panel-stall" style="display:none;position:relative;">
-        <!-- Mode bar: Template label + Save/Pages/Preview only -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span class="ms-edit-only" style="font-size:11px;color:#8e8e8e;">
-              <span style="color:#b8914a;font-weight:600;">Template:</span>
-              <span id="ms-template-name" style="color:#1c1713;font-weight:500;">Hand-made</span>
-              <span style="margin:0 6px;color:#d4c28e;">·</span>
-              <a id="ms-change-template" href="#" style="color:#b8914a;text-decoration:none;font-weight:600;">Change</a>
-            </span>
-          </div>
+        <!-- Mode bar: Save/Pages/Preview -->
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;">
           <div style="display:flex;gap:6px;align-items:center;">
             <button id="ms-pages-btn" class="ms-edit-only" style="background:none;color:#262626;border:1.5px solid #dbdbdb;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Pages</button>
             <button id="ms-save-btn" class="ms-edit-only" style="background:#262626;color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
@@ -7300,10 +7292,6 @@ function toggleVillageSound() {
         <div style="display:flex;align-items:center;padding:10px 0 14px;border-bottom:1px solid #f0f0f0;gap:12px;">
           <button id="ms-shop-back-btn" style="background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#262626;padding:0;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap;">← Home</button>
           <span style="font-size:14px;font-weight:700;color:#1c1713;flex:1;letter-spacing:-0.01em;">Shop</span>
-          <span style="font-size:11px;color:#8e8e8e;white-space:nowrap;">
-            <span style="color:#b8914a;font-weight:600;">Template:</span>
-            <span id="ms-shop-template-name" style="color:#1c1713;font-weight:500;">Hand-made</span>
-          </span>
         </div>
         <!-- Piece grid: filled by template renderers via openStallTemplate() -->
         <div id="ms-shop-section" style="width:calc(100% + 48px);margin:0 -24px;">
@@ -7778,125 +7766,7 @@ function toggleVillageSound() {
   </div>
 </div>
 
-<!-- ============ STALL TEMPLATE CAROUSEL ============
-     Opens after onboarding finishes, or from a "Change template" button in the editor.
-     Five tiles, each showing a schematic preview of a layout. Clicking one saves
-     stall_template to village_members and opens the editor rendered in that style.
-     Template #1 = the hand-made editor; templates #2-5 are new layouts. -->
-<div id="stall-template-carousel" style="display:none;position:fixed;inset:0;z-index:9400;background:rgba(20,14,6,0.58);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;">
-  <div style="background:#fefcf7;border-radius:16px;max-width:1040px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.3);padding:40px 44px 36px;position:relative;">
-    <button id="tc-close-btn" type="button" title="Close" style="display:none;position:absolute;top:18px;right:20px;background:none;border:none;font-size:24px;color:#8e8e8e;cursor:pointer;padding:6px 10px;line-height:1;">×</button>
-
-    <div style="text-align:center;margin-bottom:32px;">
-      <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b8914a;margin-bottom:8px;">Template</div>
-      <h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:500;color:#1c1713;margin:0 0 6px;letter-spacing:-0.01em;">Choose how your stall looks</h2>
-      <p style="color:#6a5d4a;font-size:14px;line-height:1.6;margin:0;max-width:540px;margin-left:auto;margin-right:auto;">Your content stays the same. You can switch any time.</p>
-    </div>
-
-    <div id="tc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;">
-      <!-- Tile: Hand-made -->
-      <div class="tc-tile" data-template="handmade" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div class="tc-preview" data-tpl="handmade" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
-          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
-            <rect x="0" y="0" width="200" height="18" fill="#e4d6ad"/>
-            <rect x="10" y="6" width="40" height="6" rx="1" fill="#b8914a"/>
-            <rect x="120" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
-            <rect x="138" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
-            <rect x="156" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
-            <rect x="174" y="6" width="14" height="6" rx="1" fill="#8e8e8e"/>
-            <rect x="10" y="28" width="180" height="50" rx="4" fill="#d4c28e"/>
-            <rect x="10" y="86" width="54" height="54" rx="3" fill="#e4d6ad"/>
-            <rect x="70" y="86" width="54" height="54" rx="3" fill="#e4d6ad"/>
-            <rect x="130" y="86" width="54" height="54" rx="3" fill="#e4d6ad"/>
-          </svg>
-        </div>
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Hand-made</div>
-        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Build page by page. Full control over every block.</div>
-        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
-      </div>
-
-      <!-- Tile: Minimal Grid -->
-      <div class="tc-tile" data-template="grid" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div class="tc-preview" data-tpl="grid" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
-          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
-            <rect x="14" y="10" width="80" height="10" rx="1" fill="#1c1713"/>
-            <rect x="14" y="24" width="50" height="4" rx="1" fill="#8e8e8e"/>
-            <rect x="14" y="40" width="54" height="54" rx="2" fill="#d4c28e"/>
-            <rect x="74" y="40" width="54" height="54" rx="2" fill="#e4d6ad"/>
-            <rect x="134" y="40" width="54" height="54" rx="2" fill="#d4c28e"/>
-            <rect x="14" y="100" width="54" height="34" rx="2" fill="#e4d6ad"/>
-            <rect x="74" y="100" width="54" height="34" rx="2" fill="#d4c28e"/>
-            <rect x="134" y="100" width="54" height="34" rx="2" fill="#e4d6ad"/>
-          </svg>
-        </div>
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Minimal Grid</div>
-        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Your work, large, center-stage. No distraction.</div>
-        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
-      </div>
-
-      <!-- Tile: Magazine -->
-      <div class="tc-tile" data-template="magazine" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div class="tc-preview" data-tpl="magazine" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
-          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
-            <rect x="0" y="0" width="200" height="60" fill="#d4c28e"/>
-            <rect x="60" y="22" width="80" height="8" rx="1" fill="#fefcf7"/>
-            <rect x="70" y="36" width="60" height="4" rx="1" fill="#fefcf7" opacity="0.8"/>
-            <rect x="14" y="72" width="78" height="4" rx="1" fill="#1c1713"/>
-            <rect x="14" y="82" width="78" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="14" y="89" width="78" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="14" y="96" width="60" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="100" y="72" width="86" height="60" rx="2" fill="#e4d6ad"/>
-            <rect x="14" y="110" width="30" height="22" rx="1" fill="#e4d6ad"/>
-            <rect x="48" y="110" width="30" height="22" rx="1" fill="#e4d6ad"/>
-          </svg>
-        </div>
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Magazine</div>
-        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">For storytellers. Intro, essay, and a gallery below.</div>
-        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
-      </div>
-
-      <!-- Tile: Journal -->
-      <div class="tc-tile" data-template="journal" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div class="tc-preview" data-tpl="journal" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
-          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
-            <rect x="50" y="10" width="100" height="8" rx="1" fill="#1c1713"/>
-            <rect x="70" y="22" width="60" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="36" width="120" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="42" width="120" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="48" width="90" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="60" width="120" height="28" rx="2" fill="#e4d6ad"/>
-            <rect x="40" y="96" width="120" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="102" width="120" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="108" width="80" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="40" y="120" width="60" height="14" rx="2" fill="#d4c28e"/>
-          </svg>
-        </div>
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Journal</div>
-        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Linear, reflective. Reads like a diary or essay.</div>
-        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
-      </div>
-
-      <!-- Tile: Tall Mobile -->
-      <div class="tc-tile" data-template="tall-mobile" style="background:#fff;border:1.5px solid #e4d6ad;border-radius:12px;padding:16px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;">
-        <div class="tc-preview" data-tpl="tall-mobile" style="aspect-ratio:4/3;background:#faf6ed;border-radius:8px;overflow:hidden;margin-bottom:14px;position:relative;">
-          <svg viewBox="0 0 200 150" width="100%" height="100%" style="display:block;">
-            <rect x="70" y="12" width="60" height="126" rx="8" fill="#1c1713"/>
-            <rect x="76" y="18" width="48" height="114" rx="4" fill="#faf6ed"/>
-            <circle cx="100" cy="34" r="10" fill="#d4c28e"/>
-            <rect x="88" y="50" width="24" height="4" rx="1" fill="#1c1713"/>
-            <rect x="82" y="60" width="36" height="3" rx="1" fill="#8e8e8e"/>
-            <rect x="82" y="70" width="36" height="16" rx="2" fill="#e4d6ad"/>
-            <rect x="82" y="90" width="36" height="16" rx="2" fill="#d4c28e"/>
-            <rect x="82" y="110" width="36" height="16" rx="2" fill="#e4d6ad"/>
-          </svg>
-        </div>
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#1c1713;margin-bottom:2px;">Tall Mobile</div>
-        <div style="font-size:12px;color:#6a5d4a;line-height:1.5;margin-bottom:12px;">Phone-first. Single column of blocks, vertical flow.</div>
-        <div class="tc-choose" style="font-size:12px;font-weight:600;color:#b8914a;">Use this template →</div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="stall-template-carousel" style="display:none;"></div>
 
 <div class="cm-toast" id="cm-toast"></div>
 <div id="vault-overlay">
@@ -23882,7 +23752,7 @@ navItems.forEach(item => {
       var _vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
       if (window._supabase && window._sbAuthUid && _vid) {
         window._supabase.from('village_members')
-          .select('stall_onboarded,stall_template')
+          .select('stall_onboarded')
           .eq('auth_id', window._sbAuthUid)
           .eq('village_id', _vid)
           .limit(1).single()
@@ -23892,12 +23762,8 @@ navItems.forEach(item => {
               window.openStallOnboarding();
               return;
             }
-            if (!m.stall_template && typeof window.openStallTemplateCarousel === 'function') {
-              window.openStallTemplateCarousel();
-              return;
-            }
             if (typeof window.openStallTemplate === 'function') {
-              window.openStallTemplate(m.stall_template || 'handmade');
+              window.openStallTemplate();
               return;
             }
             _openStallEditor();
@@ -30447,9 +30313,8 @@ body.wm-browser-fs #admin-panel:hover {
     $nextBtn.disabled = false;
     $nextBtn.textContent = 'Finish';
     OB.style.display = 'none';
-    // Next: open template carousel. Until that exists, fall through to the stall editor.
-    if (typeof window.openStallTemplateCarousel === 'function') {
-      window.openStallTemplateCarousel();
+    if (typeof window.openStallTemplate === 'function') {
+      window.openStallTemplate();
     } else {
       document.body.classList.add('stall-focus');
       if (typeof window.openGallery === 'function') window.openGallery();
@@ -30487,11 +30352,11 @@ body.wm-browser-fs #admin-panel:hover {
 })();
 </script>
 
-<!-- ============ STALL TEMPLATE CAROUSEL — wiring ============ -->
+<!-- carousel wiring script block — all code dead, TC is null so IIFE returns immediately -->
 <script>
 (function() {
-  var TC = document.getElementById('stall-template-carousel');
-  if (!TC) return;
+  var TC = null;
+  if (!TC) return; // ← everything below is unreachable
 
   var $closeBtn = document.getElementById('tc-close-btn');
   var $tiles = TC.querySelectorAll('.tc-tile');
@@ -30698,66 +30563,13 @@ body.wm-browser-fs #admin-panel:hover {
 })();
 </script>
 
-<!-- ============ STALL TEMPLATE LABEL + CHANGE LINK ============
-     Shows the current template in the stall editor's action bar and lets the
-     maker reopen the carousel to switch. -->
-<script>
-(function() {
-  var TEMPLATE_LABELS = {
-    'handmade':    'Hand-made',
-    'grid':        'Minimal Grid',
-    'magazine':    'Magazine',
-    'journal':     'Journal',
-    'tall-mobile': 'Tall Mobile'
-  };
+<!-- template label + change-link script removed -->
 
-  var $name = document.getElementById('ms-template-name');
-  var $link = document.getElementById('ms-change-template');
-
-  function refreshLabel() {
-    if (!$name) return;
-    if (!window._supabase || !window._sbAuthUid) return;
-    var vid = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : null;
-    if (!vid) return;
-    window._supabase.from('village_members')
-      .select('stall_template')
-      .eq('auth_id', window._sbAuthUid)
-      .eq('village_id', vid)
-      .limit(1).single()
-      .then(function(r) {
-        var tpl = (r && r.data && r.data.stall_template) || 'handmade';
-        $name.textContent = TEMPLATE_LABELS[tpl] || 'Hand-made';
-      });
-  }
-
-  // Refresh when the stall tab becomes visible.
-  document.addEventListener('click', function(e) {
-    var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
-    if (t) setTimeout(refreshLabel, 80);
-  });
-
-  // Also refresh once shortly after DOM is ready so labels appear for returning users.
-  setTimeout(refreshLabel, 1200);
-
-  if ($link) $link.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (typeof window.openStallTemplateCarousel === 'function') {
-      window.openStallTemplateCarousel({ dismissable: true });
-    }
-  });
-})();
-</script>
-
-<!-- ============ STALL TEMPLATE RENDERERS ============
-     All templates share the same hero + nav + profile section (always editable).
-     The template choice only changes how PIECES are displayed in #ms-shop-section
-     below the profile. This way header/avatar uploads are always accessible. -->
+<!-- ============ STALL SHOP RENDERER ============ -->
 <script>
 (function() {
   var $shop = document.getElementById('ms-shop-section');
   if (!$shop) return;
-
-  var LABELS = { 'handmade':'Hand-made', 'grid':'Grid', 'magazine':'Magazine', 'journal':'Journal', 'tall-mobile':'Tall' };
 
   // Cache of fetched pieces — kept in sync with every fetch
   var _allPieces = [];
@@ -30874,13 +30686,8 @@ body.wm-browser-fs #admin-panel:hover {
     return shopHeader('Shop') + '<div style="padding:0 24px 40px;max-width:380px;display:flex;flex-direction:column;gap:14px;">' + cards + ADD_TILE_ROW + '</div>';
   }
 
-  var RENDERERS = {
-    'handmade':    renderSquareGrid,
-    'grid':        renderSquareGrid,
-    'magazine':    renderMagazineGrid,
-    'journal':     renderJournalList,
-    'tall-mobile': renderTallList
-  };
+  // Single renderer — square grid (templates removed)
+  var _render = renderSquareGrid;
 
   // ── Piece edit drawer ─────────────────────────────────────────────────
   var $drawer = document.getElementById('ms-piece-drawer');
@@ -30914,10 +30721,7 @@ body.wm-browser-fs #admin-panel:hover {
   }
 
   function _rerender() {
-    var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
-    var tplKey  = Object.keys(LABELS).find(function(k){ return LABELS[k] === tplName; }) || 'handmade';
-    var render  = RENDERERS[tplKey] || renderSquareGrid;
-    $shop.innerHTML = render(_allPieces);
+    $shop.innerHTML = _render(_allPieces);
   }
 
   if ($dBack) $dBack.addEventListener('click', _closeDrawer);
@@ -30994,13 +30798,6 @@ body.wm-browser-fs #admin-panel:hover {
     _openDrawer(tile.dataset.pid);
   });
 
-  // ── Helper: sync template label stall homepage → shop header ──────────
-  function _syncShopLabel() {
-    var src  = document.getElementById('ms-template-name');
-    var dest = document.getElementById('ms-shop-template-name');
-    if (src && dest) dest.textContent = src.textContent;
-  }
-
   // ── Navigate: stall homepage ↔ shop panel ─────────────────────────────
   window.openStallShop = function() {
     _closeDrawer();
@@ -31008,12 +30805,8 @@ body.wm-browser-fs #admin-panel:hover {
     var shop  = document.getElementById('gal-panel-shop');
     if (stall) stall.style.display = 'none';
     if (shop)  shop.style.display  = '';
-    _syncShopLabel();
-    var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
-    var tplKey  = Object.keys(LABELS).find(function(k){ return LABELS[k] === tplName; }) || 'handmade';
-    var render  = RENDERERS[tplKey] || renderSquareGrid;
     $shop.innerHTML = '<div style="padding:40px 24px;color:#aaa;font-size:13px;">Loading…</div>';
-    fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
+    fetchPieces().then(function(pieces) { $shop.innerHTML = _render(pieces); });
   };
 
   window.openStallHome = function() {
@@ -31030,18 +30823,14 @@ body.wm-browser-fs #admin-panel:hover {
   });
 
   // ── Public API ─────────────────────────────────────────────────────────
-  window.openStallTemplate = function(tpl) {
+  window.openStallTemplate = function() {
     document.body.classList.add('stall-focus');
     if (typeof window.openGallery === 'function') window.openGallery();
     setTimeout(function() {
       var tab = document.querySelector('.gal-tab[data-tab="stall"]');
       if (tab) tab.click();
     }, 30);
-    var $label = document.getElementById('ms-template-name');
-    if ($label) $label.textContent = LABELS[tpl] || 'Hand-made';
-    _syncShopLabel();
-    var render = RENDERERS[tpl] || renderSquareGrid;
-    fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
+    fetchPieces().then(function(pieces) { $shop.innerHTML = _render(pieces); });
   };
 
   // Refresh shop when stall tab is clicked (after adding a piece, etc.)
@@ -31049,10 +30838,7 @@ body.wm-browser-fs #admin-panel:hover {
     var t = e.target.closest && e.target.closest('.gal-tab[data-tab="stall"]');
     if (!t) return;
     setTimeout(function() {
-      var tplName = (document.getElementById('ms-template-name') || {}).textContent || 'Hand-made';
-      var tplKey  = Object.keys(LABELS).find(function(k){ return LABELS[k] === tplName; }) || 'handmade';
-      var render  = RENDERERS[tplKey] || renderSquareGrid;
-      fetchPieces().then(function(pieces) { $shop.innerHTML = render(pieces); });
+      fetchPieces().then(function(pieces) { $shop.innerHTML = _render(pieces); });
     }, 80);
   });
 
