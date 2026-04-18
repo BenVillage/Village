@@ -7125,6 +7125,7 @@ function toggleVillageSound() {
     <div id="gal-tab-bar" style="display:flex;gap:0;border-bottom:1px solid #dbdbdb;padding:0 24px;flex-shrink:0;">
       <button class="gal-tab active" data-tab="gallery" style="padding:10px 20px;font-size:12px;font-weight:600;color:#c8a84b;cursor:pointer;border:none;background:none;border-bottom:2px solid #c8a84b;font-family:inherit;">Gallery</button>
       <button class="gal-tab" data-tab="market" style="padding:10px 20px;font-size:12px;font-weight:600;color:#8e8e8e;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;">Market</button>
+      <button class="gal-tab" data-tab="stall" style="padding:10px 20px;font-size:12px;font-weight:600;color:#8e8e8e;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;font-family:inherit;">My Stall</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:24px;">
       <!-- Gallery tab: random showcase -->
@@ -18945,6 +18946,15 @@ Mura facilitates. People decide.`;
       if (_igS && _activeGalTab !== 'stall') _igS.style.display = '';
       if (_activeGalTab === 'gallery') { document.getElementById('gallery-filters').style.display = ''; renderShowcase(); }
       if (_activeGalTab === 'market')  { document.getElementById('gallery-filters').style.display = 'none'; if (typeof window._ensureStallDataLoaded === 'function') window._ensureStallDataLoaded(); renderMakerCards(); }
+      if (_activeGalTab === 'stall') {
+        document.getElementById('gallery-filters').style.display = 'none';
+        if (typeof window._loadStallIdentity === 'function') window._loadStallIdentity();
+        // Open in preview mode so the user sees how their stall looks to others first
+        setTimeout(function() {
+          var prevBtn = document.getElementById('ms-preview-btn');
+          if (prevBtn && prevBtn.textContent.indexOf('Preview') !== -1) prevBtn.click();
+        }, 50);
+      }
     });
   });
 
