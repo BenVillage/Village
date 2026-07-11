@@ -1900,9 +1900,72 @@ window._isFounder = (location.hostname === 'localhost');
     color: #262626; font-size: 15px; font-weight: 600; letter-spacing: 0.03em;
   }
   #cafe-room-body {
-    flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+    flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
     padding: 0 20px 36px;
+    background: #FAF8F4;
   }
+  /* ── Café interior ── */
+  #cafe-room-leave {
+    background: none; border: 1px solid #E5E0D8; border-radius: 8px;
+    padding: 5px 12px; font-size: 12px; color: #6B6660; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  #cafe-room-leave:hover { color: #1C1A16; border-color: #1C1A16; }
+  body.wm-mode #cafe-room-leave { display: none !important; }
+  .cafe-question {
+    font-family: Georgia, 'Times New Roman', serif; font-style: italic;
+    font-size: 21px; color: #1C1A16; line-height: 1.5;
+  }
+  #cafe-door { margin: auto; max-width: 520px; width: 100%; text-align: center; padding: 40px 0; }
+  #cafe-door-question { margin: 10px 0 22px; }
+  .cafe-door-input {
+    width: 100%; box-sizing: border-box; background: #fff;
+    border: 1.5px solid #E5E0D8; border-radius: 12px; padding: 14px 16px;
+    font-size: 14px; font-family: inherit; color: #1C1A16; outline: none;
+    resize: none; line-height: 1.6;
+  }
+  .cafe-door-input::placeholder { color: #A09890; }
+  .cafe-door-input:focus { border-color: #1C1A16; }
+  .cafe-door-actions { margin-top: 14px; }
+  #cafe-door-quiet {
+    display: block; margin: 18px auto 0; background: none; border: none;
+    color: #A09890; font-size: 12px; cursor: pointer; font-family: inherit;
+  }
+  #cafe-door-quiet:hover { color: #6B6660; text-decoration: underline; }
+  #cafe-room-inner, #cafe-table-view { max-width: 760px; margin: 0 auto; width: 100%; padding-top: 22px; }
+  #cafe-fox-line { font-size: 12px; color: #A09890; margin: -10px 0 18px; font-style: italic; }
+  .cafe-wall {
+    background: #F2EFE9; border: 1px solid #E5E0D8; border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 16px;
+  }
+  .cafe-wall-q { font-size: 12px; color: #6B6660; font-style: italic; margin-bottom: 4px; }
+  .cafe-wall-empty { font-size: 12.5px; color: #A09890; padding-top: 6px; }
+  .cafe-wall-answer { font-size: 13px; color: #1C1A16; line-height: 1.55; padding: 8px 0 2px; border-top: 1px solid #E5E0D8; margin-top: 8px; }
+  .cafe-wall-answer .cw-name { font-weight: 500; color: #6B6660; margin-right: 6px; }
+  .cafe-table-card {
+    background: #fff; border: 1px solid #E5E0D8; border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s;
+  }
+  .cafe-table-card:hover { border-color: #C88520; }
+  .cafe-table-title { font-family: Georgia, 'Times New Roman', serif; font-size: 16px; color: #1C1A16; margin-bottom: 4px; }
+  .cafe-table-sub { font-size: 11px; color: #A09890; }
+  .cafe-table-preview {
+    font-size: 12.5px; color: #6B6660; margin-top: 8px; line-height: 1.5;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #cafe-cold-toggle { background: none; border: none; color: #A09890; font-size: 12px; cursor: pointer; font-family: inherit; padding: 8px 0; }
+  #cafe-cold-toggle:hover { color: #6B6660; }
+  .cafe-cold-item { font-size: 13px; color: #6B6660; padding: 8px 0; border-top: 1px solid #E5E0D8; cursor: pointer; }
+  .cafe-cold-item:hover { color: #1C1A16; }
+  #cafe-table-back { background: none; border: none; color: #6B6660; font-size: 12px; cursor: pointer; font-family: inherit; padding: 0 0 14px; }
+  #cafe-table-back:hover { color: #1C1A16; text-decoration: underline; }
+  #cafe-table-meta { font-size: 11px; color: #A09890; margin: 4px 0 14px; }
+  .cafe-msg { padding: 12px 0; border-top: 1px solid #E5E0D8; }
+  .cafe-msg-name { font-size: 12px; font-weight: 500; color: #6B6660; margin-bottom: 3px; }
+  .cafe-msg-time { font-size: 10px; color: #A09890; margin-left: 8px; font-weight: 400; }
+  .cafe-msg-text { font-size: 14px; color: #1C1A16; line-height: 1.6; }
+  #cafe-table-inputrow { display: flex; gap: 8px; margin: 18px 0 30px; }
+  .cafe-guest-note { font-size: 12px; color: #A09890; margin: 14px 0 30px; }
 
   /* === Mentor Cluster === */
   .mentor-tab-bar { display:flex; gap:2px; padding:0; margin-bottom:20px; background:#fff; border-bottom:1px solid #dbdbdb; border-radius:0; }
@@ -6380,9 +6443,53 @@ function toggleVillageSound() {
 <div id="cafe-room-overlay">
   <div id="cafe-room-top">
     <div id="cafe-room-title">Commons / Café</div>
-    <div style="width:80px;"></div>
+    <button id="cafe-room-leave" title="Back to the village">Leave</button>
   </div>
-  <div id="cafe-room-body"></div>
+  <div class="presence-strip" id="commons-presence-strip"></div>
+  <div id="cafe-room-body">
+    <!-- The door: today's question. Answer it, or sit quietly. -->
+    <div id="cafe-door" style="display:none;">
+      <div class="bld-label">At the door</div>
+      <div id="cafe-door-question" class="cafe-question"></div>
+      <textarea id="cafe-door-input" class="cafe-door-input" rows="3" placeholder="Take your time."></textarea>
+      <div class="cafe-door-actions">
+        <button id="cafe-door-enter" class="v-btn v-btn-primary">Hang it by the door</button>
+      </div>
+      <button id="cafe-door-quiet">sit quietly instead</button>
+    </div>
+    <!-- The room -->
+    <div id="cafe-room-inner" style="display:none;">
+      <p class="bld-tagline">Where you meet someone new.<br>A conversation, not a comments section.</p>
+      <div id="cafe-fox-line"></div>
+      <div id="cafe-wall" class="cafe-wall"></div>
+      <div class="bld-glass" style="margin-top:4px;">
+        <div class="bld-label">Open a table</div>
+        <div style="display:flex;gap:8px;">
+          <input id="cafe-new-topic" class="bld-input" placeholder="What do you want to talk about?" maxlength="120"/>
+          <button id="cafe-new-table-btn" class="v-btn v-btn-primary" style="flex-shrink:0;">Open</button>
+        </div>
+      </div>
+      <div class="bld-label" style="margin-top:22px;">Tables</div>
+      <div id="cafe-tables"></div>
+      <div id="cafe-cold-wrap" style="display:none;">
+        <button id="cafe-cold-toggle"></button>
+        <div id="cafe-cold-tables" style="display:none;"></div>
+      </div>
+      <div class="bld-manifesto-line">A conversation is not content.</div>
+    </div>
+    <!-- A table: one conversation -->
+    <div id="cafe-table-view" style="display:none;">
+      <button id="cafe-table-back">&larr; All tables</button>
+      <div id="cafe-table-topic" class="cafe-question"></div>
+      <div id="cafe-table-meta"></div>
+      <div id="cafe-table-msgs"></div>
+      <div id="cafe-table-inputrow">
+        <input id="cafe-table-input" class="bld-input" placeholder="Say it to the table" maxlength="1000"/>
+        <button id="cafe-table-send" class="v-btn v-btn-primary" style="flex-shrink:0;">Say it</button>
+      </div>
+      <div id="cafe-table-guestnote" class="cafe-guest-note" style="display:none;">Visitors can listen. Create your identity to speak.</div>
+    </div>
+  </div>
 </div>
 
 <!-- Observatory / World — Outward view -->
@@ -15198,7 +15305,494 @@ function openCafeRoom() {
   var _vn = document.getElementById('village-name-label');
   if (_tc) _tc.style.display = 'none';
   if (_vn) _vn.style.display = 'none';
+  if (typeof window._cafeInit === 'function') window._cafeInit();
 }
+function closeCafeRoom() {
+  var ov = document.getElementById('cafe-room-overlay');
+  if (!ov) return;
+  ov.classList.remove('open');
+  if (!document.body.classList.contains('wm-mode')) ov.style.display = 'none';
+  var _tc = document.getElementById('top-controls');
+  var _vn = document.getElementById('village-name-label');
+  if (_tc) _tc.style.display = '';
+  if (_vn) _vn.style.display = '';
+}
+
+// ── Commons / Café — the room ──────────────────────────────────────
+// The daily question at the door, then tables: small conversations,
+// not a feed. Real tables live in Supabase (cafe_tables + cafe_table_messages);
+// ambient tables come from the simulation bank via window.cafeTables.
+window.cafeTables = (function() {
+  try { return JSON.parse(localStorage.getItem('clayVillageCommonsTables') || '[]'); }
+  catch(e) { return []; }
+})();
+
+(function() {
+  var QUESTIONS = [
+    'What did your hands make yesterday?',
+    'What are you avoiding finishing?',
+    'Who taught you the thing you use most?',
+    'What did you almost throw away this week?',
+    'What would you make if nobody ever saw it?',
+    'What broke recently, and what did it teach you?',
+    'What is on your wheel right now?',
+    'What did you learn too late?',
+    'What are you copying at the moment, honestly?',
+    'What tool do you not deserve yet?',
+    'What does your studio smell like?',
+    'When did you last watch someone else work?',
+    'What is the oldest thing you own?',
+    'What did you last make for someone else?',
+    'What are you afraid to fire?',
+    'What do you do while the kiln cools?',
+    'Which mistake do you keep on the shelf?',
+    'What is worth doing slowly?',
+    'Whose work made you start?',
+    'What will you still be making in ten years?',
+    'What did you notice today that nobody else did?'
+  ];
+  var FOX_LINES = [
+    'The kettle is on.',
+    'Sit anywhere.',
+    'The good chair is free.',
+    'You are not interrupting.',
+    'Someone left biscuits.'
+  ];
+  var WARM_MS = 7 * 86400000;
+
+  var _realTables = [];
+  var _doorAnswers = [];
+  var _activeTable = null;   // { kind:'sim'|'real', sim?, row?, id }
+  var _activeMsgs = [];
+  var _lastVid = null;
+  var _wired = false;
+
+  function _vid() { return (typeof _ACTIVE_VILLAGE_ID !== 'undefined' && _ACTIVE_VILLAGE_ID) ? _ACTIVE_VILLAGE_ID : null; }
+  function _sb() { return window._supabase || null; }
+  function _isGuest() { return window._villageRole === 'guest'; }
+  function _myId() { return (typeof _presenceProfileId === 'function') ? _presenceProfileId() : 'anon'; }
+  function _myName() {
+    var p = (typeof getSessionProfile === 'function') ? getSessionProfile() : null;
+    return p ? (p.villageName || p.name || 'Someone') : 'Someone';
+  }
+  function _todayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function _dayIndex() {
+    var d = new Date();
+    return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+  }
+  function _question() { return QUESTIONS[_dayIndex() % QUESTIONS.length]; }
+  function _esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function _ago(ts) {
+    var t = (typeof ts === 'string') ? new Date(ts).getTime() : ts;
+    if (!t) return '';
+    var s = Math.floor((Date.now() - t) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    return Math.floor(s / 86400) + 'd ago';
+  }
+  function _saveSim() {
+    try { localStorage.setItem('clayVillageCommonsTables', JSON.stringify(window.cafeTables)); } catch(e) {}
+  }
+
+  // First visit: pull a few conversations from the simulation bank so the
+  // room is never empty, then age them so they feel lived-in, not spawned.
+  function _backfillSim() {
+    if (localStorage.getItem('cvCafeBackfilled')) return;
+    var have = window.cafeTables.filter(function(t) { return t.sim; }).length;
+    for (var i = have; i < 3; i++) {
+      if (typeof window.simRelease === 'function') window.simRelease('table');
+    }
+    var sims = window.cafeTables.filter(function(t) { return t.sim; });
+    sims.forEach(function(t, i) {
+      var shift = i * 86400000; // 0d, 1d, 2d back
+      t.lastActivity = (t.lastActivity || Date.now()) - shift;
+      t.createdAt = (t.createdAt || Date.now()) - shift;
+      (t.messages || []).forEach(function(m) { if (m.ts) m.ts -= shift; });
+    });
+    _saveSim();
+    localStorage.setItem('cvCafeBackfilled', '1');
+  }
+
+  // ── Views ──
+  function _show(view) {
+    var door = document.getElementById('cafe-door');
+    var room = document.getElementById('cafe-room-inner');
+    var table = document.getElementById('cafe-table-view');
+    if (door) door.style.display = view === 'door' ? '' : 'none';
+    if (room) room.style.display = view === 'room' ? '' : 'none';
+    if (table) table.style.display = view === 'table' ? '' : 'none';
+  }
+
+  function _showDoor() {
+    var q = document.getElementById('cafe-door-question');
+    if (q) q.textContent = _question();
+    var input = document.getElementById('cafe-door-input');
+    var enter = document.getElementById('cafe-door-enter');
+    var quiet = document.getElementById('cafe-door-quiet');
+    var guest = _isGuest();
+    if (input) input.style.display = guest ? 'none' : '';
+    if (enter) enter.style.display = guest ? 'none' : '';
+    if (quiet) quiet.textContent = guest ? 'step inside' : 'sit quietly instead';
+    _show('door');
+  }
+
+  function _enterRoom() {
+    var fox = document.getElementById('cafe-fox-line');
+    if (fox) fox.textContent = 'The Fox: ' + FOX_LINES[_dayIndex() % FOX_LINES.length];
+    _show('room');
+    _renderWall();
+    _renderTables();
+  }
+
+  // ── The wall: today's answers by the door ──
+  function _renderWall() {
+    var el = document.getElementById('cafe-wall');
+    if (!el) return;
+    var html = '<div class="bld-label" style="margin-bottom:2px;">At the door today</div>' +
+               '<div class="cafe-wall-q">' + _esc(_question()) + '</div>';
+    if (!_doorAnswers.length) {
+      html += '<div class="cafe-wall-empty">No one has answered yet today. The wall fills as people arrive.</div>';
+    } else {
+      _doorAnswers.forEach(function(a) {
+        html += '<div class="cafe-wall-answer"><span class="cw-name">' + _esc(a.name) + '</span>' + _esc(a.text) + '</div>';
+      });
+    }
+    el.innerHTML = html;
+  }
+
+  function _fetchDoorAnswers() {
+    var vid = _vid(), sb = _sb();
+    if (!vid || !sb) { _renderWall(); return; }
+    sb.from('cafe_notices').select('*').eq('village_id', vid).eq('type', 'door')
+      .order('created_at', { ascending: false }).limit(120)
+      .then(function(res) {
+        if (res.error || !res.data) return;
+        var today = _todayKey();
+        _doorAnswers = res.data
+          .filter(function(r) { return r.data && r.data.date === today; })
+          .map(function(r) { return { name: (r.data && r.data.name) || 'Someone', text: r.text, uid: r.data && r.data.user_id }; });
+        _renderWall();
+      });
+  }
+
+  // ── Tables ──
+  function _simTables() { return (window.cafeTables || []).filter(function(t) { return t && t.topic; }); }
+
+  function _linkedRealIds() {
+    var ids = {};
+    _simTables().forEach(function(t) { if (t.realId) ids[t.realId] = true; });
+    return ids;
+  }
+
+  function _mergedTables() {
+    var sims = _simTables();
+    var byTopic = {};
+    sims.forEach(function(t) { byTopic[t.topic] = t; });
+    var linked = _linkedRealIds();
+    var out = [];
+    _realTables.forEach(function(r) {
+      if (linked[r.id]) return; // rendered through its sim table
+      var simMatch = byTopic[r.topic];
+      if (simMatch && !simMatch.realId) { simMatch.realId = r.id; _saveSim(); return; }
+      out.push({ kind: 'real', id: r.id, topic: r.topic, by: r.created_by, activity: new Date(r.last_activity || r.created_at).getTime() });
+    });
+    sims.forEach(function(t) {
+      out.push({ kind: 'sim', id: t.id, topic: t.topic, sim: t, activity: t.lastActivity || t.createdAt || 0,
+                 voices: (t.messages || []).length });
+    });
+    out.sort(function(a, b) { return b.activity - a.activity; });
+    return out;
+  }
+
+  function _renderTables() {
+    var el = document.getElementById('cafe-tables');
+    var coldWrap = document.getElementById('cafe-cold-wrap');
+    var coldEl = document.getElementById('cafe-cold-tables');
+    var coldBtn = document.getElementById('cafe-cold-toggle');
+    if (!el) return;
+    var all = _mergedTables();
+    var now = Date.now();
+    var warm = all.filter(function(t) { return now - t.activity < WARM_MS; });
+    var cold = all.filter(function(t) { return now - t.activity >= WARM_MS; });
+    if (!warm.length && !cold.length) {
+      el.innerHTML = '<div class="cafe-wall-empty" style="padding:14px 2px;">No tables yet. Open one.</div>';
+    } else {
+      el.innerHTML = warm.map(function(t) {
+        var sub, preview = '';
+        if (t.kind === 'sim') {
+          sub = t.voices + (t.voices === 1 ? ' voice' : ' voices') + ' &middot; stirred ' + _ago(t.activity);
+          var last = t.sim.messages && t.sim.messages[t.sim.messages.length - 1];
+          if (last) preview = '<div class="cafe-table-preview">' + _esc(last.fromName) + ': ' + _esc(last.text) + '</div>';
+        } else {
+          sub = 'opened by ' + _esc(t.by === 'village' ? 'the village' : t.by) + ' &middot; stirred ' + _ago(t.activity);
+        }
+        return '<div class="cafe-table-card" data-tid="' + _esc(t.id) + '" data-kind="' + t.kind + '">' +
+               '<div class="cafe-table-title">' + _esc(t.topic) + '</div>' +
+               '<div class="cafe-table-sub">' + sub + '</div>' + preview + '</div>';
+      }).join('');
+    }
+    if (cold.length && coldWrap && coldEl && coldBtn) {
+      coldWrap.style.display = '';
+      coldBtn.textContent = 'Cold tables (' + cold.length + ')';
+      coldEl.innerHTML = cold.map(function(t) {
+        return '<div class="cafe-cold-item" data-tid="' + _esc(t.id) + '" data-kind="' + t.kind + '">' + _esc(t.topic) + '</div>';
+      }).join('');
+    } else if (coldWrap) {
+      coldWrap.style.display = 'none';
+    }
+  }
+
+  function _fetchTables() {
+    var vid = _vid(), sb = _sb();
+    if (!vid || !sb) { _renderTables(); return; }
+    sb.from('cafe_tables').select('*').eq('village_id', vid)
+      .order('last_activity', { ascending: false }).limit(60)
+      .then(function(res) {
+        if (!res.error && res.data) _realTables = res.data;
+        _renderTables();
+      });
+  }
+
+  // ── One table (thread view) ──
+  function _openTable(id, kind) {
+    var all = _mergedTables();
+    var t = null;
+    for (var i = 0; i < all.length; i++) { if (String(all[i].id) === String(id)) { t = all[i]; break; } }
+    if (!t) return;
+    _activeTable = t;
+    _activeMsgs = [];
+    var topicEl = document.getElementById('cafe-table-topic');
+    var metaEl = document.getElementById('cafe-table-meta');
+    if (topicEl) topicEl.textContent = t.topic;
+    if (metaEl) metaEl.textContent = (t.kind === 'sim')
+      ? 'An open table. Anyone can sit down.'
+      : 'Opened by ' + (t.by === 'village' ? 'the village' : t.by) + '. Anyone can sit down.';
+    var guest = _isGuest();
+    var inputRow = document.getElementById('cafe-table-inputrow');
+    var note = document.getElementById('cafe-table-guestnote');
+    if (inputRow) inputRow.style.display = guest ? 'none' : '';
+    if (note) note.style.display = guest ? '' : 'none';
+    _show('table');
+    if (t.kind === 'sim') {
+      _activeMsgs = (t.sim.messages || []).map(function(m) {
+        return { name: m.fromName, text: m.text, ts: m.ts, from: m.from };
+      });
+      _renderMsgs();
+      if (t.sim.realId) _fetchTableMsgs(t.sim.realId, true);
+    } else {
+      _renderMsgs();
+      _fetchTableMsgs(t.id, false);
+    }
+  }
+
+  function _fetchTableMsgs(tableId, append) {
+    var sb = _sb();
+    if (!sb) return;
+    sb.from('cafe_table_messages').select('*').eq('table_id', tableId)
+      .order('created_at', { ascending: true }).limit(300)
+      .then(function(res) {
+        if (res.error || !res.data) return;
+        var rows = res.data.map(function(r) {
+          return { name: r.from_name || 'Someone', text: r.message, ts: new Date(r.created_at).getTime(), from: r.from_id };
+        });
+        _activeMsgs = append ? _activeMsgs.concat(rows) : rows;
+        _renderMsgs();
+      });
+  }
+
+  function _renderMsgs() {
+    var el = document.getElementById('cafe-table-msgs');
+    if (!el) return;
+    if (!_activeMsgs.length) {
+      el.innerHTML = '<div class="cafe-wall-empty" style="padding:14px 2px;">Nobody has said anything yet. You can be first.</div>';
+    } else {
+      el.innerHTML = _activeMsgs.map(function(m) {
+        return '<div class="cafe-msg"><div class="cafe-msg-name">' + _esc(m.name) +
+               '<span class="cafe-msg-time">' + _ago(m.ts) + '</span></div>' +
+               '<div class="cafe-msg-text">' + _esc(m.text) + '</div></div>';
+      }).join('');
+    }
+    var body = document.getElementById('cafe-room-body');
+    if (body) body.scrollTop = body.scrollHeight;
+  }
+
+  function _sendToTable() {
+    if (_isGuest() || !_activeTable) return;
+    var input = document.getElementById('cafe-table-input');
+    var text = input ? input.value.trim() : '';
+    if (!text) return;
+    if (input) input.value = '';
+    var msg = { name: _myName(), text: text, ts: Date.now(), from: _myId() };
+    _activeMsgs.push(msg);
+    _renderMsgs();
+    if (typeof logToMura === 'function') logToMura({ building: 'commons', entry_type: 'cafe_table', content: _activeTable.topic + '\n\n' + text });
+    var vid = _vid(), sb = _sb();
+    var t = _activeTable;
+    if (t.kind === 'sim') { t.sim.lastActivity = Date.now(); _saveSim(); _renderTables(); }
+    if (!vid || !sb) return;
+    var insertMsg = function(tableId) {
+      sb.from('cafe_table_messages').insert({
+        table_id: tableId, village_id: vid, from_id: _myId(), from_name: _myName(), message: text
+      }).then(function(res) { if (res.error) console.warn('[Cafe] message insert:', res.error.message); });
+      sb.from('cafe_tables').update({ last_activity: new Date().toISOString() }).eq('id', tableId)
+        .then(function() {});
+    };
+    if (t.kind === 'real') { insertMsg(t.id); return; }
+    // Sim table: materialize into a real shared table on first spoken word
+    if (t.sim.realId) { insertMsg(t.sim.realId); return; }
+    sb.from('cafe_tables').insert({ village_id: vid, topic: t.topic, created_by: 'village' })
+      .select().single().then(function(res) {
+        if (res.error || !res.data) return;
+        t.sim.realId = res.data.id;
+        _saveSim();
+        insertMsg(res.data.id);
+      });
+  }
+
+  function _openNewTable() {
+    if (_isGuest()) return;
+    var input = document.getElementById('cafe-new-topic');
+    var topic = input ? input.value.trim() : '';
+    if (!topic) return;
+    if (input) input.value = '';
+    var vid = _vid(), sb = _sb();
+    if (!vid || !sb) return;
+    sb.from('cafe_tables').insert({ village_id: vid, topic: topic, created_by: _myName() })
+      .select().single().then(function(res) {
+        if (res.error || !res.data) { console.warn('[Cafe] table insert:', res.error && res.error.message); return; }
+        _realTables.unshift(res.data);
+        _renderTables();
+        _openTable(res.data.id, 'real');
+      });
+  }
+
+  // ── The door ──
+  function _doorKey() { return 'cvCafeDoor:' + (_vid() || 'local') + ':' + _todayKey(); }
+
+  function _answerDoor() {
+    if (_isGuest()) { _passDoor('quiet'); return; }
+    var input = document.getElementById('cafe-door-input');
+    var text = input ? input.value.trim() : '';
+    if (!text) return;
+    if (input) input.value = '';
+    _doorAnswers.unshift({ name: _myName(), text: text, uid: _myId() });
+    if (typeof logToMura === 'function') logToMura({ building: 'commons', entry_type: 'cafe_door', content: _question() + '\n\n' + text });
+    var vid = _vid(), sb = _sb();
+    if (vid && sb) {
+      sb.from('cafe_notices').insert({
+        village_id: vid, notice_id: 'door-' + Date.now(), type: 'door', text: text,
+        data: { question: _question(), date: _todayKey(), name: _myName(), user_id: _myId() }
+      }).then(function(res) { if (res.error) console.warn('[Cafe] door insert:', res.error.message); });
+    }
+    _passDoor('answered');
+  }
+
+  function _passDoor(how) {
+    try { localStorage.setItem(_doorKey(), how); } catch(e) {}
+    _enterRoom();
+  }
+
+  // ── Realtime ──
+  function _subscribe() {
+    var vid = _vid();
+    if (!vid || typeof subscribeChannel !== 'function') return;
+    subscribeChannel('cafe-tables-' + vid, 'cafe_tables', 'village_id=eq.' + vid, function(payload) {
+      var row = payload && payload.new;
+      if (!row) return;
+      if (!_realTables.some(function(r) { return r.id === row.id; })) _realTables.unshift(row);
+      _renderTables();
+    });
+    subscribeChannel('cafe-msgs-' + vid, 'cafe_table_messages', 'village_id=eq.' + vid, function(payload) {
+      var row = payload && payload.new;
+      if (!row || row.from_id === _myId()) return;
+      var activeRealId = _activeTable && (_activeTable.kind === 'real' ? _activeTable.id : _activeTable.sim && _activeTable.sim.realId);
+      if (activeRealId && String(row.table_id) === String(activeRealId)) {
+        _activeMsgs.push({ name: row.from_name || 'Someone', text: row.message, ts: Date.now(), from: row.from_id });
+        _renderMsgs();
+      }
+      var rt = _realTables.filter(function(r) { return r.id === row.table_id; })[0];
+      if (rt) { rt.last_activity = new Date().toISOString(); _renderTables(); }
+    });
+    subscribeChannel('cafe-door-' + vid, 'cafe_notices', 'village_id=eq.' + vid, function(payload) {
+      var row = payload && payload.new;
+      if (!row || row.type !== 'door' || !row.data || row.data.date !== _todayKey()) return;
+      if (row.data.user_id === _myId()) return;
+      _doorAnswers.unshift({ name: row.data.name || 'Someone', text: row.text, uid: row.data.user_id });
+      _renderWall();
+    });
+  }
+
+  function _unsubscribeAll(vid) {
+    if (typeof unsubscribeChannel !== 'function' || !vid) return;
+    unsubscribeChannel('cafe-tables-' + vid);
+    unsubscribeChannel('cafe-msgs-' + vid);
+    unsubscribeChannel('cafe-door-' + vid);
+  }
+
+  // ── Wiring ──
+  function _wire() {
+    if (_wired) return;
+    _wired = true;
+    var $ = function(id) { return document.getElementById(id); };
+    if ($('cafe-door-enter')) $('cafe-door-enter').addEventListener('click', _answerDoor);
+    if ($('cafe-door-quiet')) $('cafe-door-quiet').addEventListener('click', function() { _passDoor('quiet'); });
+    if ($('cafe-door-input')) $('cafe-door-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); _answerDoor(); }
+    });
+    if ($('cafe-new-table-btn')) $('cafe-new-table-btn').addEventListener('click', _openNewTable);
+    if ($('cafe-new-topic')) $('cafe-new-topic').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); _openNewTable(); }
+    });
+    if ($('cafe-table-send')) $('cafe-table-send').addEventListener('click', _sendToTable);
+    if ($('cafe-table-input')) $('cafe-table-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); _sendToTable(); }
+    });
+    if ($('cafe-table-back')) $('cafe-table-back').addEventListener('click', function() {
+      _activeTable = null; _activeMsgs = [];
+      _enterRoom();
+    });
+    if ($('cafe-cold-toggle')) $('cafe-cold-toggle').addEventListener('click', function() {
+      var el = $('cafe-cold-tables');
+      if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+    });
+    if ($('cafe-room-leave')) $('cafe-room-leave').addEventListener('click', function() {
+      closeCafeRoom();
+      if (typeof placeAvatarAtBuilding === 'function') placeAvatarAtBuilding('Commons / Café');
+    });
+    document.addEventListener('click', function(e) {
+      var card = e.target.closest && e.target.closest('.cafe-table-card, .cafe-cold-item');
+      if (!card) return;
+      var body = document.getElementById('cafe-room-body');
+      if (!body || !body.contains(card)) return;
+      _openTable(card.dataset.tid, card.dataset.kind);
+    });
+  }
+
+  window._cafeInit = function() {
+    var vid = _vid();
+    if (_lastVid && vid !== _lastVid) {
+      _unsubscribeAll(_lastVid);
+      _realTables = []; _doorAnswers = []; _activeTable = null; _activeMsgs = [];
+    }
+    _lastVid = vid;
+    _wire();
+    _backfillSim();
+    var strip = document.getElementById('commons-presence-strip');
+    if (strip && typeof renderPresenceStrip === 'function') renderPresenceStrip('commons', strip);
+    var passed = null;
+    try { passed = localStorage.getItem(_doorKey()); } catch(e) {}
+    if (passed) _enterRoom(); else _showDoor();
+    _fetchTables();
+    _fetchDoorAnswers();
+    _subscribe();
+  };
+})();
 
 </script>
 <script src="js/mastery.js"></script>
