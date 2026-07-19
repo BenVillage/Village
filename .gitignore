@@ -1,8 +1,6 @@
 # macOS
 .DS_Store
 
-# macOS
-.DS_Store
 
 # Backup files
 *.backup*
@@ -26,3 +24,10 @@ village-maker.html
 FOUNDERS_LOG_003.md
 MURA_DATABASE_MAYA_JAMES.md
 CLAUDE.md
+
+# Local credentials — never commit
+.anthropic_key
+.elevenlabs_key
+.env
+.env.*
+dev-auth.json

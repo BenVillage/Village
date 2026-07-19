@@ -9,7 +9,8 @@ function playWoosh() {
   if (gameSoundMuted) return;
   try {
     _wooshAudio.currentTime = 0;
-    _wooshAudio.play();
+    const playAttempt = _wooshAudio.play();
+    if (playAttempt && typeof playAttempt.catch === 'function') playAttempt.catch(() => {});
   } catch(e) {}
 }
 
@@ -75,9 +76,15 @@ function _getOcclusionAlpha(x, y) {
 }
 let _bellBuffer = null;
 (function preloadBell() {
-  fetch('bell.mp3').then(r => r.arrayBuffer()).then(buf => {
+  fetch('bell.mp3').then(r => {
+    if (!r.ok) throw new Error('bell ' + r.status);
+    return r.arrayBuffer();
+  }).then(buf => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    ctx.decodeAudioData(buf, decoded => { _bellBuffer = decoded; ctx.close(); });
+    return ctx.decodeAudioData(buf)
+      .then(decoded => { _bellBuffer = decoded; })
+      .catch(() => {})
+      .finally(() => { try { ctx.close(); } catch(e) {} });
   }).catch(() => {});
 })();
 const _bellSources = {}; // npcId → { source, gain, ctx }

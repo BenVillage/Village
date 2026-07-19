@@ -658,7 +658,7 @@
       // DM the founder — someone is requesting their token
       try {
         var { data: founders } = await window._supabase
-          .from('village_members').select('auth_id')
+          .from('village_member_directory').select('auth_id')
           .eq('village_id', vid).eq('role', 'founder');
         if (founders && founders.length) {
           founders.forEach(function(f) {

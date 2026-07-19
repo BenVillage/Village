@@ -4,6 +4,88 @@
 // Replace SIM_BANK entries with real content when ready — the timer system stays.
 // ===========================================================================
 (function() {
+  // Synthetic residents are a design/testing aid only. Production must be
+  // honestly empty until real people arrive.
+  const SIM_DEMO_MODE = (function() {
+    try {
+      return new URLSearchParams(location.search).get('demo') === '1' ||
+        localStorage.getItem('cvDemoMode') === '1';
+    } catch (_) { return false; }
+  })();
+  window._villageDemoMode = SIM_DEMO_MODE;
+
+  // Older local builds silently planted fictional residents. Remove only
+  // records that carry an explicit simulation marker, once, so production is
+  // truthful without touching anything a real member created.
+  function removeLegacyDemoContent() {
+    if (SIM_DEMO_MODE || localStorage.getItem('cvDemoCleanupV3') === '1') return;
+    function isLegacyDemoRow(row) {
+      if (!row) return false;
+      if (row.seed === true || row.sim === true) return true;
+      if (/^(sim[-_]|ml-|ex-seed|pb-seed|fw-seed|gl-s\d|pn-s\d)/.test(String(row.id || ''))) return true;
+      // Early simulation releases predated explicit markers. Match their
+      // exact persona + text pair so a real member with the same name is safe.
+      return DEFAULT_BANK.bonfire.some(function(item) {
+        return item.persona === row.name && item.text === row.text;
+      });
+    }
+    function cleanArray(key) {
+      try {
+        const rows = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!Array.isArray(rows)) return;
+        const realRows = rows.filter(row => !isLegacyDemoRow(row));
+        if (realRows.length !== rows.length) localStorage.setItem(key, JSON.stringify(realRows));
+      } catch (_) {}
+    }
+    [
+      'clayVillageBonfireChat',
+      'clayVillageCommonsTables',
+      'clayVillageProcessBoard',
+      'clayVillageProcessNotes',
+      'clayVillageJournals',
+      'clayVillageGallery',
+      'clayVillageFailureWall',
+      'clayVillageExchangeArchive'
+    ].forEach(function(key) {
+      cleanArray(key);
+      if (typeof vKey === 'function') cleanArray(vKey(key));
+    });
+    // The main page reads Bonfire storage before this late-loaded helper runs.
+    // Clean that already-loaded array too, so legacy fiction never flashes for
+    // one visit while waiting for a reload.
+    try {
+      if (typeof bonfireChatMessages !== 'undefined' && Array.isArray(bonfireChatMessages)) {
+        bonfireChatMessages = bonfireChatMessages.filter(function(row) { return !isLegacyDemoRow(row); });
+        if (typeof BONFIRE_CHAT_KEY !== 'undefined') {
+          localStorage.setItem(BONFIRE_CHAT_KEY, JSON.stringify(bonfireChatMessages));
+        }
+      }
+    } catch (_) {}
+    try {
+      const clusterKey = 'clayVillageMentorCluster';
+      const cluster = JSON.parse(localStorage.getItem(clusterKey) || '{}');
+      ['requests', 'agreements', 'wall'].forEach(part => {
+        if (Array.isArray(cluster[part])) {
+          cluster[part] = cluster[part].filter(row => !isLegacyDemoRow(row));
+        }
+      });
+      localStorage.setItem(clusterKey, JSON.stringify(cluster));
+    } catch (_) {}
+    try {
+      const pending = JSON.parse(localStorage.getItem('mura_pending') || '[]');
+      if (Array.isArray(pending)) {
+        localStorage.setItem('mura_pending', JSON.stringify(pending.filter(row => {
+          return row && row.profileId !== 'user1' && row.profileId !== 'user2';
+        })));
+      }
+    } catch (_) {}
+    localStorage.removeItem('_simContentSeeded');
+    localStorage.removeItem('mura_language_seeded');
+    localStorage.setItem('cvDemoCleanupV1', '1');
+    localStorage.setItem('cvDemoCleanupV2', '1');
+    localStorage.setItem('cvDemoCleanupV3', '1');
+  }
+
   const BANK_KEY     = 'clayVillageSimBank';
   const SCHEDULE_KEY = 'clayVillageSimSchedule';
 
@@ -216,6 +298,8 @@
     ],
   };
 
+  removeLegacyDemoContent();
+
   // ── Helpers ───────────────────────────────────────────────────────
   function getBank() {
     const stored = localStorage.getItem(BANK_KEY);
@@ -244,7 +328,9 @@
   // ── Release functions ─────────────────────────────────────────────
   function releaseBonfire(item) {
     if (typeof addBonfireMessage === 'function') {
-      addBonfireMessage(item.persona, item.text, '', false);
+      addBonfireMessage(item.persona, item.text, '', false, {
+        id: 'sim-bonfire-' + Date.now(), sim: true
+      });
     }
   }
 
@@ -329,6 +415,7 @@
   // window.simResetSchedule()    — reset all lastTs to 0 (triggers immediate release)
 
   window.simRelease = function(type) {
+    if (!SIM_DEMO_MODE) return;
     const bank     = getBank();
     const schedule = getSchedule();
     const items    = bank[type];
@@ -493,17 +580,23 @@
     console.log('Sim: immediate content seeded — wall(2), apprenticeship(1), journals(8), council(3), archive(1)');
   }
 
-  // ── Boot: seed immediate content, then start timed releases ────────
-  setTimeout(function() {
-    seedImmediateContent();
-    checkAndRelease();
-  }, 2000);
+  // ── Boot: demo sessions only ─────────────────────────────────────
+  if (SIM_DEMO_MODE) {
+    setTimeout(function() {
+      seedImmediateContent();
+      checkAndRelease();
+    }, 2000);
 
-  // ── Periodic check every 5 minutes ───────────────────────────────
-  setInterval(checkAndRelease, 5 * 60 * 1000);
+    // Periodic check every 5 minutes while explicitly demoing.
+    setInterval(checkAndRelease, 5 * 60 * 1000);
+  }
 
   // ── Console: reset seed flag to re-seed ──────────────────────────
   window.simReseed = function() {
+    if (!SIM_DEMO_MODE) {
+      console.warn('Sim: add ?demo=1 to use fictional test content.');
+      return;
+    }
     localStorage.removeItem('_simContentSeeded');
     seedImmediateContent();
     console.log('Sim: content re-seeded');

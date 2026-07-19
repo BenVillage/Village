@@ -651,7 +651,7 @@ html, body {
 <script>
 const SUPABASE_URL  = 'https://fokujzwgqtifpbmmhdot.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3VqendncXRpZnBibW1oZG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzM0OTIsImV4cCI6MjA5MDcwOTQ5Mn0.Tk8Y4lH0T4EUA7U4Lb22xeFyJAt4ha2CEHG_Idibux8';
-const VILLAGE_ID    = '00000000-0000-0000-0000-000000000000';
+const VILLAGE_ID    = new URLSearchParams(location.search).get('village_id') || '00000000-0000-0000-0000-000000000000';
 const VILLAGE_NAME  = 'Clay Village';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1354,8 +1354,8 @@ async function load() {
 
   try {
     let { data: rows } = await sb
-      .from('village_members')
-      .select('auth_id,display_name,avatar_url,role,profile_data,created_at')
+      .from('village_member_directory')
+      .select('auth_id,display_name,avatar_url,role,public_profile_data,created_at')
       .eq('village_id', VILLAGE_ID)
       .ilike('display_name', username)
       .limit(1);
@@ -1363,11 +1363,11 @@ async function load() {
     if (!rows || !rows.length) {
       // Fallback: scan all members for profile name match
       const { data: all } = await sb
-        .from('village_members')
-        .select('auth_id,display_name,avatar_url,role,profile_data,created_at')
+        .from('village_member_directory')
+        .select('auth_id,display_name,avatar_url,role,public_profile_data,created_at')
         .eq('village_id', VILLAGE_ID).limit(100);
       rows = (all||[]).filter(r => {
-        const pd = r.profile_data||{};
+        const pd = r.public_profile_data||{};
         const n  = (pd.villageName||pd.name||r.display_name||'').toLowerCase();
         return n === username || n.split(' ')[0] === username;
       });
@@ -1384,6 +1384,7 @@ async function load() {
     }
 
     const mem = rows[0];
+    mem.profile_data = mem.public_profile_data || {};
     const uid = mem.auth_id;
 
     const [tok, fri, prac, proc, gal, jour, bon, cnt] = await Promise.all([
@@ -1394,7 +1395,7 @@ async function load() {
       sb.from('gallery_pieces').select('created_at').eq('village_id',VILLAGE_ID).eq('user_id',uid).order('created_at',{ascending:false}).limit(3),
       sb.from('library_journals').select('created_at').eq('village_id',VILLAGE_ID).eq('user_id',uid).order('created_at',{ascending:false}).limit(3),
       sb.from('bonfire_messages').select('id',{count:'exact',head:true}).eq('village_id',VILLAGE_ID).eq('user_id',uid),
-      sb.from('village_members').select('auth_id',{count:'exact',head:true}).eq('village_id',VILLAGE_ID)
+      sb.from('village_member_directory').select('auth_id',{count:'exact',head:true}).eq('village_id',VILLAGE_ID)
     ]);
 
     render(mem, {

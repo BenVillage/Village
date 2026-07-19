@@ -1,11 +1,53 @@
 // ===== CLAY MASTERY — Skill Progression + Spaced Repetition =====
 (function() {
   var _cmData = {};
+
+  function canManageMastery() {
+    var role = window._villageRole || 'guest';
+    return !!window._sbAuthUid && (role === 'citizen' || role === 'founder');
+  }
+
+  function openMasteryMembershipPath() {
+    if (!window._sbAuthUid) {
+      var signIn = document.getElementById('nav-signin');
+      if (signIn) signIn.click();
+      return;
+    }
+
+    var applyOverlay = document.getElementById('apply-overlay');
+    if (!applyOverlay) return;
+    var villageLabel = document.getElementById('village-name-label');
+    var villageName = villageLabel && villageLabel.textContent.trim()
+      ? villageLabel.textContent.trim()
+      : 'this village';
+    var title = document.getElementById('apply-village-name');
+    var answer = document.getElementById('apply-answer');
+    var charCount = document.getElementById('apply-charcount');
+    var submit = document.getElementById('apply-submit');
+    var status = document.getElementById('apply-status');
+    if (title) title.textContent = 'Apply to ' + villageName;
+    if (answer) answer.value = '';
+    if (charCount) charCount.textContent = '0 / 50 minimum';
+    if (submit) submit.disabled = true;
+    if (status) status.textContent = '';
+    applyOverlay.dataset.villageId = _ACTIVE_VILLAGE_ID;
+    applyOverlay.dataset.villageName = villageName;
+    applyOverlay.classList.add('open');
+    setTimeout(function() { if (answer) answer.focus(); }, 100);
+  }
+
   async function fetchMasteryData() {
+    if (!canManageMastery() || !window._supabase) {
+      _cmData = {};
+      renderOverview(); renderTree();
+      return;
+    }
+
+    var uid = window._sbAuthUid;
     if (window._supabase) {
       var res = await window._supabase.from('school_mastery').select('*')
-        .eq('village_id', _ACTIVE_VILLAGE_ID).eq('user_id', _presenceProfileId());
-      if (!res.error && res.data) {
+        .eq('village_id', _ACTIVE_VILLAGE_ID).eq('user_id', uid);
+      if (canManageMastery() && window._sbAuthUid === uid && !res.error && res.data) {
         _cmData = {};
         res.data.forEach(function(r) {
           _cmData[r.skill_id] = { level: r.level, sessions: r.sessions, lastPractice: r.last_practice };
@@ -36,19 +78,19 @@
   const CM_GROUPS = ['Foundations', 'Forming', 'Refining', 'Finishing'];
 
   // --- Data (backed by Supabase, village-scoped) ---
-  function getData() { return _cmData; }
+  function getData() { return canManageMastery() ? _cmData : {}; }
   function saveData(d) {
+    if (!canManageMastery() || !window._supabase) return false;
     _cmData = d;
-    if (window._supabase) {
-      var uid = _presenceProfileId();
-      Object.keys(d).forEach(function(skillId) {
-        var s = d[skillId];
-        window._supabase.from('school_mastery').upsert({
-          village_id: _ACTIVE_VILLAGE_ID, user_id: uid, skill_id: skillId,
-          level: s.level || 0, sessions: s.sessions || 0, last_practice: s.lastPractice || null
-        }, { onConflict: 'village_id,user_id,skill_id' });
-      });
-    }
+    var uid = window._sbAuthUid;
+    Object.keys(d).forEach(function(skillId) {
+      var s = d[skillId];
+      window._supabase.from('school_mastery').upsert({
+        village_id: _ACTIVE_VILLAGE_ID, user_id: uid, skill_id: skillId,
+        level: s.level || 0, sessions: s.sessions || 0, last_practice: s.lastPractice || null
+      }, { onConflict: 'village_id,user_id,skill_id' });
+    });
+    return true;
   }
 
   function migrateOldData() { /* legacy localStorage migration removed — data now in Supabase */ }
@@ -168,6 +210,10 @@
     const nr = nextReviewDate(sd);
     const nrStr = nr ? nr.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '\u2014';
     const mastered = sd.level >= MAX_LEVEL;
+    const canTrack = canManageMastery();
+    const membershipAction = window._sbAuthUid
+      ? 'Join this village to track practice'
+      : 'Sign in to track practice';
 
     document.getElementById('cm-tree').style.display = 'none';
     const el = document.getElementById('cm-detail');
@@ -201,30 +247,41 @@
       <div class="cm-info-card">
         Each practice session increases your level. Higher levels mean longer intervals between reviews \u2014 from 1 day at level 1 to 60 days at level 6. The skill stays sharp through spaced repetition.
       </div>
-      <button class="cm-log-btn" id="cm-log-btn" ${mastered ? 'disabled' : ''}>${mastered ? 'Mastered' : 'Log Practice Session'}</button>
+      ${canTrack
+        ? `<button class="cm-log-btn" id="cm-log-btn" ${mastered ? 'disabled' : ''}>${mastered ? 'Mastered' : 'Log Practice Session'}</button>`
+        : `<div class="cm-info-card" style="border-color:rgba(200,168,75,0.35);margin-bottom:10px;">You can explore every skill here. Personal practice tracking opens after you become a village member.</div>
+           <button class="cm-log-btn" id="cm-member-cta">${membershipAction}</button>`}
     `;
     el.querySelector('.cm-detail-back').addEventListener('click', () => { renderOverview(); renderTree(); });
+    const memberCta = el.querySelector('#cm-member-cta');
+    if (memberCta) memberCta.addEventListener('click', openMasteryMembershipPath);
     const logBtn = el.querySelector('#cm-log-btn');
     if (logBtn && !mastered) {
       logBtn.addEventListener('click', () => {
-        logPractice(skillId);
-        renderDetail(skillId);
-        renderOverview();
+        if (logPractice(skillId)) {
+          renderDetail(skillId);
+          renderOverview();
+        }
       });
     }
   }
 
   // --- Log practice ---
   function logPractice(skillId) {
-    const data = getData();
-    const sd = data[skillId] || { level: 0, sessions: 0, lastPractice: null };
+    if (!canManageMastery()) return false;
+    const data = Object.assign({}, getData());
+    const sd = Object.assign(
+      { level: 0, sessions: 0, lastPractice: null },
+      data[skillId] || {}
+    );
     sd.level = Math.min(sd.level + 1, MAX_LEVEL);
     sd.sessions++;
     sd.lastPractice = new Date().toISOString();
     data[skillId] = sd;
-    saveData(data);
+    if (!saveData(data)) return false;
     const skill = CM_SKILLS.find(s => s.id === skillId);
     showToast(`${skill.icon} ${skill.name} \u2192 Level ${sd.level}`);
+    return true;
   }
 
   // --- Toast ---
@@ -285,8 +342,13 @@
     }
   };
 
-  document.getElementById('school-close').addEventListener('click', () => {
-    document.getElementById('school-overlay').style.display = 'none';
+  // The desktop window manager supplies the School's close control. Older
+  // full-screen layouts had a #school-close button, so keep the hook only
+  // when that legacy control is actually present.
+  const schoolClose = document.getElementById('school-close');
+  if (schoolClose) schoolClose.addEventListener('click', () => {
+    const schoolOverlay = document.getElementById('school-overlay');
+    if (schoolOverlay) schoolOverlay.style.display = 'none';
     if (typeof placeAvatarAtBuilding === 'function') placeAvatarAtBuilding('School');
   });
 
@@ -488,13 +550,21 @@
     _mondoHistory.push({ role: 'user', content: text });
 
     try {
+      var accessToken = typeof window.getVillageAccessToken === 'function'
+        ? await window.getVillageAccessToken()
+        : '';
+      if (!_IS_LOCAL && !accessToken) {
+        throw new Error('Sign in before starting a Mondo session.');
+      }
+      var requestHeaders = { 'Content-Type': 'application/json' };
+      if (accessToken) requestHeaders.Authorization = 'Bearer ' + accessToken;
       var resp = await fetch(_mondoUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({ messages: _mondoHistory })
+        headers: requestHeaders,
+        body: JSON.stringify({
+          messages: _mondoHistory,
+          village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : ''
+        })
       });
       var data = await resp.json();
       if (!resp.ok || (data && data.error)) {
@@ -584,9 +654,15 @@
   _rewireMondoInput();
 
   window.openMondo = openMondo; // expose globally for map icon + nav
+  window.closeMondo = closeMondo;
 
   var _mondoClose = document.getElementById('mondo-close');
   if (_mondoClose) _mondoClose.addEventListener('click', closeMondo);
+  var _mondoNav = document.getElementById('nav-mondo');
+  if (_mondoNav && !_mondoNav.dataset.mondoWired) {
+    _mondoNav.dataset.mondoWired = '1';
+    _mondoNav.addEventListener('click', openMondo);
+  }
 
   // Position fixed tooltips above the hovered word
   document.addEventListener('mouseover', function(e) {
@@ -774,8 +850,10 @@
     if (_vn) _vn.style.display = 'none';
   };
 
-  document.getElementById('ca-close').addEventListener('click', () => {
-    document.getElementById('cognitive-agency-overlay').style.display = 'none';
+  const caClose = document.getElementById('ca-close');
+  if (caClose) caClose.addEventListener('click', () => {
+    const caOverlay = document.getElementById('cognitive-agency-overlay');
+    if (caOverlay) caOverlay.style.display = 'none';
     var _tc = document.getElementById('top-controls');
     var _vn = document.getElementById('village-name-label');
     if (_tc) _tc.style.display = '';

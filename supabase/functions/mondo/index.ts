@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const MONDO_SYSTEM =
   "You are mondō. The person walked into this room on purpose. No one is watching. Mura cannot see this. They are here to say what they actually think.\n\n" +
@@ -41,7 +42,31 @@ Deno.serve(async (req) => {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } },
+    );
+    const { data: { user }, error: authError } = await authClient.auth.getUser(authHeader.slice(7));
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthenticated" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
     if (!apiKey) {
       return new Response(
@@ -50,10 +75,35 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { messages } = await req.json();
-    if (!messages || !messages.length) {
+    const { messages, village_id } = await req.json();
+    if (typeof village_id !== "string" || !village_id) {
       return new Response(
-        JSON.stringify({ error: "No messages provided" }),
+        JSON.stringify({ error: "village_id is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const { data: membership, error: membershipError } = await authClient
+      .from("village_members")
+      .select("auth_id")
+      .eq("auth_id", user.id)
+      .eq("village_id", village_id)
+      .maybeSingle();
+    if (membershipError || !membership) {
+      return new Response(JSON.stringify({ error: "Village membership required" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const validMessages = Array.isArray(messages) && messages.length <= 24 && messages.every(
+      (m: unknown) => typeof m === "object" && m !== null &&
+        ["user", "assistant"].includes(String((m as Record<string, unknown>).role)) &&
+        typeof (m as Record<string, unknown>).content === "string",
+    );
+    const totalChars = validMessages
+      ? messages.reduce((n: number, m: { content: string }) => n + m.content.length, 0)
+      : 0;
+    if (!validMessages || !messages.length || totalChars > 12_000) {
+      return new Response(
+        JSON.stringify({ error: "Invalid or oversized conversation" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

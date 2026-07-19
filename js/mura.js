@@ -4,16 +4,39 @@ const _sb = supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva3VqendncXRpZnBibW1oZG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzM0OTIsImV4cCI6MjA5MDcwOTQ5Mn0.Tk8Y4lH0T4EUA7U4Lb22xeFyJAt4ha2CEHG_Idibux8'
 );
 
+// Mura's memory is private infrastructure, not background analytics.
+// It is off until a signed-in member explicitly enables it. Fictional seed
+// material is available only in an explicit local demo session.
+function _muraDemoMode() {
+  try {
+    return new URLSearchParams(location.search).get('demo') === '1' ||
+      localStorage.getItem('cvDemoMode') === '1';
+  } catch (_) { return false; }
+}
+
+function _muraConsentKey() {
+  return 'cvMuraMemoryConsent:' + (window._sbAuthUid || 'signed-out');
+}
+
+function isMuraMemoryEnabled() {
+  if (!window._sbAuthUid) return false;
+  try { return localStorage.getItem(_muraConsentKey()) === 'yes'; }
+  catch (_) { return false; }
+}
+window.isMuraMemoryEnabled = isMuraMemoryEnabled;
+
 // Map internal profile IDs to Mura member IDs
 function getMuraId() {
+  if (window._sbAuthUid) return window._sbAuthUid;
   const p = window.playerProfile || (window.profiles || []).find(pr => pr.id === 'admin');
   if (!p) return 'profile-unknown';
   const map = { 'user1':'profile-maya','user2':'profile-james','user-ben':'profile-ben','admin':'profile-ben' };
   return map[p.id] || 'profile-' + (p.name || p.id).toLowerCase().replace(/\s+/g,'-');
 }
 
-// Silent fire-and-forget log — Mura's memory
+// Consented fire-and-forget log — ignored unless this member opted in.
 function logToMura(entry) {
+  if (!isMuraMemoryEnabled()) return false;
   const content = entry.content || '';
   const record = {
     member_id:       entry.member_id || getMuraId(),
@@ -31,10 +54,12 @@ function logToMura(entry) {
   _sb.from('member_language').insert(record).then(({ error }) => {
     if (error) console.warn('[Mura]', error.message);
   });
+  return true;
 }
 
 // One-time migration of 44 seeded entries with original timestamps
 function migrateMuraDatabase() {
+  if (!_muraDemoMode()) return;
   if (localStorage.getItem('mura_migration_v1_done')) return;
   const entries = [
     // ── Maya ──────────────────────────────────────────────────────────
@@ -119,7 +144,15 @@ function _presenceProfileId() {
   const sess = sessionStorage.getItem('cvSession') || localStorage.getItem('cvSession') || 'admin';
   const key  = 'cvPUUID_' + sess;
   let uid    = localStorage.getItem(key);
-  if (!uid) { uid = crypto.randomUUID(); localStorage.setItem(key, uid); }
+  if (!uid) {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      uid = window.crypto.randomUUID();
+    } else {
+      // randomUUID is unavailable on some older and non-secure browsers.
+      uid = 'local-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+    }
+    localStorage.setItem(key, uid);
+  }
   return uid;
 }
 
@@ -127,7 +160,8 @@ let _buildingPresence = [];
 
 function logPresence(location) {
   _presenceLocation = location || 'map';
-  if (!window._supabase) return;
+  // Visitors may observe the village, but they never appear as residents.
+  if (!window._supabase || !window._sbAuthUid || window._villageRole === 'guest') return;
   const _pData = {
     profile_id:   _presenceProfileId(),
     village_id:   _ACTIVE_VILLAGE_ID,
@@ -206,10 +240,19 @@ document.addEventListener('DOMContentLoaded', function() {
         _ttsPlaying = true;
         try {
           const _ttsUrl = _IS_LOCAL ? 'http://localhost:3001/tts' : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/tts';
+          const accessToken = typeof window.getVillageAccessToken === 'function'
+            ? await window.getVillageAccessToken()
+            : '';
+          if (!_IS_LOCAL && !accessToken) throw new Error('Sign in required');
+          const ttsHeaders = { 'Content-Type': 'application/json' };
+          if (accessToken) ttsHeaders.Authorization = 'Bearer ' + accessToken;
           const res = await fetch(_ttsUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: span.dataset.jp })
+            headers: ttsHeaders,
+            body: JSON.stringify({
+              text: span.dataset.jp,
+              village_id: typeof _ACTIVE_VILLAGE_ID !== 'undefined' ? _ACTIVE_VILLAGE_ID : ''
+            })
           });
           if (!res.ok) throw new Error('tts ' + res.status);
           const blob = await res.blob();
@@ -302,6 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Reveal — show the observation when glow is clicked ───────
   async function _muraReveal() {
+    if (!isMuraMemoryEnabled()) return;
     try {
       const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-unknown';
       const now = new Date().toISOString();
@@ -345,6 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Check for existing pending observation ───────────────────
   async function _checkMuraPending() {
+    if (!isMuraMemoryEnabled()) return;
     try {
       const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-unknown';
       const now = new Date().toISOString();
@@ -362,6 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Check if Mura should speak (triggered on building open) ──
   async function _checkMuraForBuilding(buildingName) {
+    if (!isMuraMemoryEnabled()) return;
     try {
       const memberId = (typeof getMuraId === 'function') ? getMuraId() : 'profile-unknown';
       const villageId = (typeof _ACTIVE_VILLAGE_ID !== 'undefined') ? _ACTIVE_VILLAGE_ID : '';
@@ -400,10 +446,21 @@ document.addEventListener('DOMContentLoaded', function() {
         ? 'http://localhost:3001/mura'
         : 'https://fokujzwgqtifpbmmhdot.supabase.co/functions/v1/mura';
 
+      const accessToken = typeof window.getVillageAccessToken === 'function'
+        ? await window.getVillageAccessToken()
+        : '';
+      if (!_IS_LOCAL && !accessToken) return;
+      const muraHeaders = { 'Content-Type': 'application/json' };
+      if (accessToken) muraHeaders.Authorization = 'Bearer ' + accessToken;
       const resp = await fetch(_muraUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-        body: JSON.stringify({ entries: [...entries].reverse(), last_messages: [], triggered_by: reason })
+        headers: muraHeaders,
+        body: JSON.stringify({
+          entries: [...entries].reverse(),
+          last_messages: [],
+          triggered_by: reason,
+          village_id: villageId
+        })
       });
       if (!resp.ok) return;
       const { text, error: apiErr } = await resp.json();
@@ -430,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ── Expose hook for openBuildingPage ─────────────────────────
   window._muraOnBuildingOpen = function(buildingName) {
+    if (!isMuraMemoryEnabled()) return;
     _checkMuraPending();
     _checkMuraForBuilding(buildingName);
   };
@@ -442,6 +500,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var _muraNavBtn = document.getElementById('nav-mura');
   if (_muraNavBtn) _muraNavBtn.addEventListener('click', function() {
+    // Auth resolves after DOMContentLoaded. Read the current account's choice
+    // at the moment this panel becomes visible.
+    _renderConsentState();
     var modal = document.getElementById('mura-lore-modal');
     if (modal) modal.style.display = 'flex';
   });
@@ -450,6 +511,39 @@ document.addEventListener('DOMContentLoaded', function() {
   if (_loreClose) _loreClose.addEventListener('click', function() {
     document.getElementById('mura-lore-modal').style.display = 'none';
   });
+
+  var _consentToggle = document.getElementById('mura-memory-consent');
+  var _consentState = document.getElementById('mura-memory-state');
+  function _renderConsentState() {
+    var enabled = isMuraMemoryEnabled();
+    if (_consentToggle) _consentToggle.checked = enabled;
+    if (_consentState) {
+      _consentState.textContent = enabled
+        ? 'Memory is on for this account on this device.'
+        : 'Memory is off. Mura is not collecting your village writing.';
+      _consentState.classList.toggle('is-on', enabled);
+    }
+  }
+  if (window._supabase && window._supabase.auth) {
+    window._supabase.auth.onAuthStateChange(function() {
+      // Let the application's auth listener publish _sbAuthUid first.
+      setTimeout(_renderConsentState, 0);
+    });
+  }
+  if (_consentToggle) _consentToggle.addEventListener('change', function() {
+    if (!window._sbAuthUid) {
+      _consentToggle.checked = false;
+      _renderConsentState();
+      return;
+    }
+    try {
+      if (_consentToggle.checked) localStorage.setItem(_muraConsentKey(), 'yes');
+      else localStorage.removeItem(_muraConsentKey());
+    } catch (_) {}
+    if (!_consentToggle.checked) _muraHideGlow();
+    _renderConsentState();
+  });
+  _renderConsentState();
 
   // ── Hide glow when leaving a building ────────────────────────
   _MURA_BUILDING_OVERLAYS.forEach(id => {
@@ -497,6 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ===== MURA MEMBER LANGUAGE SEED =====
 function seedMemberLanguage() {
+  if (!_muraDemoMode()) return;
   if (localStorage.getItem('mura_language_seeded') === '1') return;
 
   function ts(str) { return new Date(str).getTime(); }

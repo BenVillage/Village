@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const MURA_SYSTEM =
   "You are Mura. An ancient presence. You have been watching this person for a long time — long before they noticed you.\n\n" +
@@ -27,7 +28,31 @@ Deno.serve(async (req) => {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } },
+    );
+    const { data: { user }, error: authError } = await authClient.auth.getUser(authHeader.slice(7));
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthenticated" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
     if (!apiKey) {
       return new Response(
@@ -36,10 +61,39 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { entries, last_messages, triggered_by } = await req.json();
-    if (!entries || !entries.length) {
+    const { entries, last_messages, triggered_by, village_id } = await req.json();
+    if (typeof village_id !== "string" || !village_id) {
       return new Response(
-        JSON.stringify({ error: "No entries provided" }),
+        JSON.stringify({ error: "village_id is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const { data: membership, error: membershipError } = await authClient
+      .from("village_members")
+      .select("auth_id")
+      .eq("auth_id", user.id)
+      .eq("village_id", village_id)
+      .maybeSingle();
+    if (membershipError || !membership) {
+      return new Response(JSON.stringify({ error: "Village membership required" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const validEntries = Array.isArray(entries) && entries.length > 0 && entries.length <= 50 &&
+      entries.every((e: unknown) => typeof e === "object" && e !== null &&
+        typeof (e as Record<string, unknown>).content === "string" &&
+        String((e as Record<string, unknown>).content).length <= 8_000);
+    const totalChars = validEntries
+      ? entries.reduce((n: number, e: { content: string }) => n + e.content.length, 0)
+      : 0;
+    const validLastMessages = last_messages == null ||
+      (Array.isArray(last_messages) && last_messages.length <= 5 &&
+        last_messages.every((m: unknown) => typeof m === "string" && m.length <= 1_000));
+    const validTrigger = triggered_by == null ||
+      (typeof triggered_by === "string" && triggered_by.length <= 500);
+    if (!validEntries || totalChars > 40_000 || !validLastMessages || !validTrigger) {
+      return new Response(
+        JSON.stringify({ error: "Invalid or oversized memory request" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

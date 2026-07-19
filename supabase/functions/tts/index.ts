@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,7 +12,31 @@ Deno.serve(async (req) => {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } },
+    );
+    const { data: { user }, error: authError } = await authClient.auth.getUser(authHeader.slice(7));
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthenticated" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const elevenLabsKey = Deno.env.get("ELEVENLABS_API_KEY");
     if (!elevenLabsKey) {
       return new Response(
@@ -21,10 +46,27 @@ Deno.serve(async (req) => {
     }
 
     const voiceId = Deno.env.get("ELEVENLABS_VOICE_ID") || "8EkOjt4xTPGMclNlh1pk";
-    const { text } = await req.json();
-    if (!text) {
+    const { text, village_id } = await req.json();
+    if (typeof village_id !== "string" || !village_id) {
       return new Response(
-        JSON.stringify({ error: "No text provided" }),
+        JSON.stringify({ error: "village_id is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const { data: membership, error: membershipError } = await authClient
+      .from("village_members")
+      .select("auth_id")
+      .eq("auth_id", user.id)
+      .eq("village_id", village_id)
+      .maybeSingle();
+    if (membershipError || !membership) {
+      return new Response(JSON.stringify({ error: "Village membership required" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (typeof text !== "string" || !text.trim() || text.length > 500) {
+      return new Response(
+        JSON.stringify({ error: "Invalid or oversized text" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

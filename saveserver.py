@@ -12,6 +12,16 @@ def _get_anthropic_key():
         with open(path) as f: return f.read().strip()
     except: return ''
 
+# Set ELEVENLABS_API_KEY, or place the key in the gitignored
+# .elevenlabs_key file next to this server.
+def _get_elevenlabs_key():
+    key = os.environ.get('ELEVENLABS_API_KEY', '').strip()
+    if key: return key
+    try:
+        path = os.path.join(os.path.dirname(__file__), '.elevenlabs_key')
+        with open(path) as f: return f.read().strip()
+    except: return ''
+
 MONDO_SYSTEM = (
     "You are mondō. A thinking partner in a village for people who make things with their hands. The person walked into this room on purpose. It is quiet. You are the only one here.\n\n"
     "Your job: find the thing they have not questioned yet. Ask the one question that helps them see it.\n\n"
@@ -122,10 +132,12 @@ def call_mura(entries, last_messages=None, triggered_by=None):
     except Exception as e:
         return None, str(e)
 
-ELEVENLABS_KEY = 'c800131b53576cbf82ae6e1ab97e44830991f9662b00a35554a587d0ea9a1d8c'
 ELEVENLABS_VOICE = '8EkOjt4xTPGMclNlh1pk'
 
 def call_tts(text):
+    key = _get_elevenlabs_key()
+    if not key:
+        return None, 'ELEVENLABS_API_KEY not configured'
     payload = json.dumps({
         'text': text,
         'model_id': 'eleven_multilingual_v2',
@@ -140,7 +152,7 @@ def call_tts(text):
         f'https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE}',
         data=payload,
         headers={
-            'xi-api-key': ELEVENLABS_KEY,
+            'xi-api-key': key,
             'Content-Type': 'application/json',
             'Accept': 'audio/mpeg',
         }
@@ -153,8 +165,13 @@ def call_tts(text):
     except Exception as e:
         return None, str(e)
 
-DATA_FILE     = os.path.join(os.path.dirname(__file__), 'gamedata.json')
-DEV_AUTH_FILE = os.path.join(os.path.dirname(__file__), 'dev-auth.json')
+DATA_FILE = os.path.join(os.path.dirname(__file__), 'gamedata.json')
+MAX_REQUEST_BYTES = 1_000_000
+ALLOWED_BROWSER_ORIGINS = {
+    'http://localhost:3000', 'http://127.0.0.1:3000',
+    'http://localhost:8000', 'http://127.0.0.1:8000',
+    'http://localhost:3001', 'http://127.0.0.1:3001',
+}
 
 try:
     with open(DATA_FILE) as f:
@@ -165,17 +182,49 @@ except:
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a): pass  # silence logs
 
+    def trusted_request(self):
+        # CLI requests have no Origin. Browser requests must come from the
+        # local Village development origins, never an arbitrary web page.
+        origin = self.headers.get('Origin')
+        return not origin or origin in ALLOWED_BROWSER_ORIGINS
+
     def send_cors(self):
-        self.send_header('Access-Control-Allow-Origin', '*')
+        origin = self.headers.get('Origin')
+        if origin in ALLOWED_BROWSER_ORIGINS:
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Vary', 'Origin')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+
+    def reject_untrusted(self):
+        if self.trusted_request(): return False
+        self.send_response(403)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write(b'{"error":"untrusted browser origin"}')
+        return True
+
+    def reject_oversize(self):
+        try: length = int(self.headers.get('Content-Length', 0))
+        except ValueError: length = MAX_REQUEST_BYTES + 1
+        if length <= MAX_REQUEST_BYTES: return False
+        self.send_response(413)
+        self.send_header('Content-Type', 'application/json')
+        self.send_cors()
+        self.end_headers()
+        self.wfile.write(b'{"error":"request too large"}')
+        return True
 
     def do_OPTIONS(self):
+        if self.reject_untrusted(): return
         self.send_response(204)
         self.send_cors()
         self.end_headers()
 
     def do_GET(self):
+        if self.reject_untrusted(): return
         if self.path == '/data':
             body = json.dumps(gameData).encode()
             self.send_response(200)
@@ -183,20 +232,6 @@ class Handler(BaseHTTPRequestHandler):
             self.send_cors()
             self.end_headers()
             self.wfile.write(body)
-        elif self.path == '/dev-auth':
-            try:
-                with open(DEV_AUTH_FILE) as f:
-                    body = f.read().encode()
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json')
-                self.send_cors()
-                self.end_headers()
-                self.wfile.write(body)
-            except:
-                self.send_response(404)
-                self.send_cors()
-                self.end_headers()
-                self.wfile.write(b'{}')
         elif self.path == '/vision':
             vision_path = os.path.join(os.path.dirname(__file__), 'VISION.md')
             try:
@@ -214,19 +249,13 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_cors()
                 self.end_headers()
                 self.wfile.write(json.dumps({'error': str(e)}).encode())
-
-    def do_POST(self):
-        if self.path == '/dev-auth':
-            length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(length)
-            with open(DEV_AUTH_FILE, 'wb') as f:
-                f.write(body)
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
+        else:
+            self.send_response(404)
             self.send_cors()
             self.end_headers()
-            self.wfile.write(b'{"ok":true}')
-            return
+
+    def do_POST(self):
+        if self.reject_untrusted() or self.reject_oversize(): return
         if self.path == '/vision':
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
@@ -321,7 +350,12 @@ class Handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"ok":true}')
             except Exception as e:
                 self.send_response(400)
+                self.send_cors()
                 self.end_headers()
                 self.wfile.write(str(e).encode())
+            return
+        self.send_response(404)
+        self.send_cors()
+        self.end_headers()
 
 HTTPServer(('localhost', 3001), Handler).serve_forever()
